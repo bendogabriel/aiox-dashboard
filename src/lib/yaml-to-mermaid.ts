@@ -312,6 +312,62 @@ function generateAgentStyles(nodes: MermaidNode[]): { classDefs: string[]; class
 }
 
 /**
+ * Metadata extracted from a workflow YAML for rendering header/legend.
+ */
+export interface WorkflowMeta {
+  name: string;
+  version: string | null;
+  phaseCount: number;
+  agents: { name: string; color: string }[];
+}
+
+/**
+ * Extract display metadata from a workflow YAML string.
+ * Safe — never throws; returns sensible defaults on failure.
+ */
+export function extractWorkflowMeta(yamlContent: string): WorkflowMeta {
+  const fallback: WorkflowMeta = { name: 'Workflow', version: null, phaseCount: 0, agents: [] };
+
+  try {
+    const data = yaml.load(yamlContent) as Record<string, unknown> | null;
+    if (!data || typeof data !== 'object') return fallback;
+
+    const meta = (data.metadata ?? data) as Record<string, unknown>;
+    const name = (meta.name ?? meta.workflow_name ?? 'Workflow') as string;
+    const version = (meta.version ?? null) as string | null;
+
+    const rawPhases = data.phases as unknown[] | undefined;
+    const rawSteps = data.steps as unknown[] | undefined;
+    const workflowObj = data.workflow as Record<string, unknown> | undefined;
+    const workflowSteps = workflowObj?.steps as unknown[] | undefined;
+
+    const items = rawPhases ?? rawSteps ?? workflowSteps ?? [];
+    const phaseCount = Array.isArray(items) ? items.length : 0;
+
+    // Collect unique agents
+    const agentSet = new Map<string, string>();
+    let colorIdx = 0;
+    if (Array.isArray(items)) {
+      for (const item of items) {
+        if (item && typeof item === 'object') {
+          const agent = extractAgent(item as Record<string, unknown>);
+          if (agent !== 'unknown' && !agentSet.has(agent)) {
+            agentSet.set(agent, AGENT_COLORS[colorIdx % AGENT_COLORS.length]);
+            colorIdx++;
+          }
+        }
+      }
+    }
+
+    const agents = Array.from(agentSet.entries()).map(([n, c]) => ({ name: n, color: c }));
+
+    return { name, version, phaseCount, agents };
+  } catch {
+    return fallback;
+  }
+}
+
+/**
  * Convert a workflow YAML string to a Mermaid flowchart definition string.
  *
  * Supports two main schema styles:
