@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { getConnectionConfig, type ConnectionMode } from '../lib/connection';
 
 export interface MonitorEvent {
   id: string;
@@ -12,6 +13,9 @@ export interface MonitorEvent {
 
 interface MonitorState {
   connected: boolean;
+  connectionMode: ConnectionMode;
+  roomId: string | null;
+  cliConnected: boolean;
   events: MonitorEvent[];
   currentTool: { name: string; startedAt: string } | null;
   stats: {
@@ -24,12 +28,11 @@ interface MonitorState {
   clearEvents: () => void;
   setConnected: (connected: boolean) => void;
   setCurrentTool: (tool: { name: string; startedAt: string } | null) => void;
-  connectToMonitor: () => void;
+  connectToMonitor: (options?: { roomId?: string; token?: string }) => void;
   disconnectFromMonitor: () => void;
 }
 
 const MONITOR_URL = import.meta.env.VITE_MONITOR_URL || 'http://localhost:4001';
-const WS_URL = MONITOR_URL.replace(/^http/, 'ws');
 
 let ws: WebSocket | null = null;
 let reconnectAttempts = 0;
@@ -65,6 +68,9 @@ function mapServerEvent(raw: Record<string, unknown>): MonitorEvent {
 
 export const useMonitorStore = create<MonitorState>((set, get) => ({
   connected: false,
+  connectionMode: 'local',
+  roomId: null,
+  cliConnected: false,
   events: [],
   currentTool: null,
   stats: {
@@ -103,40 +109,66 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
 
   setCurrentTool: (tool) => set({ currentTool: tool }),
 
-  connectToMonitor: () => {
+  connectToMonitor: (options) => {
     const { disconnectFromMonitor } = get();
     disconnectFromMonitor();
     reconnectAttempts = 0;
 
-    // Load initial data
-    Promise.all([
-      fetch(`${MONITOR_URL}/events/recent?limit=50`).then((r) => r.ok ? r.json() : []),
-      fetch(`${MONITOR_URL}/stats`).then((r) => r.ok ? r.json() : null),
-    ])
-      .then(([recentEvents, serverStats]) => {
-        if (Array.isArray(recentEvents) && recentEvents.length > 0) {
-          const mapped = recentEvents.map(mapServerEvent);
-          set({ events: mapped.slice(-50) });
-        }
-        if (serverStats) {
-          set((state) => ({
-            stats: {
-              total: serverStats.total ?? state.stats.total,
-              successRate: serverStats.success_rate ?? state.stats.successRate,
-              errorCount: serverStats.errors ?? state.stats.errorCount,
-              activeSessions: serverStats.sessions_active ?? state.stats.activeSessions,
-            },
-          }));
-        }
-      })
-      .catch((err) => {
-        console.warn('[MonitorStore] Failed to load initial data:', err);
-      });
+    // Determine connection config
+    const config = getConnectionConfig();
+
+    // Allow override via options (for programmatic connection)
+    const roomId = options?.roomId || config.roomId;
+    const token = options?.token || config.token;
+
+    set({
+      connectionMode: config.mode,
+      roomId: roomId || null,
+    });
+
+    // In local mode, load initial data via HTTP
+    if (config.mode === 'local') {
+      Promise.all([
+        fetch(`${MONITOR_URL}/events/recent?limit=50`).then((r) => r.ok ? r.json() : []),
+        fetch(`${MONITOR_URL}/stats`).then((r) => r.ok ? r.json() : null),
+      ])
+        .then(([recentEvents, serverStats]) => {
+          if (Array.isArray(recentEvents) && recentEvents.length > 0) {
+            const mapped = recentEvents.map(mapServerEvent);
+            set({ events: mapped.slice(-50) });
+          }
+          if (serverStats) {
+            set((state) => ({
+              stats: {
+                total: serverStats.total ?? state.stats.total,
+                successRate: serverStats.success_rate ?? state.stats.successRate,
+                errorCount: serverStats.errors ?? state.stats.errorCount,
+                activeSessions: serverStats.sessions_active ?? state.stats.activeSessions,
+              },
+            }));
+          }
+        })
+        .catch((err) => {
+          console.warn('[MonitorStore] Failed to load initial data:', err);
+        });
+    }
+
+    // Build WebSocket URL
+    let wsUrl: string;
+    if (config.mode === 'cloud' && roomId && token) {
+      // Cloud mode: connect to relay
+      const relayUrl = import.meta.env.VITE_RELAY_URL;
+      wsUrl = `${relayUrl}/dashboard?room=${encodeURIComponent(roomId)}&token=${encodeURIComponent(token)}`;
+    } else {
+      // Local mode: connect to monitor server
+      const monitorWsUrl = MONITOR_URL.replace(/^http/, 'ws');
+      wsUrl = `${monitorWsUrl}/stream`;
+    }
 
     // Open WebSocket
     function openWebSocket() {
       try {
-        ws = new WebSocket(`${WS_URL}/stream`);
+        ws = new WebSocket(wsUrl);
       } catch {
         console.warn('[MonitorStore] Failed to create WebSocket');
         return;
@@ -151,14 +183,27 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
         try {
           const payload = JSON.parse(msg.data);
 
+          // Init message — replay buffer (both local and cloud)
           if (payload.type === 'init' && Array.isArray(payload.events)) {
             const mapped = payload.events.map(mapServerEvent);
             set({ events: mapped.slice(-50) });
+
+            // Cloud mode: track room state
+            if (payload.room) {
+              set({ cliConnected: payload.room.cliConnected ?? false });
+            }
             return;
           }
 
+          // Single event
           if (payload.type === 'event' && payload.event) {
             get().addEvent(mapServerEvent(payload.event));
+            return;
+          }
+
+          // Room update (cloud mode)
+          if (payload.type === 'room_update' && payload.room) {
+            set({ cliConnected: payload.room.cliConnected ?? false });
             return;
           }
 
