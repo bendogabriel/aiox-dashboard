@@ -25,6 +25,7 @@ interface Commit {
   author: string;
   date: string;
   url: string;
+  refs: string[];
 }
 
 interface PullRequest {
@@ -289,7 +290,12 @@ function CommitsTab({
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <p className="text-primary font-medium truncate">{commit.message}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-primary font-medium truncate">{commit.message}</p>
+                  {commit.refs?.length > 0 && commit.refs.map((ref) => (
+                    <RefBadge key={ref} refName={ref} />
+                  ))}
+                </div>
                 <div className="flex items-center gap-3 mt-2 text-xs text-tertiary">
                   <span className="font-mono glass-subtle px-2 py-0.5 rounded text-secondary">
                     {commit.sha}
@@ -468,6 +474,39 @@ function IssuesTab({
 }
 
 // Helpers
+function RefBadge({ refName }: { refName: string }) {
+  const isHead = refName.startsWith('HEAD');
+  const isTag = refName.startsWith('tag: ');
+  const isOrigin = refName.startsWith('origin/');
+
+  // Clean up display name
+  let displayName = refName;
+  if (isHead) {
+    // "HEAD -> feat/branch" → show "feat/branch"
+    const match = refName.match(/HEAD -> (.+)/);
+    displayName = match ? match[1] : 'HEAD';
+  }
+  if (isTag) displayName = refName.replace('tag: ', '');
+
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium flex-shrink-0',
+        isTag
+          ? 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/30'
+          : isHead
+            ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30'
+            : isOrigin
+              ? 'bg-purple-500/15 text-purple-400 border border-purple-500/30'
+              : 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
+      )}
+    >
+      <GitBranch size={10} />
+      {displayName}
+    </span>
+  );
+}
+
 function PrStateBadge({ state }: { state: string }) {
   const s = state.toLowerCase();
   if (s === 'open') return <Badge variant="status" status="success" size="sm">Open</Badge>;

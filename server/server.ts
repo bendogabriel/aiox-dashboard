@@ -325,17 +325,18 @@ const _server = Bun.serve({
       }
     }
 
-    // API: GitHub commits
+    // API: GitHub commits (all branches, all authors)
     if (url.pathname === '/github/commits') {
       try {
-        const limit = parseInt(url.searchParams.get('limit') || '20');
+        const limit = parseInt(url.searchParams.get('limit') || '30');
         const proc = Bun.spawnSync(
           [
-            'gh',
-            'api',
-            'repos/SynkraAI/aios-dashboard/commits',
-            '--jq',
-            `.[:${limit}] | [.[] | {sha: .sha[:7], message: (.commit.message | split("\n")[0]), author: (.commit.author.name), date: .commit.author.date, url: .html_url}]`,
+            'git',
+            'log',
+            '--all',
+            '--date-order',
+            `--max-count=${limit}`,
+            '--format=%H%x1f%h%x1f%s%x1f%an%x1f%aI%x1f%D',
           ],
           { stdout: 'pipe', stderr: 'pipe' }
         );
@@ -346,7 +347,28 @@ const _server = Bun.serve({
             headers: { ...headers, 'Content-Type': 'application/json' },
           });
         }
-        const commits = JSON.parse(proc.stdout.toString());
+        const output = proc.stdout.toString().trim();
+        if (!output) {
+          return new Response(JSON.stringify([]), {
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        const commits = output.split('\n').map((line) => {
+          const [fullSha, sha, message, author, date, refs] = line.split('\x1f');
+          return {
+            sha,
+            message,
+            author,
+            date,
+            url: `https://github.com/SynkraAI/aios-dashboard/commit/${fullSha}`,
+            refs: refs
+              ? refs
+                  .split(', ')
+                  .map((r) => r.trim())
+                  .filter(Boolean)
+              : [],
+          };
+        });
         return new Response(JSON.stringify(commits), {
           headers: { ...headers, 'Content-Type': 'application/json' },
         });
