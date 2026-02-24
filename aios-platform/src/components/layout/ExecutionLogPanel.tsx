@@ -10,8 +10,18 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  type LucideIcon,
+  ClipboardList,
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  Wrench,
+  Bot,
+} from 'lucide-react';
 import { useExecutionLogStore, LogLevel } from '../../stores/executionLogStore';
 import { cn } from '../../lib/utils';
+import { ICON_SIZES } from '../../lib/icons';
 
 // Icons
 const ChevronIcon = ({ expanded }: { expanded: boolean }) => (
@@ -36,13 +46,13 @@ const ClearIcon = () => (
   </svg>
 );
 
-const levelIcons: Record<LogLevel, string> = {
-  info: '📋',
-  success: '✅',
-  warning: '⚠️',
-  error: '❌',
-  tool: '🔧',
-  agent: '🤖',
+const levelIcons: Record<LogLevel, LucideIcon> = {
+  info: ClipboardList,
+  success: CheckCircle,
+  warning: AlertTriangle,
+  error: XCircle,
+  tool: Wrench,
+  agent: Bot,
 };
 
 const levelColors: Record<LogLevel, string> = {
@@ -180,7 +190,7 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
                       levelColors[log.level]
                     )}
                   >
-                    <span className="flex-shrink-0">{levelIcons[log.level]}</span>
+                    {(() => { const Icon = levelIcons[log.level]; return <Icon size={ICON_SIZES.sm} className="flex-shrink-0" />; })()}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-primary font-medium truncate">

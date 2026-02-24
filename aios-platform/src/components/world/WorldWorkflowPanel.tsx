@@ -1,6 +1,15 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  type LucideIcon,
+  Clapperboard,
+  Smartphone,
+  Megaphone,
+  Rocket,
+  Wrench,
+} from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { ICON_SIZES } from '../../lib/icons';
 import { domains, rooms } from './world-layout';
 import type { DomainId } from './world-layout';
 
@@ -9,7 +18,7 @@ import type { DomainId } from './world-layout';
 export interface WorkflowPipeline {
   id: string;
   name: string;
-  icon: string;
+  icon: LucideIcon;
   description: string;
   status: 'idle' | 'active' | 'completed';
   steps: WorkflowStep[];
@@ -29,7 +38,7 @@ export const businessWorkflows: WorkflowPipeline[] = [
   {
     id: 'live-semanal',
     name: 'Live Semanal',
-    icon: '🎬',
+    icon: Clapperboard,
     description: 'Pipeline completo da live: roteiro, copy, criativos, publicação',
     status: 'active',
     steps: [
@@ -42,7 +51,7 @@ export const businessWorkflows: WorkflowPipeline[] = [
   {
     id: 'feed-conteudo',
     name: 'Feed de Conteúdo',
-    icon: '📱',
+    icon: Smartphone,
     description: 'Pipeline de criação de conteúdo para redes sociais',
     status: 'idle',
     steps: [
@@ -55,7 +64,7 @@ export const businessWorkflows: WorkflowPipeline[] = [
   {
     id: 'criativos-ads',
     name: 'Criativos para Ads',
-    icon: '📢',
+    icon: Megaphone,
     description: 'Criação e otimização de criativos para campanhas',
     status: 'idle',
     steps: [
@@ -68,7 +77,7 @@ export const businessWorkflows: WorkflowPipeline[] = [
   {
     id: 'lancamento',
     name: 'Lançamento de Produto',
-    icon: '🚀',
+    icon: Rocket,
     description: 'Workflow completo de lançamento: copy, funil, tráfego, análise',
     status: 'idle',
     steps: [
@@ -83,7 +92,7 @@ export const businessWorkflows: WorkflowPipeline[] = [
   {
     id: 'dev-deploy',
     name: 'Dev → Deploy',
-    icon: '🛠',
+    icon: Wrench,
     description: 'Pipeline de desenvolvimento: código, review, design system, deploy',
     status: 'idle',
     steps: [
@@ -162,7 +171,7 @@ export function WorldWorkflowPanel({
           {activeCount > 0 && (
             <motion.span
               className="px-1.5 py-0.5 rounded text-[9px] font-bold"
-              style={{ background: '#54A0FF33', color: '#54A0FF' }}
+              style={{ background: 'color-mix(in srgb, var(--color-status-info) 20%, transparent)', color: 'var(--color-status-info)' }}
               animate={{ opacity: [0.7, 1, 0.7] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
@@ -217,7 +226,7 @@ export function WorldWorkflowPanel({
                 >
                   {/* Workflow header */}
                   <div className="flex items-center gap-2 mb-2.5">
-                    <span className="text-sm">{wf.icon}</span>
+                    <wf.icon size={ICON_SIZES.sm} />
                     <span className="text-[11px] font-semibold text-white/90">{wf.name}</span>
                     <span
                       className="ml-auto px-1.5 py-0.5 rounded text-[8px] font-bold uppercase"
@@ -301,7 +310,7 @@ export function WorldWorkflowPanel({
 
                             {/* Progress bar for active steps */}
                             {step.status === 'active' && step.progress !== undefined && (
-                              <div className="w-full h-0.5 rounded mt-0.5 overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                              <div className="w-full h-0.5 rounded mt-0.5 overflow-hidden" style={{ background: 'var(--glass-border-color)' }}>
                                 <motion.div
                                   className="h-full rounded"
                                   style={{ background: domainCfg.tileColor }}
@@ -377,7 +386,7 @@ export function WorldWorkflowPanel({
                     {selectedWorkflow === wf.id && (
                       <motion.div
                         className="mt-2 pt-2"
-                        style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+                        style={{ borderTop: '1px solid var(--glass-border-color-subtle)' }}
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}

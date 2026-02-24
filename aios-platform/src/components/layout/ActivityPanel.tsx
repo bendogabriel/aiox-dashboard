@@ -1147,7 +1147,7 @@ function StatCard({ label, value, color }: StatCardProps) {
   return (
     <div
       className={`rounded-xl p-2.5 bg-gradient-to-br ${style.bg} to-transparent`}
-      style={{ border: '1px solid rgba(255, 255, 255, 0.05)' }}
+      style={{ border: '1px solid var(--glass-border-color-subtle)' }}
     >
       <p className="text-[10px] text-white/40 mb-0.5">{label}</p>
       <p className={`text-lg font-bold ${style.text}`}>{value}</p>

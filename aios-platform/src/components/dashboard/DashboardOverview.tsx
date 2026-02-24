@@ -1,6 +1,26 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  type LucideIcon,
+  BarChart3,
+  Bot,
+  PlugZap,
+  DollarSign,
+  Settings,
+  Package,
+  Zap,
+  Link,
+  Wrench,
+  Monitor as MonitorIcon,
+  Timer,
+  Signal,
+  TrendingUp,
+  AlertTriangle,
+  Sparkles,
+  CheckCircle,
+} from 'lucide-react';
 import { GlassCard, Badge, GlassButton } from '../ui';
+import { ICON_SIZES } from '../../lib/icons';
 import { useSquads, useEcosystemOverview } from '../../hooks/useSquads';
 import { useAgents } from '../../hooks/useAgents';
 import { useExecutionHistory, useExecutionStats, useTokenUsage, useLLMHealth } from '../../hooks/useExecute';
@@ -74,12 +94,12 @@ type TabType = 'overview' | 'agents' | 'mcp' | 'costs' | 'system';
 export function DashboardOverview() {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
 
-  const tabs = [
-    { id: 'overview', label: 'Visão Geral', icon: '📊' },
-    { id: 'agents', label: 'Agents', icon: '🤖' },
-    { id: 'mcp', label: 'MCP & Tools', icon: '🔌' },
-    { id: 'costs', label: 'Custos', icon: '💰' },
-    { id: 'system', label: 'Sistema', icon: '⚙️' },
+  const tabs: { id: string; label: string; icon: LucideIcon }[] = [
+    { id: 'overview', label: 'Visão Geral', icon: BarChart3 },
+    { id: 'agents', label: 'Agents', icon: Bot },
+    { id: 'mcp', label: 'MCP & Tools', icon: PlugZap },
+    { id: 'costs', label: 'Custos', icon: DollarSign },
+    { id: 'system', label: 'Sistema', icon: Settings },
   ];
 
   return (
@@ -110,7 +130,7 @@ export function DashboardOverview() {
                 : 'text-secondary hover:text-primary'
             )}
           >
-            <span>{tab.icon}</span>
+            <tab.icon size={ICON_SIZES.md} />
             <span className="hidden sm:inline">{tab.label}</span>
           </button>
         ))}
@@ -167,13 +187,13 @@ function OverviewTab() {
     >
       {/* Quick Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <QuickStatCard label="Squads" value={squads?.length || 0} icon="📦" color="blue" />
-        <QuickStatCard label="Agents" value={agents?.length || 0} icon="🤖" color="green" />
-        <QuickStatCard label="Execuções" value={executions.length} icon="⚡" color="purple" />
+        <QuickStatCard label="Squads" value={squads?.length || 0} icon={Package} color="blue" />
+        <QuickStatCard label="Agents" value={agents?.length || 0} icon={Bot} color="green" />
+        <QuickStatCard label="Execuções" value={executions.length} icon={Zap} color="purple" />
         <QuickStatCard
           label="Sucesso"
           value={`${successRate}%`}
-          icon="✓"
+          icon={CheckCircle}
           color={successRate >= 90 ? 'green' : successRate >= 70 ? 'yellow' : 'red'}
         />
       </div>
@@ -362,10 +382,10 @@ function MCPTab() {
     >
       {/* MCP Overview */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <QuickStatCard label="Servidores" value={mcpStats?.totalServers || 0} icon="🖥️" color="blue" />
-        <QuickStatCard label="Conectados" value={mcpStats?.connectedServers || 0} icon="🔗" color="green" />
-        <QuickStatCard label="Tools" value={mcpStats?.totalTools || 0} icon="🔧" color="purple" />
-        <QuickStatCard label="Chamadas" value={mcpStats?.totalToolCalls || 0} icon="📞" color="orange" />
+        <QuickStatCard label="Servidores" value={mcpStats?.totalServers || 0} icon={MonitorIcon} color="blue" />
+        <QuickStatCard label="Conectados" value={mcpStats?.connectedServers || 0} icon={Link} color="green" />
+        <QuickStatCard label="Tools" value={mcpStats?.totalTools || 0} icon={Wrench} color="purple" />
+        <QuickStatCard label="Chamadas" value={mcpStats?.totalToolCalls || 0} icon={Zap} color="orange" />
       </div>
 
       {/* Server List */}
@@ -564,25 +584,25 @@ function SystemTab() {
         <QuickStatCard
           label="Uptime"
           value={metrics ? formatUptime(metrics.uptime) : '-'}
-          icon="⏱️"
+          icon={Timer}
           color="green"
         />
         <QuickStatCard
           label="Latência"
           value={metrics ? `${metrics.avgLatency.toFixed(0)}ms` : '-'}
-          icon="📶"
+          icon={Signal}
           color="blue"
         />
         <QuickStatCard
           label="Req/min"
           value={metrics ? metrics.requestsPerMinute.toFixed(1) : '-'}
-          icon="📈"
+          icon={TrendingUp}
           color="purple"
         />
         <QuickStatCard
           label="Erros"
           value={metrics ? `${metrics.errorRate.toFixed(1)}%` : '-'}
-          icon="⚠️"
+          icon={AlertTriangle}
           color={metrics && metrics.errorRate < 5 ? 'green' : 'red'}
         />
       </div>
@@ -633,10 +653,10 @@ function SystemTab() {
 }
 
 // Helper Components
-function QuickStatCard({ label, value, icon, color }: {
+function QuickStatCard({ label, value, icon: Icon, color }: {
   label: string;
   value: string | number;
-  icon: string;
+  icon: LucideIcon;
   color: string;
 }) {
   const colorClasses: Record<string, string> = {
@@ -654,7 +674,7 @@ function QuickStatCard({ label, value, icon, color }: {
       colorClasses[color] || colorClasses.blue
     )}>
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-xl">{icon}</span>
+        <Icon size={ICON_SIZES.xl} className="text-secondary" />
         <span className="text-xs text-tertiary uppercase tracking-wider">{label}</span>
       </div>
       <p className="text-2xl font-bold text-primary">{value}</p>

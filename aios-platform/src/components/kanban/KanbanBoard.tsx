@@ -12,7 +12,19 @@ import {
   type DragOverEvent,
 } from '@dnd-kit/core';
 import { motion } from 'framer-motion';
-import { Plus, LayoutGrid, Loader2 } from 'lucide-react';
+import {
+  Plus,
+  LayoutGrid,
+  Loader2,
+  ClipboardList,
+  RefreshCw,
+  Bot,
+  User,
+  GitMerge,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { GlassButton } from '../ui';
 import { KanbanColumn, type ColumnConfig } from './KanbanColumn';
 import { StoryCard } from './StoryCard';
@@ -22,13 +34,13 @@ import { useStories } from '../../hooks/useStories';
 import { useStoryStore, type Story, type StoryStatus } from '../../stores/storyStore';
 
 const COLUMNS: ColumnConfig[] = [
-  { id: 'backlog', label: 'Backlog', color: '#6b7280', icon: '📋' },
-  { id: 'in_progress', label: 'In Progress', color: '#3b82f6', icon: '🔄' },
-  { id: 'ai_review', label: 'AI Review', color: '#a855f7', icon: '🤖' },
-  { id: 'human_review', label: 'Human Review', color: '#f97316', icon: '👤' },
-  { id: 'pr_created', label: 'PR Created', color: '#22c55e', icon: '🔀' },
-  { id: 'done', label: 'Done', color: '#10b981', icon: '✅' },
-  { id: 'error', label: 'Error', color: '#ef4444', icon: '❌' },
+  { id: 'backlog', label: 'Backlog', color: '#6b7280', icon: ClipboardList },
+  { id: 'in_progress', label: 'In Progress', color: '#3b82f6', icon: RefreshCw },
+  { id: 'ai_review', label: 'AI Review', color: '#a855f7', icon: Bot },
+  { id: 'human_review', label: 'Human Review', color: '#f97316', icon: User },
+  { id: 'pr_created', label: 'PR Created', color: '#22c55e', icon: GitMerge },
+  { id: 'done', label: 'Done', color: '#10b981', icon: CheckCircle },
+  { id: 'error', label: 'Error', color: '#ef4444', icon: XCircle },
 ];
 
 export default function KanbanBoard() {

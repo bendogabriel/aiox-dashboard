@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
+import { ICON_SIZES } from '../../lib/icons';
 import { useSquads } from '../../hooks/useSquads';
 import { IsometricTile } from './IsometricTile';
 import { rooms, domains, TILE_WIDTH, TILE_HEIGHT } from './world-layout';
@@ -218,7 +219,7 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                 )}
                 style={filterDomain === d.id ? { background: `${d.tileColor}22`, color: d.tileColor } : undefined}
               >
-                <span>{d.icon}</span>
+                <d.icon size={ICON_SIZES.sm} />
                 <span>{d.label}</span>
                 {domainAgents > 0 && (
                   <span
@@ -314,9 +315,7 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                     offsetX={bounds.offsetX}
                     offsetY={bounds.offsetY}
                   >
-                    <span className="text-sm" style={{ imageRendering: 'pixelated' }}>
-                      {room.icon}
-                    </span>
+                    <room.icon size={ICON_SIZES.sm} />
                     {/* Activity dots — show agent activity on world map */}
                     {isActive && (
                       <div className="flex gap-0.5 mt-0.5">
@@ -398,7 +397,7 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                           }}
                         >
                           <div className="flex items-center justify-center gap-1.5 mb-1">
-                            <span className="text-xs">{room.icon}</span>
+                            <room.icon size={ICON_SIZES.xs} />
                             <span className="text-[10px] font-semibold text-white">
                               {room.label}
                             </span>

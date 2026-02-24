@@ -1390,7 +1390,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ backdropFilter: 'blur(8px)', background: 'rgba(0, 0, 0, 0.5)' }}
+            style={{ backdropFilter: 'blur(8px)', background: 'color-mix(in srgb, var(--palette-black) 50%, transparent)' }}
             onClick={() => setShowExecuteDialog(false)}
           >
             <motion.div
@@ -1459,7 +1459,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ backdropFilter: 'blur(8px)', background: 'rgba(0, 0, 0, 0.5)' }}
+            style={{ backdropFilter: 'blur(8px)', background: 'color-mix(in srgb, var(--palette-black) 50%, transparent)' }}
             onClick={() => setShowOrchestrationDialog(false)}
           >
             <motion.div

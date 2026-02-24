@@ -128,7 +128,7 @@ export function GatherWorld() {
                   >
                     <div
                       className="w-full h-full"
-                      style={{ background: domainCfg?.floorColor || '#1a1a1a' }}
+                      style={{ background: domainCfg?.floorColor || 'var(--color-background-base)' }}
                     />
                   </motion.div>
                 );

@@ -1,6 +1,7 @@
 import { useMemo, useRef, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
+import { ICON_SIZES } from '../../lib/icons';
 import { useAgents } from '../../hooks/useAgents';
 import { useUIStore } from '../../stores/uiStore';
 import { AgentSprite } from './AgentSprite';
@@ -170,7 +171,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
         </motion.button>
 
         <div className="flex items-center gap-2">
-          <span className="text-lg">{roomConfig?.icon}</span>
+          {roomConfig?.icon && <roomConfig.icon size={ICON_SIZES.lg} />}
           <div>
             <h2 className="text-sm font-semibold text-primary">
               {roomConfig?.label || roomId}
@@ -304,7 +305,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
                 <rect x="6" y="2" width="12" height="14" fill={domainCfg.floorColor} />
                 <circle cx="15" cy="10" r="1.5" fill={domainCfg.tileBorder} />
               </svg>
-              <span className="text-[7px] mt-0.5" style={{ fontFamily: 'monospace', color: 'rgba(0,0,0,0.4)' }}>
+              <span className="text-[7px] mt-0.5" style={{ fontFamily: 'monospace', color: 'var(--color-text-tertiary)' }}>
                 EXIT
               </span>
             </motion.div>
@@ -434,21 +435,21 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
             </span>
           ))}
         </div>
-        <span className="text-[8px] font-mono" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        <span className="text-[8px] font-mono" style={{ color: 'var(--color-text-tertiary)' }}>
           move
         </span>
         <span
           className="inline-flex items-center justify-center rounded text-[7px] font-mono font-bold px-1"
           style={{
             height: 16,
-            background: 'rgba(255,255,255,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            color: 'rgba(255,255,255,0.6)',
+            background: 'var(--glass-border-color)',
+            border: '1px solid var(--color-border-strong)',
+            color: 'var(--color-text-secondary)',
           }}
         >
           ESC
         </span>
-        <span className="text-[8px] font-mono" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        <span className="text-[8px] font-mono" style={{ color: 'var(--color-text-tertiary)' }}>
           back
         </span>
       </div>

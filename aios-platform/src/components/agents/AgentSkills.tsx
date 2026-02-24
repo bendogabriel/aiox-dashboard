@@ -1,5 +1,31 @@
 import { motion } from 'framer-motion';
+import {
+  type LucideIcon,
+  Sparkles,
+  Target,
+  BookOpen,
+  Lightbulb,
+  RefreshCw,
+  Palette,
+  Search,
+  Zap,
+  Gem,
+  Puzzle,
+  Clapperboard,
+  TrendingUp,
+  Scissors,
+  Flame,
+  Settings,
+  Swords,
+  Link,
+  BarChart3,
+  Star,
+  MessageSquare,
+  Ruler,
+  Landmark,
+} from 'lucide-react';
 import type { Agent, SquadType } from '../../types';
+import { ICON_SIZES } from '../../lib/icons';
 
 interface AgentSkillsProps {
   agent: Agent;
@@ -7,39 +33,39 @@ interface AgentSkillsProps {
 }
 
 // Skill definitions per squad type
-const skillDefinitions: Record<SquadType, { name: string; icon: string; color: string }[]> = {
+const skillDefinitions: Record<SquadType, { name: string; icon: LucideIcon; color: string }[]> = {
   copywriting: [
-    { name: 'Persuasão', icon: '✨', color: 'orange' },
-    { name: 'SEO', icon: '🎯', color: 'green' },
-    { name: 'Storytelling', icon: '📖', color: 'purple' },
-    { name: 'Criatividade', icon: '💡', color: 'pink' },
-    { name: 'Adaptação', icon: '🔄', color: 'blue' },
+    { name: 'Persuasão', icon: Sparkles, color: 'orange' },
+    { name: 'SEO', icon: Target, color: 'green' },
+    { name: 'Storytelling', icon: BookOpen, color: 'purple' },
+    { name: 'Criatividade', icon: Lightbulb, color: 'pink' },
+    { name: 'Adaptação', icon: RefreshCw, color: 'blue' },
   ],
   design: [
-    { name: 'UI Design', icon: '🎨', color: 'purple' },
-    { name: 'UX Research', icon: '🔍', color: 'blue' },
-    { name: 'Prototipagem', icon: '⚡', color: 'orange' },
-    { name: 'Branding', icon: '💎', color: 'pink' },
-    { name: 'Sistemas', icon: '🧩', color: 'cyan' },
+    { name: 'UI Design', icon: Palette, color: 'purple' },
+    { name: 'UX Research', icon: Search, color: 'blue' },
+    { name: 'Prototipagem', icon: Zap, color: 'orange' },
+    { name: 'Branding', icon: Gem, color: 'pink' },
+    { name: 'Sistemas', icon: Puzzle, color: 'cyan' },
   ],
   creator: [
-    { name: 'Roteiro', icon: '🎬', color: 'orange' },
-    { name: 'Engajamento', icon: '📈', color: 'green' },
-    { name: 'Edição', icon: '✂️', color: 'purple' },
-    { name: 'Tendências', icon: '🔥', color: 'pink' },
-    { name: 'Automação', icon: '⚙️', color: 'cyan' },
+    { name: 'Roteiro', icon: Clapperboard, color: 'orange' },
+    { name: 'Engajamento', icon: TrendingUp, color: 'green' },
+    { name: 'Edição', icon: Scissors, color: 'purple' },
+    { name: 'Tendências', icon: Flame, color: 'pink' },
+    { name: 'Automação', icon: Settings, color: 'cyan' },
   ],
   orchestrator: [
-    { name: 'Coordenação', icon: '🎯', color: 'blue' },
-    { name: 'Estratégia', icon: '♟️', color: 'purple' },
-    { name: 'Integração', icon: '🔗', color: 'cyan' },
-    { name: 'Otimização', icon: '📊', color: 'green' },
-    { name: 'Priorização', icon: '⭐', color: 'orange' },
+    { name: 'Coordenação', icon: Target, color: 'blue' },
+    { name: 'Estratégia', icon: Swords, color: 'purple' },
+    { name: 'Integração', icon: Link, color: 'cyan' },
+    { name: 'Otimização', icon: BarChart3, color: 'green' },
+    { name: 'Priorização', icon: Star, color: 'orange' },
   ],
   default: [
-    { name: 'Análise', icon: '🔍', color: 'blue' },
-    { name: 'Execução', icon: '⚡', color: 'orange' },
-    { name: 'Comunicação', icon: '💬', color: 'green' },
+    { name: 'Análise', icon: Search, color: 'blue' },
+    { name: 'Execução', icon: Zap, color: 'orange' },
+    { name: 'Comunicação', icon: MessageSquare, color: 'green' },
   ],
 };
 
@@ -47,15 +73,15 @@ const skillDefinitions: Record<SquadType, { name: string; icon: string; color: s
 const dynamicColors = ['orange', 'purple', 'blue', 'green', 'pink', 'cyan'];
 
 // Icon mapping for capability types
-const capabilityIcons: Record<string, string> = {
-  principle: '📐',
-  skill: '⚡',
-  expertise: '🎯',
-  framework: '🏛️',
+const capabilityIcons: Record<string, LucideIcon> = {
+  principle: Ruler,
+  skill: Zap,
+  expertise: Target,
+  framework: Landmark,
 };
 
 // Generate skill levels based on agent capabilities
-function generateSkillLevels(agent: Agent): { name: string; icon: string; color: string; level: number }[] {
+function generateSkillLevels(agent: Agent): { name: string; icon: LucideIcon; color: string; level: number }[] {
   // Priority 1: Use dynamic frameworks from agent markdown
   if ((agent as any).frameworks && (agent as any).frameworks.length > 0) {
     return (agent as any).frameworks.slice(0, 5).map((framework: string, index: number) => {
@@ -63,7 +89,7 @@ function generateSkillLevels(agent: Agent): { name: string; icon: string; color:
       const level = 75 + (seed % 20); // 75-95 range for frameworks
       return {
         name: framework.length > 20 ? framework.slice(0, 18) + '...' : framework,
-        icon: '🏛️',
+        icon: Landmark,
         color: dynamicColors[index % dynamicColors.length],
         level,
       };
@@ -78,7 +104,7 @@ function generateSkillLevels(agent: Agent): { name: string; icon: string; color:
       const level = 70 + (seed % 25);
       return {
         name: text,
-        icon: capabilityIcons[cap.type] || '✨',
+        icon: capabilityIcons[cap.type] || Sparkles,
         color: dynamicColors[index % dynamicColors.length],
         level,
       };
@@ -88,7 +114,7 @@ function generateSkillLevels(agent: Agent): { name: string; icon: string; color:
   // Fallback: Use static skills based on squad type
   const skills = skillDefinitions[agent.squadType || 'default'] || skillDefinitions.default;
 
-  return skills.map((skill: { name: string; icon: string; color: string }, index: number) => {
+  return skills.map((skill: { name: string; icon: LucideIcon; color: string }, index: number) => {
     // Generate pseudo-random but consistent levels based on agent name and skill
     const seed = agent.name.charCodeAt(0) + index * 17;
     const baseLevel = 60 + (seed % 35); // 60-95 range
@@ -116,7 +142,7 @@ export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
             transition={{ delay: index * 0.1 }}
             className="stat-badge"
           >
-            <span>{skill.icon}</span>
+            <skill.icon size={ICON_SIZES.sm} />
             <span className="stat-badge-value">{skill.level}</span>
           </motion.div>
         ))}
@@ -147,7 +173,7 @@ export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
             transition={{ delay: index * 0.08, duration: 0.3 }}
             className="skill-item"
           >
-            <div className="skill-icon">{skill.icon}</div>
+            <div className="skill-icon"><skill.icon size={ICON_SIZES.md} /></div>
             <div className="skill-info">
               <div className="skill-header">
                 <span className="skill-name">{skill.name}</span>
@@ -172,7 +198,7 @@ export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
           {/* Commands count - dynamic from agent */}
           {((agent as any).commands?.length > 0 || (agent as any).commandCount > 0) && (
             <div className="stat-badge">
-              <span>⚡</span>
+              <Zap size={ICON_SIZES.sm} />
               <span className="stat-badge-value">
                 {(agent as any).commands?.length || (agent as any).commandCount}
               </span>
@@ -182,7 +208,7 @@ export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
           {/* Frameworks count */}
           {(agent as any).frameworks?.length > 0 && (
             <div className="stat-badge">
-              <span>🏛️</span>
+              <Landmark size={ICON_SIZES.sm} />
               <span className="stat-badge-value">{(agent as any).frameworks.length}</span>
               <span className="stat-badge-label">frameworks</span>
             </div>
@@ -191,12 +217,12 @@ export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
           {!((agent as any).commands?.length > 0) && !((agent as any).frameworks?.length > 0) && (
             <>
               <div className="stat-badge">
-                <span>🏆</span>
+                <Star size={ICON_SIZES.sm} />
                 <span className="stat-badge-value">{agent.executionCount?.toLocaleString() || '0'}</span>
                 <span className="stat-badge-label">tasks</span>
               </div>
               <div className="stat-badge">
-                <span>⚡</span>
+                <Zap size={ICON_SIZES.sm} />
                 <span className="stat-badge-value">98%</span>
                 <span className="stat-badge-label">taxa</span>
               </div>

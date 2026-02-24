@@ -7,28 +7,17 @@
 
 /* ============================================
    BASE LAYER - CSS Variable Aliases
-   Maps token variables to semantic names
    ============================================ */
 
 :root {
-  /* Background aliases (for backwards compatibility) */
-  --color-bg-primary: var(--color-background-primary);
-  --color-bg-secondary: var(--color-background-secondary);
-  --color-bg-tertiary: var(--color-background-tertiary);
-  --color-bg-base: var(--color-background-base);
-
-  /* Panel backgrounds */
-  --color-panel-bg: var(--glass-background-panel);
-  --color-panel-bg-hover: var(--glass-background-panel-hover);
-
-  /* Squad color aliases */
+  /* Squad color shorthand (referenced by utils.ts) */
   --squad-copywriting: var(--squad-copywriting-default);
   --squad-design: var(--squad-design-default);
   --squad-creator: var(--squad-creator-default);
   --squad-orchestrator: var(--squad-orchestrator-default);
   --squad-default: var(--squad-default-default);
 
-  /* Transition aliases */
+  /* Transition shorthand (used by glass component classes below) */
   --transition-fast: var(--duration-fast) var(--easing-default);
   --transition-base: var(--duration-base) var(--easing-default);
   --transition-slow: var(--duration-slow) var(--easing-default);
@@ -95,22 +84,6 @@
   -webkit-backdrop-filter: blur(var(--glass-blur-maximum)) saturate(var(--glass-saturate-default));
   border: var(--glass-border-width) solid var(--glass-border-color);
   box-shadow: var(--glass-shadow-large);
-}
-
-/* ============================================
-   TEXT COLORS
-   ============================================ */
-
-.text-primary {
-  color: var(--color-text-primary);
-}
-
-.text-secondary {
-  color: var(--color-text-secondary);
-}
-
-.text-tertiary {
-  color: var(--color-text-tertiary);
 }
 
 /* ============================================
@@ -310,12 +283,12 @@
 }
 
 .glass-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: color-mix(in srgb, var(--palette-white) 15%, transparent);
   border-radius: 3px;
 }
 
 .glass-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: color-mix(in srgb, var(--palette-white) 25%, transparent);
 }
 
 /* ============================================
@@ -843,8 +816,8 @@ body {
 }
 
 @keyframes nodePulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
-  50% { box-shadow: 0 0 0 12px rgba(249, 115, 22, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--squad-color, var(--squad-copywriting-default)) 40%, transparent); }
+  50% { box-shadow: 0 0 0 12px color-mix(in srgb, var(--squad-color, var(--squad-copywriting-default)) 0%, transparent); }
 }
 
 .workflow-node.active {
@@ -942,7 +915,7 @@ body {
 }
 
 .workflow-connection.completed {
-  stroke: rgba(34, 197, 94, 0.6);
+  stroke: color-mix(in srgb, var(--color-status-success) 60%, transparent);
 }
 
 /* Agent card in workflow */
@@ -1065,8 +1038,10 @@ a:focus:not(:focus-visible) {
 
 /* Better focus for dark mode - inherits from --color-border-focus via .dark overrides */
 
-/* Live region for announcements */
-[aria-live] {
+/* Off-screen live region for screen-reader announcements only.
+   Only hides elements that explicitly opt in via .sr-live-region.
+   Visible live regions (toasts, status bars) should NOT use this class. */
+.sr-live-region[aria-live] {
   position: absolute;
   width: 1px;
   height: 1px;

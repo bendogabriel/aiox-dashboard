@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus } from 'lucide-react';
+import { ChevronDown, Plus, type LucideIcon } from 'lucide-react';
 import { GlassButton } from '../ui';
 import { cn } from '../../lib/utils';
 import { StoryCard } from './StoryCard';
@@ -12,7 +12,7 @@ export interface ColumnConfig {
   id: StoryStatus;
   label: string;
   color: string;
-  icon: string;
+  icon: LucideIcon;
 }
 
 interface KanbanColumnProps {

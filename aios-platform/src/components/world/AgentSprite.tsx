@@ -218,7 +218,7 @@ export function AgentSprite({
               }}
             >
               <div className="flex items-center gap-1.5 mb-0.5">
-                <span style={{ fontSize: '9px', color: '#fff', fontWeight: 600 }}>{name}</span>
+                <span style={{ fontSize: '9px', color: 'var(--color-text-inverse)', fontWeight: 600 }}>{name}</span>
                 <span
                   className="px-1 rounded"
                   style={{
@@ -232,7 +232,7 @@ export function AgentSprite({
                 </span>
               </div>
               {activityLabel && (
-                <div style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace' }}>
+                <div style={{ fontSize: '8px', color: 'var(--color-text-secondary)', fontFamily: 'monospace' }}>
                   {activityLabel}
                 </div>
               )}

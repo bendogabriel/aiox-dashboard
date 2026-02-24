@@ -270,7 +270,7 @@ function OperationItem({ operation, index }: { operation: WorkflowOperation; ind
         style.border,
         `bg-gradient-to-r ${style.bg} to-transparent`
       )}
-      style={{ border: '1px solid rgba(255,255,255,0.05)', borderLeftWidth: '2px' }}
+      style={{ border: '1px solid var(--glass-border-color-subtle)', borderLeftWidth: '2px' }}
     >
       <div className="flex items-start justify-between gap-2 mb-1">
         <div className="flex items-center gap-2">

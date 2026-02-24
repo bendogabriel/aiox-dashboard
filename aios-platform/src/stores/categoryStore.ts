@@ -26,12 +26,12 @@ interface CategoryState {
 
 // Default categories matching the current system (updated 2026-02-06)
 // Version bumped to force localStorage refresh
-const CATEGORY_VERSION = 2;
+const CATEGORY_VERSION = 3;
 const defaultCategories: CategoryConfig[] = [
   {
     id: 'natalia-tanaka',
     name: 'Natália Tanaka',
-    icon: '👩',
+    icon: 'User',
     squadType: 'copywriting',
     squads: [
       'communication-natalia-tanaka',
@@ -43,49 +43,49 @@ const defaultCategories: CategoryConfig[] = [
   {
     id: 'content',
     name: 'Conteúdo & YouTube',
-    icon: '🎬',
+    icon: 'Clapperboard',
     squadType: 'creator',
     squads: ['content-ecosystem', 'youtube-lives'],
   },
   {
     id: 'marketing',
     name: 'Marketing & Vendas',
-    icon: '✍️',
+    icon: 'PenTool',
     squadType: 'copywriting',
     squads: ['copywriting', 'media-buy', 'funnel-creator', 'sales'],
   },
   {
     id: 'creative',
     name: 'Criação & Design',
-    icon: '🎨',
+    icon: 'Palette',
     squadType: 'design',
     squads: ['design-system', 'creative-studio'],
   },
   {
     id: 'development',
     name: 'Desenvolvimento',
-    icon: '💻',
+    icon: 'Monitor',
     squadType: 'creator',
     squads: ['full-stack-dev', 'aios-core-dev'],
   },
   {
     id: 'data',
     name: 'Dados & Pesquisa',
-    icon: '📊',
+    icon: 'BarChart3',
     squadType: 'orchestrator',
     squads: ['data-analytics', 'deep-scraper'],
   },
   {
     id: 'strategy',
     name: 'Estratégia & Conselho',
-    icon: '🎯',
+    icon: 'Target',
     squadType: 'orchestrator',
     squads: ['conselho', 'project-management-clickup', 'infoproduct-creation'],
   },
   {
     id: 'orchestration',
     name: 'Orquestração',
-    icon: '🔄',
+    icon: 'RefreshCw',
     squadType: 'orchestrator',
     squads: ['orquestrador-global', 'squad-creator', 'operations-hub', 'docs'],
   },

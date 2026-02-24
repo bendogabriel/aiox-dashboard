@@ -120,7 +120,7 @@ export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) 
               <div className="flex-1 min-w-0">
                 <span
                   className="text-[9px] leading-tight block"
-                  style={{ color: 'rgba(255,255,255,0.85)', fontFamily: 'monospace' }}
+                  style={{ color: 'var(--color-text-primary)', fontFamily: 'monospace' }}
                 >
                   {notif.message}
                 </span>

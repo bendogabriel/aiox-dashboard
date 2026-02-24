@@ -2,8 +2,20 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import {
+  type LucideIcon,
+  Hand,
+  Users,
+  Bot,
+  MessageSquare,
+  Star,
+  Search,
+  Keyboard,
+  Rocket,
+} from 'lucide-react';
 import { GlassButton } from '../ui';
 import { cn } from '../../lib/utils';
+import { ICON_SIZES } from '../../lib/icons';
 
 // Icons
 const ArrowRightIcon = () => (
@@ -31,7 +43,7 @@ interface TourStep {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  icon: LucideIcon;
   position?: 'center' | 'left' | 'right';
 }
 
@@ -40,56 +52,56 @@ const tourSteps: TourStep[] = [
     id: 'welcome',
     title: 'Bem-vindo ao AIOS Core',
     description: 'Uma plataforma de IA multi-agente para potencializar seu trabalho. Vamos fazer um tour rápido pelas principais funcionalidades.',
-    icon: '👋',
+    icon: Hand,
     position: 'center',
   },
   {
     id: 'squads',
     title: 'Squads de Especialistas',
     description: 'Na sidebar esquerda você encontra os Squads - equipes de agentes especializados em diferentes áreas como Copywriting, Design, YouTube e mais.',
-    icon: '👥',
+    icon: Users,
     position: 'left',
   },
   {
     id: 'agents',
     title: 'Agentes Inteligentes',
     description: 'Cada squad possui agentes com habilidades únicas. Selecione um agente para iniciar uma conversa e aproveitar sua expertise.',
-    icon: '🤖',
+    icon: Bot,
     position: 'left',
   },
   {
     id: 'chat',
     title: 'Chat Interativo',
     description: 'Converse naturalmente com os agentes. Eles entendem contexto, respondem em tempo real e podem executar comandos específicos.',
-    icon: '💬',
+    icon: MessageSquare,
     position: 'center',
   },
   {
     id: 'favorites',
     title: 'Favoritos e Recentes',
     description: 'Marque seus agentes favoritos com a estrela para acesso rápido. Agentes usados recentemente também ficam salvos.',
-    icon: '⭐',
+    icon: Star,
     position: 'left',
   },
   {
     id: 'search',
     title: 'Busca Global',
     description: 'Pressione Cmd+K para abrir a busca global e encontrar rapidamente qualquer agente em qualquer squad.',
-    icon: '🔍',
+    icon: Search,
     position: 'center',
   },
   {
     id: 'shortcuts',
     title: 'Atalhos de Teclado',
     description: 'Pressione Cmd+? para ver todos os atalhos disponíveis. Navegue mais rápido com o teclado.',
-    icon: '⌨️',
+    icon: Keyboard,
     position: 'center',
   },
   {
     id: 'ready',
     title: 'Pronto para Começar!',
     description: 'Você está pronto para explorar o AIOS Core. Selecione um squad e comece uma conversa com um agente.',
-    icon: '🚀',
+    icon: Rocket,
     position: 'center',
   },
 ];
@@ -201,7 +213,9 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
             {/* Content */}
             <div className="p-6">
               {/* Icon */}
-              <div className="text-5xl mb-4">{step.icon}</div>
+              <div className="mb-4">
+                <step.icon size={48} className="text-blue-400" />
+              </div>
 
               {/* Text */}
               <h2 className="text-xl font-bold text-primary mb-2">{step.title}</h2>

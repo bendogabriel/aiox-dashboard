@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import type { DomainId } from './world-layout';
 import { domains, ROOM_COLS } from './world-layout';
+import { ICON_SIZES } from '../../lib/icons';
 
 interface RoomEnvironmentProps {
   domain: DomainId;
@@ -244,7 +245,7 @@ function DomainPlaque({ domain }: { domain: DomainId }) {
         border: `1px solid ${d.tileColor}44`,
       }}
     >
-      <span className="text-[10px]">{d.icon}</span>
+      <d.icon size={10} />
       <span
         className="text-[8px] font-bold uppercase tracking-wider"
         style={{ color: d.tileColor, fontFamily: 'monospace' }}

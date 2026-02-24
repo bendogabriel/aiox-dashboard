@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
 
 interface SuccessFeedbackProps {
   show: boolean;
@@ -142,7 +143,7 @@ function ConfettiAnimation({ message }: { message: string }) {
         transition={{ type: 'spring', damping: 12, stiffness: 200 }}
         className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl"
       >
-        ✨
+        <Sparkles size={24} />
       </motion.div>
 
       {/* Message */}

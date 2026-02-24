@@ -1,5 +1,33 @@
 // World layout configuration — room positions, domain grouping, colors
 
+import {
+  type LucideIcon,
+  FileText,
+  DollarSign,
+  Wrench,
+  Palette,
+  BarChart3,
+  Settings,
+  Clapperboard,
+  Newspaper,
+  PenTool,
+  Smartphone,
+  Megaphone,
+  Link,
+  Handshake,
+  Search,
+  Monitor,
+  Brain,
+  Target,
+  TrendingUp,
+  Landmark,
+  Library,
+  ClipboardList,
+  Globe,
+  LifeBuoy,
+  SearchCheck,
+} from 'lucide-react';
+
 export type DomainId = 'content' | 'sales' | 'dev' | 'design' | 'data' | 'ops';
 
 export interface DomainConfig {
@@ -9,7 +37,7 @@ export interface DomainConfig {
   tileBorder: string;
   agentColor: string;
   floorColor: string;
-  icon: string;
+  icon: LucideIcon;
 }
 
 export interface RoomConfig {
@@ -18,7 +46,7 @@ export interface RoomConfig {
   domain: DomainId;
   gridX: number;
   gridY: number;
-  icon: string;
+  icon: LucideIcon;
 }
 
 export const domains: Record<DomainId, DomainConfig> = {
@@ -29,7 +57,7 @@ export const domains: Record<DomainId, DomainConfig> = {
     tileBorder: '#E05555',
     agentColor: '#FFD93D',
     floorColor: '#FFF0F0',
-    icon: '📝',
+    icon: FileText,
   },
   sales: {
     id: 'sales',
@@ -38,7 +66,7 @@ export const domains: Record<DomainId, DomainConfig> = {
     tileBorder: '#E88A30',
     agentColor: '#FECA57',
     floorColor: '#FFF5EB',
-    icon: '💰',
+    icon: DollarSign,
   },
   dev: {
     id: 'dev',
@@ -47,7 +75,7 @@ export const domains: Record<DomainId, DomainConfig> = {
     tileBorder: '#3D8AE8',
     agentColor: '#48DBFB',
     floorColor: '#EBF3FF',
-    icon: '🛠',
+    icon: Wrench,
   },
   design: {
     id: 'design',
@@ -56,7 +84,7 @@ export const domains: Record<DomainId, DomainConfig> = {
     tileBorder: '#E8556B',
     agentColor: '#FF9FF3',
     floorColor: '#FFF0F3',
-    icon: '🎨',
+    icon: Palette,
   },
   data: {
     id: 'data',
@@ -65,7 +93,7 @@ export const domains: Record<DomainId, DomainConfig> = {
     tileBorder: '#8B84E8',
     agentColor: '#DDA0DD',
     floorColor: '#F3F0FF',
-    icon: '📊',
+    icon: BarChart3,
   },
   ops: {
     id: 'ops',
@@ -74,7 +102,7 @@ export const domains: Record<DomainId, DomainConfig> = {
     tileBorder: '#22C05E',
     agentColor: '#7BED9F',
     floorColor: '#EDFFF3',
-    icon: '⚙',
+    icon: Settings,
   },
 };
 
@@ -82,33 +110,33 @@ export const domains: Record<DomainId, DomainConfig> = {
 // Grouped by domain clusters
 export const rooms: RoomConfig[] = [
   // Content & Marketing cluster (top-left)
-  { squadId: 'youtube-content', label: 'YouTube Content', domain: 'content', gridX: 1, gridY: 0, icon: '🎬' },
-  { squadId: 'content-ecosystem', label: 'Content Ecosystem', domain: 'content', gridX: 2, gridY: 0, icon: '📰' },
-  { squadId: 'copywriting', label: 'Copywriting', domain: 'content', gridX: 0, gridY: 1, icon: '✍' },
-  { squadId: 'creative-studio', label: 'Creative Studio', domain: 'design', gridX: 1, gridY: 1, icon: '🎨' },
-  { squadId: 'social-publisher', label: 'Social Publisher', domain: 'content', gridX: 2, gridY: 1, icon: '📱' },
+  { squadId: 'youtube-content', label: 'YouTube Content', domain: 'content', gridX: 1, gridY: 0, icon: Clapperboard },
+  { squadId: 'content-ecosystem', label: 'Content Ecosystem', domain: 'content', gridX: 2, gridY: 0, icon: Newspaper },
+  { squadId: 'copywriting', label: 'Copywriting', domain: 'content', gridX: 0, gridY: 1, icon: PenTool },
+  { squadId: 'creative-studio', label: 'Creative Studio', domain: 'design', gridX: 1, gridY: 1, icon: Palette },
+  { squadId: 'social-publisher', label: 'Social Publisher', domain: 'content', gridX: 2, gridY: 1, icon: Smartphone },
 
   // Sales & Ads cluster (top-right)
-  { squadId: 'media-buy', label: 'Media Buy', domain: 'sales', gridX: 4, gridY: 0, icon: '📢' },
-  { squadId: 'funnel-creator', label: 'Funnel Creator', domain: 'sales', gridX: 5, gridY: 0, icon: '🔗' },
-  { squadId: 'sales', label: 'Sales', domain: 'sales', gridX: 4, gridY: 1, icon: '🤝' },
-  { squadId: 'deep-scraper', label: 'Deep Scraper', domain: 'sales', gridX: 5, gridY: 1, icon: '🔍' },
+  { squadId: 'media-buy', label: 'Media Buy', domain: 'sales', gridX: 4, gridY: 0, icon: Megaphone },
+  { squadId: 'funnel-creator', label: 'Funnel Creator', domain: 'sales', gridX: 5, gridY: 0, icon: Link },
+  { squadId: 'sales', label: 'Sales', domain: 'sales', gridX: 4, gridY: 1, icon: Handshake },
+  { squadId: 'deep-scraper', label: 'Deep Scraper', domain: 'sales', gridX: 5, gridY: 1, icon: Search },
 
   // Product & Dev cluster (bottom-left)
-  { squadId: 'full-stack-dev', label: 'Full Stack Dev', domain: 'dev', gridX: 0, gridY: 3, icon: '💻' },
-  { squadId: 'aios-core-dev', label: 'AIOS Core Dev', domain: 'dev', gridX: 1, gridY: 3, icon: '🧠' },
-  { squadId: 'design-system', label: 'Design System', domain: 'design', gridX: 2, gridY: 3, icon: '🎯' },
+  { squadId: 'full-stack-dev', label: 'Full Stack Dev', domain: 'dev', gridX: 0, gridY: 3, icon: Monitor },
+  { squadId: 'aios-core-dev', label: 'AIOS Core Dev', domain: 'dev', gridX: 1, gridY: 3, icon: Brain },
+  { squadId: 'design-system', label: 'Design System', domain: 'design', gridX: 2, gridY: 3, icon: Target },
 
   // Data & Strategy cluster (bottom-right)
-  { squadId: 'data-analytics', label: 'Data Analytics', domain: 'data', gridX: 4, gridY: 3, icon: '📈' },
-  { squadId: 'conselho', label: 'Conselho', domain: 'data', gridX: 5, gridY: 3, icon: '🏛' },
-  { squadId: 'infoproduct-creation', label: 'Infoproduct', domain: 'data', gridX: 4, gridY: 4, icon: '📚' },
+  { squadId: 'data-analytics', label: 'Data Analytics', domain: 'data', gridX: 4, gridY: 3, icon: TrendingUp },
+  { squadId: 'conselho', label: 'Conselho', domain: 'data', gridX: 5, gridY: 3, icon: Landmark },
+  { squadId: 'infoproduct-creation', label: 'Infoproduct', domain: 'data', gridX: 4, gridY: 4, icon: Library },
 
   // Operations cluster (center-bottom)
-  { squadId: 'project-management-clickup', label: 'Project Mgmt', domain: 'ops', gridX: 1, gridY: 5, icon: '📋' },
-  { squadId: 'orquestrador-global', label: 'Orquestrador', domain: 'ops', gridX: 2, gridY: 5, icon: '🌐' },
-  { squadId: 'support', label: 'Support', domain: 'ops', gridX: 3, gridY: 5, icon: '🛟' },
-  { squadId: 'seo', label: 'SEO', domain: 'ops', gridX: 4, gridY: 5, icon: '🔎' },
+  { squadId: 'project-management-clickup', label: 'Project Mgmt', domain: 'ops', gridX: 1, gridY: 5, icon: ClipboardList },
+  { squadId: 'orquestrador-global', label: 'Orquestrador', domain: 'ops', gridX: 2, gridY: 5, icon: Globe },
+  { squadId: 'support', label: 'Support', domain: 'ops', gridX: 3, gridY: 5, icon: LifeBuoy },
+  { squadId: 'seo', label: 'SEO', domain: 'ops', gridX: 4, gridY: 5, icon: SearchCheck },
 ];
 
 // Furniture templates per domain type — rich environments
