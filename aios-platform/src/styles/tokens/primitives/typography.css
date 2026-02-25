@@ -1,0 +1,13 @@
+/* Typography Tokens */
+:root {
+  --font-family-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-family-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-size-xs: 0.625rem;
+  --font-size-sm: 0.75rem;
+  --font-size-base: 0.875rem;
+  --font-size-md: 0.8125rem;
+  --letter-spacing-wide: 0.05em;
+  --letter-spacing-wider: 0.08em;
+}

@@ -1,0 +1,23 @@
+/* Glassmorphism Tokens — blur, saturate, backgrounds, shadows */
+/* All color values reference primitives via var() or color-mix() */
+:root {
+  --glass-border-color: color-mix(in srgb, var(--palette-black) 8%, transparent);
+  --glass-border-color-subtle: color-mix(in srgb, var(--palette-black) 5%, transparent);
+  --glass-border-width: 1px;
+  --glass-background-panel: color-mix(in srgb, var(--palette-white) 70%, transparent);
+  --glass-background-panel-hover: color-mix(in srgb, var(--palette-white) 80%, transparent);
+  --glass-background-card: color-mix(in srgb, var(--palette-white) 60%, transparent);
+  --glass-background-card-active: linear-gradient(135deg, color-mix(in srgb, var(--palette-blue-800) 8%, transparent) 0%, color-mix(in srgb, var(--palette-blue-800) 4%, transparent) 100%);
+  --glass-background-input: color-mix(in srgb, var(--palette-white) 75%, transparent);
+  --glass-background-button: color-mix(in srgb, var(--palette-white) 55%, transparent);
+  --glass-background-button-primary: linear-gradient(135deg, var(--palette-blue-800), var(--palette-blue-700));
+  --glass-background-button-primary-hover: linear-gradient(135deg, var(--palette-blue-750), var(--palette-blue-650));
+  --glass-blur-default: 20px;
+  --glass-blur-strong: 40px;
+  --glass-blur-maximum: 60px;
+  --glass-blur-subtle: 12px;
+  --glass-saturate-default: 180%;
+  --glass-shadow-default: 0 0 0 1px color-mix(in srgb, var(--palette-black) 4%, transparent) inset, 0 4px 16px color-mix(in srgb, var(--palette-black) 6%, transparent);
+  --glass-shadow-large: 0 0 0 1px color-mix(in srgb, var(--palette-black) 4%, transparent) inset, 0 8px 32px color-mix(in srgb, var(--palette-black) 8%, transparent);
+  --glass-shadow-hover: 0 0 0 1px color-mix(in srgb, var(--palette-black) 6%, transparent) inset, 0 12px 40px color-mix(in srgb, var(--palette-black) 10%, transparent);
+}
