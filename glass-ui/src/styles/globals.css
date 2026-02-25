@@ -1,0 +1,174 @@
+@import "tailwindcss";
+@import "./animations.css";
+
+/* ============================================
+   Glass Design System - Design Tokens
+   ============================================ */
+
+@theme {
+  /* Primitive Color Palette */
+  --color-palette-white: #ffffff;
+  --color-palette-black: #000000;
+
+  /* Dark surfaces */
+  --color-palette-dark-900: #0f0f0f;
+  --color-palette-dark-800: #141414;
+  --color-palette-dark-700: #191919;
+  --color-palette-dark-600: #1e1e1e;
+  --color-palette-dark-500: #282828;
+
+  /* Status colors */
+  --color-status-success: #22c55e;
+  --color-status-warning: #eab308;
+  --color-status-error: #ef4444;
+  --color-status-info: #3b82f6;
+
+  /* Blue (accent) */
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #0055cc;
+  --color-blue-800: #007aff;
+
+  /* Border radius */
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+
+  /* Font families */
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Timing */
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
+
+  /* Easing */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-glass: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+}
+
+:root {
+  /* Glass blur levels */
+  --glass-blur-subtle: 12px;
+  --glass-blur-default: 20px;
+  --glass-blur-strong: 40px;
+  --glass-blur-maximum: 60px;
+  --glass-saturate: 180%;
+
+  /* Glass backgrounds - Light mode */
+  --glass-bg: color-mix(in srgb, white 70%, transparent);
+  --glass-bg-hover: color-mix(in srgb, white 80%, transparent);
+  --glass-bg-panel: color-mix(in srgb, white 70%, transparent);
+  --glass-bg-card: color-mix(in srgb, white 60%, transparent);
+  --glass-bg-input: color-mix(in srgb, white 75%, transparent);
+  --glass-bg-button: color-mix(in srgb, white 55%, transparent);
+
+  /* Glass borders */
+  --glass-border-color: color-mix(in srgb, black 8%, transparent);
+  --glass-border-subtle: color-mix(in srgb, black 5%, transparent);
+  --glass-border-width: 1px;
+
+  /* Glass shadows */
+  --glass-shadow:
+    0 0 0 1px color-mix(in srgb, black 4%, transparent) inset,
+    0 4px 16px color-mix(in srgb, black 6%, transparent);
+  --glass-shadow-large:
+    0 0 0 1px color-mix(in srgb, black 4%, transparent) inset,
+    0 8px 32px color-mix(in srgb, black 8%, transparent);
+  --glass-shadow-hover:
+    0 0 0 1px color-mix(in srgb, black 6%, transparent) inset,
+    0 12px 40px color-mix(in srgb, black 10%, transparent);
+
+  /* Semantic colors */
+  --background: var(--color-palette-white);
+  --foreground: var(--color-palette-dark-900);
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
+  --accent: var(--color-blue-800);
+  --accent-foreground: var(--color-palette-white);
+
+  /* Primary button gradient */
+  --glass-gradient-primary: linear-gradient(135deg, #007aff, #0055cc);
+  --glass-gradient-primary-hover: linear-gradient(135deg, #1a8aff, #0066dd);
+}
+
+.dark {
+  /* Glass backgrounds - Dark mode */
+  --glass-bg: color-mix(in srgb, #1a1a2e 80%, transparent);
+  --glass-bg-hover: color-mix(in srgb, #1a1a2e 90%, transparent);
+  --glass-bg-panel: color-mix(in srgb, #1a1a2e 80%, transparent);
+  --glass-bg-card: color-mix(in srgb, #1a1a2e 70%, transparent);
+  --glass-bg-input: color-mix(in srgb, #1a1a2e 85%, transparent);
+  --glass-bg-button: color-mix(in srgb, #1a1a2e 65%, transparent);
+
+  /* Dark mode borders */
+  --glass-border-color: color-mix(in srgb, white 10%, transparent);
+  --glass-border-subtle: color-mix(in srgb, white 6%, transparent);
+
+  /* Dark mode shadows */
+  --glass-shadow:
+    0 0 0 1px color-mix(in srgb, white 5%, transparent) inset,
+    0 4px 16px color-mix(in srgb, black 20%, transparent);
+  --glass-shadow-large:
+    0 0 0 1px color-mix(in srgb, white 5%, transparent) inset,
+    0 8px 32px color-mix(in srgb, black 25%, transparent);
+  --glass-shadow-hover:
+    0 0 0 1px color-mix(in srgb, white 8%, transparent) inset,
+    0 12px 40px color-mix(in srgb, black 30%, transparent);
+
+  /* Semantic colors */
+  --background: var(--color-palette-dark-900);
+  --foreground: var(--color-palette-white);
+  --muted: var(--color-palette-dark-700);
+  --muted-foreground: #a1a1aa;
+}
+
+/* Base styles */
+* {
+  border-color: var(--glass-border-subtle);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Glass utility classes */
+@utility glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-default)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-default)) saturate(var(--glass-saturate));
+}
+
+@utility glass-subtle {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-subtle)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-subtle)) saturate(var(--glass-saturate));
+}
+
+@utility glass-strong {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+}
+
+@utility glass-border {
+  border: var(--glass-border-width) solid var(--glass-border-color);
+}
+
+@utility glass-shadow {
+  box-shadow: var(--glass-shadow);
+}
+
+@utility glass-shadow-hover {
+  box-shadow: var(--glass-shadow-hover);
+}

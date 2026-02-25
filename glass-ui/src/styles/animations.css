@@ -1,0 +1,153 @@
+/* ============================================
+   Glass Design System - CSS Animations
+   ============================================ */
+
+/* Keyframes */
+@keyframes glass-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes glass-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes glass-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes glass-scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes glass-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glass-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glass-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes glass-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes glass-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes glass-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes glass-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation utilities */
+@utility animate-glass-fade-in {
+  animation: glass-fade-in var(--duration-base) var(--ease-glass) forwards;
+}
+
+@utility animate-glass-fade-out {
+  animation: glass-fade-out var(--duration-base) var(--ease-glass) forwards;
+}
+
+@utility animate-glass-scale-in {
+  animation: glass-scale-in var(--duration-base) var(--ease-spring) forwards;
+}
+
+@utility animate-glass-scale-out {
+  animation: glass-scale-out var(--duration-fast) var(--ease-default) forwards;
+}
+
+@utility animate-glass-slide-up {
+  animation: glass-slide-up var(--duration-base) var(--ease-glass) forwards;
+}
+
+@utility animate-glass-slide-down {
+  animation: glass-slide-down var(--duration-base) var(--ease-glass) forwards;
+}
+
+@utility animate-glass-shimmer {
+  animation: glass-shimmer 2s linear infinite;
+  background-size: 200% 100%;
+}
+
+@utility animate-glass-pulse {
+  animation: glass-pulse 2s var(--ease-default) infinite;
+}
+
+@utility animate-glass-spin {
+  animation: glass-spin 1s linear infinite;
+}
