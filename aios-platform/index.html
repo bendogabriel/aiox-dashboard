@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+    <!-- Primary Meta Tags -->
+    <title>AIOS Core - AI Agent Platform</title>
+    <meta name="title" content="AIOS Core - AI Agent Platform" />
+    <meta name="description" content="Interface para orquestração de agentes de IA - Comunicação centralizada com squads de copywriting, design, creator e orchestrator" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1e40af" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="AIOS Core" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/icon.svg" color="#1e40af" />
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AIOS Core - AI Agent Platform" />
+    <meta property="og:description" content="Interface para orquestração de agentes de IA" />
+    <meta property="og:image" content="/pwa-512x512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <style>
+      /* Prevent FOUC */
+      html {
+        background: #f5f5f7;
+      }
+      html.dark {
+        background: #0f172a;
+      }
+      /* PWA Splash Screen */
+      #pwa-splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        z-index: 9999;
+        transition: opacity 0.3s ease-out;
+      }
+      #pwa-splash.hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #pwa-splash svg {
+        width: 80px;
+        height: 80px;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- PWA Splash Screen -->
+    <div id="pwa-splash">
+      <svg viewBox="0 0 512 512" fill="none">
+        <circle cx="256" cy="256" r="60" stroke="white" stroke-width="6"/>
+        <circle cx="256" cy="256" r="20" fill="white"/>
+        <path d="M256 100 L356 168 L356 304 L256 372 L156 304 L156 168 Z"
+              stroke="white" stroke-width="6" fill="none" opacity="0.6"/>
+      </svg>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Hide splash screen when app loads
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const splash = document.getElementById('pwa-splash');
+          if (splash) {
+            splash.classList.add('hide');
+            setTimeout(() => splash.remove(), 300);
+          }
+        }, 500);
+      });
+    </script>
+  </body>
+</html>
