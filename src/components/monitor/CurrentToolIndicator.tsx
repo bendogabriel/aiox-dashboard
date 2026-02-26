@@ -36,17 +36,12 @@ export const CurrentToolIndicator = memo(function CurrentToolIndicator({
     return (
       <div
         className={cn(
-          'flex items-center gap-2 px-3 py-2 border rounded',
+          'flex items-center gap-2 px-3 py-2 border rounded bg-[var(--bg-surface)] border-[var(--border-subtle)]',
           className
         )}
-        style={{
-          backgroundColor: 'var(--bg-surface)',
-          borderColor: 'var(--border-subtle)',
-        }}
       >
         <span
-          className="h-2 w-2 rounded-full"
-          style={{ backgroundColor: 'var(--status-idle)' }}
+          className="h-2 w-2 rounded-full bg-[var(--status-idle)]"
         />
         <span className="text-label text-text-muted">
           Idle
@@ -79,22 +74,14 @@ export const CurrentToolIndicator = memo(function CurrentToolIndicator({
   return (
     <div
       className={cn(
-        'flex items-center gap-3 px-3 py-2 border rounded animate-pulse',
+        'flex items-center gap-3 px-3 py-2 border rounded animate-pulse bg-[var(--accent-gold-bg)] border-[var(--accent-gold)]',
         className
       )}
-      style={{
-        backgroundColor: 'var(--accent-gold-bg)',
-        borderColor: 'var(--accent-gold)',
-      }}
     >
       {/* Spinner */}
       <div className="relative h-4 w-4">
         <div
-          className="absolute inset-0 border-2 rounded-full animate-spin"
-          style={{
-            borderColor: 'var(--accent-gold)',
-            borderTopColor: 'transparent',
-          }}
+          className="absolute inset-0 border-2 rounded-full animate-spin border-[var(--accent-gold)] border-t-transparent"
         />
       </div>
 

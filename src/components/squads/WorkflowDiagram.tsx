@@ -84,7 +84,7 @@ export function WorkflowDiagram({ yamlContent }: WorkflowDiagramProps) {
     <div className="w-full border border-border bg-bg-secondary overflow-hidden">
       {meta && <WorkflowHeader meta={meta} />}
 
-      <div className="w-full overflow-auto p-4" style={{ maxHeight: '600px' }}>
+      <div className="w-full overflow-auto p-4 max-h-[600px]">
         <Mermaid
           chart={mermaidString}
           config={{

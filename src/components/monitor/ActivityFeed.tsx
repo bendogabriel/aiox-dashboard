@@ -83,10 +83,9 @@ const EventItem = memo(function EventItem({ event }: { event: MonitorEvent }) {
   return (
     <div
       className={cn(
-        'flex items-start gap-2 px-3 py-2 border-b transition-colors hover:bg-bg-hover',
+        'flex items-start gap-2 px-3 py-2 border-b transition-colors hover:bg-bg-hover border-[var(--border-subtle)]',
         event.is_error && 'bg-[rgba(239,68,68,0.05)]'
       )}
-      style={{ borderColor: 'var(--border-subtle)' }}
     >
       {/* Icon */}
       <div
@@ -167,7 +166,7 @@ export const ActivityFeed = memo(function ActivityFeed({
 
   if (!connected) {
     return (
-      <div className={cn('flex flex-col h-full', className)} style={{ backgroundColor: 'var(--bg-base)' }}>
+      <div className={cn('flex flex-col h-full bg-[var(--bg-base)]', className)}>
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
           <WifiOffIcon className="h-8 w-8 mb-4 text-text-muted" />
           <h3 className="text-sm font-light mb-1 text-text-tertiary">
@@ -176,7 +175,7 @@ export const ActivityFeed = memo(function ActivityFeed({
           <p className="text-label text-text-muted">
             Start the monitor server to see real-time activity.
           </p>
-          <code className="mt-3 px-3 py-1.5 text-detail font-mono rounded text-text-secondary" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+          <code className="mt-3 px-3 py-1.5 text-detail font-mono rounded text-text-secondary bg-[var(--bg-elevated)]">
             cd apps/monitor-server && bun run dev
           </code>
         </div>
@@ -186,7 +185,7 @@ export const ActivityFeed = memo(function ActivityFeed({
 
   if (displayEvents.length === 0) {
     return (
-      <div className={cn('flex flex-col h-full', className)} style={{ backgroundColor: 'var(--bg-base)' }}>
+      <div className={cn('flex flex-col h-full bg-[var(--bg-base)]', className)}>
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
           <ActivityIcon className="h-8 w-8 mb-4 text-border" />
           <h3 className="text-sm font-light mb-1 text-text-tertiary">
@@ -201,7 +200,7 @@ export const ActivityFeed = memo(function ActivityFeed({
   }
 
   return (
-    <div className={cn('flex flex-col h-full overflow-hidden', className)} style={{ backgroundColor: 'var(--bg-base)' }}>
+    <div className={cn('flex flex-col h-full overflow-hidden bg-[var(--bg-base)]', className)}>
       <div className="flex-1 overflow-y-auto">
         {displayEvents.map((event) => (
           <EventItem key={event.id} event={event} />
@@ -210,16 +209,14 @@ export const ActivityFeed = memo(function ActivityFeed({
 
       {/* Footer */}
       <div
-        className="px-3 py-2 border-t flex items-center justify-between"
-        style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
+        className="px-3 py-2 border-t flex items-center justify-between bg-[var(--bg-elevated)] border-[var(--border-subtle)]"
       >
         <span className="text-detail text-text-muted">
           {displayEvents.length} events
         </span>
         <div className="flex items-center gap-1">
           <span
-            className="h-1.5 w-1.5 rounded-full animate-pulse"
-            style={{ backgroundColor: 'var(--status-success)' }}
+            className="h-1.5 w-1.5 rounded-full animate-pulse bg-[var(--status-success)]"
           />
           <span className="text-detail text-status-success">
             Live

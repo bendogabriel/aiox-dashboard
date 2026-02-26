@@ -52,13 +52,9 @@ function SurfaceDecisionBanner({ decision }: SurfaceDecisionBannerProps) {
   return (
     <div
       className={cn(
-        'flex items-start gap-3 rounded-lg border p-3',
+        'flex items-start gap-3 rounded-lg border p-3 border-[#eab30860] bg-[#eab30810]',
         isNew && 'animate-pulse'
       )}
-      style={{
-        borderColor: '#eab30860',
-        backgroundColor: '#eab30810',
-      }}
       role="alert"
       aria-label="Bob surface decision pending"
     >

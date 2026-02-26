@@ -7,6 +7,7 @@ import {
   closestCorners,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragStartEvent,
@@ -53,6 +54,12 @@ export function KanbanBoard({
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -137,9 +144,12 @@ export function KanbanBoard({
 
       const activeId = active.id as string;
       const overId = over.id as string;
-      const activeStory = getStoryById(activeId);
 
-      if (!activeStory) return;
+      // Read fresh state from store to avoid stale useMemo/closure data
+      const freshState = useStoryStore.getState();
+      const freshStory = freshState.stories[activeId];
+
+      if (!freshStory) return;
 
       // Determine target status
       let targetStatus: StoryStatus;
@@ -150,19 +160,20 @@ export function KanbanBoard({
         targetStatus = overId as StoryStatus;
         targetIndex = 0; // Add to top of column
       } else {
-        // Dropped on another story
-        const overStory = getStoryById(overId);
+        // Dropped on another story — find its column from fresh state
+        const overStory = freshState.stories[overId];
         if (!overStory) return;
 
         targetStatus = overStory.status;
-        const targetStories = getStoriesByStatus(targetStatus, 'story');
-        targetIndex = targetStories.findIndex((s) => s.id === overId);
+        const colOrder = freshState.storyOrder[targetStatus] || [];
+        targetIndex = colOrder.indexOf(overId);
+        if (targetIndex === -1) targetIndex = 0;
       }
 
       // Same column reorder
-      if (activeStory.status === targetStatus) {
-        const stories = getStoriesByStatus(targetStatus, 'story');
-        const oldIndex = stories.findIndex((s) => s.id === activeId);
+      if (freshStory.status === targetStatus) {
+        const colOrder = freshState.storyOrder[targetStatus] || [];
+        const oldIndex = colOrder.indexOf(activeId);
         if (oldIndex !== -1 && targetIndex !== undefined && oldIndex !== targetIndex) {
           reorderInColumn(targetStatus, oldIndex, targetIndex);
         }
@@ -171,7 +182,7 @@ export function KanbanBoard({
         await moveStory(activeId, targetStatus, targetIndex);
       }
     },
-    [getStoryById, getStoriesByStatus, moveStory, reorderInColumn]
+    [moveStory, reorderInColumn]
   );
 
   return (

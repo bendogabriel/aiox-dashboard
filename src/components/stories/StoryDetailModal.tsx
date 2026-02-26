@@ -58,7 +58,7 @@ export function StoryDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-[var(--bg-surface)] border-[var(--border)]">
         <DialogHeader>
           <div className="mb-1">
             <span className="text-detail uppercase tracking-[0.2em] text-gold">{story.id}</span>
@@ -121,15 +121,14 @@ export function StoryDetailModal({
           {/* Priority Badge */}
           {story.priority && (
             <span
-              className="inline-flex items-center px-2 py-1 text-detail font-medium uppercase tracking-wider border text-text-muted"
-              style={{ borderColor: 'var(--border)' }}
+              className="inline-flex items-center px-2 py-1 text-detail font-medium uppercase tracking-wider border text-text-muted border-[var(--border)]"
             >
               P{story.priority}
             </span>
           )}
         </div>
 
-        <div className="border-t my-4" style={{ borderColor: 'var(--border-subtle)' }} />
+        <div className="border-t my-4 border-[var(--border-subtle)]" />
 
         {/* Description */}
         <section>
@@ -168,18 +167,14 @@ export function StoryDetailModal({
               Technical Notes
             </h3>
             <div
-              className="border p-3 text-label font-mono whitespace-pre-wrap text-text-tertiary"
-              style={{
-                backgroundColor: 'var(--bg-hover)',
-                borderColor: 'var(--border-subtle)',
-              }}
+              className="border p-3 text-label font-mono whitespace-pre-wrap text-text-tertiary bg-[var(--bg-hover)] border-[var(--border-subtle)]"
             >
               {story.technicalNotes}
             </div>
           </section>
         )}
 
-        <div className="border-t my-4" style={{ borderColor: 'var(--border-subtle)' }} />
+        <div className="border-t my-4 border-[var(--border-subtle)]" />
 
         {/* Timestamps */}
         <div className="flex items-center justify-between text-detail">

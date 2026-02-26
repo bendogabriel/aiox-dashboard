@@ -49,15 +49,14 @@ export function RoadmapView({ className }: RoadmapViewProps) {
 
   if (!settings.useMockData || items.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center" style={{ backgroundColor: 'var(--bg-base)' }}>
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-[var(--bg-base)]">
         <MapIcon className="h-8 w-8 mb-4 text-border" />
         <h3 className="text-sm font-light mb-1 text-text-tertiary">No Roadmap Items</h3>
         <p className="text-label mb-4 text-text-muted">
           Enable Demo Mode in Settings to see sample roadmap.
         </p>
         <button
-          className="flex items-center gap-1.5 px-3 py-1.5 text-label border transition-luxury hover:opacity-80 text-text-secondary"
-          style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-hover)' }}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-label border transition-luxury hover:opacity-80 text-text-secondary border-[var(--border)] bg-[var(--bg-hover)]"
         >
           <PlusIcon className="h-3 w-3" />
           Add Feature
@@ -67,15 +66,15 @@ export function RoadmapView({ className }: RoadmapViewProps) {
   }
 
   return (
-    <div className={cn('h-full flex flex-col', className)} style={{ backgroundColor: 'var(--bg-base)' }}>
+    <div className={cn('h-full flex flex-col bg-[var(--bg-base)]', className)}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+      <div className="flex items-center justify-between p-4 border-b border-[var(--border-subtle)]">
         <div className="flex items-center gap-4">
           <div>
             <span className="text-detail uppercase tracking-[0.2em] block mb-1 text-gold">Planning</span>
             <h2 className="text-sm font-light text-text-primary">Product Roadmap</h2>
           </div>
-          <div className="h-8 w-px" style={{ backgroundColor: 'var(--border-subtle)' }} />
+          <div className="h-8 w-px bg-[var(--border-subtle)]" />
           <div className="flex items-baseline gap-1">
             <span className="text-2xl font-light text-text-primary">{items.length}</span>
             <span className="text-label text-text-muted">features</span>
@@ -84,8 +83,7 @@ export function RoadmapView({ className }: RoadmapViewProps) {
 
         <div className="flex items-center gap-3">
           <button
-            className="flex items-center gap-1.5 px-3 py-1.5 text-label border transition-luxury hover:opacity-80 text-text-secondary"
-            style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-hover)' }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-label border transition-luxury hover:opacity-80 text-text-secondary border-[var(--border)] bg-[var(--bg-hover)]"
           >
             <PlusIcon className="h-3 w-3" />
             Add Feature
@@ -94,8 +92,8 @@ export function RoadmapView({ className }: RoadmapViewProps) {
       </div>
 
       {/* Filter Bar */}
-      <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
-        <div className="flex items-center gap-1 p-0.5 w-fit border" style={{ backgroundColor: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}>
+      <div className="px-4 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
+        <div className="flex items-center gap-1 p-0.5 w-fit border bg-[var(--bg-hover)] border-[var(--border-subtle)]">
           {filterButtons.map((btn) => (
             <button
               key={btn.id}
@@ -146,23 +144,23 @@ export function RoadmapView({ className }: RoadmapViewProps) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between px-4 py-2 border-t" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
+      <div className="flex items-center justify-between px-4 py-2 border-t border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
         <span className="text-detail text-text-muted">
           {settings.useMockData ? 'Demo Mode' : 'Connected to AIOS'}
         </span>
         <div className="flex items-center gap-4 text-detail">
           <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: 'var(--priority-must)' }} />
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--priority-must)]" />
             <span className="uppercase tracking-wider text-text-muted">Must</span>
             <span className="text-text-tertiary">{groupedItems.must_have.length}</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: 'var(--priority-should)' }} />
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--priority-should)]" />
             <span className="uppercase tracking-wider text-text-muted">Should</span>
             <span className="text-text-tertiary">{groupedItems.should_have.length}</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: 'var(--priority-could)' }} />
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--priority-could)]" />
             <span className="uppercase tracking-wider text-text-muted">Could</span>
             <span className="text-text-tertiary">{groupedItems.could_have.length}</span>
           </span>
@@ -213,8 +211,7 @@ function PrioritySection({ priority, items, config }: PrioritySectionProps) {
           items.map((item) => <RoadmapCard key={item.id} item={item} />)
         ) : (
           <div
-            className="h-20 border border-dashed flex items-center justify-center text-label italic"
-            style={{ borderColor: 'var(--border)', color: 'var(--border)' }}
+            className="h-20 border border-dashed flex items-center justify-center text-label italic border-[var(--border)] text-[var(--border)]"
           >
             No items
           </div>

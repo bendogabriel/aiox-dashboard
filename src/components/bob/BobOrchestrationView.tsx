@@ -83,7 +83,7 @@ export const BobOrchestrationView = memo(function BobOrchestrationView() {
   // Inactive state — show last known state with badge
   if (active && isInactive) {
     return (
-      <div className="h-full overflow-y-auto p-4 space-y-4" style={{ opacity: 0.6 }}>
+      <div className="h-full overflow-y-auto p-4 space-y-4 opacity-60">
         <div className="flex items-center gap-2 mb-2">
           <span
             className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-detail font-medium bg-text-muted/10 text-text-muted"
@@ -121,7 +121,7 @@ function BobInactivePlaceholder() {
   return (
     <div className="flex h-full items-center justify-center">
       <div className="text-center max-w-sm">
-        <Bot className="h-12 w-12 mx-auto mb-4 text-text-muted" style={{ opacity: 0.4 }} />
+        <Bot className="h-12 w-12 mx-auto mb-4 text-text-muted opacity-40" />
         <p className="text-sm font-medium mb-1 text-text-secondary">
           Bob não está ativo
         </p>
@@ -136,8 +136,7 @@ function BobInactivePlaceholder() {
 function ErrorList({ errors }: { errors: BobError[] }) {
   return (
     <div
-      className="rounded-lg border p-4"
-      style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
+      className="rounded-lg border p-4 border-[var(--border-subtle)] bg-[var(--bg-elevated)]"
     >
       <div className="flex items-center gap-2 mb-3">
         <AlertCircle className="h-4 w-4 text-status-error" />

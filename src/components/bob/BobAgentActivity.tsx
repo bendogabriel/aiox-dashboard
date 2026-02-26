@@ -35,11 +35,9 @@ function AgentActivityCard({ terminal, isCurrent }: AgentCardProps) {
 
   return (
     <div
-      className="rounded-md border p-3"
+      className="rounded-md border p-3 bg-[var(--bg-elevated)] border-l-[3px]"
       style={{
         borderColor: isCurrent ? color : 'var(--border-subtle)',
-        backgroundColor: 'var(--bg-elevated)',
-        borderLeftWidth: '3px',
         borderLeftColor: color,
       }}
     >
@@ -94,8 +92,7 @@ export const BobAgentActivity = memo(function BobAgentActivity() {
   if (terminals.length === 0 && !currentAgent) {
     return (
       <div
-        className="rounded-lg border p-4"
-        style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
+        className="rounded-lg border p-4 border-[var(--border-subtle)] bg-[var(--bg-elevated)]"
       >
         <div className="flex items-center gap-2 mb-3">
           <Users className="h-4 w-4 text-text-muted" />
@@ -115,8 +112,7 @@ export const BobAgentActivity = memo(function BobAgentActivity() {
 
   return (
     <div
-      className="rounded-lg border p-4"
-      style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
+      className="rounded-lg border p-4 border-[var(--border-subtle)] bg-[var(--bg-elevated)]"
     >
       <div className="flex items-center gap-2 mb-3">
         <Users className="h-4 w-4 text-text-primary" />

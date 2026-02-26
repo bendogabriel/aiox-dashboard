@@ -51,19 +51,18 @@ export function KanbanColumn({
   return (
     <div
       className={cn(
-        'flex flex-col min-w-[280px] max-w-[320px] border border-l-2 transition-luxury',
+        'flex flex-col min-w-[280px] max-w-[320px] border border-l-2 transition-luxury border-[var(--border-subtle)]',
         isOver && 'border-[rgba(201,178,152,0.3)]'
       )}
       style={{
         backgroundColor: isOver ? 'var(--accent-gold-bg)' : 'var(--bg-surface)',
-        borderColor: 'var(--border-subtle)',
         borderLeftColor: colorStyle.border,
       }}
     >
       {/* Column Header */}
       <div
-        className="flex items-center justify-between p-3 border-b"
-        style={{ borderColor: 'var(--border-subtle)', backgroundColor: colorStyle.bg }}
+        className="flex items-center justify-between p-3 border-b border-[var(--border-subtle)]"
+        style={{ backgroundColor: colorStyle.bg }}
       >
         <div className="flex items-center gap-2">
           {/* Collapse Toggle */}
@@ -89,8 +88,7 @@ export function KanbanColumn({
 
           {/* Count Badge */}
           <span
-            className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 text-detail font-medium text-text-tertiary"
-            style={{ backgroundColor: 'var(--border-subtle)' }}
+            className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 text-detail font-medium text-text-tertiary bg-[var(--border-subtle)]"
           >
             {stories.length}
           </span>
@@ -112,8 +110,14 @@ export function KanbanColumn({
       {!isCollapsed && (
         <div
           ref={setNodeRef}
-          className="flex-1 p-2 space-y-2 overflow-y-auto min-h-[200px] max-h-[calc(100vh-220px)] scrollbar-refined"
+          className="flex-1 p-2 space-y-2 overflow-y-auto overflow-x-visible min-h-[200px] max-h-[calc(100vh-220px)] scrollbar-refined"
         >
+          {/* Drop indicator - shows at top when dragging over column */}
+          {isOver && (
+            <div
+              className="h-0.5 rounded-full mx-1 mb-1 transition-all bg-[var(--accent-gold)]"
+            />
+          )}
           <SortableContext
             items={stories.map((s) => s.id)}
             strategy={verticalListSortingStrategy}

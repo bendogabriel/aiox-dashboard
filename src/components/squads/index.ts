@@ -9,3 +9,8 @@ export { SquadAgentDetail } from './SquadAgentDetail';
 export { SquadTaskCard } from './SquadTaskCard';
 export { SquadSectionGrid } from './SquadSectionGrid';
 export { SquadItemViewer } from './SquadItemViewer';
+export { AgentDetailPanel } from './AgentDetailPanel';
+export { ConnectionsMap } from './ConnectionsMap';
+export { SquadOrgChart } from './SquadOrgChart';
+export { SquadSelector } from './SquadSelector';
+export { SquadStatsPanel } from './SquadStatsPanel';
