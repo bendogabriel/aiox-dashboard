@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { safePersistStorage } from '../lib/safeStorage';
 import type { TerminalSession } from '../components/terminals/TerminalCard';
 
 const MAX_OUTPUT_LINES = 500;
@@ -59,6 +60,7 @@ export const useTerminalStore = create<TerminalState>()(
     }),
     {
       name: 'aios-terminal-store',
+      storage: safePersistStorage,
       partialize: (state) => ({
         sessions: state.sessions,
       }),

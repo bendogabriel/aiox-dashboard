@@ -33,7 +33,9 @@ export function getConnectionConfig(): ConnectionConfig {
   // Check URL for room parameter
   const urlParams = new URLSearchParams(window.location.search);
   const roomId = urlParams.get('room') || undefined;
-  const token = urlParams.get('token') || localStorage.getItem('aios_token') || undefined;
+  let storedToken: string | null = null;
+  try { storedToken = localStorage.getItem('aios_token'); } catch { /* storage unavailable */ }
+  const token = urlParams.get('token') || storedToken || undefined;
 
   // Cloud mode: relay URL configured and room ID provided
   if (RELAY_URL && roomId && token) {
@@ -61,15 +63,15 @@ export function getRelayHttpUrl(): string | undefined {
 
 /** Store auth token */
 export function setAuthToken(token: string): void {
-  localStorage.setItem('aios_token', token);
+  try { localStorage.setItem('aios_token', token); } catch { /* storage unavailable */ }
 }
 
 /** Get stored auth token */
 export function getAuthToken(): string | null {
-  return localStorage.getItem('aios_token');
+  try { return localStorage.getItem('aios_token'); } catch { return null; }
 }
 
 /** Clear auth token */
 export function clearAuthToken(): void {
-  localStorage.removeItem('aios_token');
+  try { localStorage.removeItem('aios_token'); } catch { /* storage unavailable */ }
 }

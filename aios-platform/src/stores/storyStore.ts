@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { safePersistStorage } from '../lib/safeStorage';
 
 export type StoryStatus =
   | 'backlog'
@@ -209,6 +210,7 @@ export const useStoryStore = create<StoryState & StoryActions>()(
     }),
     {
       name: 'aios-story-store',
+      storage: safePersistStorage,
       partialize: (state) => ({
         stories: state.stories,
         storyOrder: state.storyOrder,

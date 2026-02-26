@@ -177,11 +177,15 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
 export function MatrixEffects() {
   const [booted, setBooted] = useState(() => {
     // Only show boot once per session
-    return sessionStorage.getItem('matrix-booted') === 'true';
+    try {
+      return sessionStorage.getItem('matrix-booted') === 'true';
+    } catch {
+      return false;
+    }
   });
 
   const handleBootComplete = () => {
-    sessionStorage.setItem('matrix-booted', 'true');
+    try { sessionStorage.setItem('matrix-booted', 'true'); } catch { /* storage unavailable */ }
     setBooted(true);
   };
 

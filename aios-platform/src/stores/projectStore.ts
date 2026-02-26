@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { safePersistStorage } from '../lib/safeStorage';
 
 export interface Project {
   id: string;
@@ -76,6 +77,7 @@ export const useProjectStore = create<ProjectState>()(
     }),
     {
       name: 'aios-projects',
+      storage: safePersistStorage,
       partialize: (state) => ({
         projects: state.projects,
         activeProjectId: state.activeProjectId,

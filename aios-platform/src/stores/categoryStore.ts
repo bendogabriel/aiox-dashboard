@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { safePersistStorage } from '../lib/safeStorage';
 import type { SquadType } from '../types';
 
 export interface CategoryConfig {
@@ -176,6 +177,7 @@ export const useCategoryStore = create<CategoryState>()(
     }),
     {
       name: 'aios-category-config',
+      storage: safePersistStorage,
       version: CATEGORY_VERSION,
       migrate: (persistedState, version) => {
         // If version is outdated, reset to new defaults

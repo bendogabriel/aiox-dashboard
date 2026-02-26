@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { safePersistStorage } from '../lib/safeStorage';
 import type { UIState } from '../types';
 
 type ThemeType = 'light' | 'dark' | 'system' | 'matrix' | 'glass';
@@ -139,6 +140,7 @@ export const useUIStore = create<UIState & UIActions>()(
     }),
     {
       name: 'aios-ui-store',
+      storage: safePersistStorage,
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
         activityPanelOpen: state.activityPanelOpen,

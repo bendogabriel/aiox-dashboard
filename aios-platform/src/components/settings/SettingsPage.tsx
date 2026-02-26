@@ -526,7 +526,8 @@ function APISettings() {
 
   // Load saved keys from localStorage
   const [apiKeys, setApiKeys] = useState<StoredAPIKey[]>(() => {
-    const saved = localStorage.getItem('aios-api-keys');
+    let saved: string | null = null;
+    try { saved = localStorage.getItem('aios-api-keys'); } catch { /* storage unavailable */ }
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -614,7 +615,7 @@ function APISettings() {
   };
 
   const handleSaveKeys = () => {
-    localStorage.setItem('aios-api-keys', JSON.stringify(apiKeys));
+    try { localStorage.setItem('aios-api-keys', JSON.stringify(apiKeys)); } catch { /* storage unavailable */ }
     success('Salvo!', 'API Keys salvas com sucesso');
   };
 

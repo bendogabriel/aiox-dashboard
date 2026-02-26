@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { safePersistStorage } from '../lib/safeStorage';
 
 export interface AgentColorConfig {
   id: string;
@@ -66,6 +67,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
     }),
     {
       name: 'aios-settings',
+      storage: safePersistStorage,
       partialize: (state) => ({
         autoRefresh: state.autoRefresh,
         refreshInterval: state.refreshInterval,
