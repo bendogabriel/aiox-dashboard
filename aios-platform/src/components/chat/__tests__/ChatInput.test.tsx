@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '../../../test/test-utils';
+import { render, screen } from '../../../test/test-utils';
 import { ChatInput } from '../ChatInput';
 
 describe('ChatInput', () => {
@@ -44,7 +44,7 @@ describe('ChatInput', () => {
     const handleSend = vi.fn();
     const { user } = render(<ChatInput onSend={handleSend} />);
 
-    const textarea = screen.getByRole('textbox');
+    screen.getByRole('textbox');
     await user.keyboard('{Enter}');
 
     expect(handleSend).not.toHaveBeenCalled();

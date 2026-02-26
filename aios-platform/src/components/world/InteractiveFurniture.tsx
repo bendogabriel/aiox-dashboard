@@ -52,7 +52,7 @@ const FURNITURE_SIZES: Record<FurnitureItem['type'], { w: number; h: number }> =
   projectorScreen: { w: 60, h: 44 },
 };
 
-export function InteractiveFurniture({ item, domain, tileSize, index }: InteractiveFurnitureProps) {
+export function InteractiveFurniture({ item, domain, tileSize }: InteractiveFurnitureProps) {
   const [hovered, setHovered] = useState(false);
   const info = FURNITURE_INFO[item.type];
   const size = FURNITURE_SIZES[item.type];

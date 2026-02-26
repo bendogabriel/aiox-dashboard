@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 
 /**
  * Hook for managing focus trap within a container
@@ -81,7 +81,12 @@ export function useListNavigation<T>(
   } = {}
 ) {
   const { loop = true, orientation = 'vertical' } = options;
-  const activeIndexRef = useRef(0);
+  const [activeIndex, setActiveIndexState] = useState(0);
+  // Keep a ref in sync for use inside the callback without stale closures
+  const activeIndexRef = useRef(activeIndex);
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -123,6 +128,7 @@ export function useListNavigation<T>(
       }
 
       activeIndexRef.current = newIndex;
+      setActiveIndexState(newIndex);
       onSelect(items[newIndex], newIndex);
     },
     [items, onSelect, loop, orientation]
@@ -130,11 +136,12 @@ export function useListNavigation<T>(
 
   const setActiveIndex = useCallback((index: number) => {
     activeIndexRef.current = index;
+    setActiveIndexState(index);
   }, []);
 
   return {
     handleKeyDown,
-    activeIndex: activeIndexRef.current,
+    activeIndex,
     setActiveIndex,
   };
 }

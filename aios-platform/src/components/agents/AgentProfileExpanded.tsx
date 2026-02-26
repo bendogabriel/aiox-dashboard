@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GlassCard, Avatar, Badge, GlassButton, useToast } from '../ui';
+import { Avatar, Badge, GlassButton, useToast } from '../ui';
 import { useFavoritesStore } from '../../hooks/useFavorites';
 import { cn, getTierTheme } from '../../lib/utils';
-import type { Agent, AgentCommand, SquadType } from '../../types';
+import type { Agent, AgentCommand } from '../../types';
 import { getSquadType } from '../../types';
 
 // Icons

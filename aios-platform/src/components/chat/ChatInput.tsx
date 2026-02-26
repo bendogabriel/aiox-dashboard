@@ -156,7 +156,7 @@ export function ChatInput({
         if (f.preview) URL.revokeObjectURL(f.preview);
       });
     };
-  }, []);
+  }, [pendingFiles]);
 
   const processFiles = async (files: FileList | File[]) => {
     const fileArray = Array.from(files);

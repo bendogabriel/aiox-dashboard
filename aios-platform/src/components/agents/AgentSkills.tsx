@@ -24,8 +24,16 @@ import {
   Ruler,
   Landmark,
 } from 'lucide-react';
-import type { Agent, SquadType } from '../../types';
+import type { Agent, AgentCommand, SquadType } from '../../types';
 import { ICON_SIZES } from '../../lib/icons';
+
+// Extended agent type that includes UI-enriched fields from useAgentById
+interface AgentWithExtras extends Omit<Agent, 'capabilities'> {
+  commands?: AgentCommand[];
+  frameworks?: string[];
+  capabilities?: Array<{ type: string; text: string }> | string[];
+  commandCount?: number;
+}
 
 interface AgentSkillsProps {
   agent: Agent;
@@ -124,9 +132,12 @@ const capabilityIcons: Record<string, LucideIcon> = {
 
 // Generate skill levels based on agent capabilities
 function generateSkillLevels(agent: Agent): { name: string; icon: LucideIcon; color: string; level: number }[] {
+  const extAgent = agent as AgentWithExtras;
+
   // Priority 1: Use dynamic frameworks from agent markdown
-  if ((agent as any).frameworks && (agent as any).frameworks.length > 0) {
-    return (agent as any).frameworks.slice(0, 5).map((framework: string, index: number) => {
+  const frameworks = extAgent.frameworks;
+  if (frameworks && frameworks.length > 0) {
+    return frameworks.slice(0, 5).map((framework: string, index: number) => {
       const seed = framework.charCodeAt(0) + index * 13;
       const level = 75 + (seed % 20); // 75-95 range for frameworks
       return {
@@ -139,8 +150,9 @@ function generateSkillLevels(agent: Agent): { name: string; icon: LucideIcon; co
   }
 
   // Priority 2: Use dynamic capabilities from agent config
-  if ((agent as any).capabilities && (agent as any).capabilities.length > 0) {
-    return (agent as any).capabilities.slice(0, 5).map((cap: { type: string; text: string }, index: number) => {
+  const capabilities = extAgent.capabilities;
+  if (capabilities && capabilities.length > 0) {
+    return (capabilities as Array<{ type: string; text: string }>).slice(0, 5).map((cap: { type: string; text: string }, index: number) => {
       const text = cap.text.length > 25 ? cap.text.slice(0, 23) + '...' : cap.text;
       const seed = cap.text.charCodeAt(0) + index * 11;
       const level = 70 + (seed % 25);
@@ -171,6 +183,7 @@ function generateSkillLevels(agent: Agent): { name: string; icon: LucideIcon; co
 }
 
 export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
+  const extAgent = agent as AgentWithExtras;
   const skills = generateSkillLevels(agent);
 
   if (compact) {
@@ -238,25 +251,25 @@ export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-glass-border-subtle">
         <div className="flex gap-3">
           {/* Commands count - dynamic from agent */}
-          {((agent as any).commands?.length > 0 || (agent as any).commandCount > 0) && (
+          {(extAgent.commands?.length ?? 0) > 0 || (extAgent.commandCount ?? 0) > 0 ? (
             <div className="stat-badge">
               <Zap size={ICON_SIZES.sm} />
               <span className="stat-badge-value">
-                {(agent as any).commands?.length || (agent as any).commandCount}
+                {extAgent.commands?.length || extAgent.commandCount}
               </span>
               <span className="stat-badge-label">comandos</span>
             </div>
-          )}
+          ) : null}
           {/* Frameworks count */}
-          {(agent as any).frameworks?.length > 0 && (
+          {(extAgent.frameworks?.length ?? 0) > 0 && (
             <div className="stat-badge">
               <Landmark size={ICON_SIZES.sm} />
-              <span className="stat-badge-value">{(agent as any).frameworks.length}</span>
+              <span className="stat-badge-value">{extAgent.frameworks?.length}</span>
               <span className="stat-badge-label">frameworks</span>
             </div>
           )}
           {/* Fallback stats */}
-          {!((agent as any).commands?.length > 0) && !((agent as any).frameworks?.length > 0) && (
+          {!((extAgent.commands?.length ?? 0) > 0) && !((extAgent.frameworks?.length ?? 0) > 0) && (
             <>
               <div className="stat-badge">
                 <Star size={ICON_SIZES.sm} />

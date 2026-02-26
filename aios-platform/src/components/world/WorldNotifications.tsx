@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { DomainId } from './world-layout';
 import { domains } from './world-layout';
@@ -39,7 +39,7 @@ const DEMO_NOTIFICATIONS: Array<Omit<WorldNotification, 'id' | 'timestamp'>> = [
 
 export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) {
   const [notifications, setNotifications] = useState<WorldNotification[]>([]);
-  const [demoIdx, setDemoIdx] = useState(0);
+  const [, setDemoIdx] = useState(0);
   const counterRef = useRef(0);
 
   // Auto-generate demo notifications for ambience

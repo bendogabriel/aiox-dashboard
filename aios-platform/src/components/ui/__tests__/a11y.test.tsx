@@ -1,9 +1,9 @@
-/// <reference path="../../../test/vitest-axe.d.ts" />
 /**
  * Accessibility Tests using vitest-axe
  * These tests validate WCAG 2.1 AA compliance for UI components
  */
 
+import type {} from '../../../test/vitest-axe.d.ts';
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { axe } from 'vitest-axe';

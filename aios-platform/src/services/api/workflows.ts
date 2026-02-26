@@ -187,7 +187,6 @@ export const workflowsApi = {
 
           const decoder = new TextDecoder();
           let textBuffer = ''; // Buffer for incomplete lines
-          let currentEventType = ''; // Current event type
 
           const processEvent = (eventType: string, dataStr: string) => {
             try {

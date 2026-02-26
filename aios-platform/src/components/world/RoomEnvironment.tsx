@@ -1,7 +1,5 @@
-import { motion } from 'framer-motion';
 import type { DomainId } from './world-layout';
-import { domains, ROOM_COLS } from './world-layout';
-import { ICON_SIZES } from '../../lib/icons';
+import { domains } from './world-layout';
 
 interface RoomEnvironmentProps {
   domain: DomainId;
@@ -15,7 +13,7 @@ const WINDOW_W = 72;
 const WINDOW_H = 48;
 const WINDOW_GAP = 160;
 
-export function RoomEnvironment({ domain, tileSize, roomWidth }: RoomEnvironmentProps) {
+export function RoomEnvironment({ domain, roomWidth }: RoomEnvironmentProps) {
   const d = domains[domain];
 
   // Darken the domain color for wall

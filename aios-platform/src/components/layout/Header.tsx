@@ -15,6 +15,7 @@ import { MobileMenuButton } from './Sidebar';
 import { useGlobalSearch } from '../search';
 import { useUIStore } from '../../stores/uiStore';
 import { cn, formatRelativeTime } from '../../lib/utils';
+import type { SquadType } from '../../types';
 import { ICON_SIZES } from '../../lib/icons';
 
 // Icons
@@ -53,12 +54,6 @@ const BellIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
     <path d="M13.73 21a2 2 0 01-3.46 0" />
-  </svg>
-);
-
-const CheckIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="20 6 9 17 4 12" />
   </svg>
 );
 
@@ -209,7 +204,7 @@ export function Header() {
                           <Avatar
                             name={notification.agentName}
                             size="sm"
-                            squadType={notification.squadType as any}
+                            squadType={notification.squadType as SquadType}
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">

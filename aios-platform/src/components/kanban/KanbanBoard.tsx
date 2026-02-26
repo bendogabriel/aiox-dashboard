@@ -24,7 +24,6 @@ import {
   CheckCircle,
   XCircle,
 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
 import { GlassButton } from '../ui';
 import { KanbanColumn, type ColumnConfig } from './KanbanColumn';
 import { StoryCard } from './StoryCard';

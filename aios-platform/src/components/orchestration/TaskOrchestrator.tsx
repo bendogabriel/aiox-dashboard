@@ -6,8 +6,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Play,
-  Send,
   Loader2,
   Sparkles,
   Users,
@@ -15,7 +13,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Workflow,
-  ArrowRight,
   Zap,
   Copy,
   Check,
@@ -34,7 +31,6 @@ import {
   Layers,
   GitBranch,
 } from 'lucide-react';
-import { GlassCard } from '../ui/GlassCard';
 import { GlassButton } from '../ui/GlassButton';
 import { getSquadInlineStyle } from '../../lib/theme';
 
@@ -131,15 +127,22 @@ const phases = [
 ];
 
 // Animated background particles
+// Pre-compute random values outside component to preserve purity
+const PARTICLE_DATA = Array.from({ length: 20 }, (_, i) => ({
+  x: ((i * 37 + 13) % 100) + '%', // deterministic spread
+  duration: (i % 10) + 10,
+  delay: (i * 0.25) % 5,
+}));
+
 function BackgroundParticles() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(20)].map((_, i) => (
+      {PARTICLE_DATA.map((p, i) => (
         <motion.div
           key={i}
           className="absolute w-1 h-1 bg-cyan-500/30 rounded-full"
           initial={{
-            x: Math.random() * 100 + '%',
+            x: p.x,
             y: '100%',
             opacity: 0,
           }}
@@ -148,9 +151,9 @@ function BackgroundParticles() {
             opacity: [0, 0.5, 0],
           }}
           transition={{
-            duration: Math.random() * 10 + 10,
+            duration: p.duration,
             repeat: Infinity,
-            delay: Math.random() * 5,
+            delay: p.delay,
             ease: 'linear',
           }}
         />
@@ -161,11 +164,13 @@ function BackgroundParticles() {
 
 // Live metrics component
 function LiveMetrics({ state }: { state: TaskState }) {
-  const [elapsed, setElapsed] = useState(0);
+  const [elapsed, setElapsed] = useState(() =>
+    state.startTime ? Math.floor((Date.now() - state.startTime) / 1000) : 0
+  );
 
   useEffect(() => {
     if (state.status === 'idle' || !state.startTime) {
-      setElapsed(0);
+      queueMicrotask(() => setElapsed(0));
       return;
     }
 
@@ -411,14 +416,27 @@ function AgentOutputCard({
   copied: boolean;
 }) {
   const [expanded, setExpanded] = useState(true);
+  const [streamElapsed, setStreamElapsed] = useState(() =>
+    streaming ? (Date.now() - streaming.startedAt) / 1000 : 0
+  );
   const data = output || streaming;
+
+  // Update streaming elapsed time via interval (avoids Date.now during render)
+  useEffect(() => {
+    if (!streaming) return;
+    const interval = setInterval(() => {
+      setStreamElapsed((Date.now() - streaming.startedAt) / 1000);
+    }, 100);
+    return () => clearInterval(interval);
+  }, [streaming]);
+
   if (!data) return null;
 
   const isStreaming = !!streaming;
   const color = getSquadColor(data.agent.squad);
   const response = output?.response || streaming?.accumulated || '';
   const elapsedTime = streaming
-    ? ((Date.now() - streaming.startedAt) / 1000).toFixed(1)
+    ? streamElapsed.toFixed(1)
     : output?.processingTimeMs
     ? (output.processingTimeMs / 1000).toFixed(1)
     : '0';

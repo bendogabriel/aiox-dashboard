@@ -16,14 +16,13 @@ import {
   Signal,
   TrendingUp,
   AlertTriangle,
-  Sparkles,
   CheckCircle,
 } from 'lucide-react';
 import { GlassCard, Badge, GlassButton } from '../ui';
 import { ICON_SIZES } from '../../lib/icons';
-import { useSquads, useEcosystemOverview } from '../../hooks/useSquads';
+import { useSquads } from '../../hooks/useSquads';
 import { useAgents } from '../../hooks/useAgents';
-import { useExecutionHistory, useExecutionStats, useTokenUsage, useLLMHealth } from '../../hooks/useExecute';
+import { useExecutionHistory, useTokenUsage, useLLMHealth } from '../../hooks/useExecute';
 import {
   useCostSummary,
   useAgentAnalytics,
@@ -33,9 +32,8 @@ import {
   useSystemHealth,
   useSystemMetrics,
 } from '../../hooks/useDashboard';
-import { useChatStore } from '../../stores/chatStore';
 import { useUIStore } from '../../stores/uiStore';
-import { formatRelativeTime, cn } from '../../lib/utils';
+import { cn } from '../../lib/utils';
 import { LineChart, BarChart, DonutChart, ProgressRing } from './Charts';
 
 // Icons
@@ -53,32 +51,10 @@ const TrendUpIcon = () => (
   </svg>
 );
 
-const ServerIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
-    <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
-    <line x1="6" y1="6" x2="6.01" y2="6" />
-    <line x1="6" y1="18" x2="6.01" y2="18" />
-  </svg>
-);
-
 const PlugIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M12 2v10" />
     <path d="M18.4 6.6a9 9 0 1 1-12.8 0" />
-  </svg>
-);
-
-const DollarIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <line x1="12" y1="1" x2="12" y2="23" />
-    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-  </svg>
-);
-
-const ActivityIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
   </svg>
 );
 
@@ -159,7 +135,7 @@ function OverviewTab() {
   const { data: llmHealth } = useLLMHealth();
   const { data: mcpStats } = useMCPStats();
 
-  const executions = historyData?.executions || [];
+  const executions = useMemo(() => historyData?.executions || [], [historyData?.executions]);
   const completedCount = executions.filter(e => e.status === 'completed').length;
   const successRate = executions.length > 0 ? Math.round((completedCount / executions.length) * 100) : 100;
 

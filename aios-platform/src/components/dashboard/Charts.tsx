@@ -1,6 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '../../lib/utils';
 
 // Simple Line Chart Component - uses actual pixel coordinates
 interface LineChartProps {
@@ -272,7 +271,12 @@ export function DonutChart({
     '#8B5CF6', // purple
   ];
 
-  let currentOffset = 0;
+  // Pre-compute cumulative offsets to avoid mutation during render
+  const offsets = data.reduce<number[]>((acc, item, i) => {
+    const prev = i === 0 ? 0 : acc[i - 1] + data[i - 1].value / total;
+    acc.push(prev);
+    return acc;
+  }, []);
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
@@ -292,8 +296,7 @@ export function DonutChart({
           const percentage = item.value / total;
           const strokeDasharray = circumference;
           const strokeDashoffset = circumference * (1 - percentage);
-          const rotation = currentOffset * 360;
-          currentOffset += percentage;
+          const rotation = offsets[index] * 360;
 
           return (
             <motion.circle

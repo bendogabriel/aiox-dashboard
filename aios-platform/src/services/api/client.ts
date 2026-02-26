@@ -382,7 +382,7 @@ class ApiClient {
 
   async post<T>(endpoint: string, data?: unknown, options?: { timeout?: number; signal?: AbortSignal }): Promise<T> {
     const headers = data !== undefined ? this.headers : (() => {
-      const { 'Content-Type': _, ...rest } = this.headers;
+      const { 'Content-Type': _contentType, ...rest } = this.headers;
       return rest;
     })();
 

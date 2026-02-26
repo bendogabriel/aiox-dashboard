@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { GlassCard, GlassButton, GlassInput } from '../ui';
 import { useCategoryStore, type CategoryConfig } from '../../stores/categoryStore';
@@ -6,7 +6,7 @@ import { useSquads } from '../../hooks/useSquads';
 import { useToast } from '../ui/Toast';
 import { cn, getSquadTheme } from '../../lib/utils';
 import { getIconComponent, ICON_SIZES } from '../../lib/icons';
-import type { SquadType } from '../../types';
+import type { Squad, SquadType } from '../../types';
 
 // Icons
 const GripIcon = () => (
@@ -301,9 +301,9 @@ export function CategoryManager() {
               <motion.div
                 key={squad.id}
                 draggable
-                onDragStart={(e: any) => {
+                onDragStart={((e: React.DragEvent<HTMLDivElement>) => {
                   e.dataTransfer.setData('squadId', squad.id);
-                }}
+                }) as unknown as (event: MouseEvent | TouchEvent | PointerEvent) => void}
                 className="px-3 py-1.5 rounded-lg border border-white/20 bg-white/5 text-sm text-primary cursor-grab hover:border-white/40 transition-colors"
               >
                 {squad.icon} {squad.name}
@@ -319,7 +319,7 @@ export function CategoryManager() {
 // Category Item Component
 interface CategoryItemProps {
   category: CategoryConfig;
-  squads: any[];
+  squads: Squad[];
   isExpanded: boolean;
   isEditing: boolean;
   onToggle: () => void;
@@ -352,10 +352,9 @@ function CategoryItem({
 
   const [isDragOver, setIsDragOver] = useState(false);
 
-  const categorySquads = squads.filter((s) => category.squads.includes(s.id));
   const sortedSquads = category.squads
     .map((id) => squads.find((s) => s.id === id))
-    .filter(Boolean);
+    .filter((s): s is Squad => Boolean(s));
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -472,7 +471,7 @@ function CategoryItem({
                   onReorder={onReorderSquads}
                   className="space-y-1"
                 >
-                  {sortedSquads.map((squad: any) => (
+                  {sortedSquads.map((squad) => (
                     <Reorder.Item
                       key={squad.id}
                       value={squad.id}

@@ -30,7 +30,6 @@ export function useGlobalKeyboardShortcuts(options: KeyboardShortcutsOptions = {
   const { onShowShortcuts, enabled = true } = options;
 
   const {
-    currentView,
     setCurrentView,
     toggleSidebar,
     toggleTheme,
@@ -46,6 +45,22 @@ export function useGlobalKeyboardShortcuts(options: KeyboardShortcutsOptions = {
   } = useChatStore();
 
   const globalSearch = useGlobalSearch();
+
+  // Navigate between conversations — defined before handleKeyDown to avoid forward reference
+  const navigateConversation = useCallback((direction: 'prev' | 'next') => {
+    if (sessions.length === 0) return;
+
+    const currentIndex = sessions.findIndex(s => s.id === activeSessionId);
+    let newIndex: number;
+
+    if (direction === 'prev') {
+      newIndex = currentIndex <= 0 ? sessions.length - 1 : currentIndex - 1;
+    } else {
+      newIndex = currentIndex >= sessions.length - 1 ? 0 : currentIndex + 1;
+    }
+
+    setActiveSession(sessions[newIndex].id);
+  }, [sessions, activeSessionId, setActiveSession]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (!enabled) return;
@@ -157,13 +172,12 @@ export function useGlobalKeyboardShortcuts(options: KeyboardShortcutsOptions = {
     const lowerKey = e.key.toLowerCase();
     if (!modifier && !e.shiftKey && !e.altKey && viewShortcuts[lowerKey]) {
       e.preventDefault();
-      setCurrentView(viewShortcuts[lowerKey] as any);
+      setCurrentView(viewShortcuts[lowerKey] as Parameters<typeof setCurrentView>[0]);
       return;
     }
 
   }, [
     enabled,
-    currentView,
     setCurrentView,
     toggleSidebar,
     toggleTheme,
@@ -173,23 +187,8 @@ export function useGlobalKeyboardShortcuts(options: KeyboardShortcutsOptions = {
     globalSearch,
     setActiveSession,
     onShowShortcuts,
+    navigateConversation,
   ]);
-
-  // Navigate between conversations
-  const navigateConversation = useCallback((direction: 'prev' | 'next') => {
-    if (sessions.length === 0) return;
-
-    const currentIndex = sessions.findIndex(s => s.id === activeSessionId);
-    let newIndex: number;
-
-    if (direction === 'prev') {
-      newIndex = currentIndex <= 0 ? sessions.length - 1 : currentIndex - 1;
-    } else {
-      newIndex = currentIndex >= sessions.length - 1 ? 0 : currentIndex + 1;
-    }
-
-    setActiveSession(sessions[newIndex].id);
-  }, [sessions, activeSessionId, setActiveSession]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);

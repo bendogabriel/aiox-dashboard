@@ -6,7 +6,6 @@ import {
   GitCommit,
   GitPullRequest,
   CircleDot,
-  ExternalLink,
   GitBranch,
   User,
 } from 'lucide-react';

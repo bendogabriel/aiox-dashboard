@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { Agent, AgentSummary, AgentCommand, SearchFilters, getSquadType } from '../../types';
+import type { Agent, AgentSummary, AgentCommand, SearchFilters } from '../../types';
 
 export interface AgentsParams {
   squad?: string;

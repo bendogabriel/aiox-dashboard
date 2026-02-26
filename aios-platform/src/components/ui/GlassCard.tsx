@@ -1,4 +1,4 @@
-import { forwardRef, useState, HTMLAttributes } from 'react';
+import React, { forwardRef, useState, HTMLAttributes } from 'react';
 import { motion, MotionProps } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
@@ -71,7 +71,7 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           onAnimationComplete={() => setIsAnimating(false)}
           {...motionProps}
-          {...(props as any)}
+          {...(props as React.ComponentProps<typeof motion.div>)}
         >
           {children}
         </motion.div>

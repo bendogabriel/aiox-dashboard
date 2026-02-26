@@ -3,7 +3,6 @@ import { executeApi, buildExecuteRequest } from '../services/api';
 import { useChatStore } from '../stores/chatStore';
 import { useExecutionLogStore } from '../stores/executionLogStore';
 import type {
-  ExecuteRequest,
   ExecuteResponse,
   ExecutionHistory,
   ExecutionStats,
@@ -11,7 +10,6 @@ import type {
   LLMHealth,
   SquadType,
   MessageAttachment,
-  getSquadType,
   StreamToolsEvent,
 } from '../types';
 
@@ -25,9 +23,10 @@ function extractImagesFromToolResults(toolResults: StreamToolsEvent['toolResults
 
   for (const toolResult of toolResults) {
     // Use 'tool' field (backend) or 'name' field (fallback)
-    const toolName = toolResult.tool || (toolResult as any).name || '';
+    const toolResultRecord = toolResult as Record<string, unknown>;
+    const toolName = toolResult.tool || (toolResultRecord.name as string) || '';
     // Use 'output' field (backend) or 'result' field (fallback)
-    const output = toolResult.output || (toolResult as any).result;
+    const output = toolResult.output || toolResultRecord.result;
 
     console.log('[extractImages] Tool:', toolName, 'Success:', toolResult.success, 'Output:', output);
 
@@ -134,11 +133,12 @@ export function useExecuteAgent() {
                 // Log tool usage
                 if (event.toolResults && event.toolResults.length > 0) {
                   for (const toolResult of event.toolResults) {
-                    const toolName = toolResult.tool || (toolResult as any).name || 'unknown';
+                    const trRecord = toolResult as Record<string, unknown>;
+                    const toolName = toolResult.tool || (trRecord.name as string) || 'unknown';
                     addToolUse(
                       toolName,
                       toolResult.success,
-                      toolResult.output || (toolResult as any).result,
+                      toolResult.output || trRecord.result,
                       toolResult.error
                     );
                   }

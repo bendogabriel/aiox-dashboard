@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { GlassButton } from '../ui';
 import { cn } from '../../lib/utils';
-import { ICON_SIZES } from '../../lib/icons';
 
 // Icons
 const ArrowRightIcon = () => (

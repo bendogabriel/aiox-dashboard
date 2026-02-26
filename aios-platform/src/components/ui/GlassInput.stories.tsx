@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { GlassInput, GlassTextarea } from './GlassInput';
 
 const meta: Meta<typeof GlassInput> = {

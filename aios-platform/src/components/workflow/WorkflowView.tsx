@@ -9,7 +9,7 @@ import { useWorkflows, useCreateWorkflow, useExecuteWorkflow, useWorkflowExecuti
 import { workflowsApi } from '../../services/api';
 import { CreateWorkflowModal } from '../settings/WorkflowManager';
 import { WorkflowExecutionLive } from './WorkflowExecutionLive';
-import type { WorkflowMission, WorkflowOperation, AgentTool, TokenUsage } from './types';
+import type { WorkflowMission, WorkflowOperation, AgentTool } from './types';
 import type { SquadType } from '../../types';
 
 // Icons
@@ -732,8 +732,8 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
   const { data: executions, isLoading: isLoadingExecutions } = useWorkflowExecutions({ limit: 10 });
   const createWorkflowMutation = useCreateWorkflow();
   const executeWorkflowMutation = useExecuteWorkflow();
-  const { state: liveExecutionState, isExecuting: isLiveExecuting, execute: executeLive, reset: resetLiveExecution } = useExecuteWorkflowStream();
-  const { state: orchestrationState, isOrchestrating, orchestrate: startOrchestration, reset: resetOrchestration } = useSmartOrchestration();
+  const { state: liveExecutionState, execute: executeLive, reset: resetLiveExecution } = useExecuteWorkflowStream();
+  const { state: orchestrationState, orchestrate: startOrchestration, reset: resetOrchestration } = useSmartOrchestration();
   const [showLiveExecution, setShowLiveExecution] = useState(false);
   const [showOrchestration, setShowOrchestration] = useState(false);
 

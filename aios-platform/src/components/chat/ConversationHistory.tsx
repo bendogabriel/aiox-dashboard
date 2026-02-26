@@ -75,7 +75,6 @@ const ConversationItem = memo(function ConversationItem({ session, isActive, onS
   const lastMessage = session.messages[session.messages.length - 1];
   const preview = lastMessage?.content?.slice(0, 50) || 'Nova conversa';
   const timeAgo = formatTimeAgo(session.updatedAt);
-  const squadType = session.squadType || getSquadType(session.squadId);
   const messageCount = session.messages.length;
 
   return (

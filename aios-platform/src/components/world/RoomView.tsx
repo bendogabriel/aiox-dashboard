@@ -1,6 +1,5 @@
 import { useMemo, useRef, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../lib/utils';
 import { ICON_SIZES } from '../../lib/icons';
 import { useAgents } from '../../hooks/useAgents';
 import { useUIStore } from '../../stores/uiStore';

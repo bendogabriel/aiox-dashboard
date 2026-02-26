@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { GlassCard, Badge, Avatar, GlassButton } from '../ui';
+import { GlassCard, Badge, Avatar } from '../ui';
 import { useUIStore } from '../../stores/uiStore';
 import { useChatStore } from '../../stores/chatStore';
-import { useAgentById } from '../../hooks/useAgents';
+import { useAgentById, type AgentWithUI } from '../../hooks/useAgents';
 import { useTokenUsage, useLLMHealth, useExecutionStats } from '../../hooks';
 import { useMCPStatus } from '../../hooks/useDashboard';
 import { useChat } from '../../hooks/useChat';
@@ -39,12 +39,6 @@ const ServerIcon = () => (
     <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
     <line x1="6" y1="6" x2="6.01" y2="6" />
     <line x1="6" y1="18" x2="6.01" y2="18" />
-  </svg>
-);
-
-const MessageIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
   </svg>
 );
 
@@ -316,9 +310,16 @@ export function ActivityPanel() {
   );
 }
 
+// Agent action from backend (runtime field not in base type)
+interface AgentAction {
+  name: string;
+  description?: string;
+  trigger?: string;
+}
+
 // Agent Info Card
 interface AgentInfoCardProps {
-  agent: any;
+  agent: AgentWithUI;
   squadType: SquadType;
 }
 
@@ -364,7 +365,7 @@ interface SquadCommand {
   file: string;
 }
 
-function AgentCommandsPanel({ agent }: { agent: any }) {
+function AgentCommandsPanel({ agent }: { agent: AgentWithUI & { actions?: AgentAction[] } }) {
   const { sendMessage } = useChat();
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
@@ -402,16 +403,25 @@ function AgentCommandsPanel({ agent }: { agent: any }) {
   };
 
   // Command categories configuration
-  const categories = [
+  const categories: Array<{
+    id: string;
+    label: string;
+    icon: React.ReactNode;
+    items: unknown[];
+    color: string;
+    getCommand: (item: unknown) => string;
+    getLabel: (item: unknown) => string;
+    getDescription: (item: unknown) => string | null | undefined;
+  }> = [
     {
       id: 'actions',
       label: 'Ações',
       icon: <ActionIcon />,
       items: agentActions,
       color: 'yellow',
-      getCommand: (item: any) => item.description || item.name,
-      getLabel: (item: any) => item.name,
-      getDescription: (item: any) => item.trigger,
+      getCommand: (item: unknown) => { const a = item as AgentAction; return a.description || a.name; },
+      getLabel: (item: unknown) => (item as AgentAction).name,
+      getDescription: (item: unknown) => (item as AgentAction).trigger,
     },
     {
       id: 'commands',
@@ -419,9 +429,9 @@ function AgentCommandsPanel({ agent }: { agent: any }) {
       icon: <CommandIcon />,
       items: agentCommands,
       color: 'purple',
-      getCommand: (item: any) => item.command,
-      getLabel: (item: any) => item.command,
-      getDescription: (item: any) => item.description,
+      getCommand: (item: unknown) => (item as { command: string }).command,
+      getLabel: (item: unknown) => (item as { command: string }).command,
+      getDescription: (item: unknown) => (item as { description?: string }).description,
     },
     {
       id: 'prompts',
@@ -429,8 +439,8 @@ function AgentCommandsPanel({ agent }: { agent: any }) {
       icon: <PromptIcon />,
       items: agentPrompts,
       color: 'green',
-      getCommand: (item: string) => item,
-      getLabel: (item: string) => item.slice(0, 40) + (item.length > 40 ? '...' : ''),
+      getCommand: (item: unknown) => item as string,
+      getLabel: (item: unknown) => { const s = item as string; return s.slice(0, 40) + (s.length > 40 ? '...' : ''); },
       getDescription: () => null,
     },
     {
@@ -439,9 +449,9 @@ function AgentCommandsPanel({ agent }: { agent: any }) {
       icon: <TaskIcon />,
       items: tasks,
       color: 'orange',
-      getCommand: (item: SquadCommand) => `*${item.id}`,
-      getLabel: (item: SquadCommand) => item.name || item.id,
-      getDescription: (item: SquadCommand) => item.description,
+      getCommand: (item: unknown) => `*${(item as SquadCommand).id}`,
+      getLabel: (item: unknown) => { const c = item as SquadCommand; return c.name || c.id; },
+      getDescription: (item: unknown) => (item as SquadCommand).description,
     },
     {
       id: 'workflows',
@@ -449,9 +459,9 @@ function AgentCommandsPanel({ agent }: { agent: any }) {
       icon: <WorkflowIcon />,
       items: workflows,
       color: 'cyan',
-      getCommand: (item: SquadCommand) => `@workflow:${item.id}`,
-      getLabel: (item: SquadCommand) => item.name || item.id,
-      getDescription: (item: SquadCommand) => item.description,
+      getCommand: (item: unknown) => `@workflow:${(item as SquadCommand).id}`,
+      getLabel: (item: unknown) => { const c = item as SquadCommand; return c.name || c.id; },
+      getDescription: (item: unknown) => (item as SquadCommand).description,
     },
   ];
 
@@ -496,7 +506,7 @@ function AgentCommandsPanel({ agent }: { agent: any }) {
             {/* Category Items */}
             <div className="space-y-1.5">
               <AnimatePresence initial={false}>
-                {displayItems.map((item: any, index: number) => (
+                {displayItems.map((item: unknown, index: number) => (
                   <motion.button
                     key={index}
                     initial={index >= 3 ? { opacity: 0, height: 0 } : false}

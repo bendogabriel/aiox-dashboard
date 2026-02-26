@@ -24,8 +24,6 @@ import {
   Library,
   PenTool,
   Lightbulb,
-  MessageSquare,
-  Star,
   Calendar,
   Puzzle,
   Package,
@@ -44,15 +42,30 @@ import { SmartMessageList } from './VirtualizedMessageList';
 import { ChatInput } from './ChatInput';
 import { ExportChatModal } from './ExportChat';
 import { useChat } from '../../hooks/useChat';
-import { useAgents } from '../../hooks/useAgents';
+import { useAgents, type AgentWithUI } from '../../hooks/useAgents';
 import { useSquads } from '../../hooks/useSquads';
 import { useChatStore } from '../../stores/chatStore';
 import { useUIStore } from '../../stores/uiStore';
 import { apiClient } from '../../services/api/client';
 import { cn, squadLabels, getTierTheme } from '../../lib/utils';
 import { ICON_SIZES, getIconComponent } from '../../lib/icons';
-import type { Squad, SquadType, AgentSummary, AgentTier, ChatSession } from '../../types';
+import type { Squad, SquadType, Agent, AgentSummary, AgentTier, AgentCommand, ChatSession, Message } from '../../types';
 import { getSquadType } from '../../types';
+
+// Action shape coming from agent markdown definitions
+interface AgentAction {
+  name: string;
+  description?: string;
+  trigger?: string;
+}
+
+// Extended agent type used in chat components that may include dynamic backend fields.
+// Omits 'capabilities' from AgentWithUI to resolve the type conflict between
+// AgentWithUI (Array<{type,text}>) and Agent (string[]) — both shapes exist at runtime.
+interface ChatAgent extends Omit<AgentWithUI, 'capabilities'> {
+  actions?: AgentAction[];
+  capabilities?: Array<{ type: string; text: string }> | string[];
+}
 
 export function ChatContainer() {
   const {
@@ -62,7 +75,6 @@ export function ChatContainer() {
     isStreaming,
     sendMessage,
     stopStreaming,
-    selectAgent,
   } = useChat();
   const { sessions, activeSessionId, setActiveSession, deleteSession } = useChatStore();
   const { selectedAgentId } = useUIStore();
@@ -320,8 +332,8 @@ function ChatConversationPanel({
 }
 
 interface ChatHeaderProps {
-  agent: any;
-  session: any;
+  agent: ChatAgent;
+  session: ChatSession | null;
   chatSidebarOpen?: boolean;
   onToggleSidebar?: () => void;
 }
@@ -355,7 +367,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
 
   // Filter messages based on search
   const matchingMessages = searchQuery.length > 1 && session?.messages
-    ? session.messages.filter((m: any) =>
+    ? session.messages.filter((m: Message) =>
         m.content.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : [];
@@ -423,7 +435,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
 
       {/* Mini skills preview */}
       <div className="flex items-center gap-3">
-        <AgentSkills agent={agent} compact />
+        <AgentSkills agent={agent as unknown as Agent} compact />
 
         <div className="flex items-center gap-1 ml-2">
           {/* Commands Button */}
@@ -502,7 +514,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
                           <p className="text-xs text-tertiary px-2 py-1">
                             {matchingMessages.length} resultado(s)
                           </p>
-                          {matchingMessages.slice(0, 5).map((msg: any, i: number) => (
+                          {matchingMessages.slice(0, 5).map((msg: Message, i: number) => (
                             <div
                               key={i}
                               className="p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors"
@@ -587,7 +599,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
                       onClick={() => {
                         if (session?.messages) {
                           const content = session.messages
-                            .map((m: any) => `${m.role}: ${m.content}`)
+                            .map((m: Message) => `${m.role}: ${m.content}`)
                             .join('\n\n');
                           navigator.clipboard.writeText(content);
                         }
@@ -665,7 +677,7 @@ function MenuOption({ icon, label, danger, onClick }: MenuOptionProps) {
 
 // Commands Modal - shows agent commands, tasks, and workflows
 interface CommandsModalProps {
-  agent: any;
+  agent: ChatAgent;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -839,11 +851,11 @@ function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
                         {agentActions.length === 0 ? (
                           <EmptyState message="Nenhuma ação definida para este agent" />
                         ) : (
-                          agentActions.map((action: any, index: number) => (
+                          agentActions.map((action: AgentAction, index: number) => (
                             <CommandItem
                               key={index}
                               command={action.name}
-                              description={action.description || action.trigger}
+                              description={action.description || action.trigger || ''}
                               type="action"
                               onUse={() => handleUseCommand(action.description || action.name)}
                             />
@@ -858,11 +870,11 @@ function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
                         {agentCommands.length === 0 ? (
                           <EmptyState message="Nenhum comando definido para este agent" />
                         ) : (
-                          agentCommands.map((cmd: any, index: number) => (
+                          agentCommands.map((cmd: AgentCommand, index: number) => (
                             <CommandItem
                               key={index}
                               command={cmd.command}
-                              description={cmd.description}
+                              description={cmd.description || ''}
                               type="command"
                               onUse={() => handleUseCommand(cmd.command)}
                             />
@@ -1066,7 +1078,7 @@ function EmptyState({ message }: { message: string }) {
 }
 
 interface WelcomeMessageProps {
-  agent: any;
+  agent: ChatAgent;
 }
 
 function WelcomeMessage({ agent }: WelcomeMessageProps) {
@@ -1108,7 +1120,7 @@ function WelcomeMessage({ agent }: WelcomeMessageProps) {
 
       {/* Skills Card */}
       <div className="w-full max-w-sm mb-6">
-        <AgentSkills agent={agent} />
+        <AgentSkills agent={agent as unknown as Agent} />
       </div>
 
       {/* Suggestion Prompts */}
@@ -1125,7 +1137,7 @@ function WelcomeMessage({ agent }: WelcomeMessageProps) {
   );
 }
 
-function SuggestionPrompts({ agent }: { agent: any }) {
+function SuggestionPrompts({ agent }: { agent: ChatAgent }) {
   const { sendMessage } = useChat();
 
   const suggestions = getSuggestionsForAgent(agent);
@@ -1259,13 +1271,13 @@ const squadSuggestions: Record<string, AgentSuggestion[]> = {
   ],
 };
 
-function getSuggestionsForAgent(agent: any): AgentSuggestion[] {
+function getSuggestionsForAgent(agent: ChatAgent): AgentSuggestion[] {
   // Priority 1: Dynamic commands from agent markdown files (from backend)
   if (agent.commands && agent.commands.length > 0) {
-    const dynamicSuggestions = agent.commands.slice(0, 4).map((cmd: any) => ({
+    const dynamicSuggestions = agent.commands.slice(0, 4).map((cmd: AgentCommand) => ({
       icon: getCommandIcon(cmd.command),
       label: cmd.command.replace(/^\*/, ''),
-      prompt: cmd.description,
+      prompt: cmd.description || cmd.command,
     }));
     return dynamicSuggestions;
   }

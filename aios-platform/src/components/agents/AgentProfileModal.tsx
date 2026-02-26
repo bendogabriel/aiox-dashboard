@@ -98,8 +98,48 @@ const LinkIcon = () => (
   </svg>
 );
 
+interface AgentProfileAgent {
+  id: string;
+  name: string;
+  title?: string;
+  icon?: string;
+  tier: number;
+  squad: string;
+  whenToUse?: string;
+  commandCount?: number;
+  commands?: Array<{ command: string; description?: string }>;
+  persona?: {
+    role?: string;
+    style?: string;
+    focus?: string;
+    identity?: string;
+    background?: string;
+  };
+  corePrinciples?: Array<string | { principle: string }>;
+  frameworks?: string[];
+  hasVoiceDna?: boolean;
+  hasAntiPatterns?: boolean;
+  hasIntegration?: boolean;
+  config?: {
+    anti_patterns?: {
+      never_do?: string[];
+    };
+    voice_dna?: {
+      sentence_starters?: string[];
+      vocabulary?: {
+        always_use?: string[];
+        never_use?: string[];
+      };
+    };
+    integration?: {
+      receives_from?: string[];
+      handoff_to?: string[];
+    };
+  };
+}
+
 interface AgentProfileModalProps {
-  agent: any;
+  agent: AgentProfileAgent | null;
   isOpen: boolean;
   onClose: () => void;
   onStartChat?: () => void;
@@ -198,7 +238,7 @@ export function AgentProfileModal({ agent, isOpen, onClose, onStartChat }: Agent
                     <Badge variant="squad" squadType={squadType} size="sm">
                       {agent.squad}
                     </Badge>
-                    {agent.commandCount > 0 && (
+                    {(agent.commandCount ?? 0) > 0 && (
                       <span className="text-xs text-white/40">{agent.commandCount} comandos</span>
                     )}
                   </div>
@@ -233,7 +273,7 @@ export function AgentProfileModal({ agent, isOpen, onClose, onStartChat }: Agent
                   id={`tab-${tab.id}`}
                   aria-selected={activeTab === tab.id}
                   aria-controls={`tabpanel-${tab.id}`}
-                  onClick={() => !tab.disabled && setActiveTab(tab.id as any)}
+                  onClick={() => !tab.disabled && setActiveTab(tab.id as typeof activeTab)}
                   disabled={tab.disabled}
                   tabIndex={activeTab === tab.id ? 0 : -1}
                   className={cn(
@@ -304,7 +344,7 @@ export function AgentProfileModal({ agent, isOpen, onClose, onStartChat }: Agent
 }
 
 // Tab: Overview
-function TabOverview({ agent }: { agent: any }) {
+function TabOverview({ agent }: { agent: AgentProfileAgent }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -341,7 +381,7 @@ function TabOverview({ agent }: { agent: any }) {
       {agent.corePrinciples && agent.corePrinciples.length > 0 && (
         <Section title="Princípios Core" icon={<PrincipleIcon />}>
           <ul className="space-y-2">
-            {agent.corePrinciples.map((principle: any, i: number) => (
+            {agent.corePrinciples.map((principle: string | { principle: string }, i: number) => (
               <li key={i} className="flex items-start gap-2">
                 <span className="text-blue-400 mt-1">•</span>
                 <span className="text-sm text-white/70">
@@ -387,7 +427,7 @@ function TabOverview({ agent }: { agent: any }) {
 }
 
 // Tab: Commands
-function TabCommands({ agent }: { agent: any }) {
+function TabCommands({ agent }: { agent: AgentProfileAgent }) {
   const commands = agent.commands || [];
 
   return (
@@ -403,7 +443,7 @@ function TabCommands({ agent }: { agent: any }) {
           <p className="mt-2">Nenhum comando específico definido</p>
         </div>
       ) : (
-        commands.map((cmd: any, i: number) => (
+        commands.map((cmd: { command: string; description?: string }, i: number) => (
           <div
             key={i}
             className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
@@ -422,7 +462,7 @@ function TabCommands({ agent }: { agent: any }) {
 }
 
 // Tab: Voice & Style
-function TabVoice({ agent }: { agent: any }) {
+function TabVoice({ agent }: { agent: AgentProfileAgent }) {
   const voiceDna = agent.config?.voice_dna;
 
   if (!voiceDna) {
@@ -486,7 +526,7 @@ function TabVoice({ agent }: { agent: any }) {
 }
 
 // Tab: Integration
-function TabIntegration({ agent }: { agent: any }) {
+function TabIntegration({ agent }: { agent: AgentProfileAgent }) {
   const integration = agent.config?.integration;
 
   if (!integration) {

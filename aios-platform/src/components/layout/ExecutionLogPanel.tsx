@@ -77,7 +77,7 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
   // Auto-expand when execution starts
   useEffect(() => {
     if (isExecuting && logs.length > 0) {
-      setExpanded(true);
+      queueMicrotask(() => setExpanded(true));
     }
   }, [isExecuting, logs.length]);
 

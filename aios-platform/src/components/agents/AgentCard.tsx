@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { GlassCard, Avatar, Badge } from '../ui';
 import { cn, getTierTheme } from '../../lib/utils';
 import { useFavoritesStore } from '../../hooks/useFavorites';
-import type { AgentSummary, AgentTier, getSquadType } from '../../types';
+import type { AgentSummary, AgentTier } from '../../types';
 import { getSquadType as getSquadTypeUtil } from '../../types';
 
 // Star icon for favorites

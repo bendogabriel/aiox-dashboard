@@ -1,3 +1,5 @@
+'use no memo';
+
 import { useRef, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { AnimatePresence } from 'framer-motion';
@@ -13,6 +15,7 @@ export function VirtualizedMessageList({ messages, className }: VirtualizedMessa
   const parentRef = useRef<HTMLDivElement>(null);
   const scrollingRef = useRef(false);
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Virtual is safe to use; skipping compiler memoization
   const virtualizer = useVirtualizer({
     count: messages.length,
     getScrollElement: () => parentRef.current,

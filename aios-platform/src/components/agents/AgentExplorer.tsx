@@ -5,7 +5,7 @@ import { AgentExplorerCard } from './AgentCard';
 import { useAgents, useSquads, useAgent, useAgentCommands } from '../../hooks';
 import { useChat } from '../../hooks/useChat';
 import { cn, getTierTheme } from '../../lib/utils';
-import type { AgentSummary, AgentTier, Squad } from '../../types';
+import type { AgentSummary, AgentTier } from '../../types';
 import { getSquadType } from '../../types';
 
 // Icons
@@ -20,12 +20,6 @@ const CloseIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <line x1="18" y1="6" x2="6" y2="18" />
     <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-
-const FilterIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
   </svg>
 );
 
@@ -63,7 +57,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
   const [selectedAgentSquadId, setSelectedAgentSquadId] = useState<string | null>(null);
 
   const { data: allAgents, isLoading: loadingAgents } = useAgents();
-  const { data: squads, isLoading: loadingSquads } = useSquads();
+  const { data: squads } = useSquads();
   const { selectAgent: startChat } = useChat();
 
   // Filter agents

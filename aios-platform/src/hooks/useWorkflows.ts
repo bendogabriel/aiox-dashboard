@@ -260,19 +260,23 @@ export function useExecuteWorkflowStream() {
         },
         onExecutionCreated: (data) => {
           console.log('[LiveExecution] Execution created:', data);
+          const dataRecord = data as Record<string, unknown>;
           setState((prev) => prev ? {
             ...prev,
             executionId: data.executionId,
             workflowName: data.workflowName,
             status: 'created',
-            input: (data as any).input || prev.input, // Use input from server if available
-            steps: data.steps.map((s: any) => ({
-              id: s.id,
-              type: s.type,
-              status: s.status as LiveExecutionStep['status'],
-              name: s.name, // Step name from workflow definition
-              config: s.config, // Agent config (squadId, agentId, role)
-            })),
+            input: (dataRecord.input as Record<string, unknown>) || prev.input, // Use input from server if available
+            steps: data.steps.map((s) => {
+              const step = s as Record<string, unknown>;
+              return {
+                id: s.id,
+                type: s.type,
+                status: s.status as LiveExecutionStep['status'],
+                name: step.name as string | undefined, // Step name from workflow definition
+                config: step.config as LiveExecutionStep['config'], // Agent config (squadId, agentId, role)
+              };
+            }),
           } : null);
         },
         onExecutionStarted: (data) => {
@@ -463,12 +467,12 @@ export function useSmartOrchestration() {
               workflowId: prev.workflowId || '',
               workflowName: data.workflowName || prev.workflowName || '',
               status: 'created',
-              steps: data.steps.map((s: any) => ({
+              steps: data.steps.map((s) => ({
                 id: s.id,
                 type: s.type,
                 status: s.status as LiveExecutionStep['status'],
                 name: s.name,
-                config: s.config,
+                config: s.config as LiveExecutionStep['config'],
               })),
               input: data.input as Record<string, unknown>,
             },

@@ -4,7 +4,24 @@ import { GlassButton, Badge, Avatar } from '../ui';
 import { WorkflowCanvas } from './WorkflowCanvas';
 import type { LiveExecutionState, LiveExecutionStep } from '../../hooks/useWorkflows';
 import type { WorkflowNode, WorkflowEdge } from './types';
+import type { SquadType } from '../../types';
 import { cn } from '../../lib/utils';
+
+// Shape of step.output from the SSE execution stream
+interface StepOutput {
+  agent?: {
+    name?: string;
+    squad?: string;
+  };
+  role?: string;
+  response?: string;
+  llmMetadata?: {
+    provider: string;
+    model: string;
+    inputTokens?: number;
+    outputTokens?: number;
+  };
+}
 
 // ============================================
 // ICONS
@@ -271,7 +288,8 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
   useEffect(() => {
     if (state.status === 'running' && state.startedAt) {
       const startTime = new Date(state.startedAt).getTime();
-      setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+      // Set initial elapsed time via microtask to avoid synchronous setState in effect
+      queueMicrotask(() => setElapsedTime(Math.floor((Date.now() - startTime) / 1000)));
       const interval = setInterval(() => {
         setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
       }, 1000);
@@ -317,9 +335,9 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
       const x = startX + (index + 1) * (stepWidth + stepSpacing);
       const y = startY + (index % 2 === 0 ? 0 : 50);
 
-      const output = step.output as any;
+      const output = step.output as StepOutput | undefined;
       const agent = output?.agent;
-      const config = step.config as any;
+      const config = step.config;
 
       // Use agent from output if available (after completion), otherwise use config (before completion)
       const agentName = agent?.name || config?.agentId || step.name || `Step ${index + 1}`;
@@ -331,7 +349,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
         type: 'agent',
         label: agentName,
         agentName: agentName,
-        squadType: squadType as any,
+        squadType: squadType as SquadType,
         status: stepStatusToNodeStatus(step.status),
         position: { x, y },
         progress: step.status === 'running' ? 50 : step.status === 'completed' ? 100 : 0,
@@ -632,7 +650,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                 ) : (
                   <div className="space-y-2">
                     {state.steps.map((step, index) => {
-                      const output = step.output as any;
+                      const output = step.output as StepOutput | undefined;
                       const agent = output?.agent;
                       const squadType = agent?.squad || STEP_TYPE_TO_SQUAD[step.type] || 'orchestrator';
                       const style = getSquadStyle(squadType);
@@ -658,7 +676,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                               <Avatar
                                 name={agent?.name || `Step ${index + 1}`}
                                 size="sm"
-                                squadType={squadType}
+                                squadType={squadType as SquadType}
                               />
                               <span className="text-white text-xs font-medium">
                                 {agent?.name || `Step ${index + 1}`}
@@ -804,7 +822,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                           <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Demanda Solicitada</span>
                         </div>
                         <p className="text-sm text-white/90 whitespace-pre-wrap leading-relaxed">
-                          {(state.input as any)?.demand || (state.input as any)?.message || 'Demanda não especificada'}
+                          {(state.input?.demand as string) || (state.input?.message as string) || 'Demanda não especificada'}
                         </p>
                       </div>
 
@@ -824,7 +842,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                         </div>
                         <ul className="space-y-2 text-sm text-white/80">
                           {state.steps.map((step, idx) => {
-                            const output = step.output as any;
+                            const output = step.output as StepOutput | undefined;
                             const agentName = output?.agent?.name || `Step ${idx + 1}`;
                             const role = output?.role || STEP_TYPE_LABELS[step.type] || step.type;
                             return (
@@ -922,7 +940,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                           <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Demanda Original</span>
                         </div>
                         <p className="text-sm text-white/70 whitespace-pre-wrap leading-relaxed line-clamp-3">
-                          {(state.input as any)?.demand || (state.input as any)?.message || 'Demanda não especificada'}
+                          {(state.input?.demand as string) || (state.input?.message as string) || 'Demanda não especificada'}
                         </p>
                       </div>
 
@@ -942,7 +960,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                         </div>
                         <div className="space-y-3">
                           {state.steps.filter(s => s.status === 'completed').map((step, idx) => {
-                            const output = step.output as any;
+                            const output = step.output as StepOutput | undefined;
                             const agentName = output?.agent?.name || `Step ${idx + 1}`;
                             const squadType = output?.agent?.squad || 'orchestrator';
                             const response = output?.response || '';
@@ -955,7 +973,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                                 style={{ background: 'var(--color-background-disabled)' }}
                               >
                                 <div className="flex items-center gap-2 mb-1">
-                                  <Avatar name={agentName} size="sm" squadType={squadType as any} />
+                                  <Avatar name={agentName} size="sm" squadType={squadType as SquadType} />
                                   <span className="text-xs font-medium text-white/80">{agentName}</span>
                                   <span className="text-[10px] text-white/40 ml-auto">{squadType}</span>
                                 </div>
@@ -984,7 +1002,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                             </div>
                             {(() => {
                               const lastStep = [...state.steps].reverse().find(s => s.status === 'completed');
-                              const response = (lastStep?.output as any)?.response || '';
+                              const response = (lastStep?.output as StepOutput | undefined)?.response || '';
                               return response ? (
                                 <button
                                   onClick={() => handleCopy(response)}
@@ -1001,7 +1019,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                           <p className="text-sm text-white/90 whitespace-pre-wrap leading-relaxed max-h-64 overflow-auto">
                             {(() => {
                               const lastStep = [...state.steps].reverse().find(s => s.status === 'completed');
-                              return (lastStep?.output as any)?.response || 'Nenhum resultado disponível';
+                              return (lastStep?.output as StepOutput | undefined)?.response || 'Nenhum resultado disponível';
                             })()}
                           </p>
                         </div>
@@ -1029,16 +1047,15 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
 
                   {/* ========== SPECIALIST STEP ========== */}
                   {selectedStep && !isStartNode && !isEndNode && (() => {
-                    const output = selectedStep.output as any;
-                    const config = selectedStep.config as any;
+                    const output = selectedStep.output as StepOutput | undefined;
+                    const config = selectedStep.config;
                     const agent = output?.agent;
                     // Use config for agent info before completion, output.agent after completion
                     const agentName = agent?.name || config?.agentId || selectedStep.name || `Step ${state.steps.indexOf(selectedStep) + 1}`;
-                    const squadType = agent?.squad || config?.squadId || STEP_TYPE_TO_SQUAD[selectedStep.type] || 'orchestrator';
-                    const style = getSquadStyle(squadType);
+                    const squadType = agent?.squad || config?.squadId || 'orchestrator';
                     const response = output?.response || '';
                     // Use config.message for step-specific request, or fallback to workflow input
-                    const inputDemand = config?.message || state.input?.demand || state.input?.message || (typeof state.input === 'string' ? state.input : '');
+                    const inputDemand = config?.message || (state.input?.demand as string) || (state.input?.message as string) || (typeof state.input === 'string' ? state.input : '');
 
                     return (
                       <>
@@ -1047,7 +1064,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                           <Avatar
                             name={agentName}
                             size="lg"
-                            squadType={squadType}
+                            squadType={squadType as SquadType}
                             status={selectedStep.status === 'running' ? 'online' : selectedStep.status === 'completed' ? 'online' : 'offline'}
                           />
                           <div className="flex-1 min-w-0">
@@ -1145,8 +1162,8 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                               </div>
                               <div className="space-y-2">
                                 {previousSteps.map((prevStep) => {
-                                  const prevOutput = prevStep.output as any;
-                                  const prevConfig = prevStep.config as any;
+                                  const prevOutput = prevStep.output as StepOutput | undefined;
+                                  const prevConfig = prevStep.config;
                                   const prevAgent = prevOutput?.agent?.name || prevConfig?.agentId || prevStep.name || 'Step anterior';
                                   const prevResponse = prevOutput?.response || '';
                                   return (

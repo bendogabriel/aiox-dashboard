@@ -1,7 +1,7 @@
 import { lazy, Suspense, memo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { Avatar, Badge, GlassButton } from '../ui';
+import { Avatar, Badge } from '../ui';
 import { cn, formatRelativeTime } from '../../lib/utils';
 import type { Message, MessageAttachment, SquadType } from '../../types';
 
@@ -138,7 +138,7 @@ function MessageContent({ content, isStreaming, isUser }: MessageContentProps) {
   }
 
   // Check if content has markdown formatting (for user messages)
-  const hasMarkdown = isUser && /[*_`#\[\]|>]/.test(content);
+  const hasMarkdown = isUser && /[*_`#[\]|>]/.test(content);
 
   // For user messages with markdown formatting, use markdown renderer
   // For simple user messages, use plain text for performance

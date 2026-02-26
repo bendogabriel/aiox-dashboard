@@ -108,7 +108,6 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
               >
                 <div className="space-y-0.5">
                   {favorites.map((agent, index) => {
-                    const squadType = getSquadType(agent.squad);
                     return (
                       <motion.div
                         key={agent.id}
@@ -170,7 +169,6 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
               >
                 <div className="space-y-0.5">
                   {recents.map((agent, index) => {
-                    const squadType = getSquadType(agent.squad);
                     return (
                       <motion.div
                         key={agent.id}

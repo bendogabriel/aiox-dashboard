@@ -49,7 +49,6 @@ interface WorkflowMissionDetailProps {
 
 export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetailProps) {
   const completedNodes = mission.nodes.filter((n) => n.status === 'completed').length;
-  const activeNodes = mission.nodes.filter((n) => n.status === 'active').length;
   const totalNodes = mission.nodes.filter((n) => n.type === 'agent').length;
 
   return (

@@ -324,18 +324,14 @@ export const wsManager = new WebSocketManager({
 import { useState, useEffect, useCallback } from 'react';
 
 export function useWebSocket() {
-  const [status, setStatus] = useState<WebSocketStatus>(wsManager.getStatus());
-  const [isConnected, setIsConnected] = useState(wsManager.isConnected());
+  const [status, setStatus] = useState<WebSocketStatus>(() => wsManager.getStatus());
+  const [isConnected, setIsConnected] = useState(() => wsManager.isConnected());
 
   useEffect(() => {
     const unsubStatus = wsManager.onStatusChange((newStatus) => {
       setStatus(newStatus);
       setIsConnected(newStatus === 'connected');
     });
-
-    // Initial state
-    setStatus(wsManager.getStatus());
-    setIsConnected(wsManager.isConnected());
 
     return unsubStatus;
   }, []);

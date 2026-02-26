@@ -289,7 +289,7 @@ interface AsyncBoundaryProps {
   loadingFallback?: ReactNode;
 }
 
-export function AsyncBoundary({ children, fallback, loadingFallback }: AsyncBoundaryProps) {
+export function AsyncBoundary({ children, fallback }: AsyncBoundaryProps) {
   return (
     <ErrorBoundary fallback={fallback}>
       {children}

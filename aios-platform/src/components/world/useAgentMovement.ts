@@ -156,7 +156,7 @@ function findDetour(
 function computeHomePositions(
   agents: AgentSummary[],
   roomCols: number,
-  roomRows: number,
+  _roomRows: number,
 ): Map<string, { x: number; y: number }> {
   const sorted = [...agents].sort((a, b) => a.tier - b.tier);
   const map = new Map<string, { x: number; y: number }>();
@@ -434,12 +434,15 @@ export function useAgentMovement(
       // Fallback: stay put
       setMovementMap(new Map(stateRef.current));
     },
-    [agents, homePositions, waypoints, bubbleOptions],
+    [agents, homePositions, waypoints, bubbleOptions, obstacleGrid],
   );
 
   // ── Initialize + run movement cycles — slow and organic ──
   useEffect(() => {
     if (!agents || agents.length === 0) return;
+
+    // Capture ref value for cleanup
+    const timers = timersRef.current;
 
     // Initialize all agents at home
     const initialMap = new Map<string, AgentMovementState>();
@@ -453,7 +456,7 @@ export function useAgentMovement(
       }
     });
     stateRef.current = initialMap;
-    setMovementMap(new Map(initialMap));
+    queueMicrotask(() => setMovementMap(new Map(initialMap)));
 
     // Staggered movement cycles — MUCH slower for natural feel
     agents.forEach((agent) => {
@@ -472,17 +475,17 @@ export function useAgentMovement(
           // Each tick has a different interval for organic rhythm
           const nextInterval = baseInterval + (hashStr(agent.id + Date.now()) % varianceRange);
           const nextTimer = setTimeout(tick, nextInterval);
-          timersRef.current.set(`${agent.id}-cycle`, nextTimer);
+          timers.set(`${agent.id}-cycle`, nextTimer);
         };
         tick();
       }, initialDelay);
 
-      timersRef.current.set(`${agent.id}-start`, startTimer);
+      timers.set(`${agent.id}-start`, startTimer);
     });
 
     return () => {
-      timersRef.current.forEach((timer) => clearTimeout(timer));
-      timersRef.current.clear();
+      timers.forEach((timer) => clearTimeout(timer));
+      timers.clear();
     };
   }, [agents, homePositions, pickNextAction]);
 

@@ -4,7 +4,6 @@ import {
   agentsApi,
   type AnalyticsOverview,
   type RealtimeMetrics,
-  type AgentPerformance,
   type CostReport,
   type HealthDashboard,
   type TimePeriod,
@@ -72,7 +71,7 @@ export function useCostSummary() {
       openai: openaiProvider?.cost || externalByProvider['openai']?.cost || 0,
     },
     bySquad: Object.entries(externalBySquad).reduce((acc, [squadId, data]) => {
-      acc[squadId] = (data as any)?.cost || 0;
+      acc[squadId] = (data as Record<string, unknown>)?.cost as number || 0;
       return acc;
     }, {} as Record<string, number>),
     trend: costReport?.timeline?.map(t => t.cost) || Object.values(dailyCosts).slice(-7) as number[],

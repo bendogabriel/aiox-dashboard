@@ -20,4 +20,25 @@ export default defineConfig([globalIgnores(['dist']), {
     ecmaVersion: 2020,
     globals: globals.browser,
   },
+  rules: {
+    '@typescript-eslint/no-unused-vars': ['error', {
+      argsIgnorePattern: '^_',
+      varsIgnorePattern: '^_',
+      destructuredArrayIgnorePattern: '^_',
+    }],
+    'react-refresh/only-export-components': ['warn', {
+      allowConstantExport: true,
+      allowExportNames: [
+        'useGlobalSearch',
+        'useOnboardingTour',
+        'useOnboardingStore',
+        'useErrorHandler',
+        'useIsPWA',
+        'useRipple',
+        'useSuccessFeedback',
+        'useToast',
+        'useKeyboardShortcuts',
+      ],
+    }],
+  },
 }, ...storybook.configs["flat/recommended"]])

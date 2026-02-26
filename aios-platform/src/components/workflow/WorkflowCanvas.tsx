@@ -34,7 +34,7 @@ export function WorkflowCanvas({
 
       // If container has no size yet, use fallback
       if (width === 0 || height === 0) {
-        setPan({ x: 50, y: 50 });
+        queueMicrotask(() => setPan({ x: 50, y: 50 }));
         return;
       }
 
@@ -51,13 +51,13 @@ export function WorkflowCanvas({
       const centerX = (width - contentWidth * zoom) / 2 - minX * zoom + 50;
       const centerY = (height - contentHeight * zoom) / 2 - minY * zoom + 30;
 
-      setPan({ x: centerX, y: centerY });
+      queueMicrotask(() => setPan({ x: centerX, y: centerY }));
     } else if (containerRef.current) {
       // Default centering when no nodes
       const { width, height } = containerRef.current.getBoundingClientRect();
-      setPan({ x: width / 4, y: height / 4 });
+      queueMicrotask(() => setPan({ x: width / 4, y: height / 4 }));
     }
-  }, [nodes.length, zoom]);
+  }, [nodes, zoom]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.target === containerRef.current || (e.target as HTMLElement).classList.contains('canvas-bg')) {
@@ -280,7 +280,6 @@ function EdgePath({
 }) {
   // Calculate control points for curved path
   const dx = targetPos.x - sourcePos.x;
-  const dy = targetPos.y - sourcePos.y;
 
   // Offset for node size
   const sourceX = sourcePos.x + 60;
@@ -363,14 +362,6 @@ function WorkflowNodeComponent({
       border: theme.border + '/50',
       glow: theme.glow,
     };
-  };
-
-  const statusColors: Record<string, string> = {
-    completed: 'ring-green-500',
-    active: 'ring-orange-500',
-    waiting: 'ring-yellow-500',
-    idle: 'ring-gray-500/50',
-    error: 'ring-red-500',
   };
 
   const colors = getNodeColors(node.squadType);

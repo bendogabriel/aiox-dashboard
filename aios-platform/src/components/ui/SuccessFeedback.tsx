@@ -101,9 +101,17 @@ function CheckmarkAnimation({ message }: { message: string }) {
   );
 }
 
-function ConfettiAnimation({ message }: { message: string }) {
-  const confettiColors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
+// Pre-computed confetti particle data for render purity
+const CONFETTI_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
+const CONFETTI_PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+  color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+  x: ((((i * 7 + 3) % 20) / 20) - 0.5) * 200,
+  y: ((((i * 13 + 7) % 20) / 20) - 0.5) * 200,
+  rotate: ((i * 17 + 5) % 360),
+  delay: 0.2 + ((i * 11) % 20) / 100,
+}));
 
+function ConfettiAnimation({ message }: { message: string }) {
   return (
     <motion.div
       initial={{ scale: 0.5, opacity: 0 }}
@@ -112,25 +120,25 @@ function ConfettiAnimation({ message }: { message: string }) {
       className="flex flex-col items-center gap-4 p-8 rounded-2xl glass-lg relative overflow-hidden"
     >
       {/* Confetti particles */}
-      {Array.from({ length: 20 }).map((_, i) => (
+      {CONFETTI_PARTICLES.map((p, i) => (
         <motion.div
           key={i}
           className="absolute w-2 h-2 rounded-full"
           style={{
-            backgroundColor: confettiColors[i % confettiColors.length],
+            backgroundColor: p.color,
             left: '50%',
             top: '50%',
           }}
           initial={{ x: 0, y: 0, scale: 0 }}
           animate={{
-            x: (Math.random() - 0.5) * 200,
-            y: (Math.random() - 0.5) * 200,
+            x: p.x,
+            y: p.y,
             scale: [0, 1, 0],
-            rotate: Math.random() * 360,
+            rotate: p.rotate,
           }}
           transition={{
             duration: 0.8,
-            delay: 0.2 + Math.random() * 0.2,
+            delay: p.delay,
             ease: 'easeOut',
           }}
         />

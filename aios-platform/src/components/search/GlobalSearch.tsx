@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { searchAgents } from '../../services/api/agents';
@@ -7,7 +7,7 @@ import { useChat } from '../../hooks/useChat';
 import { useSearchStore } from '../../stores/searchStore';
 import { cn, getSquadTheme, getTierTheme } from '../../lib/utils';
 import { getSquadType } from '../../types';
-import type { AgentSummary, AgentTier } from '../../types';
+import type { AgentSummary, SquadType } from '../../types';
 
 // Icons
 const SearchIcon = () => (
@@ -39,7 +39,7 @@ const ArrowRightIcon = () => (
 
 // Get border color for squad from centralized theme
 const getSquadBorderColor = (squadType: string): string => {
-  const theme = getSquadTheme(squadType as any);
+  const theme = getSquadTheme(squadType as SquadType);
   return theme.borderLeft;
 };
 
@@ -65,7 +65,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
     staleTime: 30000,
   });
 
-  const results: AgentSummary[] = searchResults || [];
+  const results: AgentSummary[] = useMemo(() => searchResults || [], [searchResults]);
 
   // Group results by squad
   interface GroupedSquad {
@@ -96,13 +96,20 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 100);
-      setQuery('');
-      setSelectedIndex(0);
+      queueMicrotask(() => {
+        setQuery('');
+        setSelectedIndex(0);
+      });
     }
   }, [isOpen]);
 
-  // Keyboard navigation
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+  const handleSelectAgent = useCallback((agent: AgentSummary) => {
+    selectAgent(agent);
+    onClose();
+  }, [selectAgent, onClose]);
+
+  // Keyboard navigation — use a regular function to avoid compiler memoization issues
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
@@ -122,18 +129,13 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
         onClose();
         break;
     }
-  }, [flatResults, selectedIndex, onClose]);
+  };
 
   // Scroll selected into view
   useEffect(() => {
     const selected = resultsRef.current?.querySelector(`[data-index="${selectedIndex}"]`);
     selected?.scrollIntoView({ block: 'nearest' });
   }, [selectedIndex]);
-
-  const handleSelectAgent = (agent: AgentSummary) => {
-    selectAgent(agent);
-    onClose();
-  };
 
   // Global keyboard shortcut
   useEffect(() => {

@@ -5,7 +5,7 @@ import { SkeletonAgentList } from '../ui';
 import { useAgents } from '../../hooks/useAgents';
 import { useChat } from '../../hooks/useChat';
 import { useUIStore } from '../../stores/uiStore';
-import { cn } from '../../lib/utils';
+import type { AgentSummary } from '../../types';
 
 interface AgentListProps {
   onAgentSelect?: () => void;
@@ -16,7 +16,7 @@ export function AgentList({ onAgentSelect }: AgentListProps) {
   const { data: agents, isLoading } = useAgents(selectedSquadId);
   const { selectAgent } = useChat();
 
-  const handleSelectAgent = (agent: any) => {
+  const handleSelectAgent = (agent: AgentSummary) => {
     selectAgent(agent);
     onAgentSelect?.();
   };
@@ -108,14 +108,14 @@ export function AgentList({ onAgentSelect }: AgentListProps) {
 interface AgentGroupProps {
   title: string;
   count: number;
-  agents: any[];
+  agents: AgentSummary[];
   selectedId: string | null;
-  onSelect: (agent: any) => void;
+  onSelect: (agent: AgentSummary) => void;
   defaultExpanded?: boolean;
 }
 
 // Check if agent is a chief/leader
-function isChiefAgent(agent: any): boolean {
+function isChiefAgent(agent: AgentSummary): boolean {
   const id = agent.id?.toLowerCase() || '';
   const name = agent.name?.toLowerCase() || '';
   return id.includes('chief') || name.includes('chief') ||

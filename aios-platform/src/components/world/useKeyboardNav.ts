@@ -25,7 +25,11 @@ export function useKeyboardNav({
   const keysDown = useRef(new Set<string>());
   const rafRef = useRef<number | null>(null);
   const onPanRef = useRef(onPan);
-  onPanRef.current = onPan;
+
+  // Update the ref in an effect, not during render
+  useEffect(() => {
+    onPanRef.current = onPan;
+  }, [onPan]);
 
   useEffect(() => {
     if (!enabled) return;

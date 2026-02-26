@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { GlassButton, Badge, Avatar } from '../ui';
+import { motion } from 'framer-motion';
+import { Badge, Avatar } from '../ui';
 import { cn, formatRelativeTime } from '../../lib/utils';
 import type { WorkflowMission, WorkflowOperation } from './types';
 

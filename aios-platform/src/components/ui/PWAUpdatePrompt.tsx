@@ -25,7 +25,14 @@ const DownloadIcon = () => (
 );
 
 export function PWAUpdatePrompt() {
-  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(() => {
+    // Check if already dismissed on initial render
+    try {
+      return !sessionStorage.getItem('pwa-install-dismissed');
+    } catch {
+      return true;
+    }
+  });
   const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
   const [needRefresh, setNeedRefresh] = useState(false);
 
@@ -97,17 +104,6 @@ export function PWAUpdatePrompt() {
       // Storage not available
     }
   };
-
-  // Check if already dismissed
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem('pwa-install-dismissed')) {
-        setShowInstallPrompt(false);
-      }
-    } catch {
-      // Storage not available
-    }
-  }, []);
 
   return (
     <>
@@ -210,17 +206,13 @@ export function PWAUpdatePrompt() {
 
 // Hook to check if running as PWA
 export function useIsPWA() {
-  const [isPWA, setIsPWA] = useState(false);
-
-  useEffect(() => {
+  const [isPWA] = useState(() => {
     // Check if running in standalone mode (installed PWA)
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    return window.matchMedia('(display-mode: standalone)').matches
       // @ts-expect-error - navigator.standalone exists on iOS
       || window.navigator.standalone
       || document.referrer.includes('android-app://');
-
-    setIsPWA(isStandalone);
-  }, []);
+  });
 
   return isPWA;
 }
