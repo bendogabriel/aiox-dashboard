@@ -141,9 +141,9 @@ const ToolIcon = () => (
 type TabType = 'activity' | 'history' | 'metrics';
 
 export function ActivityPanel() {
-  const { selectedAgentId } = useUIStore();
+  const { selectedAgentId, selectedSquadId } = useUIStore();
   const { getActiveSession, isStreaming } = useChatStore();
-  const { data: selectedAgent } = useAgentById(selectedAgentId);
+  const { data: selectedAgent } = useAgentById(selectedAgentId, selectedSquadId);
 
   const [activeTab, setActiveTab] = useState<TabType>('activity');
   const [expandedSections, setExpandedSections] = useState({

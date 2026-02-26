@@ -45,7 +45,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
 
   // Emote state
   const [emoteAgent, setEmoteAgent] = useState<{ id: string; x: number; y: number } | null>(null);
-  const [floatingEmotes, setFloatingEmotes] = useState<Array<{ id: string; emoji: string; x: number; y: number }>>([]);
+  const [floatingEmotes, setFloatingEmotes] = useState<Array<{ id: string; emoteKey: string; x: number; y: number }>>([]);
 
   const roomConfig = rooms.find((r) => r.squadId === roomId);
   const domain: DomainId = roomConfig?.domain || 'dev';
@@ -145,10 +145,10 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
   }, []);
 
   // Emote selected from ring
-  const handleEmote = useCallback((emoji: string) => {
+  const handleEmote = useCallback((emoteKey: string) => {
     if (!emoteAgent) return;
     const id = `${emoteAgent.id}-${Date.now()}`;
-    setFloatingEmotes((prev) => [...prev, { id, emoji, x: emoteAgent.x, y: emoteAgent.y }]);
+    setFloatingEmotes((prev) => [...prev, { id, emoteKey, x: emoteAgent.x, y: emoteAgent.y }]);
     // Clean up after animation
     setTimeout(() => {
       setFloatingEmotes((prev) => prev.filter((e) => e.id !== id));
@@ -389,7 +389,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
 
             {/* Floating emotes */}
             {floatingEmotes.map((fe) => (
-              <FloatingEmote key={fe.id} emoji={fe.emoji} x={fe.x} y={fe.y} />
+              <FloatingEmote key={fe.id} emoteKey={fe.emoteKey} x={fe.x} y={fe.y} />
             ))}
 
             {/* Empty state */}

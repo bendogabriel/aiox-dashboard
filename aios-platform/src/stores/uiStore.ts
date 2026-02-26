@@ -2,12 +2,12 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { UIState } from '../types';
 
-type ThemeType = 'light' | 'dark' | 'system' | 'matrix';
+type ThemeType = 'light' | 'dark' | 'system' | 'matrix' | 'glass';
 
 type ViewType =
   | 'chat' | 'dashboard' | 'settings' | 'orchestrator' | 'world'
   | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor'
-  | 'insights' | 'context' | 'roadmap' | 'squads' | 'github' | 'qa';
+  | 'insights' | 'context' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories';
 export type SettingsSection = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
 interface UIActions {
@@ -49,6 +49,10 @@ const applyTheme = (theme: ThemeType) => {
     // Matrix needs .dark for Tailwind dark: utilities + data-theme for CSS overrides
     html.classList.add('dark');
     html.setAttribute('data-theme', 'matrix');
+  } else if (theme === 'glass') {
+    // Glass uses dark mode with colorful gradient blobs (original vibrant dark look)
+    html.classList.add('dark');
+    html.setAttribute('data-theme', 'glass');
   } else {
     const effectiveTheme = theme === 'system' ? getSystemTheme() : theme;
     if (effectiveTheme === 'dark') {
@@ -90,14 +94,16 @@ export const useUIStore = create<UIState & UIActions>()(
 
       toggleTheme: () => {
         const currentTheme = get().theme;
-        // Cycle: light -> dark -> matrix -> light
+        // Cycle: light -> dark -> glass -> matrix -> light
         // (system resolves to its effective theme first)
         let newTheme: ThemeType;
         if (currentTheme === 'matrix') {
           newTheme = 'light';
+        } else if (currentTheme === 'glass') {
+          newTheme = 'matrix';
         } else {
           const effectiveTheme = currentTheme === 'system' ? getSystemTheme() : currentTheme;
-          newTheme = effectiveTheme === 'dark' ? 'matrix' : 'dark';
+          newTheme = effectiveTheme === 'dark' ? 'glass' : 'dark';
         }
         applyTheme(newTheme);
         set({ theme: newTheme });

@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { agentsApi } from '../services/api';
-import type { Agent, AgentSummary, AgentCommand, SearchFilters, AgentCommand as AgentCommandType } from '../types';
+import type { Agent, AgentSummary, AgentCommand, SearchFilters } from '../types';
 import { getSquadType } from '../types';
 
-export function useAgents(squadId?: string | null) {
+export function useAgents(squadId?: string | null, options?: { refetchInterval?: number | false }) {
   return useQuery<AgentSummary[]>({
     queryKey: ['agents', squadId || 'all'],
     queryFn: async () => {
@@ -15,6 +15,7 @@ export function useAgents(squadId?: string | null) {
     },
     staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
     gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    refetchInterval: options?.refetchInterval,
   });
 }
 
@@ -43,26 +44,39 @@ export interface AgentWithUI extends AgentSummary {
   sampleTasks?: string[];
 }
 
-// Convenience hook when you only have agentId (searches all agents)
-// Fetches full agent details including commands for dynamic suggestions
-export function useAgentById(agentId: string | null) {
+// Convenience hook to fetch agent details with UI enrichment.
+// When squadId is provided, uses direct lookup (reliable).
+// Falls back to search when only agentId is available.
+export function useAgentById(agentId: string | null, squadId?: string | null) {
   return useQuery<AgentWithUI | null>({
-    queryKey: ['agentById', agentId],
+    queryKey: ['agentById', agentId, squadId],
     queryFn: async () => {
       if (!agentId) return null;
       let agent: AgentSummary | null = null;
       let fullAgent: Agent | null = null;
 
-      // First search for the agent to get its squad
-      const results = await agentsApi.searchAgents({ query: agentId, limit: 10 });
-      agent = results.find((a) => a.id === agentId) || null;
-
-      // If found, fetch full details including commands
-      if (agent) {
+      // Strategy 1: Direct lookup when squadId is available (most reliable)
+      if (squadId) {
         try {
-          fullAgent = await agentsApi.getAgent(agent.squad, agent.id);
+          fullAgent = await agentsApi.getAgent(squadId, agentId);
+          agent = fullAgent;
         } catch (e) {
-          console.warn(`Could not fetch full agent details for ${agentId}:`, e);
+          console.warn(`Direct fetch failed for ${squadId}/${agentId}, falling back to search:`, e);
+        }
+      }
+
+      // Strategy 2: Search for the agent by ID (fallback)
+      if (!agent) {
+        const results = await agentsApi.searchAgents({ query: agentId, limit: 10 });
+        agent = results.find((a) => a.id === agentId) || null;
+
+        // If found via search, fetch full details
+        if (agent && !fullAgent) {
+          try {
+            fullAgent = await agentsApi.getAgent(agent.squad, agent.id);
+          } catch (e) {
+            console.warn(`Could not fetch full agent details for ${agentId}:`, e);
+          }
         }
       }
 

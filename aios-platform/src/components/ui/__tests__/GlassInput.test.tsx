@@ -80,14 +80,14 @@ describe('GlassInput', () => {
   });
 
   it('should render left icon', () => {
-    const Icon = () => <span data-testid="left-icon">🔍</span>;
+    const Icon = () => <span data-testid="left-icon">Q</span>;
     render(<GlassInput leftIcon={<Icon />} />);
 
     expect(screen.getByTestId('left-icon')).toBeInTheDocument();
   });
 
   it('should render right icon', () => {
-    const Icon = () => <span data-testid="right-icon">✓</span>;
+    const Icon = () => <span data-testid="right-icon">{'\u2713'}</span>;
     render(<GlassInput rightIcon={<Icon />} />);
 
     expect(screen.getByTestId('right-icon')).toBeInTheDocument();

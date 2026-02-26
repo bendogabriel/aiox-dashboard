@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { EMOTE_LIST, type EmoteKey } from '../../lib/icons';
 
 interface AgentEmotesProps {
   /** Position (center of the emote ring) */
@@ -9,26 +10,14 @@ interface AgentEmotesProps {
   onClose: () => void;
 }
 
-const EMOTES = [
-  { emoji: '👋', label: 'Wave' },
-  { emoji: '👍', label: 'Thumbs up' },
-  { emoji: '❤️', label: 'Love' },
-  { emoji: '🎉', label: 'Celebrate' },
-  { emoji: '🤔', label: 'Thinking' },
-  { emoji: '⚡', label: 'Lightning' },
-  { emoji: '🔥', label: 'Fire' },
-  { emoji: '💡', label: 'Idea' },
-];
-
 const RING_RADIUS = 44;
 
 export function AgentEmotes({ x, y, onEmote, onClose }: AgentEmotesProps) {
-  const [selectedEmote, setSelectedEmote] = useState<string | null>(null);
+  const [selectedEmote, setSelectedEmote] = useState<EmoteKey | null>(null);
 
-  const handleEmote = (emoji: string) => {
-    setSelectedEmote(emoji);
-    onEmote(emoji);
-    // Auto-close after brief display
+  const handleEmote = (key: EmoteKey) => {
+    setSelectedEmote(key);
+    onEmote(key);
     setTimeout(onClose, 800);
   };
 
@@ -46,24 +35,24 @@ export function AgentEmotes({ x, y, onEmote, onClose }: AgentEmotesProps) {
         exit={{ opacity: 0, scale: 0.5 }}
         transition={{ type: 'spring', damping: 15, stiffness: 300 }}
       >
-        {EMOTES.map((emote, i) => {
-          const angle = (i / EMOTES.length) * Math.PI * 2 - Math.PI / 2;
+        {EMOTE_LIST.map((emote, i) => {
+          const angle = (i / EMOTE_LIST.length) * Math.PI * 2 - Math.PI / 2;
           const ex = Math.cos(angle) * RING_RADIUS;
           const ey = Math.sin(angle) * RING_RADIUS;
 
           return (
             <motion.button
-              key={emote.emoji}
+              key={emote.key}
               className="absolute pointer-events-auto flex items-center justify-center rounded-full"
               style={{
                 width: 28,
                 height: 28,
                 left: ex - 14,
                 top: ey - 14,
-                fontSize: '14px',
                 background: 'rgba(0,0,0,0.7)',
                 border: '1px solid rgba(255,255,255,0.15)',
                 cursor: 'pointer',
+                color: 'rgba(255,255,255,0.8)',
               }}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -72,11 +61,11 @@ export function AgentEmotes({ x, y, onEmote, onClose }: AgentEmotesProps) {
               whileTap={{ scale: 0.9 }}
               onClick={(e) => {
                 e.stopPropagation();
-                handleEmote(emote.emoji);
+                handleEmote(emote.key);
               }}
               title={emote.label}
             >
-              {emote.emoji}
+              <emote.Icon size={14} />
             </motion.button>
           );
         })}
@@ -84,34 +73,40 @@ export function AgentEmotes({ x, y, onEmote, onClose }: AgentEmotesProps) {
 
       {/* Floating emote animation */}
       <AnimatePresence>
-        {selectedEmote && (
-          <motion.div
-            className="absolute z-50 pointer-events-none text-2xl"
-            style={{ left: x - 12, top: y - 30 }}
-            initial={{ opacity: 1, y: 0, scale: 1 }}
-            animate={{ opacity: 0, y: -40, scale: 1.5 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          >
-            {selectedEmote}
-          </motion.div>
-        )}
+        {selectedEmote && (() => {
+          const selected = EMOTE_LIST.find(e => e.key === selectedEmote);
+          if (!selected) return null;
+          return (
+            <motion.div
+              className="absolute z-50 pointer-events-none"
+              style={{ left: x - 12, top: y - 30, color: 'rgba(255,255,255,0.9)' }}
+              initial={{ opacity: 1, y: 0, scale: 1 }}
+              animate={{ opacity: 0, y: -40, scale: 1.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+            >
+              <selected.Icon size={24} />
+            </motion.div>
+          );
+        })()}
       </AnimatePresence>
     </>
   );
 }
 
 /** Small floating emote that rises and fades — used after selection */
-export function FloatingEmote({ emoji, x, y }: { emoji: string; x: number; y: number }) {
+export function FloatingEmote({ emoteKey, x, y }: { emoteKey: string; x: number; y: number }) {
+  const emote = EMOTE_LIST.find(e => e.key === emoteKey);
+  if (!emote) return null;
   return (
     <motion.div
-      className="absolute pointer-events-none text-xl"
-      style={{ left: x - 10, top: y - 30, zIndex: 45 }}
+      className="absolute pointer-events-none"
+      style={{ left: x - 10, top: y - 30, zIndex: 45, color: 'rgba(255,255,255,0.9)' }}
       initial={{ opacity: 1, y: 0, scale: 0.8 }}
       animate={{ opacity: 0, y: -50, scale: 1.4 }}
       transition={{ duration: 1.2, ease: 'easeOut' }}
     >
-      {emoji}
+      <emote.Icon size={20} />
     </motion.div>
   );
 }

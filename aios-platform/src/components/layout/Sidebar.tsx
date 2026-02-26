@@ -18,28 +18,19 @@ import {
   ChevronLeft,
   Menu,
   X,
+  BookOpen,
 } from 'lucide-react';
-import { GlassCard, GlassButton } from '../ui';
+import { GlassCard, GlassButton, AioxLogo } from '../ui';
 import { useUIStore } from '../../stores/uiStore';
 import { cn } from '../../lib/utils';
 
 // Logo components
 const Logo = () => (
-  <div className="flex items-center gap-3">
-    <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-lg" style={{ background: 'var(--sidebar-logo-gradient)' }}>
-      <span className="text-white font-bold text-lg">A</span>
-    </div>
-    <div className="flex flex-col">
-      <span className="text-primary font-semibold text-lg leading-tight">AIOS</span>
-      <span className="text-secondary text-xs">Core Platform</span>
-    </div>
-  </div>
+  <AioxLogo variant="full" size={36} className="text-primary" />
 );
 
 const LogoSmall = () => (
-  <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-lg mx-auto" style={{ background: 'var(--sidebar-logo-gradient)' }}>
-    <span className="text-white font-bold text-lg">A</span>
-  </div>
+  <AioxLogo variant="icon" size={36} className="text-primary mx-auto" />
 );
 
 // Navigation items — existing views + 11 PRD views
@@ -58,6 +49,7 @@ const navItems = [
   { id: 'context' as const, icon: Brain, label: 'Context', shortcut: 'C', separator: false },
   { id: 'roadmap' as const, icon: Map, label: 'Roadmap', shortcut: 'R', separator: false },
   { id: 'squads' as const, icon: Network, label: 'Squads', shortcut: 'Q', separator: false },
+  { id: 'stories' as const, icon: BookOpen, label: 'Stories', shortcut: 'Y', separator: false },
   { id: 'github' as const, icon: Github, label: 'GitHub', shortcut: 'G', separator: false },
   { id: 'settings' as const, icon: Settings, label: 'Settings', shortcut: 'S', separator: false },
 ] as const;
@@ -198,7 +190,7 @@ function DesktopSidebar() {
         <div className="p-3 border-t border-glass-border">
           <GlassCard variant="subtle" padding="sm" className="text-center">
             <span className="text-xs text-secondary">
-              v2.0.0 · AIOS Core
+              v2.0.0 · AIOX
             </span>
           </GlassCard>
         </div>
@@ -277,7 +269,7 @@ function MobileSidebar() {
             <div className="p-3 border-t border-glass-border">
               <GlassCard variant="subtle" padding="sm" className="text-center">
                 <span className="text-xs text-secondary">
-                  v2.0.0 · AIOS Core
+                  v2.0.0 · AIOX
                 </span>
               </GlassCard>
             </div>

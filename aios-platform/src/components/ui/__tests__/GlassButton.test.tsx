@@ -38,7 +38,7 @@ describe('GlassButton', () => {
   });
 
   it('should render with left icon', () => {
-    const Icon = () => <span data-testid="icon">🔥</span>;
+    const Icon = () => <span data-testid="icon">F</span>;
     render(<GlassButton leftIcon={<Icon />}>With Icon</GlassButton>);
 
     expect(screen.getByTestId('icon')).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe('GlassButton', () => {
   it('should render as icon button with size="icon"', () => {
     render(
       <GlassButton size="icon" aria-label="Icon button">
-        <span>🔍</span>
+        <span>Q</span>
       </GlassButton>
     );
 

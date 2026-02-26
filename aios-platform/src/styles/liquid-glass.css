@@ -412,30 +412,29 @@ body {
   position: absolute;
   inset: 0;
   background:
-    /* Main colorful blobs - more vibrant */
-    radial-gradient(ellipse 70% 50% at 5% 95%, rgba(255, 100, 100, 0.55) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 70% at 95% 5%, rgba(64, 200, 190, 0.5) 0%, transparent 50%),
-    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(160, 80, 200, 0.35) 0%, transparent 45%),
-    radial-gradient(ellipse 70% 50% at 15% 25%, rgba(255, 180, 100, 0.45) 0%, transparent 45%),
-    radial-gradient(ellipse 50% 70% at 85% 75%, rgba(80, 160, 230, 0.45) 0%, transparent 45%),
-    radial-gradient(ellipse 60% 40% at 70% 20%, rgba(255, 120, 180, 0.3) 0%, transparent 40%),
-    /* Base gradient */
-    linear-gradient(160deg, #ffe4c9 0%, #ffc9b5 20%, #e8b4c8 40%, #c9b8e8 60%, #b8e0e8 80%, #c9e8d4 100%);
+    /* Soft pastel blobs - very subtle */
+    radial-gradient(ellipse 70% 50% at 5% 95%, rgba(255, 100, 100, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 70% at 95% 5%, rgba(64, 200, 190, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(160, 80, 200, 0.08) 0%, transparent 45%),
+    radial-gradient(ellipse 70% 50% at 15% 25%, rgba(255, 180, 100, 0.10) 0%, transparent 45%),
+    radial-gradient(ellipse 50% 70% at 85% 75%, rgba(80, 160, 230, 0.10) 0%, transparent 45%),
+    radial-gradient(ellipse 60% 40% at 70% 20%, rgba(255, 120, 180, 0.07) 0%, transparent 40%),
+    /* Light clean base */
+    linear-gradient(160deg, #f8f6f4 0%, #f6f2f0 20%, #f4f0f4 40%, #f0f0f6 60%, #f0f4f6 80%, #f2f6f4 100%);
   animation: backgroundShift 25s ease-in-out infinite alternate;
 }
 
-/* Dark mode - VIBRANT colorful background that shows through glass */
+/* Dark mode - Nearly flat dark background, minimal color */
 .dark .app-background::before {
   background:
-    /* Bright colorful blobs - high saturation */
-    radial-gradient(ellipse 80% 60% at 0% 100%, rgba(255, 90, 60, 0.45) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 80% at 100% 0%, rgba(50, 180, 170, 0.4) 0%, transparent 55%),
-    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(140, 60, 180, 0.35) 0%, transparent 50%),
-    radial-gradient(ellipse 80% 60% at 10% 30%, rgba(255, 160, 60, 0.4) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 80% at 90% 70%, rgba(60, 140, 220, 0.4) 0%, transparent 50%),
-    radial-gradient(ellipse 70% 50% at 75% 25%, rgba(220, 80, 150, 0.3) 0%, transparent 45%),
-    /* Deep dark base */
-    linear-gradient(160deg, #1a1520 0%, #15181f 30%, #121420 50%, #181215 70%, #0d1015 100%);
+    radial-gradient(ellipse 80% 60% at 0% 100%, rgba(255, 90, 60, 0.04) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 80% at 100% 0%, rgba(50, 180, 170, 0.03) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(140, 60, 180, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 60% at 10% 30%, rgba(255, 160, 60, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 80% at 90% 70%, rgba(60, 140, 220, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 50% at 75% 25%, rgba(220, 80, 150, 0.03) 0%, transparent 45%),
+    /* Near-black base */
+    linear-gradient(160deg, #09080c 0%, #080a0e 30%, #07090d 50%, #0a080a 70%, #06080a 100%);
 }
 
 /* Noise texture overlay */

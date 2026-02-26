@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { useStoryStore, type Story } from '../stores/storyStore';
+import { useStoryStore, type Story, type StoryState, type StoryActions } from '../stores/storyStore';
+
+type StoryStore = StoryState & StoryActions;
 import { useEffect } from 'react';
 
 // Fallback stories used when the /api/stories endpoint is unavailable.
@@ -217,8 +219,8 @@ const FALLBACK_STORIES: Story[] = [
 ];
 
 export function useStories() {
-  const setStories = useStoryStore((s) => s.setStories);
-  const stories = useStoryStore((s) => s.stories);
+  const setStories = useStoryStore((s: StoryStore) => s.setStories);
+  const stories = useStoryStore((s: StoryStore) => s.stories);
 
   const query = useQuery({
     queryKey: ['stories'],

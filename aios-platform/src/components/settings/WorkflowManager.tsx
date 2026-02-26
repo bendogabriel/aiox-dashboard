@@ -317,7 +317,7 @@ export function WorkflowManager() {
                               <ul className="space-y-1">
                                 {details.output.expected.map((output: string, idx: number) => (
                                   <li key={idx} className="text-xs text-tertiary flex items-start gap-2">
-                                    <span className="text-green-400 mt-0.5">✓</span>
+                                    <span className="text-green-400 mt-0.5">{'\u2713'}</span>
                                     {output}
                                   </li>
                                 ))}
@@ -361,7 +361,7 @@ export function WorkflowManager() {
 }
 
 // Create Workflow Modal
-function CreateWorkflowModal({
+export function CreateWorkflowModal({
   onClose,
   onSubmit,
   isLoading,

@@ -157,8 +157,8 @@ export const useExecutionLogStore = create<ExecutionLogState>((set, get) => ({
     get().addLog({
       level: success ? 'tool' : 'error',
       message: success
-        ? `🔧 ${toolName} executado`
-        : `🔧 ${toolName} falhou: ${error}`,
+        ? `[tool] ${toolName} executado`
+        : `[tool] ${toolName} falhou: ${error}`,
       toolName,
       details: result ? { result } : error ? { error } : undefined,
     });

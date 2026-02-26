@@ -108,7 +108,7 @@ export function CategoryManager() {
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategory, setNewCategory] = useState({
     name: '',
-    icon: '📁',
+    icon: '\u{1F4C2}',
     squadType: 'orchestrator' as SquadType,
   });
 
@@ -141,7 +141,7 @@ export function CategoryManager() {
       squadType: newCategory.squadType,
     });
 
-    setNewCategory({ name: '', icon: '📁', squadType: 'orchestrator' });
+    setNewCategory({ name: '', icon: '\u{1F4C2}', squadType: 'orchestrator' });
     setShowNewCategory(false);
     success('Categoria criada', `Categoria "${newCategory.name}" foi criada`);
   };
@@ -215,7 +215,7 @@ export function CategoryManager() {
                     <GlassInput
                       value={newCategory.icon}
                       onChange={(e) => setNewCategory({ ...newCategory, icon: e.target.value })}
-                      placeholder="📁"
+                      placeholder="icon"
                       className="text-center"
                     />
                   </div>

@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { Squad, SquadDetail, SquadStats, EcosystemOverview, getSquadType } from '../../types';
+import type { Squad, SquadDetail, SquadStats, EcosystemOverview } from '../../types';
 
 export interface SquadsParams {
   domain?: string;
@@ -32,4 +32,5 @@ export const squadsApi = {
   getEcosystemOverview: async (): Promise<EcosystemOverview> => {
     return apiClient.get<EcosystemOverview>('/squads/ecosystem/overview');
   },
+
 };

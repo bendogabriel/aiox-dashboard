@@ -127,10 +127,10 @@ export const WithIcons: Story = {
         <span className="mr-1">●</span> Online
       </Badge>
       <Badge variant="status" status="error">
-        <span className="mr-1">✕</span> Failed
+        <span className="mr-1">{'\u2715'}</span> Failed
       </Badge>
       <Badge variant="status" status="success">
-        <span className="mr-1">✓</span> Complete
+        <span className="mr-1">{'\u2713'}</span> Complete
       </Badge>
     </div>
   ),

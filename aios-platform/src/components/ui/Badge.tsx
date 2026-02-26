@@ -15,6 +15,12 @@ const squadStyles: Record<SquadType, string> = {
   design: 'bg-purple-500/15 text-purple-500 dark:text-purple-400',
   creator: 'bg-green-500/15 text-green-500 dark:text-green-400',
   orchestrator: 'bg-cyan-500/15 text-cyan-500 dark:text-cyan-400',
+  content: 'bg-red-500/15 text-red-500 dark:text-red-400',
+  development: 'bg-blue-500/15 text-blue-500 dark:text-blue-400',
+  engineering: 'bg-indigo-500/15 text-indigo-500 dark:text-indigo-400',
+  analytics: 'bg-teal-500/15 text-teal-500 dark:text-teal-400',
+  marketing: 'bg-pink-500/15 text-pink-500 dark:text-pink-400',
+  advisory: 'bg-yellow-500/15 text-yellow-600 dark:text-yellow-400',
   default: 'bg-gray-500/15 text-gray-500 dark:text-gray-400',
 };
 

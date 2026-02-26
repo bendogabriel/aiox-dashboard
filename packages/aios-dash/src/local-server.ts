@@ -19,7 +19,7 @@ export function startLocalServer(options: LocalServerOptions): { port: number; s
   const server = Bun.serve({
     port,
 
-    async fetch(req) {
+    async fetch(req: Request) {
       const url = new URL(req.url);
 
       // CORS

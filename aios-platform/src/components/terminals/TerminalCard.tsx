@@ -95,7 +95,7 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
                 <div key={i} className="whitespace-pre-wrap">
                   {line.startsWith('$') ? (
                     <span className="text-green-400">{line}</span>
-                  ) : line.startsWith('PASS') || line.includes('passed') || line.startsWith('✓') ? (
+                  ) : line.startsWith('PASS') || line.includes('passed') || line.startsWith('\u2713') ? (
                     <span className="text-green-300">{line}</span>
                   ) : line.startsWith('FAIL') || line.includes('error') || line.includes('Error') ? (
                     <span className="text-red-400">{line}</span>
@@ -112,7 +112,16 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
         )}
       </AnimatePresence>
 
-      {/* Footer: Story badge */}
+      {/* Last output preview (when minimized) */}
+      {minimized && session.output.length > 0 && (
+        <div className="px-3 py-1.5 border-t border-white/5 bg-black/40">
+          <p className="font-mono text-[10px] text-tertiary truncate">
+            {session.output[session.output.length - 1]}
+          </p>
+        </div>
+      )}
+
+      {/* Footer: Story badge + activity indicator */}
       <div className="flex items-center justify-between px-3 py-1.5 border-t border-white/5">
         {session.story ? (
           <Badge variant="default" size="sm">
@@ -121,14 +130,22 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
         ) : (
           <span className="text-[10px] text-tertiary">No active story</span>
         )}
-        <span
-          className={cn(
-            'text-[10px] font-medium capitalize',
-            isActive ? 'text-green-400' : 'text-tertiary',
+        <div className="flex items-center gap-1.5">
+          {isActive && (
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+            </span>
           )}
-        >
-          {session.status}
-        </span>
+          <span
+            className={cn(
+              'text-[10px] font-medium capitalize',
+              isActive ? 'text-green-400' : 'text-tertiary',
+            )}
+          >
+            {session.status}
+          </span>
+        </div>
       </div>
     </GlassCard>
   );

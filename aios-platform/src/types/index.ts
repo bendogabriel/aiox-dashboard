@@ -445,6 +445,16 @@ export interface HealthStatus {
   mcp: { healthy: boolean; connectedServers: number };
 }
 
+// Agent Activity Entry (used by AgentActivityTimeline)
+export interface AgentActivityEntry {
+  id: string;
+  agentId: string;
+  timestamp: string;
+  action: string;
+  status: 'success' | 'error';
+  duration: number;
+}
+
 // Agent Analytics Types
 export interface AgentAnalytics {
   agentId: string;
@@ -572,7 +582,7 @@ export interface ChatState {
 export type ViewType =
   | 'chat' | 'dashboard' | 'settings' | 'orchestrator' | 'world'  // existing
   | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor'          // new
-  | 'insights' | 'context' | 'roadmap' | 'squads' | 'github' | 'qa'; // new
+  | 'insights' | 'context' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories'; // new
 export type SettingsSectionType = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
 export interface UIState {
@@ -581,7 +591,7 @@ export interface UIState {
   workflowViewOpen: boolean;
   agentExplorerOpen: boolean;
   mobileMenuOpen: boolean;
-  theme: 'light' | 'dark' | 'system' | 'matrix';
+  theme: 'light' | 'dark' | 'system' | 'matrix' | 'glass';
   selectedSquadId: string | null;
   selectedAgentId: string | null;
   currentView: ViewType;

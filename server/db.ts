@@ -71,22 +71,24 @@ export function insertEvent(event: Event): void {
   `);
 
   stmt.run(
-    event.id,
-    event.type,
-    event.timestamp,
-    event.session_id,
-    event.project,
-    event.cwd,
-    event.agent,
-    event.tool_name,
-    JSON.stringify(event.tool_input),
-    event.tool_result,
-    event.is_error ? 1 : 0,
-    event.duration_ms,
-    event.aios_agent,
-    event.aios_story_id,
-    event.aios_task_id,
-    JSON.stringify(event)
+    ...[
+      event.id,
+      event.type,
+      event.timestamp,
+      event.session_id,
+      event.project,
+      event.cwd,
+      event.agent,
+      event.tool_name,
+      JSON.stringify(event.tool_input),
+      event.tool_result,
+      event.is_error ? 1 : 0,
+      event.duration_ms,
+      event.aios_agent,
+      event.aios_story_id,
+      event.aios_task_id,
+      JSON.stringify(event)
+    ] as any[]
   );
 }
 
@@ -133,7 +135,7 @@ export function getEvents(options: {
     params.push(options.offset);
   }
 
-  const rows = db.prepare(sql).all(...params) as { data: string }[];
+  const rows = db.prepare(sql).all(...params as any[]) as { data: string }[];
   return rows.map((row) => JSON.parse(row.data));
 }
 
@@ -170,12 +172,14 @@ export function upsertSession(session_id: string, event: Event): void {
       WHERE id = ?
     `
     ).run(
-      event.timestamp,
-      event.type === 'PostToolUse' ? 1 : 0,
-      event.is_error ? 1 : 0,
-      event.aios_agent,
-      event.aios_story_id,
-      session_id
+      ...[
+        event.timestamp,
+        event.type === 'PostToolUse' ? 1 : 0,
+        event.is_error ? 1 : 0,
+        event.aios_agent,
+        event.aios_story_id,
+        session_id
+      ] as any[]
     );
   } else {
     db.prepare(
@@ -184,15 +188,17 @@ export function upsertSession(session_id: string, event: Event): void {
       VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, ?)
     `
     ).run(
-      session_id,
-      event.project || 'unknown',
-      event.cwd || '',
-      event.timestamp,
-      event.timestamp,
-      event.type === 'PostToolUse' ? 1 : 0,
-      event.is_error ? 1 : 0,
-      event.aios_agent,
-      event.aios_story_id
+      ...[
+        session_id,
+        event.project || 'unknown',
+        event.cwd || '',
+        event.timestamp,
+        event.timestamp,
+        event.type === 'PostToolUse' ? 1 : 0,
+        event.is_error ? 1 : 0,
+        event.aios_agent,
+        event.aios_story_id
+      ] as any[]
     );
   }
 }

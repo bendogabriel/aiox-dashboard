@@ -394,7 +394,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                             <ul className="space-y-1">
                               {agent.antiPatterns.neverDo.slice(0, 5).map((item, i) => (
                                 <li key={i} className="flex items-start gap-2 text-xs text-red-400">
-                                  <span className="text-red-500">✕</span>
+                                  <span className="text-red-500">{'\u2715'}</span>
                                   {item}
                                 </li>
                               ))}

@@ -72,6 +72,10 @@ const QAMetrics = lazy(() =>
   import('./components/qa/QAMetrics')
 );
 
+const StoriesView = lazy(() =>
+  import('./components/stories').then((m) => ({ default: m.StoryList }))
+);
+
 // View map — maps ViewType to lazy component
 const viewMap: Record<string, ComponentType> = {
   dashboard: DashboardOverview,
@@ -89,6 +93,7 @@ const viewMap: Record<string, ComponentType> = {
   qa: QAMetrics,
   orchestrator: TaskOrchestrator,
   world: GatherWorld,
+  stories: StoriesView,
 };
 
 // Loading messages per view
@@ -109,6 +114,7 @@ const viewLoaderMessages: Record<string, string> = {
   squads: 'Carregando squads...',
   github: 'Carregando GitHub...',
   qa: 'Carregando QA...',
+  stories: 'Carregando stories...',
 };
 
 // Create a client

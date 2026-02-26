@@ -57,7 +57,7 @@ function authRequest(req: Request): { userId: string } | Response {
 const server = Bun.serve<WsData>({
   port: PORT,
 
-  async fetch(req, server) {
+  async fetch(req: Request, server: any) {
     const url = new URL(req.url);
 
     // CORS preflight
@@ -214,7 +214,7 @@ const server = Bun.serve<WsData>({
   },
 
   websocket: {
-    open(ws) {
+    open(ws: any) {
       const { roomId, userId, role } = ws.data;
 
       if (role === 'cli') {
@@ -247,7 +247,7 @@ const server = Bun.serve<WsData>({
       }
     },
 
-    message(ws, message) {
+    message(ws: any, message: string | Buffer) {
       const { roomId, role } = ws.data;
       const raw = typeof message === 'string' ? message : new TextDecoder().decode(message as unknown as ArrayBuffer);
 
@@ -295,7 +295,7 @@ const server = Bun.serve<WsData>({
       // Dashboard clients are read-only in Phase 1
     },
 
-    close(ws) {
+    close(ws: any) {
       const { roomId, userId, role } = ws.data;
 
       if (role === 'cli') {

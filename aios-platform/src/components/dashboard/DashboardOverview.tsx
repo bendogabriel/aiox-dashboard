@@ -711,7 +711,7 @@ function HealthCard({ title, status, details }: {
             <span className="text-secondary">{d.label}</span>
             {d.ok !== undefined ? (
               <span className={d.ok ? 'text-green-400' : 'text-red-400'}>
-                {d.ok ? '✓' : '✗'}
+                {d.ok ? '\u2713' : '\u2717'}
               </span>
             ) : (
               <span className="text-primary font-medium">{d.value}</span>

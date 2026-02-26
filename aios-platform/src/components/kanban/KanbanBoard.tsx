@@ -74,7 +74,7 @@ export default function KanbanBoard() {
 
   // Group stories by column using storyOrder
   const storiesByColumn = useMemo(() => {
-    const storyMap = new Map(stories.map((s) => [s.id, s]));
+    const storyMap = new Map(stories.map((s: Story) => [s.id, s]));
     const result: Record<StoryStatus, Story[]> = {
       backlog: [],
       in_progress: [],
@@ -114,7 +114,7 @@ export default function KanbanBoard() {
     (storyId: string): StoryStatus | null => {
       for (const col of COLUMNS) {
         const colStories = storiesByColumn[col.id];
-        if (colStories.some((s) => s.id === storyId)) {
+        if (colStories.some((s: Story) => s.id === storyId)) {
           return col.id;
         }
       }
@@ -127,7 +127,7 @@ export default function KanbanBoard() {
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
       const { active } = event;
-      const story = stories.find((s) => s.id === active.id);
+      const story = stories.find((s: Story) => s.id === active.id);
       if (story) {
         setActiveStory(story);
         setDraggedStory(story.id);
@@ -186,8 +186,8 @@ export default function KanbanBoard() {
 
       if (activeColumn && activeColumn === overColumn) {
         const colStories = storiesByColumn[activeColumn];
-        const oldIndex = colStories.findIndex((s) => s.id === activeId);
-        const newIndex = colStories.findIndex((s) => s.id === overId);
+        const oldIndex = colStories.findIndex((s: Story) => s.id === activeId);
+        const newIndex = colStories.findIndex((s: Story) => s.id === overId);
 
         if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
           reorderStory(activeColumn, oldIndex, newIndex);

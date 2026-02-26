@@ -63,7 +63,7 @@ describe('EmptyState', () => {
     render(
       <EmptyState
         type="custom"
-        icon={<span data-testid="custom-icon">🎉</span>}
+        icon={<span data-testid="custom-icon">*</span>}
         title="Custom"
       />
     );

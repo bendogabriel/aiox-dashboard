@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
@@ -14,14 +14,20 @@ import { useUIStore } from '../../stores/uiStore';
 import { useGlobalKeyboardShortcuts } from '../../hooks/useGlobalKeyboardShortcuts';
 import { cn } from '../../lib/utils';
 
+// Lazy-load matrix effects — only loaded when matrix theme is active
+const MatrixEffects = lazy(() =>
+  import('../ui/MatrixEffects').then((m) => ({ default: m.MatrixEffects }))
+);
+
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const { sidebarCollapsed, activityPanelOpen, agentExplorerOpen, setAgentExplorerOpen, currentView } = useUIStore();
+  const { sidebarCollapsed, activityPanelOpen, agentExplorerOpen, setAgentExplorerOpen, currentView, theme } = useUIStore();
   const globalSearch = useGlobalSearch();
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const isMatrix = theme === 'matrix';
 
   // Global keyboard shortcuts - all handled in one place
   useGlobalKeyboardShortcuts({
@@ -32,12 +38,19 @@ export function AppLayout({ children }: AppLayoutProps) {
   const showActivityPanel = activityPanelOpen && currentView !== 'settings';
 
   return (
-    <div className="min-h-screen relative" role="application" aria-label="AIOS Core">
+    <div className="min-h-screen relative isolate" role="application" aria-label="AIOS Core">
       {/* Skip Links for Accessibility */}
       <SkipLinks />
 
       {/* Gradient Background */}
       <div className="app-background" aria-hidden="true" />
+
+      {/* Matrix Effects — only rendered when matrix theme is active */}
+      {isMatrix && (
+        <Suspense fallback={null}>
+          <MatrixEffects />
+        </Suspense>
+      )}
 
       {/* Main Grid - No sidebar in mobile (handled by drawer) */}
       <div

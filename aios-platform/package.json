@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:full": "bash scripts/dev-full.sh",
+    "backend": "cd /Users/rafaelcosta/Downloads/aios-core-meta-gpt && node src/server.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

@@ -109,7 +109,7 @@ export const workflowsApi = {
   // Update workflow
   // PATCH /api/workflows/:id
   updateWorkflow: async (id: string, updates: Partial<Workflow>): Promise<Workflow> => {
-    return apiClient.put<Workflow>(`/workflows/${id}`, updates);
+    return apiClient.patch<Workflow>(`/workflows/${id}`, updates);
   },
 
   // Delete workflow

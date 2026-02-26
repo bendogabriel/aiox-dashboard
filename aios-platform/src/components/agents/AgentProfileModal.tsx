@@ -375,7 +375,7 @@ function TabOverview({ agent }: { agent: any }) {
           <ul className="space-y-2">
             {agent.config.anti_patterns.never_do?.slice(0, 5).map((item: string, i: number) => (
               <li key={i} className="flex items-start gap-2">
-                <span className="text-red-400 mt-1">✕</span>
+                <span className="text-red-400 mt-1">{'\u2715'}</span>
                 <span className="text-sm text-white/70">{item}</span>
               </li>
             ))}

@@ -1,17 +1,20 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
-import './styles/liquid-glass.css';
 import './index.css';
 
-// Initialize theme
+// Initialize theme early to prevent flash of unstyled content
 const initTheme = () => {
   const stored = localStorage.getItem('aios-ui-store');
   if (stored) {
     try {
       const { state } = JSON.parse(stored);
       const theme = state?.theme;
-      if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      if (theme === 'glass' || theme === 'matrix') {
+        // Glass & Matrix need .dark class + data-theme attribute
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      } else if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
       }
     } catch {

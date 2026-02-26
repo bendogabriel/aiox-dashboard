@@ -6,6 +6,7 @@ import { useUIStore, type SettingsSection } from '../../stores/uiStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useToast } from '../ui/Toast';
 import { cn } from '../../lib/utils';
+import { ThemeIcons } from '../../lib/icons';
 import { CategoryManager } from './CategoryManager';
 import { MemoryManager } from './MemoryManager';
 import { WorkflowManager } from './WorkflowManager';
@@ -1053,10 +1054,11 @@ function AppearanceSettings() {
   const { success } = useToast();
 
   const themes = [
-    { id: 'light', label: 'Claro', icon: '☀️', description: 'Interface clara para ambientes iluminados' },
-    { id: 'dark', label: 'Escuro', icon: '🌙', description: 'Interface escura para conforto visual' },
-    { id: 'system', label: 'Sistema', icon: '💻', description: 'Segue as preferências do sistema' },
-    { id: 'matrix', label: 'Matrix', icon: '🟢', description: 'Verde neon sobre preto — modo hacker' },
+    { id: 'light' as const, label: 'Claro', description: 'Interface clara para ambientes iluminados' },
+    { id: 'dark' as const, label: 'Escuro', description: 'Interface escura para conforto visual' },
+    { id: 'glass' as const, label: 'Liquid Glass', description: 'Painéis de vidro fosco sobre fundo colorido vibrante' },
+    { id: 'matrix' as const, label: 'Matrix', description: 'Verde neon sobre preto — modo hacker' },
+    { id: 'system' as const, label: 'Sistema', description: 'Segue as preferências do sistema' },
   ];
 
   const isMatrix = theme === 'matrix';
@@ -1072,31 +1074,39 @@ function AppearanceSettings() {
           <ThemeToggleSwitch />
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {themes.map((t) => {
             const isActive = theme === t.id;
             const isMatrixCard = t.id === 'matrix';
+            const isGlassCard = t.id === 'glass';
             return (
               <button
                 key={t.id}
                 onClick={() => {
-                  setTheme(t.id as 'light' | 'dark' | 'system' | 'matrix');
+                  setTheme(t.id as 'light' | 'dark' | 'system' | 'matrix' | 'glass');
                   success('Tema alterado', `Tema ${t.label} aplicado`);
                 }}
                 className={cn(
                   'p-4 rounded-xl border-2 transition-all text-center group',
-                  isActive && !isMatrixCard
-                    ? 'border-blue-500 bg-blue-500/10'
-                    : isActive && isMatrixCard
+                  isActive && isMatrixCard
                     ? 'border-green-500 bg-green-500/10'
+                    : isActive && isGlassCard
+                    ? 'border-purple-500 bg-purple-500/10'
+                    : isActive
+                    ? 'border-blue-500 bg-blue-500/10'
                     : 'border-transparent glass-subtle hover:border-white/20'
                 )}
               >
-                <span className="text-2xl mb-2 block group-hover:scale-110 transition-transform">{t.icon}</span>
+                <span className="text-2xl mb-2 block group-hover:scale-110 transition-transform">
+                  {(() => { const Icon = ThemeIcons[t.id]; return <Icon size={24} />; })()}
+                </span>
                 <span className="text-sm text-primary font-medium">{t.label}</span>
                 <p className="text-[10px] text-tertiary mt-1 leading-tight">{t.description}</p>
                 {isActive && (
-                  <div className={cn('mt-2', isMatrixCard ? 'text-green-500' : 'text-blue-500')}>
+                  <div className={cn(
+                    'mt-2',
+                    isMatrixCard ? 'text-green-500' : isGlassCard ? 'text-purple-500' : 'text-blue-500'
+                  )}>
                     <CheckIcon />
                   </div>
                 )}

@@ -24,10 +24,18 @@ interface MonitorState {
     errorCount: number;
     activeSessions: number;
   };
+  metrics: { cpu: number; memory: number; latency: number; throughput: number };
+  alerts: Array<{ id: string; message: string; severity: 'info' | 'warning' | 'error'; timestamp: string; dismissed: boolean }>;
+  eventFilters: Set<MonitorEvent['type']>;
   addEvent: (event: MonitorEvent) => void;
   clearEvents: () => void;
   setConnected: (connected: boolean) => void;
   setCurrentTool: (tool: { name: string; startedAt: string } | null) => void;
+  setMetrics: (metrics: MonitorState['metrics']) => void;
+  addAlert: (alert: MonitorState['alerts'][0]) => void;
+  dismissAlert: (id: string) => void;
+  toggleEventFilter: (type: MonitorEvent['type']) => void;
+  getFilteredEvents: () => MonitorEvent[];
   connectToMonitor: (options?: { roomId?: string; token?: string }) => void;
   disconnectFromMonitor: () => void;
 }
@@ -79,6 +87,9 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
     errorCount: 0,
     activeSessions: 0,
   },
+  metrics: { cpu: 0, memory: 0, latency: 0, throughput: 0 },
+  alerts: [],
+  eventFilters: new Set(),
 
   addEvent: (event) =>
     set((state) => {
@@ -108,6 +119,33 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
   setConnected: (connected) => set({ connected }),
 
   setCurrentTool: (tool) => set({ currentTool: tool }),
+
+  setMetrics: (metrics) => set({ metrics }),
+
+  addAlert: (alert) =>
+    set((state) => ({ alerts: [...state.alerts, alert] })),
+
+  dismissAlert: (id) =>
+    set((state) => ({
+      alerts: state.alerts.map((a) => (a.id === id ? { ...a, dismissed: true } : a)),
+    })),
+
+  toggleEventFilter: (type) =>
+    set((state) => {
+      const next = new Set(state.eventFilters);
+      if (next.has(type)) {
+        next.delete(type);
+      } else {
+        next.add(type);
+      }
+      return { eventFilters: next };
+    }),
+
+  getFilteredEvents: () => {
+    const { events, eventFilters } = get();
+    if (eventFilters.size === 0) return events;
+    return events.filter((e) => eventFilters.has(e.type));
+  },
 
   connectToMonitor: (options) => {
     const { disconnectFromMonitor } = get();

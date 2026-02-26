@@ -61,7 +61,7 @@ export const statusColors = {
 
 // Tier badge shapes
 export const tierBadge: Record<AgentTier, { symbol: string; color: string }> = {
-  0: { symbol: '★', color: '#FFD700' },
+  0: { symbol: '\u2605', color: '#FFD700' },
   1: { symbol: '◆', color: '#C0C0C0' },
   2: { symbol: '●', color: '#CD7F32' },
 };

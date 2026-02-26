@@ -149,11 +149,11 @@ function sessionToMarkdown(session: ChatSession): string {
     });
 
     if (message.role === 'user') {
-      lines.push(`### 👤 Você (${time})`);
+      lines.push(`### [User] Você (${time})`);
     } else if (message.role === 'agent') {
-      lines.push(`### 🤖 ${message.agentName || session.agentName} (${time})`);
+      lines.push(`### [Agent] ${message.agentName || session.agentName} (${time})`);
     } else {
-      lines.push(`### ⚙️ Sistema (${time})`);
+      lines.push(`### [System] Sistema (${time})`);
     }
     lines.push('');
     lines.push(message.content);
@@ -252,7 +252,7 @@ function sessionToHtml(session: ChatSession): string {
       <div style="margin: 12px 0; text-align: ${align};">
         <div style="display: inline-block; max-width: 80%; ${marginSide}; text-align: left;">
           <div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px;">
-            ${isUser ? '👤' : '🤖'} ${sender} · ${time}
+            ${isUser ? '[User]' : '[Agent]'} ${sender} \u00B7 ${time}
           </div>
           <div style="background: ${bgColor}; color: white; padding: 12px 16px; border-radius: 16px; white-space: pre-wrap; line-height: 1.5;">
             ${escapeHtml(message.content)}
@@ -305,7 +305,7 @@ function sessionToHtml(session: ChatSession): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1>🤖 Conversa com ${escapeHtml(session.agentName)}</h1>
+      <h1>Conversa com ${escapeHtml(session.agentName)}</h1>
       <p>Squad: ${escapeHtml(session.squadId)} · ${session.messages.length} mensagens · ${new Date(session.createdAt).toLocaleDateString('pt-BR')}</p>
     </div>
     <div class="messages">

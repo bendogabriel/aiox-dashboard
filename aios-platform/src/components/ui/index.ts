@@ -42,3 +42,4 @@ export { ProgressBar } from './ProgressBar';
 export { Dialog } from './Dialog';
 export { SectionLabel } from './SectionLabel';
 export { ContextMenu } from './ContextMenu';
+export { AioxLogo } from './AioxLogo';

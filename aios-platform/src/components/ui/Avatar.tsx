@@ -30,6 +30,12 @@ const squadGradients: Record<SquadType, string> = {
   design: 'from-purple-400 to-violet-500',
   creator: 'from-green-400 to-emerald-500',
   orchestrator: 'from-cyan-400 to-blue-500',
+  content: 'from-red-400 to-rose-500',
+  development: 'from-blue-400 to-sky-500',
+  engineering: 'from-indigo-400 to-violet-500',
+  analytics: 'from-teal-400 to-emerald-500',
+  marketing: 'from-pink-400 to-rose-500',
+  advisory: 'from-yellow-400 to-amber-500',
   default: 'from-gray-400 to-slate-500',
 };
 

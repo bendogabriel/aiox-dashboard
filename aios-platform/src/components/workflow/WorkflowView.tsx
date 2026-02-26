@@ -7,6 +7,7 @@ import { WorkflowMissionDetail } from './WorkflowMissionDetail';
 import { cn, formatRelativeTime, getSquadTheme } from '../../lib/utils';
 import { useWorkflows, useCreateWorkflow, useExecuteWorkflow, useWorkflowExecutions, useExecuteWorkflowStream, useSmartOrchestration } from '../../hooks/useWorkflows';
 import { workflowsApi } from '../../services/api';
+import { CreateWorkflowModal } from '../settings/WorkflowManager';
 import { WorkflowExecutionLive } from './WorkflowExecutionLive';
 import type { WorkflowMission, WorkflowOperation, AgentTool, TokenUsage } from './types';
 import type { SquadType } from '../../types';
@@ -737,6 +738,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
   const [showOrchestration, setShowOrchestration] = useState(false);
 
   // Execution dialog state
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showExecuteDialog, setShowExecuteDialog] = useState(false);
   const [pendingWorkflowId, setPendingWorkflowId] = useState<string | null>(null);
   const [demandInput, setDemandInput] = useState('');
@@ -763,49 +765,29 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
     setZoom(type === 'complex' ? 0.8 : 1); // Zoom out for complex workflow
   };
 
-  // Create a sample workflow with real agents
-  const handleCreateSampleWorkflow = async () => {
+  // Handle workflow created from modal
+  const handleWorkflowCreated = useCallback(async (data: {
+    name: string;
+    description: string;
+    steps: Array<{
+      id: string;
+      type: string;
+      name: string;
+      handler: string;
+      config: { squadId: string; agentId: string; role: string; message: string };
+      dependsOn?: string[];
+    }>;
+  }) => {
     try {
-      const steps = [
-        {
-          id: 'research',
-          type: 'task' as const,
-          name: 'Pesquisa de Tema',
-          handler: 'agent',
-          config: { squadId: 'copywriting', agentId: 'eugene-schwartz', message: 'Pesquise o tema' }
-        },
-        {
-          id: 'headline',
-          type: 'task' as const,
-          name: 'Criar Headlines',
-          handler: 'agent',
-          config: { squadId: 'copywriting', agentId: 'gary-halbert', message: 'Crie headlines impactantes' },
-          dependsOn: ['research']
-        },
-        {
-          id: 'body-copy',
-          type: 'task' as const,
-          name: 'Escrever Copy',
-          handler: 'agent',
-          config: { squadId: 'copywriting', agentId: 'dan-kennedy', message: 'Escreva o corpo do texto' },
-          dependsOn: ['headline']
-        },
-        {
-          id: 'review',
-          type: 'task' as const,
-          name: 'Revisão Final',
-          handler: 'agent',
-          config: { squadId: 'copywriting', agentId: 'copywriting-chief', message: 'Revise o conteúdo' },
-          dependsOn: ['body-copy']
-        },
-      ];
       const workflow = await createWorkflowMutation.mutateAsync({
-        name: 'Content Pipeline Multi-Agent',
-        description: 'Pipeline de criação de conteúdo com copywriters especializados',
-        stepCount: steps.length,
-        steps,
+        name: data.name,
+        description: data.description,
+        stepCount: data.steps.length,
+        steps: data.steps.map((s) => ({
+          ...s,
+          type: s.type as 'task',
+        })),
       });
-      // Activate workflow immediately after creation
       if (workflow?.id && workflow.status !== 'active') {
         try {
           await workflowsApi.activateWorkflow(workflow.id);
@@ -813,11 +795,12 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
           console.warn('Could not activate workflow:', activateError);
         }
       }
+      setShowCreateModal(false);
       refetchWorkflows();
     } catch (error) {
       console.error('Failed to create workflow:', error);
     }
-  };
+  }, [createWorkflowMutation, refetchWorkflows]);
 
   // Activate a draft workflow
   const handleActivateWorkflow = async (workflowId: string) => {
@@ -1012,7 +995,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                       </svg>
                       Orquestrar
                     </GlassButton>
-                    <GlassButton variant="ghost" size="sm" onClick={handleCreateSampleWorkflow}>
+                    <GlassButton variant="ghost" size="sm" onClick={() => setShowCreateModal(true)}>
                       + Criar Workflow
                     </GlassButton>
                   </div>
@@ -1073,8 +1056,8 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-4xl mb-6">
-                  🔄
+                <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center mb-6">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/60"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" /><path d="M16 16h5v5" /></svg>
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">Nenhum workflow criado</h3>
                 <p className="text-white/60 mb-6 max-w-md">
@@ -1084,10 +1067,9 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                 <div className="flex gap-3">
                   <GlassButton
                     variant="primary"
-                    onClick={handleCreateSampleWorkflow}
-                    disabled={createWorkflowMutation.isPending}
+                    onClick={() => setShowCreateModal(true)}
                   >
-                    {createWorkflowMutation.isPending ? 'Criando...' : '+ Criar Workflow'}
+                    + Criar Workflow
                   </GlassButton>
                   <GlassButton variant="ghost" onClick={() => setActiveTab('demo')}>
                     Ver Demonstração
@@ -1161,8 +1143,8 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-4xl mb-6">
-                  📋
+                <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center mb-6">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/60"><rect x="8" y="2" width="8" height="4" rx="1" ry="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><path d="M12 11h4" /><path d="M12 16h4" /><path d="M8 11h.01" /><path d="M8 16h.01" /></svg>
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">Nenhuma execução</h3>
                 <p className="text-white/60 mb-6 max-w-md">
@@ -1547,6 +1529,17 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
               planSteps: orchestrationState.planSteps,
               phase: orchestrationState.phase,
             } : undefined}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Create Workflow Modal */}
+      <AnimatePresence>
+        {showCreateModal && (
+          <CreateWorkflowModal
+            onClose={() => setShowCreateModal(false)}
+            onSubmit={handleWorkflowCreated}
+            isLoading={createWorkflowMutation.isPending}
           />
         )}
       </AnimatePresence>

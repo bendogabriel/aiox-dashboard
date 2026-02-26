@@ -24,12 +24,12 @@ interface Particle {
 
 // Domain-specific particle characters
 const DOMAIN_CHARS: Record<DomainId, string[]> = {
-  content: ['✦', '♦', '◇'],
+  content: ['\u2726', '\u2666', '\u25C7'],
   sales:   ['$', '◆', '▲'],
   dev:     ['<', '/', '>'],
-  design:  ['●', '◐', '★'],
-  data:    ['0', '1', '⬡'],
-  ops:     ['⚙', '◎', '⬢'],
+  design:  ['\u25CF', '\u25D0', '\u2605'],
+  data:    ['0', '1', '\u2B21'],
+  ops:     ['\u2699', '\u25CE', '\u2B22'],
 };
 
 const PARTICLE_COUNT = 12;

@@ -58,12 +58,14 @@ export function ChatContainer() {
   const {
     activeSession,
     selectedAgent,
+    isAgentLoading,
     isStreaming,
     sendMessage,
     stopStreaming,
     selectAgent,
   } = useChat();
   const { sessions, activeSessionId, setActiveSession, deleteSession } = useChatStore();
+  const { selectedAgentId } = useUIStore();
   const [chatSidebarOpen, setChatSidebarOpen] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -72,6 +74,15 @@ export function ChatContainer() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeSession?.messages]);
+
+  // Show loading while agent data is being fetched (prevents flash of EmptyChat)
+  if (!selectedAgent && isAgentLoading && selectedAgentId) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   if (!selectedAgent) {
     return <EmptyChat />;

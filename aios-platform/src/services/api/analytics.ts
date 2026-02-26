@@ -145,22 +145,22 @@ export const analyticsApi = {
   },
 
   // Get agent performance
-  // GET /api/analytics/agents
+  // GET /api/analytics/performance/agents
   getAgentPerformance: async (params?: {
     period?: TimePeriod;
     squadId?: string;
     limit?: number;
   }): Promise<{ agents: AgentPerformance[] }> => {
-    return apiClient.get<{ agents: AgentPerformance[] }>('/analytics/agents', params);
+    return apiClient.get<{ agents: AgentPerformance[] }>('/analytics/performance/agents', params);
   },
 
   // Get squad performance
-  // GET /api/analytics/squads
+  // GET /api/analytics/performance/squads
   getSquadPerformance: async (params?: {
     period?: TimePeriod;
     limit?: number;
   }): Promise<{ squads: SquadPerformance[] }> => {
-    return apiClient.get<{ squads: SquadPerformance[] }>('/analytics/squads', params);
+    return apiClient.get<{ squads: SquadPerformance[] }>('/analytics/performance/squads', params);
   },
 
   // Get cost report
@@ -176,7 +176,7 @@ export const analyticsApi = {
   },
 
   // Get token usage details
-  // GET /api/analytics/tokens
+  // GET /api/analytics/usage/tokens
   getTokenUsage: async (params?: {
     period?: TimePeriod;
     groupBy?: 'provider' | 'squad' | 'agent';
@@ -184,6 +184,6 @@ export const analyticsApi = {
     total: { input: number; output: number };
     byGroup: Array<{ name: string; input: number; output: number }>;
   }> => {
-    return apiClient.get('/analytics/tokens', params);
+    return apiClient.get('/analytics/usage/tokens', params);
   },
 };

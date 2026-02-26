@@ -1,4 +1,4 @@
-/// <reference types="vitest-axe/extend-expect" />
+/// <reference path="../../../test/vitest-axe.d.ts" />
 /**
  * Accessibility Tests using vitest-axe
  * These tests validate WCAG 2.1 AA compliance for UI components

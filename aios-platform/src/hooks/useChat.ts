@@ -1,16 +1,16 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useChatStore } from '../stores/chatStore';
 import { useUIStore } from '../stores/uiStore';
 import { useToastStore } from '../stores/toastStore';
 import { useFavoritesStore } from './useFavorites';
-import { useAgentById } from './useAgents';
+import { useAgentById, type AgentWithUI } from './useAgents';
 import { useExecuteAgent } from './useExecute';
 import type { AgentSummary, MessageAttachment } from '../types';
 import { getSquadType as getSquadTypeUtil } from '../types';
 
 export function useChat() {
   const { selectedAgentId, selectedSquadId } = useUIStore();
-  const { data: selectedAgent } = useAgentById(selectedAgentId);
+  const { data: fetchedAgent, isLoading: isAgentLoading } = useAgentById(selectedAgentId, selectedSquadId);
 
   const {
     sessions,
@@ -31,6 +31,24 @@ export function useChat() {
   const executeMutation = useExecuteAgent();
 
   const activeSession = getActiveSession();
+
+  // Fallback: if agent not found in API but we have session data,
+  // build a minimal agent from session info (handles renamed/removed agents)
+  const selectedAgent = useMemo<AgentWithUI | null | undefined>(() => {
+    if (fetchedAgent) return fetchedAgent;
+    if (!isAgentLoading && selectedAgentId && activeSession) {
+      return {
+        id: activeSession.agentId,
+        name: activeSession.agentName,
+        squad: activeSession.squadId,
+        squadType: activeSession.squadType || getSquadTypeUtil(activeSession.squadId),
+        tier: 2 as const,
+        role: 'Agent (offline)',
+        status: 'offline' as const,
+      };
+    }
+    return fetchedAgent;
+  }, [fetchedAgent, isAgentLoading, selectedAgentId, activeSession]);
 
   const selectAgent = useCallback(
     (agent: AgentSummary) => {
@@ -124,6 +142,7 @@ export function useChat() {
     activeSession,
     activeSessionId,
     selectedAgent,
+    isAgentLoading,
     isLoading,
     isStreaming,
     error,

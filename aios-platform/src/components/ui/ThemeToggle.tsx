@@ -58,25 +58,28 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
   };
 
   const isMatrix = theme === 'matrix';
-  const effectiveTheme = theme === 'system' ? getSystemTheme() : (theme === 'matrix' ? 'dark' : theme);
+  const isGlass = theme === 'glass';
+  const effectiveTheme = theme === 'system' ? getSystemTheme() : ((theme === 'matrix' || theme === 'glass') ? 'dark' : theme);
   const isDark = effectiveTheme === 'dark';
 
   const handleToggle = () => {
     if (showDropdown) {
       setIsOpen(!isOpen);
     } else {
-      // Cycle: light -> dark -> matrix -> light
+      // Cycle: light -> dark -> glass -> matrix -> light
       if (isMatrix) {
         setTheme('light');
-      } else if (isDark) {
+      } else if (isGlass) {
         setTheme('matrix');
+      } else if (isDark) {
+        setTheme('glass');
       } else {
         setTheme('dark');
       }
     }
   };
 
-  const handleSelectTheme = (newTheme: 'light' | 'dark' | 'system' | 'matrix') => {
+  const handleSelectTheme = (newTheme: 'light' | 'dark' | 'system' | 'matrix' | 'glass') => {
     setTheme(newTheme);
     setIsOpen(false);
   };
@@ -112,6 +115,20 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
                 <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="4 17 10 11 4 5" />
                   <line x1="12" y1="19" x2="20" y2="19" />
+                </svg>
+              </motion.div>
+            ) : isGlass ? (
+              <motion.div
+                key="glass"
+                initial={{ scale: 0, rotate: -180, opacity: 0 }}
+                animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                exit={{ scale: 0, rotate: 180, opacity: 0 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="text-purple-400"
+              >
+                <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                  <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
                 </svg>
               </motion.div>
             ) : theme === 'system' ? (
@@ -155,7 +172,7 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
         <motion.div
           className={cn(
             'absolute inset-0 rounded-xl opacity-20 pointer-events-none',
-            isMatrix ? 'bg-green-500' : isDark ? 'bg-blue-500' : 'bg-amber-500'
+            isMatrix ? 'bg-green-500' : isGlass ? 'bg-purple-500' : isDark ? 'bg-blue-500' : 'bg-amber-500'
           )}
           initial={false}
           animate={{
@@ -191,6 +208,19 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
             <ThemeOption
               icon={
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                  <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
+                </svg>
+              }
+              label="Liquid Glass"
+              description="Escuro vibrante com vidro"
+              isSelected={theme === 'glass'}
+              onClick={() => handleSelectTheme('glass')}
+              accentColor="purple"
+            />
+            <ThemeOption
+              icon={
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="4 17 10 11 4 5" />
                   <line x1="12" y1="19" x2="20" y2="19" />
                 </svg>
@@ -222,13 +252,16 @@ interface ThemeOptionProps {
   description?: string;
   isSelected: boolean;
   onClick: () => void;
-  accentColor?: 'blue' | 'green';
+  accentColor?: 'blue' | 'green' | 'purple';
 }
 
 function ThemeOption({ icon, label, description, isSelected, onClick, accentColor = 'blue' }: ThemeOptionProps) {
-  const colorClasses = accentColor === 'green'
-    ? { bg: 'bg-green-500/15', text: 'text-green-500' }
-    : { bg: 'bg-blue-500/15', text: 'text-blue-500' };
+  const colorMap = {
+    green: { bg: 'bg-green-500/15', text: 'text-green-500' },
+    purple: { bg: 'bg-purple-500/15', text: 'text-purple-500' },
+    blue: { bg: 'bg-blue-500/15', text: 'text-blue-500' },
+  };
+  const colorClasses = colorMap[accentColor];
 
   return (
     <button

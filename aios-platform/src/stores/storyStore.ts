@@ -29,13 +29,16 @@ export interface Story {
   updatedAt: string;
 }
 
-interface StoryState {
+export interface StoryState {
   stories: Story[];
   storyOrder: Record<StoryStatus, string[]>;
   draggedStoryId: string | null;
+  statusFilter: StoryStatus | null;
+  epicFilter: string | null;
+  searchQuery: string;
 }
 
-interface StoryActions {
+export interface StoryActions {
   addStory: (story: Story) => void;
   updateStory: (id: string, updates: Partial<Story>) => void;
   deleteStory: (id: string) => void;
@@ -43,6 +46,10 @@ interface StoryActions {
   reorderStory: (status: StoryStatus, oldIndex: number, newIndex: number) => void;
   setDraggedStory: (storyId: string | null) => void;
   setStories: (stories: Story[]) => void;
+  setStatusFilter: (status: StoryStatus | null) => void;
+  setEpicFilter: (epicId: string | null) => void;
+  setSearchQuery: (query: string) => void;
+  getFilteredStories: () => Story[];
 }
 
 function buildOrderFromStories(stories: Story[]): Record<StoryStatus, string[]> {
@@ -80,11 +87,14 @@ function withGuard(opKey: string, fn: () => void): void {
 
 export const useStoryStore = create<StoryState & StoryActions>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       // State
-      stories: [],
+      stories: [] as Story[],
       storyOrder: buildOrderFromStories([]),
       draggedStoryId: null,
+      statusFilter: null,
+      epicFilter: null,
+      searchQuery: '',
 
       // Actions
       addStory: (story) =>
@@ -167,12 +177,44 @@ export const useStoryStore = create<StoryState & StoryActions>()(
           stories,
           storyOrder: buildOrderFromStories(stories),
         }),
+
+      setStatusFilter: (status) => set({ statusFilter: status }),
+      setEpicFilter: (epicId) => set({ epicFilter: epicId }),
+      setSearchQuery: (query) => set({ searchQuery: query }),
+
+      getFilteredStories: (): Story[] => {
+        const { stories, statusFilter, epicFilter, searchQuery } = get();
+        let filtered: Story[] = stories;
+
+        if (statusFilter) {
+          filtered = filtered.filter((s: Story) => s.status === statusFilter);
+        }
+
+        if (epicFilter) {
+          filtered = filtered.filter((s: Story) => s.epicId === epicFilter);
+        }
+
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase().trim();
+          filtered = filtered.filter(
+            (s: Story) =>
+              s.title.toLowerCase().includes(q) ||
+              s.id.toLowerCase().includes(q) ||
+              (s.description && s.description.toLowerCase().includes(q))
+          );
+        }
+
+        return filtered;
+      },
     }),
     {
       name: 'aios-story-store',
       partialize: (state) => ({
         stories: state.stories,
         storyOrder: state.storyOrder,
+        statusFilter: state.statusFilter,
+        epicFilter: state.epicFilter,
+        searchQuery: state.searchQuery,
       }),
     }
   )

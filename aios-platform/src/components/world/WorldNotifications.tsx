@@ -18,9 +18,9 @@ interface WorldNotificationsProps {
 
 const TYPE_ICONS: Record<WorldNotification['type'], string> = {
   info: 'i',
-  success: '✓',
+  success: '\u2713',
   warning: '!',
-  task: '→',
+  task: '\u2192',
 };
 
 // Demo notifications that cycle for ambience

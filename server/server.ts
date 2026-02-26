@@ -139,7 +139,7 @@ function _formatDuration(seconds: number): string {
 const _server = Bun.serve({
   port: PORT,
 
-  async fetch(req, server) {
+  async fetch(req: Request, server: any) {
     const url = new URL(req.url);
 
     // WebSocket upgrade
@@ -353,7 +353,7 @@ const _server = Bun.serve({
             headers: { ...headers, 'Content-Type': 'application/json' },
           });
         }
-        const commits = output.split('\n').map((line) => {
+        const commits = output.split('\n').map((line: string) => {
           const [fullSha, sha, message, author, date, refs] = line.split('\x1f');
           return {
             sha,
@@ -364,7 +364,7 @@ const _server = Bun.serve({
             refs: refs
               ? refs
                   .split(', ')
-                  .map((r) => r.trim())
+                  .map((r: string) => r.trim())
                   .filter(Boolean)
               : [],
           };
@@ -502,7 +502,7 @@ const _server = Bun.serve({
   },
 
   websocket: {
-    open(ws) {
+    open(ws: any) {
       clients.add(ws as unknown as ServerWebSocket<unknown>);
       console.log(`[WS] Client connected (${clients.size} total)`);
 
@@ -510,11 +510,11 @@ const _server = Bun.serve({
       const recent = getRecentEvents(20);
       ws.send(JSON.stringify({ type: 'init', events: recent }));
     },
-    close(ws) {
+    close(ws: any) {
       clients.delete(ws as unknown as ServerWebSocket<unknown>);
       console.log(`[WS] Client disconnected (${clients.size} remaining)`);
     },
-    message(ws, message) {
+    message(ws: any, message: string | Buffer) {
       // Handle ping/pong
       if (message === 'ping') {
         ws.send('pong');
