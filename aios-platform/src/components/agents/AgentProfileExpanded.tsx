@@ -146,10 +146,11 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                       size="icon"
                       onClick={handleFavoriteToggle}
                       className={cn(favorited && 'text-yellow-500')}
+                      aria-label={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                     >
                       <StarIcon filled={favorited} />
                     </GlassButton>
-                    <GlassButton variant="ghost" size="icon" onClick={onClose}>
+                    <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
                       <CloseIcon />
                     </GlassButton>
                   </div>
@@ -174,7 +175,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
 
               {/* Tabs */}
               <div className="px-6 py-3 border-b border-white/10">
-                <div className="flex gap-1 p-1 glass-subtle rounded-xl">
+                <div className="flex gap-1 p-1 glass-subtle rounded-xl" role="tablist" aria-label="Informacoes do agente">
                   {[
                     { id: 'overview', label: 'Visão Geral' },
                     { id: 'commands', label: `Comandos ${agent.commands?.length ? `(${agent.commands.length})` : ''}` },
@@ -182,6 +183,9 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                   ].map((tab) => (
                     <button
                       key={tab.id}
+                      role="tab"
+                      aria-selected={activeTab === tab.id}
+                      tabIndex={activeTab === tab.id ? 0 : -1}
                       onClick={() => setActiveTab(tab.id as typeof activeTab)}
                       className={cn(
                         'flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all',
@@ -197,7 +201,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
               </div>
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto p-6 glass-scrollbar">
+              <div className="flex-1 overflow-y-auto p-6 glass-scrollbar" tabIndex={0} role="region" aria-label="Conteudo do perfil do agente">
                 <AnimatePresence mode="wait">
                   {activeTab === 'overview' && (
                     <motion.div
@@ -449,6 +453,7 @@ function CommandCard({ command, onCopy, copied }: CommandCardProps) {
                 'p-1 rounded transition-colors',
                 copied ? 'text-green-500' : 'text-tertiary hover:text-primary'
               )}
+              aria-label="Copiar comando"
             >
               {copied ? <CheckIcon /> : <CopyIcon />}
             </button>

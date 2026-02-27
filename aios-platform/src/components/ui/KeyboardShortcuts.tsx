@@ -86,13 +86,14 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
                 <button
                   onClick={onClose}
                   className="p-2 rounded-lg text-tertiary hover:text-primary hover:bg-white/10 transition-colors"
+                  aria-label="Fechar"
                 >
                   <CloseIcon />
                 </button>
               </div>
 
               {/* Content */}
-              <div className="p-4 max-h-[60vh] overflow-y-auto glass-scrollbar">
+              <div className="p-4 max-h-[60vh] overflow-y-auto glass-scrollbar" tabIndex={0}>
                 <div className="space-y-6">
                   {Object.entries(groupedShortcuts).map(([category, categoryShortcuts]) => (
                     <div key={category}>

@@ -164,33 +164,6 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
       roomId: roomId || null,
     });
 
-    // In local mode, load initial data via HTTP
-    if (config.mode === 'local') {
-      Promise.all([
-        fetch(`${MONITOR_URL}/events/recent?limit=50`).then((r) => r.ok ? r.json() : []),
-        fetch(`${MONITOR_URL}/stats`).then((r) => r.ok ? r.json() : null),
-      ])
-        .then(([recentEvents, serverStats]) => {
-          if (Array.isArray(recentEvents) && recentEvents.length > 0) {
-            const mapped = recentEvents.map(mapServerEvent);
-            set({ events: mapped.slice(-50) });
-          }
-          if (serverStats) {
-            set((state) => ({
-              stats: {
-                total: serverStats.total ?? state.stats.total,
-                successRate: serverStats.success_rate ?? state.stats.successRate,
-                errorCount: serverStats.errors ?? state.stats.errorCount,
-                activeSessions: serverStats.sessions_active ?? state.stats.activeSessions,
-              },
-            }));
-          }
-        })
-        .catch((err) => {
-          console.warn('[MonitorStore] Failed to load initial data:', err);
-        });
-    }
-
     // Build WebSocket URL
     let wsUrl: string;
     if (config.mode === 'cloud' && roomId && token) {
@@ -203,12 +176,52 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
       wsUrl = `${monitorWsUrl}/stream`;
     }
 
+    // In local mode, probe the server before opening connections
+    // to avoid noisy ERR_CONNECTION_REFUSED errors in the console.
+    if (config.mode === 'local') {
+      fetch(`${MONITOR_URL}/stats`, { signal: AbortSignal.timeout(3000) })
+        .then((r) => {
+          if (!r.ok) throw new Error('Monitor not available');
+          return r.json();
+        })
+        .then((serverStats) => {
+          if (serverStats) {
+            set((state) => ({
+              stats: {
+                total: serverStats.total ?? state.stats.total,
+                successRate: serverStats.success_rate ?? state.stats.successRate,
+                errorCount: serverStats.errors ?? state.stats.errorCount,
+                activeSessions: serverStats.sessions_active ?? state.stats.activeSessions,
+              },
+            }));
+          }
+          // Server is reachable — fetch events and open WebSocket
+          fetch(`${MONITOR_URL}/events/recent?limit=50`)
+            .then((r) => r.ok ? r.json() : [])
+            .then((recentEvents) => {
+              if (Array.isArray(recentEvents) && recentEvents.length > 0) {
+                const mapped = recentEvents.map(mapServerEvent);
+                set({ events: mapped.slice(-50) });
+              }
+            })
+            .catch(() => { /* already connected, non-critical */ });
+          openWebSocket();
+        })
+        .catch(() => {
+          // Monitor service is not running — skip WebSocket to avoid console noise
+          console.debug('[MonitorStore] Monitor service unavailable at', MONITOR_URL);
+        });
+    } else {
+      // Cloud mode — connect immediately
+      openWebSocket();
+    }
+
     // Open WebSocket
     function openWebSocket() {
       try {
         ws = new WebSocket(wsUrl);
       } catch {
-        console.warn('[MonitorStore] Failed to create WebSocket');
+        console.debug('[MonitorStore] Failed to create WebSocket');
         return;
       }
 
@@ -270,8 +283,6 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
       reconnectAttempts++;
       reconnectTimer = setTimeout(openWebSocket, delay);
     }
-
-    openWebSocket();
   },
 
   disconnectFromMonitor: () => {

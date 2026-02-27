@@ -163,8 +163,9 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
           className="h-8 w-8 flex items-center justify-center rounded-lg glass-subtle hover:bg-white/10 transition-colors"
           whileHover={{ x: -2 }}
           whileTap={{ scale: 0.9 }}
+          aria-label="Voltar"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </motion.button>
@@ -297,7 +298,11 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
             <motion.div
               className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer pb-1"
               onClick={onBack}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onBack?.(); } }}
               whileHover={{ y: 2 }}
+              role="button"
+              tabIndex={0}
+              aria-label="Sair da sala"
             >
               <svg width="24" height="20" viewBox="0 0 24 20" style={{ imageRendering: 'pixelated' }}>
                 <rect x="4" y="0" width="16" height="18" fill={domainCfg.tileBorder} rx="2" />

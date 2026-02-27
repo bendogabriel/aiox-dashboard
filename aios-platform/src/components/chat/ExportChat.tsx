@@ -436,6 +436,7 @@ export function ExportChatModal({ isOpen, onClose, session }: ExportChatModalPro
                 <button
                   onClick={onClose}
                   className="p-2 rounded-lg text-tertiary hover:text-primary hover:bg-white/10 transition-colors"
+                  aria-label="Fechar"
                 >
                   <CloseIcon />
                 </button>
@@ -532,6 +533,7 @@ export function ExportChatButton({ onClick, disabled }: ExportChatButtonProps) {
       onClick={onClick}
       disabled={disabled}
       title="Exportar conversa"
+      aria-label="Exportar conversa"
       className="h-8 w-8"
     >
       <ExportIcon />

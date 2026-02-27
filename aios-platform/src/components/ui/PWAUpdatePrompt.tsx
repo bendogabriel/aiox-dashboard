@@ -170,6 +170,7 @@ export function PWAUpdatePrompt() {
                     <button
                       onClick={handleDismissInstall}
                       className="p-1 rounded text-tertiary hover:text-primary hover:bg-white/10 transition-colors"
+                      aria-label="Fechar"
                     >
                       <CloseIcon />
                     </button>

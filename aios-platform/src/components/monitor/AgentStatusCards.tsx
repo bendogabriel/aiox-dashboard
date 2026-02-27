@@ -22,7 +22,7 @@ export default function AgentStatusCards() {
   }
 
   const agentCards = (agents || []).map((a) => ({
-    id: a.id,
+    id: `${a.squad}-${a.id}`,
     name: `@${a.id} (${a.name})`,
     status: 'idle' as StatusType,
     task: '-',

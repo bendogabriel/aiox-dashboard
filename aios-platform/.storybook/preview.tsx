@@ -1,6 +1,72 @@
+import { useEffect } from 'react';
 import type { Preview } from '@storybook/react-vite';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { installApiMocks } from './api-mocks';
 import '../src/index.css';
 import '../src/styles/liquid-glass.css';
+import '../src/styles/light-mode-compat.css';
+
+// Intercept /api/* fetch calls with mock data
+installApiMocks();
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
+
+// Override liquid-glass.css body overflow:hidden so Storybook docs pages can scroll
+const styleOverride = document.createElement('style');
+styleOverride.textContent = `
+  body { overflow: auto !important; }
+  .sb-show-main { overflow: auto !important; }
+  .docs-story > div { overflow: visible !important; }
+`;
+document.head.appendChild(styleOverride);
+
+/**
+ * Theme activation map:
+ *   light  → no .dark, no data-theme
+ *   dark   → .dark on <html>, no data-theme
+ *   glass  → .dark on <html>, data-theme="glass" on <html>
+ *   matrix → .dark on <html>, data-theme="matrix" on <html>
+ */
+function ThemeWrapper({ theme, children }: { theme: string; children: React.ReactNode }) {
+  useEffect(() => {
+    const html = document.documentElement;
+
+    // Dark class: all themes except light need it
+    const needsDark = theme !== 'light';
+    html.classList.toggle('dark', needsDark);
+
+    // data-theme attribute: only glass and matrix
+    if (theme === 'glass' || theme === 'matrix') {
+      html.setAttribute('data-theme', theme);
+    } else {
+      html.removeAttribute('data-theme');
+    }
+
+    return () => {
+      html.classList.remove('dark');
+      html.removeAttribute('data-theme');
+    };
+  }, [theme]);
+
+  return (
+    <div
+      className={theme !== 'light' ? 'dark' : ''}
+      style={{ position: 'relative', minHeight: 200 }}
+    >
+      {/* Real app-background from liquid-glass.css — provides gradient + blobs + noise */}
+      <div className="app-background" style={{ position: 'absolute', inset: 0, zIndex: 0 }} />
+      {/* Content above background */}
+      <div style={{ position: 'relative', zIndex: 1, padding: 24 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 const preview: Preview = {
   parameters: {
@@ -10,41 +76,33 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
-    backgrounds: {
-      default: 'light',
-      values: [
-        {
-          name: 'light',
-          value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        },
-        {
-          name: 'dark',
-          value: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-        },
-        {
-          name: 'white',
-          value: '#ffffff',
-        },
-        {
-          name: 'gray',
-          value: '#f5f5f7',
-        },
-      ],
-    },
+    backgrounds: { disable: true },
     a11y: {
-      test: 'todo',
+      test: 'error',
+      config: {
+        rules: [
+          // color-contrast disabled in CI — requires design system-level token audit
+          // (glass morphism theme uses low-opacity overlays that axe cannot compute)
+          // TODO: run `*contrast-matrix` to fix token palette and re-enable
+          { id: 'color-contrast', enabled: false },
+          // scrollable-region-focusable on <body> is a Storybook iframe issue, not our components
+          { id: 'scrollable-region-focusable', selector: ':not(body)' },
+        ],
+      },
     },
   },
   globalTypes: {
     theme: {
       name: 'Theme',
       description: 'Global theme for components',
-      defaultValue: 'light',
+      defaultValue: 'dark',
       toolbar: {
         icon: 'circlehollow',
         items: [
           { value: 'light', icon: 'sun', title: 'Light' },
           { value: 'dark', icon: 'moon', title: 'Dark' },
+          { value: 'glass', icon: 'mirror', title: 'Glass' },
+          { value: 'matrix', icon: 'cpu', title: 'Matrix' },
         ],
         showName: true,
         dynamicTitle: true,
@@ -53,12 +111,13 @@ const preview: Preview = {
   },
   decorators: [
     (Story, context) => {
-      const theme = context.globals.theme;
-      document.documentElement.classList.toggle('dark', theme === 'dark');
+      const theme = context.globals.theme ?? 'dark';
       return (
-        <div className={`p-6 min-h-[200px] ${theme === 'dark' ? 'dark' : ''}`}>
-          <Story />
-        </div>
+        <QueryClientProvider client={queryClient}>
+          <ThemeWrapper theme={theme}>
+            <Story />
+          </ThemeWrapper>
+        </QueryClientProvider>
       );
     },
   ],

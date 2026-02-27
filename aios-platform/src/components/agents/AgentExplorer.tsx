@@ -168,7 +168,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                     </p>
                   </div>
                 </div>
-                <GlassButton variant="ghost" size="icon" onClick={onClose}>
+                <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
                   <CloseIcon />
                 </GlassButton>
               </div>
@@ -184,6 +184,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50"
+                  aria-label="Buscar agents"
                 />
               </div>
 
@@ -223,6 +224,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                   value={selectedSquadId}
                   onChange={(e) => setSelectedSquadId(e.target.value)}
                   className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500/50"
+                  aria-label="Filtrar por squad"
                 >
                   <option value="all">Todos os Squads</option>
                   {squads?.map((squad) => (
@@ -342,16 +344,16 @@ function AgentSection({ tier, agents, selectedId, onSelect }: AgentSectionProps)
         )}>
           {tier}
         </div>
-        <h3 className={cn('text-sm font-semibold', getTierTheme(tier).text)}>
+        <h2 className={cn('text-sm font-semibold', getTierTheme(tier).text)}>
           {getTierTheme(tier).label}s
-        </h3>
+        </h2>
         <Badge variant="count" size="sm">{agents.length}</Badge>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         {agents.map((agent, index) => (
           <motion.div
-            key={agent.id}
+            key={`${agent.squad}-${agent.id}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.03 }}
@@ -440,7 +442,7 @@ function AgentDetailPanel({ squadId, agentId, onClose, onStartChat }: AgentDetai
               </div>
             </div>
           </div>
-          <GlassButton variant="ghost" size="icon" onClick={onClose}>
+          <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
             <CloseIcon />
           </GlassButton>
         </div>

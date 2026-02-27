@@ -182,7 +182,7 @@ export function SettingsPage() {
   return (
     <div className="h-full flex overflow-hidden">
       {/* Section Navigation */}
-      <nav className="w-52 flex-shrink-0 border-r border-white/10 pr-3 mr-4 overflow-y-auto glass-scrollbar">
+      <nav aria-label="Secoes de configuracao" className="w-52 flex-shrink-0 border-r border-white/10 pr-3 mr-4 overflow-y-auto glass-scrollbar">
         <ul className="space-y-1">
           {settingsSections.map((section) => {
             const isActive = settingsSection === section.id;
@@ -312,6 +312,7 @@ function DashboardSettings() {
                 value={agent.color}
                 onChange={(e) => setAgentColor(agent.id, e.target.value)}
                 className="h-8 w-8 rounded-lg cursor-pointer border-0 bg-transparent"
+                aria-label={`Cor do agente ${agent.label}`}
               />
               <div>
                 <p className="text-sm text-primary font-medium">{agent.label}</p>
@@ -395,7 +396,7 @@ function ProfileSettings() {
             label="Idioma"
             description="Idioma da interface"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm">
+              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar idioma">
                 <option value="pt-BR">Português (BR)</option>
                 <option value="en">English</option>
                 <option value="es">Español</option>
@@ -407,7 +408,7 @@ function ProfileSettings() {
             label="Fuso horário"
             description="Para exibição de datas e horários"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm">
+              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar fuso horário">
                 <option value="America/Sao_Paulo">São Paulo (GMT-3)</option>
                 <option value="America/New_York">New York (GMT-5)</option>
                 <option value="Europe/London">London (GMT+0)</option>
@@ -739,6 +740,7 @@ function APISettings() {
                       onClick={() => deleteKey(key.id)}
                       className="text-red-400 hover:bg-red-500/10"
                       title="Remover"
+                      aria-label="Remover"
                     >
                       <TrashIcon />
                     </GlassButton>
@@ -774,6 +776,7 @@ function APISettings() {
                         <button
                           onClick={() => toggleKeyVisibility(key.id)}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary hover:text-primary"
+                          aria-label={isVisible ? 'Ocultar chave' : 'Mostrar chave'}
                         >
                           {isVisible ? <EyeOffIcon /> : <EyeIcon />}
                         </button>
@@ -800,7 +803,7 @@ function APISettings() {
             label="Modelo padrão"
             description="Modelo usado quando não especificado"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm">
+              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar modelo padrão">
                 <option value="claude-sonnet">Claude Sonnet 4</option>
                 <option value="claude-opus">Claude Opus 4</option>
                 <option value="gpt-4o">GPT-4o</option>
@@ -818,6 +821,7 @@ function APISettings() {
                 max="100"
                 defaultValue="70"
                 className="w-24 accent-blue-500"
+                aria-label="Temperatura"
               />
             }
           />
@@ -826,7 +830,7 @@ function APISettings() {
             label="Max tokens"
             description="Limite de tokens por resposta"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm">
+              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar max tokens">
                 <option value="2048">2048</option>
                 <option value="4096">4096</option>
                 <option value="8192">8192</option>
@@ -912,7 +916,7 @@ function AddAPIKeyModal({
         <GlassCard className="flex flex-col max-h-[80vh] !bg-gray-900/95 border border-white/10 shadow-2xl">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-primary">Adicionar API Key</h2>
-            <GlassButton variant="ghost" size="icon" onClick={onClose}>
+            <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
@@ -1131,7 +1135,7 @@ function AppearanceSettings() {
             label="Densidade"
             description="Espaçamento entre elementos"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm">
+              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar densidade">
                 <option value="comfortable">Confortável</option>
                 <option value="compact">Compacto</option>
               </select>
@@ -1148,7 +1152,7 @@ function AppearanceSettings() {
             label="Tamanho da fonte"
             description="Tamanho base do texto"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm">
+              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar tamanho da fonte">
                 <option value="sm">Pequeno</option>
                 <option value="md">Médio</option>
                 <option value="lg">Grande</option>
@@ -1160,7 +1164,7 @@ function AppearanceSettings() {
             label="Fonte do código"
             description="Fonte para blocos de código"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm">
+              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar fonte do código">
                 <option value="fira">Fira Code</option>
                 <option value="jetbrains">JetBrains Mono</option>
                 <option value="source">Source Code Pro</option>
@@ -1418,6 +1422,9 @@ function SettingToggle({ label, description, defaultChecked, onChange }: {
           'w-11 h-6 rounded-full transition-colors relative',
           checked ? 'bg-blue-500' : 'bg-white/20'
         )}
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
       >
         <div
           className={cn(

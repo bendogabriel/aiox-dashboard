@@ -149,7 +149,7 @@ export const AllDomains: Story = {
           status="online"
           x={20 + i * 90}
           y={40}
-          onClick={fn(`click-${domain}`)}
+          onClick={fn()}
         />
       ))}
     </div>

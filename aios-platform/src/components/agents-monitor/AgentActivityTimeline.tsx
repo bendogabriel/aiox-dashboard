@@ -55,7 +55,7 @@ export function AgentActivityTimeline({
   }
 
   return (
-    <div ref={scrollRef} className="max-h-80 overflow-y-auto space-y-1">
+    <div ref={scrollRef} className="max-h-80 overflow-y-auto space-y-1" tabIndex={0} role="region" aria-label="Linha do tempo de atividades dos agentes">
       {visible.map((entry, i) => (
         <motion.div
           key={entry.id}

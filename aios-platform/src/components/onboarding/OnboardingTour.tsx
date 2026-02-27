@@ -270,6 +270,7 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
         <button
           onClick={handleSkip}
           className="absolute top-4 right-4 p-2 rounded-full glass-subtle text-tertiary hover:text-primary transition-colors"
+          aria-label="Fechar"
         >
           <CloseIcon />
         </button>

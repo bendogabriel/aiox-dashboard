@@ -86,7 +86,7 @@ const maxWeekly = Math.max(...weeklyActivity.map((d) => d.count));
 
 export default function InsightsView() {
   return (
-    <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6">
+    <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6" tabIndex={0} role="region" aria-label="Painel de insights">
       {/* Header */}
       <div className="flex items-center gap-3">
         <BarChart3 size={22} className="text-blue-400" />

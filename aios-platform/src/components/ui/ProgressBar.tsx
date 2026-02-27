@@ -60,6 +60,7 @@ export function ProgressBar({
           sizeClasses[size],
         )}
         role="progressbar"
+        aria-label={label || `${clampedValue}% complete`}
         aria-valuenow={clampedValue}
         aria-valuemin={0}
         aria-valuemax={100}

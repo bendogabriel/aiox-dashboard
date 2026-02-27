@@ -38,7 +38,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const showActivityPanel = activityPanelOpen && currentView !== 'settings';
 
   return (
-    <div className="min-h-screen relative isolate" role="application" aria-label="AIOS Core">
+    <div className="min-h-screen relative isolate">
       {/* Skip Links for Accessibility */}
       <SkipLinks />
 
@@ -79,7 +79,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           <ProjectTabs />
 
           {/* Main Content */}
-          <main id="main-content" className="flex-1 overflow-hidden p-4 pb-20 md:p-6 md:pb-6" role="main" aria-label="Conteúdo principal">
+          <main id="main-content" className="flex-1 overflow-hidden p-4 pb-20 md:p-6 md:pb-6" aria-label="Conteúdo principal">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

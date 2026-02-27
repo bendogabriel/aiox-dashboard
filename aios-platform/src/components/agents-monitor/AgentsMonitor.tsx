@@ -127,7 +127,7 @@ export default function AgentsMonitor() {
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               {activeAgents.map((agent, i) => (
                 <motion.div
-                  key={agent.id}
+                  key={`${agent.squad}-${agent.id}`}
                   layout
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -166,7 +166,7 @@ export default function AgentsMonitor() {
           <div className="flex flex-wrap gap-2">
             {standbyAgents.map((agent) => (
               <motion.button
-                key={agent.id}
+                key={`${agent.squad}-${agent.id}`}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 onClick={() => handleCardClick(agent.id)}

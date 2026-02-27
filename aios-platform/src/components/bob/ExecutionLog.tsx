@@ -30,6 +30,9 @@ export default function ExecutionLog({ entries }: { entries: ExecutionLogEntry[]
     <div
       ref={scrollRef}
       className="max-h-64 overflow-y-auto space-y-1 rounded-xl glass-subtle p-3"
+      tabIndex={0}
+      role="region"
+      aria-label="Log de execucao"
     >
       {entries.map((entry) => {
         const badge = typeBadge[entry.type];

@@ -149,6 +149,7 @@ export function AgentInteractionPanel({
             size="icon"
             onClick={onClose}
             className="h-7 w-7"
+            aria-label="Fechar"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -271,6 +272,7 @@ export function AgentInteractionPanel({
                     disabled={isStreaming}
                     className="flex-1 h-8 px-2.5 rounded-lg text-[11px] text-primary placeholder:text-tertiary glass-subtle focus:outline-none focus:ring-1 transition-all bg-transparent"
                     style={{ focusRingColor: domainCfg.tileColor } as React.CSSProperties}
+                    aria-label={`Mensagem para ${agent?.name || 'agent'}`}
                   />
                   <button
                     onClick={handleSend}
@@ -286,6 +288,7 @@ export function AgentInteractionPanel({
                         ? { backgroundColor: domainCfg.tileColor }
                         : undefined
                     }
+                    aria-label="Enviar mensagem"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <line x1="22" y1="2" x2="11" y2="13" />

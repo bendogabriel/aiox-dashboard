@@ -135,6 +135,9 @@ export function TerminalOutput({ lines, isActive }: TerminalOutputProps) {
         ref={containerRef}
         onScroll={handleScroll}
         className="h-full bg-black/80 p-3 font-mono text-xs leading-relaxed overflow-y-auto"
+        tabIndex={0}
+        role="region"
+        aria-label="Saida do terminal"
       >
         {lines.map((line, i) => (
           <TerminalLine key={i} line={line} />

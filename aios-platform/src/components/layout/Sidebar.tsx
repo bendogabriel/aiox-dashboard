@@ -59,7 +59,7 @@ function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
   const { currentView, setCurrentView } = useUIStore();
 
   return (
-    <nav className="flex-1 p-2 overflow-y-auto glass-scrollbar">
+    <nav className="flex-1 p-2 overflow-y-auto glass-scrollbar" aria-label="Navegacao principal">
       <div className="space-y-0.5">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -125,6 +125,7 @@ function DesktopSidebar() {
 
   return (
     <aside
+      aria-label="Barra lateral principal"
       className={cn(
         'hidden md:flex h-screen glass-panel border-r border-glass-border flex-col transition-all duration-300 ease-out',
         sidebarCollapsed ? 'w-[72px]' : 'w-[220px]'
@@ -242,6 +243,7 @@ function MobileSidebar() {
 
           {/* Drawer */}
           <motion.aside
+            aria-label="Menu lateral mobile"
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}

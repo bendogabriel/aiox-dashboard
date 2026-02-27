@@ -220,9 +220,9 @@ function ChatConversationPanel({
               : 'Nova conversa';
 
             return (
-              <button
+              <div
                 key={session.id}
-                onClick={() => onSelectSession(session.id)}
+                role="presentation"
                 onMouseEnter={() => setHoveredId(session.id)}
                 onMouseLeave={() => setHoveredId(null)}
                 className={cn(
@@ -232,7 +232,18 @@ function ChatConversationPanel({
                     : 'hover:bg-white/5 border border-transparent'
                 )}
               >
-                <div className="flex items-center gap-2.5">
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => onSelectSession(session.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onSelectSession(session.id);
+                    }
+                  }}
+                  className="flex items-center gap-2.5 cursor-pointer"
+                >
                   <Avatar
                     name={session.agentName}
                     size="sm"
@@ -254,7 +265,7 @@ function ChatConversationPanel({
                       {session.messages.length}
                     </span>
                   )}
-                </div>
+                </span>
 
                 {/* Delete button on hover */}
                 {isHovered && !isActive && (
@@ -265,6 +276,7 @@ function ChatConversationPanel({
                     }}
                     className="absolute top-1.5 right-1.5 p-1 rounded-md hover:bg-red-500/20 text-tertiary hover:text-red-400 transition-colors"
                     title="Excluir conversa"
+                    aria-label={`Excluir conversa com ${session.agentName}`}
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <line x1="18" y1="6" x2="6" y2="18" />
@@ -272,7 +284,7 @@ function ChatConversationPanel({
                     </svg>
                   </button>
                 )}
-              </button>
+              </div>
             );
           })}
         </div>
@@ -292,6 +304,7 @@ function ChatConversationPanel({
             onClick={onNewChat}
             className="h-7 w-7"
             title="Nova conversa"
+            aria-label="Nova conversa"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -304,6 +317,7 @@ function ChatConversationPanel({
             onClick={onToggle}
             className="h-7 w-7"
             title="Fechar painel"
+            aria-label="Fechar painel"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -398,6 +412,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
             onClick={onToggleSidebar}
             className="text-tertiary hover:text-primary transition-colors p-1.5 -ml-1.5 rounded-lg hover:bg-white/10"
             title="Abrir conversas"
+            aria-label="Abrir conversas"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -410,6 +425,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
           onClick={handleBack}
           className="text-tertiary hover:text-primary transition-colors p-1.5 rounded-lg hover:bg-white/10"
           title="Voltar para agents"
+          aria-label="Voltar"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5" />
@@ -444,6 +460,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
             size="icon"
             onClick={() => setShowCommands(true)}
             title="Comandos disponíveis"
+            aria-label="Comandos disponíveis"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="4 17 10 11 4 5" />
@@ -458,6 +475,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
               size="icon"
               onClick={() => setShowSearch(!showSearch)}
               className={cn(showSearch && 'bg-blue-500/10 text-blue-500')}
+              aria-label="Buscar"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
@@ -545,6 +563,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
               size="icon"
               onClick={() => setShowMenu(!showMenu)}
               className={cn(showMenu && 'bg-blue-500/10 text-blue-500')}
+              aria-label="Menu"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="1" />
@@ -758,7 +777,7 @@ function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
                   <h2 className="text-lg font-semibold text-primary">Ações & Comandos</h2>
                   <p className="text-xs text-tertiary">{agent.name} • {agent.squad}</p>
                 </div>
-                <GlassButton variant="ghost" size="icon" onClick={onClose}>
+                <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
@@ -767,7 +786,7 @@ function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
               </div>
 
               {/* Tabs - Alphabetical order */}
-              <div className="flex border-b border-white/10 overflow-x-auto">
+              <div className="flex border-b border-white/10 overflow-x-auto" role="tablist" aria-label="Abas de informacoes do agente">
                 {/* Ações */}
                 <TabButton
                   active={activeTab === 'actions'}
@@ -972,6 +991,9 @@ function TabButton({
 }) {
   return (
     <button
+      role="tab"
+      aria-selected={active}
+      tabIndex={active ? 0 : -1}
       onClick={onClick}
       className={cn(
         'flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors',

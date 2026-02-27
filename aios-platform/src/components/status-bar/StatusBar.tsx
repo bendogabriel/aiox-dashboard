@@ -47,7 +47,7 @@ export function StatusBar() {
         'glass-subtle border-t border-glass-border',
         'text-[10px] select-none'
       )}
-      role="status"
+      role="contentinfo"
       aria-label="Status bar"
     >
       {/* Left side */}

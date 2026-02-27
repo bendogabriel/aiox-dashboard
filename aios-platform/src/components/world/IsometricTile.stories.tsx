@@ -113,7 +113,7 @@ export const GridOfTiles: Story = {
               color={colors[(row * 3 + col) % colors.length]}
               offsetX={200}
               offsetY={40}
-              onClick={fn(`click-${col}-${row}`)}
+              onClick={fn()}
             />
           ))
         )}

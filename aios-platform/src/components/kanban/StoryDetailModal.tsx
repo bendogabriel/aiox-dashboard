@@ -314,18 +314,18 @@ function ReadView({
       {/* Description */}
       {story.description && (
         <div>
-          <h4 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1">
+          <h3 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1">
             Description
-          </h4>
+          </h3>
           <p className="text-sm text-primary leading-relaxed">{story.description}</p>
         </div>
       )}
 
       {/* Progress */}
       <div>
-        <h4 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-2">
+        <h3 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-2">
           Progress
-        </h4>
+        </h3>
         <ProgressBar
           value={story.progress}
           size="md"
@@ -344,9 +344,9 @@ function ReadView({
       {/* Acceptance Criteria */}
       {story.acceptanceCriteria && story.acceptanceCriteria.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-2">
+          <h3 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-2">
             Acceptance Criteria
-          </h4>
+          </h3>
           <ul className="flex flex-col gap-1.5">
             {story.acceptanceCriteria.map((ac, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-primary">
@@ -361,9 +361,9 @@ function ReadView({
       {/* Technical Notes */}
       {story.technicalNotes && (
         <div>
-          <h4 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1">
+          <h3 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1">
             Technical Notes
-          </h4>
+          </h3>
           <p className="text-sm text-secondary leading-relaxed font-mono bg-white/5 p-3 rounded-lg">
             {story.technicalNotes}
           </p>
@@ -471,6 +471,7 @@ function EditView({
             className={selectClasses}
             value={editStatus}
             onChange={(e) => setEditStatus(e.target.value as StoryStatus)}
+            aria-label="Selecionar status"
           >
             {statusOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -486,6 +487,7 @@ function EditView({
             className={selectClasses}
             value={editPriority}
             onChange={(e) => setEditPriority(e.target.value as Story['priority'])}
+            aria-label="Selecionar prioridade"
           >
             {priorityOptions.map((p) => (
               <option key={p} value={p} className="capitalize">
@@ -503,6 +505,7 @@ function EditView({
             className={selectClasses}
             value={editComplexity}
             onChange={(e) => setEditComplexity(e.target.value as Story['complexity'])}
+            aria-label="Selecionar complexidade"
           >
             {complexityOptions.map((c) => (
               <option key={c} value={c}>
@@ -518,6 +521,7 @@ function EditView({
             className={selectClasses}
             value={editCategory}
             onChange={(e) => setEditCategory(e.target.value as Story['category'])}
+            aria-label="Selecionar categoria"
           >
             {categoryOptionsList.map((c) => (
               <option key={c} value={c}>
@@ -534,6 +538,7 @@ function EditView({
           className={selectClasses}
           value={editAgent}
           onChange={(e) => setEditAgent(e.target.value)}
+          aria-label="Selecionar agente"
         >
           {agentOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>

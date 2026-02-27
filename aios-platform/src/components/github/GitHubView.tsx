@@ -62,7 +62,9 @@ export default function GitHubView() {
 
   const checkGitHubStatus = useCallback(async () => {
     try {
-      const res = await fetch(`${MONITOR_URL}/github/status`);
+      const res = await fetch(`${MONITOR_URL}/github/status`, {
+        signal: AbortSignal.timeout(3000),
+      });
       if (res.ok) {
         const data = await res.json();
         setIsConnected(data.connected);
@@ -185,10 +187,13 @@ export default function GitHubView() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex gap-1 p-1 glass-subtle rounded-xl mb-4 flex-shrink-0 overflow-x-auto">
+      <div className="flex gap-1 p-1 glass-subtle rounded-xl mb-4 flex-shrink-0 overflow-x-auto" role="tablist" aria-label="Abas do GitHub">
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            tabIndex={activeTab === tab.id ? 0 : -1}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
               'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap',

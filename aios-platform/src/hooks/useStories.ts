@@ -229,12 +229,13 @@ export function useStories() {
         const res = await fetch('/api/stories');
         if (!res.ok) throw new Error(`Failed to fetch stories: ${res.status}`);
         return res.json();
-      } catch (err) {
-        console.warn('[useStories] API unavailable, using fallback data:', err);
+      } catch {
+        // API unavailable — silently fall back to demo data
         return FALLBACK_STORIES;
       }
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: false, // Don't retry — fallback data is returned on failure
   });
 
   // Sync fetched data into Zustand store

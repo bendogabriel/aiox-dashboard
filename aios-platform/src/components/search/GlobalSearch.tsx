@@ -189,6 +189,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                   onKeyDown={handleKeyDown}
                   placeholder="Buscar agents por nome, skill ou squad..."
                   className="flex-1 bg-transparent text-primary placeholder:text-tertiary outline-none text-sm"
+                  aria-label="Busca global"
                 />
                 <div className="flex items-center gap-1 text-[10px] text-tertiary">
                   <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono">esc</kbd>
@@ -200,6 +201,9 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
               <div
                 ref={resultsRef}
                 className="max-h-[400px] overflow-y-auto scrollbar-thin"
+                tabIndex={0}
+                role="region"
+                aria-label="Resultados da busca"
               >
                 {query.length < 2 ? (
                   <div className="px-4 py-8 text-center text-sm text-tertiary">

@@ -175,9 +175,9 @@ function StoryCardContent({
       </div>
 
       {/* Title */}
-      <h4 className="text-sm font-medium text-primary leading-tight line-clamp-2">
+      <h2 className="text-sm font-medium text-primary leading-tight line-clamp-2">
         {story.title}
-      </h4>
+      </h2>
 
       {/* Description */}
       {story.description && (

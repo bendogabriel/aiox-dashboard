@@ -180,6 +180,7 @@ export function StoryCreateModal({
               className={selectClasses}
               value={status}
               onChange={(e) => setStatus(e.target.value as StoryStatus)}
+              aria-label="Selecionar status"
             >
               {statusOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -195,6 +196,7 @@ export function StoryCreateModal({
               className={selectClasses}
               value={priority}
               onChange={(e) => setPriority(e.target.value as Story['priority'])}
+              aria-label="Selecionar prioridade"
             >
               {priorityOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -213,6 +215,7 @@ export function StoryCreateModal({
               className={selectClasses}
               value={complexity}
               onChange={(e) => setComplexity(e.target.value as Story['complexity'])}
+              aria-label="Selecionar complexidade"
             >
               {complexityOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -228,6 +231,7 @@ export function StoryCreateModal({
               className={selectClasses}
               value={category}
               onChange={(e) => setCategory(e.target.value as Story['category'])}
+              aria-label="Selecionar categoria"
             >
               {categoryOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -245,6 +249,7 @@ export function StoryCreateModal({
             className={selectClasses}
             value={assignedAgent}
             onChange={(e) => setAssignedAgent(e.target.value)}
+            aria-label="Selecionar agente"
           >
             {agentOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>

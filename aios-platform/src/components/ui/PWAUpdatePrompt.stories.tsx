@@ -84,7 +84,7 @@ export const InstallPromptMockup: Story = {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-semibold text-primary">Instalar AIOS Core</h4>
-                <button className="p-1 rounded text-tertiary hover:text-primary">
+                <button className="p-1 rounded text-tertiary hover:text-primary" aria-label="Fechar">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />

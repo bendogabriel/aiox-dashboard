@@ -481,20 +481,22 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
             <div className="flex items-center gap-1 bg-white/5 rounded-lg p-1 border border-white/10">
               <button
                 onClick={() => setZoom(z => Math.max(0.5, z - 0.1))}
-                className="p-1.5 rounded hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+                className="p-1.5 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                aria-label="Diminuir zoom"
               >
                 <ZoomOutIcon />
               </button>
-              <span className="text-xs text-white/50 w-10 text-center">{Math.round(zoom * 100)}%</span>
+              <span className="text-xs text-white/60 w-10 text-center">{Math.round(zoom * 100)}%</span>
               <button
                 onClick={() => setZoom(z => Math.min(1.5, z + 0.1))}
-                className="p-1.5 rounded hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+                className="p-1.5 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                aria-label="Aumentar zoom"
               >
                 <ZoomInIcon />
               </button>
             </div>
 
-            <GlassButton variant="ghost" size="icon" className="h-9 w-9" onClick={onClose}>
+            <GlassButton variant="ghost" size="icon" className="h-9 w-9" onClick={onClose} aria-label="Fechar workflow">
               <CloseIcon />
             </GlassButton>
           </div>
@@ -536,9 +538,9 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                 <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                   <RocketIcon />
                 </div>
-                <h3 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+                <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Execução Ativa
-                </h3>
+                </h2>
                 <Badge variant="count" size="sm" className="ml-auto">
                   #{state.executionId?.slice(-6) || '...'}
                 </Badge>
@@ -584,7 +586,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                   <p className="text-xs text-white/70 leading-relaxed">{orchestrationPlan.analysis}</p>
                   {orchestrationPlan.expectedOutputs.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-white/10">
-                      <p className="text-[10px] text-white/40 mb-1">Outputs esperados:</p>
+                      <p className="text-[10px] text-white/60 mb-1">Outputs esperados:</p>
                       <div className="flex flex-wrap gap-1">
                         {orchestrationPlan.expectedOutputs.map((output, i) => (
                           <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300">
@@ -619,7 +621,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                       style={{ boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)' }}
                     />
                   </div>
-                  <p className="text-[10px] text-white/40">
+                  <p className="text-[10px] text-white/60">
                     {completedSteps} de {totalSteps} steps concluídos
                     {state.startedAt && ` · ${formatDuration(state.startedAt, state.completedAt || undefined)}`}
                   </p>
@@ -633,17 +635,17 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                 <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
                   <ActivityIcon />
                 </div>
-                <h3 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+                <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
                   Log de Steps
-                </h3>
+                </h2>
                 <Badge variant="count" size="sm" className="ml-auto">
                   {totalSteps}
                 </Badge>
               </div>
 
-              <div className="flex-1 overflow-y-auto glass-scrollbar px-4 pb-4">
+              <div className="flex-1 overflow-y-auto glass-scrollbar px-4 pb-4" tabIndex={0} role="region" aria-label="Passos do workflow">
                 {state.steps.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-white/40 py-8">
+                  <div className="flex flex-col items-center justify-center h-full text-white/60 py-8">
                     <SpinnerIcon size={24} />
                     <p className="mt-3 text-sm">Aguardando steps...</p>
                   </div>
@@ -707,7 +709,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                             {output?.role || STEP_TYPE_LABELS[step.type] || step.type}
                           </p>
 
-                          <div className="flex items-center justify-between text-[10px] text-white/40">
+                          <div className="flex items-center justify-between text-[10px] text-white/60">
                             <span>{agent?.squad || squadType}</span>
                             {step.startedAt && <span>{formatDuration(step.startedAt, step.completedAt)}</span>}
                           </div>
@@ -734,7 +736,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
           ========================================== */}
           <div className="flex-1 relative">
             {state.steps.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-white/40">
+              <div className="flex flex-col items-center justify-center h-full text-white/60">
                 <SpinnerIcon size={40} />
                 <p className="mt-4 text-lg">Preparando execução...</p>
                 <p className="mt-1 text-sm">Aguardando dados do workflow</p>
@@ -780,11 +782,11 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                     )}>
                       {isStartNode ? <RocketIcon /> : isEndNode ? <TargetIcon /> : <TargetIcon />}
                     </div>
-                    <h3 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+                    <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
                       {isStartNode ? 'Início do Workflow' : isEndNode ? 'Resultado Final' : 'Detalhes do Step'}
-                    </h3>
+                    </h2>
                   </div>
-                  <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSelectedNodeId(null)}>
+                  <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSelectedNodeId(null)} aria-label="Fechar detalhes">
                     <CloseIcon />
                   </GlassButton>
                 </div>
@@ -801,7 +803,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                           <RocketIcon />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-white/90 font-semibold">{state.workflowName || 'Workflow'}</h4>
+                          <h3 className="text-white/90 font-semibold">{state.workflowName || 'Workflow'}</h3>
                           <p className="text-white/60 text-sm">{totalSteps} etapas planejadas</p>
                         </div>
                         <Badge variant="status" status="success" size="sm">Iniciado</Badge>
@@ -847,7 +849,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                             const role = output?.role || STEP_TYPE_LABELS[step.type] || step.type;
                             return (
                               <li key={step.id} className="flex items-start gap-2">
-                                <span className="text-white/40 text-xs mt-1">{idx + 1}.</span>
+                                <span className="text-white/60 text-xs mt-1">{idx + 1}.</span>
                                 <div>
                                   <span className="text-white/90 font-medium">{agentName}</span>
                                   <span className="text-white/50"> — {role}</span>
@@ -875,15 +877,15 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                         <div className="grid grid-cols-3 gap-2 text-center">
                           <div className="p-2 rounded-lg bg-white/5">
                             <p className="text-lg font-bold text-green-400">{completedSteps}</p>
-                            <p className="text-[10px] text-white/40">Concluídos</p>
+                            <p className="text-[10px] text-white/60">Concluídos</p>
                           </div>
                           <div className="p-2 rounded-lg bg-white/5">
                             <p className="text-lg font-bold text-orange-400">{runningSteps}</p>
-                            <p className="text-[10px] text-white/40">Executando</p>
+                            <p className="text-[10px] text-white/60">Executando</p>
                           </div>
                           <div className="p-2 rounded-lg bg-white/5">
                             <p className="text-lg font-bold text-gray-400">{pendingSteps}</p>
-                            <p className="text-[10px] text-white/40">Pendentes</p>
+                            <p className="text-[10px] text-white/60">Pendentes</p>
                           </div>
                         </div>
                       </div>
@@ -906,10 +908,10 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                           {state.status === 'running' && <SpinnerIcon size={20} />}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-white/90 font-semibold">
+                          <h3 className="text-white/90 font-semibold">
                             {state.status === 'completed' ? 'Workflow Concluído' :
                              state.status === 'failed' ? 'Workflow Falhou' : 'Em Execução'}
-                          </h4>
+                          </h3>
                           <p className="text-white/60 text-sm">
                             {completedSteps}/{totalSteps} etapas · {formatDuration(state.startedAt, state.completedAt)}
                           </p>
@@ -975,7 +977,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                                 <div className="flex items-center gap-2 mb-1">
                                   <Avatar name={agentName} size="sm" squadType={squadType as SquadType} />
                                   <span className="text-xs font-medium text-white/80">{agentName}</span>
-                                  <span className="text-[10px] text-white/40 ml-auto">{squadType}</span>
+                                  <span className="text-[10px] text-white/60 ml-auto">{squadType}</span>
                                 </div>
                                 <p className="text-xs text-white/60 line-clamp-2">{response || 'Sem resposta'}</p>
                               </div>
@@ -1008,8 +1010,9 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                                   onClick={() => handleCopy(response)}
                                   className={cn(
                                     'p-1.5 rounded-lg transition-all',
-                                    copiedText === response ? 'bg-green-500/20 text-green-400' : 'hover:bg-white/10 text-white/40 hover:text-white'
+                                    copiedText === response ? 'bg-green-500/20 text-green-400' : 'hover:bg-white/10 text-white/60 hover:text-white'
                                   )}
+                                  aria-label="Copiar resultado"
                                 >
                                   {copiedText === response ? <CheckIcon size={12} /> : <CopyIcon />}
                                 </button>
@@ -1068,9 +1071,9 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                             status={selectedStep.status === 'running' ? 'online' : selectedStep.status === 'completed' ? 'online' : 'offline'}
                           />
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-white/90 font-semibold">
+                            <h3 className="text-white/90 font-semibold">
                               {agentName}
-                            </h4>
+                            </h3>
                             <p className="text-white/60 text-sm">{squadType}</p>
                           </div>
                           <Badge
@@ -1217,8 +1220,9 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                                 onClick={() => handleCopy(response)}
                                 className={cn(
                                   'p-1.5 rounded-lg transition-all',
-                                  copiedText === response ? 'bg-green-500/20 text-green-400' : 'hover:bg-white/10 text-white/40 hover:text-white'
+                                  copiedText === response ? 'bg-green-500/20 text-green-400' : 'hover:bg-white/10 text-white/60 hover:text-white'
                                 )}
+                                aria-label="Copiar output"
                               >
                                 {copiedText === response ? <CheckIcon size={12} /> : <CopyIcon />}
                               </button>
@@ -1290,7 +1294,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                         {/* Raw JSON */}
                         {output && (
                           <details className="text-xs">
-                            <summary className="text-white/40 cursor-pointer hover:text-white/60 py-2 flex items-center gap-2">
+                            <summary className="text-white/60 cursor-pointer hover:text-white/80 py-2 flex items-center gap-2">
                               <CodeIcon />
                               <span>Ver JSON completo</span>
                             </summary>
@@ -1396,7 +1400,7 @@ function StatBox({ label, value, color }: { label: string; value: number; color:
       }}
     >
       <p className={cn('text-xl font-bold', style.text)}>{value}</p>
-      <p className="text-[10px] text-white/40">{label}</p>
+      <p className="text-[10px] text-white/60">{label}</p>
     </div>
   );
 }

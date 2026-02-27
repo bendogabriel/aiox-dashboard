@@ -85,9 +85,9 @@ export function WorkflowSidebar({
           <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
             <RocketIcon />
           </div>
-          <h3 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
             Missão Ativa
-          </h3>
+          </h2>
           <Badge variant="count" size="sm" className="ml-auto">
             #{mission.id.split('-')[1]}
           </Badge>
@@ -105,7 +105,7 @@ export function WorkflowSidebar({
 
           <div className="relative">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-white font-medium text-sm">{mission.name}</h4>
+              <h3 className="text-white font-medium text-sm">{mission.name}</h3>
               <ChevronRightIcon />
             </div>
             <p className="text-white/50 text-xs mb-3 line-clamp-2">{mission.description}</p>
@@ -136,9 +136,9 @@ export function WorkflowSidebar({
           <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
             <UsersIcon />
           </div>
-          <h3 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
             Agents na Missão
-          </h3>
+          </h2>
           <Badge variant="count" size="sm" className="ml-auto">
             {mission.agents.length}
           </Badge>
@@ -209,15 +209,15 @@ export function WorkflowSidebar({
           <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
             <ActivityIcon />
           </div>
-          <h3 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
             Log de Operações
-          </h3>
+          </h2>
           <Badge variant="count" size="sm" className="ml-auto">
             {operations.length}
           </Badge>
         </div>
 
-        <div className="flex-1 overflow-y-auto glass-scrollbar px-4 pb-4">
+        <div className="flex-1 overflow-y-auto glass-scrollbar px-4 pb-4" tabIndex={0} role="region" aria-label="Log de operacoes do workflow">
           <div className="space-y-2">
             {operations.map((op, index) => (
               <OperationItem key={op.id} operation={op} index={index} />

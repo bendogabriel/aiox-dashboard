@@ -33,8 +33,8 @@ function StatCard({
             {label}
           </span>
         </div>
-        <p className="text-2xl font-bold text-primary">{value}</p>
-        {sub && <p className="text-[10px] text-tertiary mt-0.5">{sub}</p>}
+        <div className="text-2xl font-bold text-primary">{value}</div>
+        {sub && <div className="text-[10px] text-tertiary mt-0.5">{sub}</div>}
       </GlassCard>
     </motion.div>
   );

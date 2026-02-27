@@ -5,6 +5,9 @@
 /* Liquid Glass Design System (includes token imports) - MUST be first */
 @import './styles/liquid-glass.css';
 
+/* Light mode compatibility — remaps hardcoded dark utilities to semantic tokens */
+@import './styles/light-mode-compat.css';
+
 /* Tailwind CSS Layers */
 @tailwind base;
 @tailwind components;

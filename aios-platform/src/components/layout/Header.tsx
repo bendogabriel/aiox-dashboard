@@ -118,7 +118,7 @@ export function Header() {
   };
 
   return (
-    <header className="h-16 px-4 md:px-6 flex items-center justify-between glass border-b border-glass-border gap-4 relative z-50">
+    <header aria-label="Cabecalho principal" className="h-16 px-4 md:px-6 flex items-center justify-between glass border-b border-glass-border gap-4 relative z-50">
       {/* Mobile Menu Button */}
       <MobileMenuButton />
 
@@ -187,7 +187,7 @@ export function Header() {
                 </div>
 
                 {/* Notifications List */}
-                <div className="max-h-80 overflow-y-auto glass-scrollbar">
+                <div className="max-h-80 overflow-y-auto glass-scrollbar" tabIndex={0} role="region" aria-label="Lista de notificacoes">
                   {notifications.length > 0 ? (
                     notifications.map((notification, index) => (
                       <motion.div

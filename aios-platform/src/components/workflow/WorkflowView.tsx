@@ -919,8 +919,11 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
             <h2 className="text-white font-semibold">Workflows</h2>
 
             {/* Main Tabs */}
-            <div className="flex gap-1 p-1 bg-white/8 rounded-lg border border-white/10">
+            <div className="flex gap-1 p-1 bg-white/8 rounded-lg border border-white/10" role="tablist" aria-label="Abas do workflow">
               <button
+                role="tab"
+                aria-selected={activeTab === 'list'}
+                tabIndex={activeTab === 'list' ? 0 : -1}
                 onClick={() => setActiveTab('list')}
                 className={cn(
                   'px-3 py-1.5 rounded text-sm font-medium transition-all',
@@ -932,6 +935,9 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                 Workflows
               </button>
               <button
+                role="tab"
+                aria-selected={activeTab === 'executions'}
+                tabIndex={activeTab === 'executions' ? 0 : -1}
                 onClick={() => setActiveTab('executions')}
                 className={cn(
                   'px-3 py-1.5 rounded text-sm font-medium transition-all',
@@ -948,6 +954,9 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                 )}
               </button>
               <button
+                role="tab"
+                aria-selected={activeTab === 'demo'}
+                tabIndex={activeTab === 'demo' ? 0 : -1}
                 onClick={() => setActiveTab('demo')}
                 className={cn(
                   'px-3 py-1.5 rounded text-sm font-medium transition-all',
@@ -961,7 +970,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
             </div>
           </div>
 
-          <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
+          <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} aria-label="Fechar">
             <CloseIcon />
           </GlassButton>
         </div>
@@ -1215,6 +1224,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                   size="icon"
                   className="h-7 w-7"
                   onClick={() => setViewMode('canvas')}
+                  aria-label="Visualizacao em canvas"
                 >
                   <GridIcon />
                 </GlassButton>
@@ -1223,6 +1233,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                   size="icon"
                   className="h-7 w-7"
                   onClick={() => setViewMode('list')}
+                  aria-label="Visualizacao em lista"
                 >
                   <ListIcon />
                 </GlassButton>
@@ -1231,13 +1242,13 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
               <div className="w-px h-6 bg-white/10" />
 
               {/* Zoom Controls */}
-              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomOut}>
+              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomOut} aria-label="Diminuir zoom">
                 <ZoomOutIcon />
               </GlassButton>
               <span className="text-xs text-white/60 w-12 text-center">
                 {Math.round(zoom * 100)}%
               </span>
-              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomIn}>
+              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomIn} aria-label="Aumentar zoom">
                 <ZoomInIcon />
               </GlassButton>
 
@@ -1249,12 +1260,13 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                 size="icon"
                 className="h-8 w-8"
                 onClick={() => setIsPlaying(!isPlaying)}
+                aria-label={isPlaying ? 'Pausar' : 'Reproduzir'}
               >
                 {isPlaying ? <PauseIcon /> : <PlayIcon />}
               </GlassButton>
 
               {/* Reset */}
-              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleReset}>
+              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleReset} aria-label="Reiniciar">
                 <RefreshIcon />
               </GlassButton>
 
@@ -1657,7 +1669,7 @@ function NodeDetailPanel({
           </div>
           <h3 className="text-xs font-semibold text-white/70 uppercase tracking-wider">Detalhes do Nó</h3>
         </div>
-        <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={onClose}>
+        <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={onClose} aria-label="Fechar">
           <CloseIcon />
         </GlassButton>
       </div>

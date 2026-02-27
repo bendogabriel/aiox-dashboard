@@ -275,10 +275,13 @@ export default function SquadsView() {
         </GlassCard>
 
         {/* Tab Bar */}
-        <div className="flex items-center gap-1 p-1 glass-subtle rounded-xl w-fit">
+        <div className="flex items-center gap-1 p-1 glass-subtle rounded-xl w-fit" role="tablist" aria-label="Abas do squad">
           {squadTabs.map((tab) => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              tabIndex={activeTab === tab.id ? 0 : -1}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
                 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200',

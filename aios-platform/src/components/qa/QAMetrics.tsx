@@ -68,7 +68,7 @@ const gotchasRegistry = { total: 23, recent: ['CSS @media keyword collision', 'M
 
 export default function QAMetrics() {
   return (
-    <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6">
+    <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6" tabIndex={0} role="region" aria-label="Metricas de qualidade">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Shield size={22} className="text-green-400" />

@@ -94,10 +94,13 @@ export function DashboardOverview() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex gap-1 p-1 glass-subtle rounded-xl mb-4 flex-shrink-0 overflow-x-auto">
+      <div className="flex gap-1 p-1 glass-subtle rounded-xl mb-4 flex-shrink-0 overflow-x-auto" role="tablist" aria-label="Abas do painel">
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            tabIndex={activeTab === tab.id ? 0 : -1}
             onClick={() => setActiveTab(tab.id as TabType)}
             className={cn(
               'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap',
@@ -179,7 +182,7 @@ function OverviewTab() {
         {/* Execution Trend */}
         <GlassCard className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-primary">Execuções (7 dias)</h3>
+            <h2 className="font-semibold text-primary">Execuções (7 dias)</h2>
             <Badge variant="count" size="sm">{executions.length} total</Badge>
           </div>
           <LineChart
@@ -192,7 +195,7 @@ function OverviewTab() {
 
         {/* Status Distribution */}
         <GlassCard>
-          <h3 className="font-semibold text-primary mb-4">Status</h3>
+          <h2 className="font-semibold text-primary mb-4">Status</h2>
           <div className="flex justify-center py-2">
             <DonutChart
               data={[
@@ -259,7 +262,7 @@ function AgentsTab() {
     >
       {/* Top Agents */}
       <GlassCard>
-        <h3 className="font-semibold text-primary mb-4">Agents Mais Ativos</h3>
+        <h2 className="font-semibold text-primary mb-4">Agents Mais Ativos</h2>
         <div className="space-y-3">
           {agentAnalytics?.slice(0, 8).map((agent, index) => (
             <motion.div
@@ -307,7 +310,7 @@ function AgentsTab() {
       {/* Command Analytics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <GlassCard>
-          <h3 className="font-semibold text-primary mb-4">Comandos Mais Usados</h3>
+          <h2 className="font-semibold text-primary mb-4">Comandos Mais Usados</h2>
           {commandAnalytics && commandAnalytics.length > 0 ? (
             <BarChart
               data={commandAnalytics.slice(0, 6).map(c => ({
@@ -323,7 +326,7 @@ function AgentsTab() {
         </GlassCard>
 
         <GlassCard>
-          <h3 className="font-semibold text-primary mb-4">Performance por Comando</h3>
+          <h2 className="font-semibold text-primary mb-4">Performance por Comando</h2>
           <div className="space-y-3">
             {commandAnalytics?.slice(0, 5).map((cmd) => (
               <div key={cmd.command} className="flex items-center justify-between p-2 rounded-lg glass-subtle">
@@ -366,7 +369,7 @@ function MCPTab() {
 
       {/* Server List */}
       <GlassCard>
-        <h3 className="font-semibold text-primary mb-4">Servidores MCP</h3>
+        <h2 className="font-semibold text-primary mb-4">Servidores MCP</h2>
         <div className="space-y-3">
           {mcpServers?.map((server) => (
             <div
@@ -426,7 +429,7 @@ function MCPTab() {
 
       {/* Top Tools */}
       <GlassCard>
-        <h3 className="font-semibold text-primary mb-4">Tools Mais Usadas</h3>
+        <h2 className="font-semibold text-primary mb-4">Tools Mais Usadas</h2>
         {mcpStats?.topTools && mcpStats.topTools.length > 0 ? (
           <BarChart
             data={mcpStats.topTools.map(t => ({
@@ -481,7 +484,7 @@ function CostsTab() {
       {/* Cost by Provider */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <GlassCard>
-          <h3 className="font-semibold text-primary mb-4">Custo por Provider</h3>
+          <h2 className="font-semibold text-primary mb-4">Custo por Provider</h2>
           <div className="space-y-4">
             <CostProviderRow
               name="Claude (Anthropic)"
@@ -499,7 +502,7 @@ function CostsTab() {
         </GlassCard>
 
         <GlassCard>
-          <h3 className="font-semibold text-primary mb-4">Trend de Custos (7 dias)</h3>
+          <h2 className="font-semibold text-primary mb-4">Trend de Custos (7 dias)</h2>
           {costSummary?.trend && (
             <LineChart
               data={costSummary.trend}
@@ -515,7 +518,7 @@ function CostsTab() {
 
       {/* Cost by Squad */}
       <GlassCard>
-        <h3 className="font-semibold text-primary mb-4">Custo por Squad</h3>
+        <h2 className="font-semibold text-primary mb-4">Custo por Squad</h2>
         {costSummary?.bySquad && Object.keys(costSummary.bySquad).length > 0 ? (
           <BarChart
             data={Object.entries(costSummary.bySquad)
@@ -585,7 +588,7 @@ function SystemTab() {
 
       {/* Health Status */}
       <GlassCard>
-        <h3 className="font-semibold text-primary mb-4">Status dos Serviços</h3>
+        <h2 className="font-semibold text-primary mb-4">Status dos Serviços</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <ServiceHealthCard
             name="API Gateway"
@@ -612,7 +615,7 @@ function SystemTab() {
 
       {/* System Info */}
       <GlassCard>
-        <h3 className="font-semibold text-primary mb-4">Informações do Sistema</h3>
+        <h2 className="font-semibold text-primary mb-4">Informações do Sistema</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="p-3 rounded-xl glass-subtle">
             <p className="text-xs text-tertiary mb-1">Fila de Execução</p>
@@ -672,7 +675,7 @@ function HealthCard({ title, status, details }: {
   return (
     <GlassCard className={statusColors[status]}>
       <div className="flex items-center justify-between mb-3">
-        <h4 className="font-medium text-primary">{title}</h4>
+        <h3 className="font-medium text-primary">{title}</h3>
         <Badge
           variant="status"
           status={status === 'healthy' ? 'online' : status === 'partial' ? 'warning' : 'offline'}

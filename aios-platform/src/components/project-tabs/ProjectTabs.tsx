@@ -66,7 +66,7 @@ export function ProjectTabs() {
         'glass-subtle border-b border-glass-border',
         'overflow-x-auto scrollbar-hidden'
       )}
-      role="tablist"
+      role="toolbar"
       aria-label="Project tabs"
     >
       <DndContext
@@ -113,6 +113,7 @@ export function ProjectTabs() {
             autoFocus
             placeholder="project name"
             className="h-6 w-28 px-2 text-xs bg-white/5 border border-glass-border rounded text-primary placeholder:text-tertiary focus:outline-none focus:border-blue-500/50"
+            aria-label="Nome do projeto"
           />
         </div>
       ) : (
@@ -188,12 +189,9 @@ function SortableTab({
         style={style}
         {...attributes}
         {...listeners}
-        role="tab"
-        aria-selected={isActive}
-        tabIndex={isActive ? 0 : -1}
-        onClick={onActivate}
+        role="presentation"
         className={cn(
-          'group relative flex items-center gap-1.5 h-9 px-3 text-xs cursor-pointer',
+          'group relative flex items-center h-9 text-xs',
           'transition-colors duration-150 select-none flex-shrink-0',
           'border-r border-glass-border',
           isDragging && 'opacity-50 z-10',
@@ -202,8 +200,22 @@ function SortableTab({
             : 'text-tertiary hover:text-secondary hover:bg-white/3'
         )}
       >
-        {/* Tab name */}
-        <span className="max-w-[120px] truncate font-medium">{project.name}</span>
+        {/* Tab name (interactive tab element) */}
+        <span
+          role="button"
+          aria-pressed={isActive}
+          tabIndex={0}
+          onClick={onActivate}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onActivate();
+            }
+          }}
+          className="flex items-center gap-1.5 px-3 h-full cursor-pointer max-w-[120px] truncate font-medium"
+        >
+          {project.name}
+        </span>
 
         {/* Close button */}
         {canClose && (
@@ -213,7 +225,7 @@ function SortableTab({
               onClose();
             }}
             className={cn(
-              'flex-shrink-0 h-4 w-4 flex items-center justify-center rounded-sm',
+              'flex-shrink-0 h-4 w-4 flex items-center justify-center rounded-sm mr-1',
               'text-tertiary hover:text-primary hover:bg-white/10 transition-colors',
               'opacity-0 group-hover:opacity-100',
               isActive && 'opacity-60'

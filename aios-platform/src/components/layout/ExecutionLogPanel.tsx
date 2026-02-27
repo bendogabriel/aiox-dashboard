@@ -160,7 +160,7 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="max-h-[300px] overflow-y-auto glass-scrollbar">
+            <div className="max-h-[300px] overflow-y-auto glass-scrollbar" tabIndex={0} role="region" aria-label="Painel de log de execucao">
               {/* Clear button */}
               {hasLogs && !isExecuting && (
                 <div className="flex justify-end px-3 py-1 border-b border-white/5">

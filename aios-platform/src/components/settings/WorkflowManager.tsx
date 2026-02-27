@@ -240,7 +240,7 @@ export function WorkflowManager() {
               <PlusIcon />
               <span className="ml-1">Criar Workflow</span>
             </GlassButton>
-            <GlassButton variant="ghost" size="icon" onClick={() => refetch()} title="Atualizar">
+            <GlassButton variant="ghost" size="icon" onClick={() => refetch()} title="Atualizar" aria-label="Atualizar">
               <RefreshIcon />
             </GlassButton>
           </div>
@@ -508,7 +508,7 @@ export function CreateWorkflowModal({
               <h2 className="text-lg font-semibold text-primary">Criar Novo Workflow</h2>
               <p className="text-xs text-tertiary">Configure os steps e agents do workflow</p>
             </div>
-            <GlassButton variant="ghost" size="icon" onClick={onClose}>
+            <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
               <CloseIcon />
             </GlassButton>
           </div>
@@ -564,6 +564,7 @@ export function CreateWorkflowModal({
                           size="icon"
                           onClick={() => removeStep(index)}
                           className="text-red-400 hover:bg-red-500/10 h-7 w-7"
+                          aria-label="Remover step"
                         >
                           <TrashIcon />
                         </GlassButton>

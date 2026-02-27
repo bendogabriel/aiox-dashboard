@@ -334,7 +334,7 @@ export function MemoryManager() {
         <GlassCard className="w-80 flex-shrink-0 flex flex-col">
           {/* Toolbar */}
           <div className="flex items-center gap-2 pb-3 border-b border-white/10 mb-3">
-            <GlassButton variant="ghost" size="icon" onClick={goHome} title="Início">
+            <GlassButton variant="ghost" size="icon" onClick={goHome} title="Início" aria-label="Inicio">
               <HomeIcon />
             </GlassButton>
             <GlassButton
@@ -343,6 +343,7 @@ export function MemoryManager() {
               onClick={goUp}
               disabled={!currentPath}
               title="Voltar"
+              aria-label="Voltar"
             >
               <ChevronLeftIcon />
             </GlassButton>
@@ -354,6 +355,7 @@ export function MemoryManager() {
                 refetchDir();
               }}
               title="Atualizar"
+              aria-label="Atualizar"
             >
               <RefreshIcon />
             </GlassButton>
@@ -454,6 +456,7 @@ export function MemoryManager() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setSelectedFile(null)}
+                  aria-label="Fechar"
                 >
                   <CloseIcon />
                 </GlassButton>

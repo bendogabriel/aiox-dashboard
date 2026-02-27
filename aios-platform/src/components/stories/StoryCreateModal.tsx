@@ -141,6 +141,7 @@ export function StoryCreateModal({ isOpen, onClose, defaultStatus = 'backlog' }:
               className={selectClasses}
               value={status}
               onChange={(e) => setStatus(e.target.value as StoryStatus)}
+              aria-label="Selecionar status"
             >
               <option value="backlog">Backlog</option>
               <option value="in_progress">In Progress</option>
@@ -159,6 +160,7 @@ export function StoryCreateModal({ isOpen, onClose, defaultStatus = 'backlog' }:
               className={selectClasses}
               value={priority}
               onChange={(e) => setPriority(e.target.value as Story['priority'])}
+              aria-label="Selecionar prioridade"
             >
               <option value="low">Low</option>
               <option value="medium">Medium</option>
@@ -174,6 +176,7 @@ export function StoryCreateModal({ isOpen, onClose, defaultStatus = 'backlog' }:
               className={selectClasses}
               value={complexity}
               onChange={(e) => setComplexity(e.target.value as Story['complexity'])}
+              aria-label="Selecionar complexidade"
             >
               <option value="simple">Simple</option>
               <option value="standard">Standard</option>
@@ -188,6 +191,7 @@ export function StoryCreateModal({ isOpen, onClose, defaultStatus = 'backlog' }:
               className={selectClasses}
               value={category}
               onChange={(e) => setCategory(e.target.value as Story['category'])}
+              aria-label="Selecionar categoria"
             >
               <option value="feature">Feature</option>
               <option value="fix">Fix</option>

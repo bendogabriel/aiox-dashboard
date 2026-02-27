@@ -106,9 +106,9 @@ export function StoryDetailModal({ story, isOpen, onClose }: StoryDetailModalPro
         {/* Description */}
         {story.description && (
           <div>
-            <h4 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1.5">
+            <h3 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1.5">
               Descricao
-            </h4>
+            </h3>
             <p className="text-sm text-primary leading-relaxed">{story.description}</p>
           </div>
         )}
@@ -116,9 +116,9 @@ export function StoryDetailModal({ story, isOpen, onClose }: StoryDetailModalPro
         {/* Acceptance Criteria */}
         {story.acceptanceCriteria && story.acceptanceCriteria.length > 0 && (
           <div>
-            <h4 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1.5">
+            <h3 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1.5">
               Criterios de Aceitacao
-            </h4>
+            </h3>
             <ul className="space-y-1">
               {story.acceptanceCriteria.map((criterion, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-primary">
@@ -133,9 +133,9 @@ export function StoryDetailModal({ story, isOpen, onClose }: StoryDetailModalPro
         {/* Technical Notes */}
         {story.technicalNotes && (
           <div>
-            <h4 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1.5">
+            <h3 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1.5">
               Notas Tecnicas
-            </h4>
+            </h3>
             <pre className="text-xs text-primary font-mono bg-[var(--color-background-hover)] p-3 rounded-xl whitespace-pre-wrap leading-relaxed">
               {story.technicalNotes}
             </pre>

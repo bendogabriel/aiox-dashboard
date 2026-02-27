@@ -1,10 +1,14 @@
-import { beforeAll } from 'vitest';
-import * as a11yAddonAnnotations from "@storybook/addon-a11y/preview";
-import { setProjectAnnotations } from 'storybook';
+import * as reactAnnotations from '@storybook/react/entry-preview';
+import * as a11yAddonAnnotations from '@storybook/addon-a11y/preview';
+import { setProjectAnnotations } from 'storybook/preview-api';
 import * as projectAnnotations from './preview';
 
-// Apply project annotations for portable stories
-// More info at: https://storybook.js.org/docs/api/portable-stories/portable-stories-vitest#setprojectannotations
-const annotations = setProjectAnnotations([a11yAddonAnnotations, projectAnnotations]);
-
-beforeAll(annotations.beforeAll);
+// This file is NOT used via setupFiles (which breaks Vite's dependency scanner
+// in browser mode). Instead, the storybookAnnotationsPlugin() in vitest.config.ts
+// injects setProjectAnnotations() directly into story file transforms.
+//
+// Keeping this file as reference for the correct annotation setup:
+// - reactAnnotations: provides render/renderToCanvas for React framework
+// - a11yAddonAnnotations: accessibility addon annotations
+// - projectAnnotations: project-level preview.tsx configuration
+setProjectAnnotations([reactAnnotations, a11yAddonAnnotations, projectAnnotations]);

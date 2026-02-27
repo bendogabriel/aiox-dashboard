@@ -352,7 +352,7 @@ function SquadCard({ selection, isActive }: { selection: SquadSelection; isActiv
               <Layers className="w-5 h-5" style={{ color: color.text }} />
             </div>
             <div>
-              <h3 className="font-semibold text-white">{selection.squadId}</h3>
+              <h2 className="font-semibold text-white">{selection.squadId}</h2>
               <p className="text-xs text-white/50">Chief: {selection.chief}</p>
             </div>
           </div>
@@ -468,10 +468,9 @@ function AgentOutputCard({
 
       {/* Header */}
       <div
-        className="relative flex items-center justify-between p-4 cursor-pointer"
-        onClick={() => setExpanded(!expanded)}
+        className="relative flex items-center justify-between p-4"
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer" onClick={() => setExpanded(!expanded)}>
           <div className="relative">
             <motion.div
               className="w-12 h-12 rounded-xl flex items-center justify-center"
@@ -502,7 +501,7 @@ function AgentOutputCard({
 
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-white">{data.agent.name || data.agent.id}</h3>
+              <h2 className="font-semibold text-white">{data.agent.name || data.agent.id}</h2>
               {isStreaming && (
                 <motion.span
                   initial={{ opacity: 0 }}
@@ -540,21 +539,25 @@ function AgentOutputCard({
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              onClick={(e) => {
-                e.stopPropagation();
-                onCopy(response);
-              }}
+              onClick={() => onCopy(response)}
               className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all"
+              aria-label="Copiar"
             >
               {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
             </motion.button>
           )}
-          <motion.div
-            animate={{ rotate: expanded ? 180 : 0 }}
-            className="p-2 rounded-lg bg-white/5 text-white/50"
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="p-2 rounded-lg bg-white/5 text-white/50 hover:bg-white/10 transition-all"
+            aria-label={expanded ? 'Recolher' : 'Expandir'}
           >
-            <ChevronDown className="w-4 h-4" />
-          </motion.div>
+            <motion.span
+              animate={{ rotate: expanded ? 180 : 0 }}
+              className="block"
+            >
+              <ChevronDown className="w-4 h-4" />
+            </motion.span>
+          </button>
         </div>
       </div>
 
@@ -610,7 +613,7 @@ function EventsPanel({ events, isActive }: { events: TaskEvent[]; isActive: bool
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Terminal className="w-5 h-5 text-cyan-400" />
-          <h3 className="font-semibold text-white">Eventos em Tempo Real</h3>
+          <h2 className="font-semibold text-white">Eventos em Tempo Real</h2>
           {isActive && (
             <motion.div
               className="w-2 h-2 bg-green-400 rounded-full"
@@ -986,7 +989,7 @@ export default function TaskOrchestrator() {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Users className="w-4 h-4 text-cyan-400" />
-                <h3 className="text-sm font-medium text-white/70">Squads Ativados</h3>
+                <h2 className="text-sm font-medium text-white/70">Squads Ativados</h2>
               </div>
               <div className="space-y-3">
                 {state.squadSelections.map((selection) => (
@@ -1070,7 +1073,7 @@ export default function TaskOrchestrator() {
                   className="p-6 rounded-2xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 text-center"
                 >
                   <CheckCircle2 className="w-12 h-12 text-green-400 mx-auto mb-3" />
-                  <h3 className="text-xl font-bold text-white mb-2">Tarefa Concluída!</h3>
+                  <h2 className="text-xl font-bold text-white mb-2">Tarefa Concluída!</h2>
                   <p className="text-white/60">
                     {state.agentOutputs.length} agentes executados com sucesso
                   </p>
@@ -1085,7 +1088,7 @@ export default function TaskOrchestrator() {
                   className="p-6 rounded-2xl bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/30 text-center"
                 >
                   <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
-                  <h3 className="text-xl font-bold text-white mb-2">Erro na Execução</h3>
+                  <h2 className="text-xl font-bold text-white mb-2">Erro na Execução</h2>
                   <p className="text-white/60">{state.error}</p>
                 </motion.div>
               )}

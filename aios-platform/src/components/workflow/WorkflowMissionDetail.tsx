@@ -74,13 +74,13 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
             <h2 className="text-primary text-lg font-semibold">{mission.name}</h2>
             <p className="text-tertiary text-sm">Missão #{mission.id}</p>
           </div>
-          <GlassButton variant="ghost" size="icon" onClick={onClose}>
+          <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
             <CloseIcon />
           </GlassButton>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto glass-scrollbar">
+        <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto glass-scrollbar" tabIndex={0} role="region" aria-label="Detalhes da missao">
           {/* Description */}
           <div>
             <h3 className="text-sm font-semibold text-secondary mb-2">Descrição</h3>

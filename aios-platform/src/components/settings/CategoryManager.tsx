@@ -416,10 +416,10 @@ function CategoryItem({
                 </option>
               ))}
             </select>
-            <GlassButton variant="ghost" size="icon" onClick={onCancelEdit}>
+            <GlassButton variant="ghost" size="icon" onClick={onCancelEdit} aria-label="Cancelar">
               <XIcon />
             </GlassButton>
-            <GlassButton variant="primary" size="icon" onClick={() => onSave(editForm)}>
+            <GlassButton variant="primary" size="icon" onClick={() => onSave(editForm)} aria-label="Salvar">
               <CheckIcon />
             </GlassButton>
           </div>
@@ -437,7 +437,7 @@ function CategoryItem({
             </button>
 
             <div className="flex items-center gap-1">
-              <GlassButton variant="ghost" size="icon" onClick={onEdit}>
+              <GlassButton variant="ghost" size="icon" onClick={onEdit} aria-label="Editar">
                 <EditIcon />
               </GlassButton>
               <GlassButton
@@ -446,6 +446,7 @@ function CategoryItem({
                 onClick={onDelete}
                 className="text-red-400 hover:bg-red-500/10"
                 disabled={category.squads.length > 0}
+                aria-label="Excluir"
               >
                 <TrashIcon />
               </GlassButton>

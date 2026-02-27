@@ -138,7 +138,7 @@ function TaskOrchestratorShell({
                 className="w-full h-32 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 resize-none"
               />
               <div className="absolute bottom-3 right-3">
-                <GlassButton disabled={isRunning} onClick={fn()}>
+                <GlassButton disabled={isRunning} onClick={fn()} aria-label={isRunning ? 'Executando' : undefined}>
                   {isRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Zap className="w-4 h-4 mr-2" />Executar</>}
                 </GlassButton>
               </div>
@@ -149,7 +149,7 @@ function TaskOrchestratorShell({
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Users className="w-4 h-4 text-cyan-400" />
-                <h3 className="text-sm font-medium text-white/70">Squads Ativados</h3>
+                <h2 className="text-sm font-medium text-white/70">Squads Ativados</h2>
               </div>
               <div className="space-y-3">
                 {['copywriting', 'design'].map((squad) => (
@@ -159,7 +159,7 @@ function TaskOrchestratorShell({
                         <Layers className="w-5 h-5 text-cyan-400" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-white">{squad}</h3>
+                        <h3 className="font-semibold text-white" aria-label={`Squad ${squad}`}>{squad}</h3>
                         <p className="text-xs text-white/50">3 agentes</p>
                       </div>
                     </div>
@@ -189,7 +189,7 @@ function TaskOrchestratorShell({
           {status === 'completed' && (
             <div className="p-6 rounded-2xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 text-center">
               <CheckCircle2 className="w-12 h-12 text-green-400 mx-auto mb-3" />
-              <h3 className="text-xl font-bold text-white mb-2">Tarefa Concluida!</h3>
+              <h2 className="text-xl font-bold text-white mb-2">Tarefa Concluida!</h2>
               <p className="text-white/60">{agentCount || 3} agentes executados com sucesso</p>
             </div>
           )}
@@ -197,7 +197,7 @@ function TaskOrchestratorShell({
           {status === 'failed' && (
             <div className="p-6 rounded-2xl bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/30 text-center">
               <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
-              <h3 className="text-xl font-bold text-white mb-2">Erro na Execucao</h3>
+              <h2 className="text-xl font-bold text-white mb-2">Erro na Execucao</h2>
               <p className="text-white/60">LLM provider timeout after 30s</p>
             </div>
           )}
@@ -217,7 +217,7 @@ function TaskOrchestratorShell({
           <div className="w-80 border-l border-white/10 p-6 overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
               <Terminal className="w-5 h-5 text-cyan-400" />
-              <h3 className="font-semibold text-white">Eventos em Tempo Real</h3>
+              <h2 className="font-semibold text-white">Eventos em Tempo Real</h2>
             </div>
             <div className="space-y-2">
               {['task:analyzing', 'task:squads-selected', 'task:planning'].map((evt, i) => (

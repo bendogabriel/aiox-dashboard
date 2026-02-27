@@ -61,6 +61,7 @@ export function ContextMenu({ items, children, className }: ContextMenuProps) {
       ref={triggerRef}
       onContextMenu={handleContextMenu}
       className={cn('relative', className)}
+      role="presentation"
     >
       {children}
 

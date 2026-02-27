@@ -156,6 +156,9 @@ export default function EventList() {
         <div
           ref={feedRef}
           className="flex-1 overflow-y-auto divide-y divide-white/5"
+          tabIndex={0}
+          role="region"
+          aria-label="Feed de eventos"
         >
           <AnimatePresence initial={false}>
             {reversedEvents.map((event) => (

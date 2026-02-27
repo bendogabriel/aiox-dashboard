@@ -284,6 +284,7 @@ export function ConversationHistory() {
                 placeholder="Buscar em conversas..."
                 className="w-full px-3 py-1.5 text-xs bg-white/5 border border-white/10 rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus:border-blue-500/50"
                 autoFocus
+                aria-label="Buscar em conversas"
               />
               {searchQuery && (
                 <button

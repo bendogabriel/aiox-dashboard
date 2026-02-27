@@ -90,6 +90,9 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
                 !listMode && 'h-[200px]',
                 listMode && 'max-h-[160px]',
               )}
+              tabIndex={0}
+              role="region"
+              aria-label={`Terminal ${session.agent}`}
             >
               {visibleLines.map((line, i) => (
                 <div key={i} className="whitespace-pre-wrap">

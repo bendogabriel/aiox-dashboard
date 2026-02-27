@@ -160,7 +160,7 @@ export function ActivityPanel() {
   const squadType = selectedAgent ? getSquadType(selectedAgent.squad) : 'default';
 
   return (
-    <aside className="h-screen glass-panel border-l border-glass-border flex flex-col w-[320px]">
+    <aside aria-label="Painel de atividade" className="h-screen glass-panel border-l border-glass-border flex flex-col w-[320px]">
       {/* Header */}
       <div className="h-16 px-4 flex items-center justify-between border-b border-glass-border">
         <h2 className="text-primary font-semibold">Atividade</h2>
@@ -181,7 +181,7 @@ export function ActivityPanel() {
 
       {/* Tabs */}
       <div className="px-4 py-3 border-b border-glass-border">
-        <div className="flex gap-1 p-1 glass-subtle rounded-xl">
+        <div className="flex gap-1 p-1 glass-subtle rounded-xl" role="tablist" aria-label="Abas do painel de atividade">
           {[
             { id: 'activity', label: 'Status' },
             { id: 'history', label: 'Histórico' },
@@ -189,6 +189,9 @@ export function ActivityPanel() {
           ].map((tab) => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              tabIndex={activeTab === tab.id ? 0 : -1}
               onClick={() => setActiveTab(tab.id as TabType)}
               className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 activeTab === tab.id
@@ -203,7 +206,7 @@ export function ActivityPanel() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto glass-scrollbar p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto glass-scrollbar p-4 space-y-4" tabIndex={0} role="region" aria-label="Conteudo do painel de atividade">
         <AnimatePresence mode="wait">
           {activeTab === 'activity' && (
             <motion.div
