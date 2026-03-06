@@ -5,7 +5,142 @@
    - Solid dark surfaces instead of heavy blur
    - Brutalist borders (no rounded corners)
    - Neon lime glow on interactive states
+
+   STRATEGY:
+   1. Nuclear border-radius reset on all elements
+   2. Glass → Solid surface replacements
+   3. Flat app background (no gradients/blobs)
+   4. Hover: no translateY, use neon glow
+   5. Cover tabs, dropdowns, tooltips, sidebar, modals
    ============================================ */
+
+/* ============================================
+   NUCLEAR RESET — Zero Radius Everywhere
+   Specificity: html[data-theme="aiox"] * (0-1-1 + *)
+   This is the brutalist core: NO rounded corners.
+   ============================================ */
+
+html[data-theme="aiox"] *,
+html[data-theme="aiox"] *::before,
+html[data-theme="aiox"] *::after {
+  border-radius: 0 !important;
+}
+
+/* Exception: scrollbar thumbs keep a tiny radius for usability */
+html[data-theme="aiox"] ::-webkit-scrollbar-thumb {
+  border-radius: 2px !important;
+}
+
+/* Exception: status dots keep full radius */
+html[data-theme="aiox"] .status-online,
+html[data-theme="aiox"] .status-busy,
+html[data-theme="aiox"] .status-offline {
+  border-radius: 50% !important;
+}
+
+/* ============================================
+   APP BACKGROUND — Flat Near-Black
+   No gradients, no blobs, no noise animation.
+   ============================================ */
+
+html[data-theme="aiox"] .app-background::before {
+  background: var(--aiox-dark) !important;
+  animation: none !important;
+  filter: none !important;
+}
+
+html[data-theme="aiox"] .app-background::after {
+  opacity: 0 !important;
+}
+
+/* ============================================
+   GLASS → SOLID — All Glass Utilities
+   Replace backdrop-blur with solid surfaces.
+   ============================================ */
+
+html[data-theme="aiox"] .glass {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-lg {
+  background: var(--aiox-surface-panel) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-xl {
+  background: var(--aiox-surface-deep) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-subtle {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.1) !important;
+}
+
+/* ============================================
+   GLASS CARD — Solid Cockpit Panel
+   ============================================ */
+
+html[data-theme="aiox"] .glass-card {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-card:hover {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-card-active {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(209, 255, 0, 0.3) !important;
+  box-shadow: 0 0 12px var(--aiox-lime-glow-soft) !important;
+}
+
+/* ============================================
+   GLASS PANEL — Sidebar & Major Panels
+   ============================================ */
+
+html[data-theme="aiox"] .glass-panel {
+  background: var(--aiox-dark) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.12) !important;
+  box-shadow: none !important;
+}
+
+/* ============================================
+   INTERACTIVE STATES — No Lift, Neon Glow
+   ============================================ */
+
+html[data-theme="aiox"] .glass-interactive:hover {
+  background: rgba(209, 255, 0, 0.04) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  border-color: rgba(209, 255, 0, 0.15) !important;
+}
+
+html[data-theme="aiox"] .glass-interactive:active {
+  transform: none !important;
+  background: rgba(209, 255, 0, 0.08) !important;
+}
 
 /* ============================================
    BUTTONS — Cockpit Style
@@ -17,12 +152,28 @@ html[data-theme="aiox"] .glass-button {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border-radius: 0;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
   transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
+html[data-theme="aiox"] .glass-button:hover {
+  background: rgba(209, 255, 0, 0.06) !important;
+  border-color: rgba(209, 255, 0, 0.2) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-button:active {
+  transform: none !important;
+}
+
 html[data-theme="aiox"] .glass-button-primary {
-  border-radius: 0;
+  background: var(--aiox-lime) !important;
+  color: var(--aiox-dark) !important;
+  border: none !important;
   font-family: var(--font-family-mono);
   font-size: 0.65rem;
   font-weight: 600;
@@ -32,6 +183,7 @@ html[data-theme="aiox"] .glass-button-primary {
 
 html[data-theme="aiox"] .glass-button-primary:hover {
   box-shadow: 0 0 20px var(--aiox-lime-glow), 0 0 60px var(--aiox-lime-glow-soft) !important;
+  transform: none !important;
 }
 
 /* Small button */
@@ -42,22 +194,9 @@ html[data-theme="aiox"] button[class*="text-xs"] {
   letter-spacing: 0.08em;
 }
 
-/* ============================================
-   CARDS — Brutalist Cockpit
-   ============================================ */
-
-html[data-theme="aiox"] .glass-card {
-  border-radius: 0;
-  backdrop-filter: blur(5px) saturate(120%);
-  -webkit-backdrop-filter: blur(5px) saturate(120%);
-}
-
-html[data-theme="aiox"] .glass-card:hover {
-  box-shadow: inset 0 0 0 1px var(--aiox-neon-dim) !important;
-}
-
-html[data-theme="aiox"] .glass-card-active {
-  border-radius: 0;
+/* Generic buttons and links that look like buttons */
+html[data-theme="aiox"] button {
+  font-family: var(--font-family-mono);
 }
 
 /* ============================================
@@ -67,9 +206,10 @@ html[data-theme="aiox"] .glass-card-active {
 html[data-theme="aiox"] .glass-input {
   font-family: var(--font-family-mono);
   font-size: 0.7rem;
-  border-radius: 0;
-  background: var(--aiox-surface);
-  border: 1px solid rgba(156, 156, 156, 0.15);
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
 }
 
 html[data-theme="aiox"] .glass-input:focus {
@@ -89,6 +229,22 @@ html[data-theme="aiox"] textarea.glass-input {
   min-height: 80px;
 }
 
+/* All native inputs/selects */
+html[data-theme="aiox"] input,
+html[data-theme="aiox"] select,
+html[data-theme="aiox"] textarea {
+  font-family: var(--font-family-mono);
+  background: var(--aiox-surface);
+  border: 1px solid rgba(156, 156, 156, 0.15);
+}
+
+html[data-theme="aiox"] input:focus,
+html[data-theme="aiox"] select:focus,
+html[data-theme="aiox"] textarea:focus {
+  border-color: var(--aiox-lime);
+  box-shadow: 0 0 0 1px var(--aiox-lime);
+}
+
 /* ============================================
    BADGES — Cockpit Labels
    ============================================ */
@@ -98,8 +254,8 @@ html[data-theme="aiox"] .glass-badge {
   font-size: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border-radius: 0;
-  backdrop-filter: none;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 html[data-theme="aiox"] .glass-badge-squad {
@@ -109,11 +265,19 @@ html[data-theme="aiox"] .glass-badge-squad {
 }
 
 /* ============================================
-   PANELS & SIDEBAR — Solid Dark
+   MESSAGE BUBBLES — Solid Cockpit
    ============================================ */
 
-html[data-theme="aiox"] .glass-panel {
-  border-radius: 0;
+html[data-theme="aiox"] .message-bubble-user {
+  background: var(--aiox-lime) !important;
+  color: var(--aiox-dark) !important;
+}
+
+html[data-theme="aiox"] .message-bubble-agent {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
 }
 
 /* ============================================
@@ -121,8 +285,81 @@ html[data-theme="aiox"] .glass-panel {
    ============================================ */
 
 html[data-theme="aiox"] [role="dialog"] {
-  border-radius: 0;
-  border: 1px solid rgba(156, 156, 156, 0.15);
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+  background: var(--aiox-dark) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Dialog backdrop */
+html[data-theme="aiox"] [data-radix-overlay],
+html[data-theme="aiox"] .dialog-overlay,
+html[data-theme="aiox"] [role="dialog"] + div[class*="overlay"],
+html[data-theme="aiox"] [class*="backdrop"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* ============================================
+   DROPDOWNS & POPOVERS
+   ============================================ */
+
+html[data-theme="aiox"] [role="listbox"],
+html[data-theme="aiox"] [role="menu"],
+html[data-theme="aiox"] [data-radix-popper-content-wrapper] > *,
+html[data-theme="aiox"] [class*="dropdown"],
+html[data-theme="aiox"] [class*="popover"] {
+  background: var(--aiox-dark) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+/* ============================================
+   TABS — Cockpit Navigation
+   ============================================ */
+
+html[data-theme="aiox"] [role="tablist"] {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [role="tab"] {
+  font-family: var(--font-family-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+html[data-theme="aiox"] [role="tab"][aria-selected="true"] {
+  background: rgba(209, 255, 0, 0.08) !important;
+  color: var(--aiox-lime) !important;
+  border: 1px solid rgba(209, 255, 0, 0.2) !important;
+}
+
+/* ============================================
+   TOOLTIPS
+   ============================================ */
+
+html[data-theme="aiox"] [role="tooltip"] {
+  background: var(--aiox-dark) !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.6rem;
+}
+
+/* ============================================
+   DIVIDERS — Sharp Lines
+   ============================================ */
+
+html[data-theme="aiox"] .glass-divider {
+  background: rgba(156, 156, 156, 0.15) !important;
 }
 
 /* ============================================
@@ -168,7 +405,6 @@ html[data-theme="aiox"] td[class*="value"] {
    ============================================ */
 
 html[data-theme="aiox"] [role="alert"] {
-  border-radius: 0;
   font-family: var(--font-family-mono);
   font-size: 0.65rem;
 }
@@ -210,6 +446,55 @@ html[data-theme="aiox"] legend {
 }
 
 /* ============================================
+   SIDEBAR & NAVIGATION
+   ============================================ */
+
+html[data-theme="aiox"] nav {
+  font-family: var(--font-family-mono);
+}
+
+html[data-theme="aiox"] nav button,
+html[data-theme="aiox"] nav a {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Active nav item: lime accent left border */
+html[data-theme="aiox"] nav button[class*="glass"],
+html[data-theme="aiox"] nav a[class*="glass"] {
+  background: rgba(209, 255, 0, 0.06) !important;
+  border-left: 2px solid var(--aiox-lime) !important;
+}
+
+/* ============================================
+   PROGRESS BARS & RINGS
+   ============================================ */
+
+html[data-theme="aiox"] progress {
+  background: var(--aiox-surface);
+}
+
+html[data-theme="aiox"] progress::-webkit-progress-bar {
+  background: var(--aiox-surface);
+}
+
+html[data-theme="aiox"] progress::-webkit-progress-value {
+  background: var(--aiox-lime);
+}
+
+/* ============================================
+   GRADIENT OVERRIDES — Remove Glass Gradients
+   Components using bg-gradient-to-br still show
+   colored glass effects. Override to solid dark.
+   ============================================ */
+
+html[data-theme="aiox"] [class*="bg-gradient-to"] {
+  background: var(--aiox-surface) !important;
+}
+
+/* ============================================
    SCROLLBAR — Cockpit Style
    ============================================ */
 
@@ -224,7 +509,6 @@ html[data-theme="aiox"] ::-webkit-scrollbar-track {
 
 html[data-theme="aiox"] ::-webkit-scrollbar-thumb {
   background: rgba(156, 156, 156, 0.15);
-  border-radius: 4px;
 }
 
 html[data-theme="aiox"] ::-webkit-scrollbar-thumb:hover {
@@ -245,14 +529,14 @@ html[data-theme="aiox"] ::selection {
    ============================================ */
 
 html[data-theme="aiox"] *:focus-visible {
-  outline: 2px solid rgba(209, 255, 0, 0.5);
-  outline-offset: 2px;
+  outline: 2px solid rgba(209, 255, 0, 0.5) !important;
+  outline-offset: 2px !important;
 }
 
 html[data-theme="aiox"] input:focus-visible,
 html[data-theme="aiox"] textarea:focus-visible,
 html[data-theme="aiox"] select:focus-visible {
-  outline: none;
+  outline: none !important;
 }
 
 /* ============================================
