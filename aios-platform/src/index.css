@@ -2,6 +2,9 @@
    AIOS Platform - Main Stylesheet
    ============================================ */
 
+/* AIOX Cockpit fonts (loaded on-demand when theme active) */
+@import './styles/fonts/aiox-fonts.css';
+
 /* Liquid Glass Design System (includes token imports) - MUST be first */
 @import './styles/liquid-glass.css';
 

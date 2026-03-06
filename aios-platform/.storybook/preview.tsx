@@ -31,6 +31,7 @@ document.head.appendChild(styleOverride);
  *   dark   → .dark on <html>, no data-theme
  *   glass  → .dark on <html>, data-theme="glass" on <html>
  *   matrix → .dark on <html>, data-theme="matrix" on <html>
+ *   aiox   → .dark on <html>, data-theme="aiox" on <html>
  */
 function ThemeWrapper({ theme, children }: { theme: string; children: React.ReactNode }) {
   useEffect(() => {
@@ -41,7 +42,7 @@ function ThemeWrapper({ theme, children }: { theme: string; children: React.Reac
     html.classList.toggle('dark', needsDark);
 
     // data-theme attribute: only glass and matrix
-    if (theme === 'glass' || theme === 'matrix') {
+    if (theme === 'glass' || theme === 'matrix' || theme === 'aiox') {
       html.setAttribute('data-theme', theme);
     } else {
       html.removeAttribute('data-theme');
@@ -103,6 +104,7 @@ const preview: Preview = {
           { value: 'dark', icon: 'moon', title: 'Dark' },
           { value: 'glass', icon: 'mirror', title: 'Glass' },
           { value: 'matrix', icon: 'cpu', title: 'Matrix' },
+          { value: 'aiox', icon: 'lightning', title: 'AIOX Cockpit' },
         ],
         showName: true,
         dynamicTitle: true,

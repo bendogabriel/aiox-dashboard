@@ -1,0 +1,270 @@
+/* ============================================
+   AIOX COCKPIT — Component Style Overrides
+   Transforms glass components into brandbook cockpit aesthetic:
+   - Monospace labels, uppercase, letter-spacing 0.08em
+   - Solid dark surfaces instead of heavy blur
+   - Brutalist borders (no rounded corners)
+   - Neon lime glow on interactive states
+   ============================================ */
+
+/* ============================================
+   BUTTONS — Cockpit Style
+   ============================================ */
+
+html[data-theme="aiox"] .glass-button {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 0;
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+html[data-theme="aiox"] .glass-button-primary {
+  border-radius: 0;
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+html[data-theme="aiox"] .glass-button-primary:hover {
+  box-shadow: 0 0 20px var(--aiox-lime-glow), 0 0 60px var(--aiox-lime-glow-soft) !important;
+}
+
+/* Small button */
+html[data-theme="aiox"] .glass-button[class*="text-xs"],
+html[data-theme="aiox"] .glass-button[class*="text-sm"],
+html[data-theme="aiox"] button[class*="text-xs"] {
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================
+   CARDS — Brutalist Cockpit
+   ============================================ */
+
+html[data-theme="aiox"] .glass-card {
+  border-radius: 0;
+  backdrop-filter: blur(5px) saturate(120%);
+  -webkit-backdrop-filter: blur(5px) saturate(120%);
+}
+
+html[data-theme="aiox"] .glass-card:hover {
+  box-shadow: inset 0 0 0 1px var(--aiox-neon-dim) !important;
+}
+
+html[data-theme="aiox"] .glass-card-active {
+  border-radius: 0;
+}
+
+/* ============================================
+   INPUTS — Cockpit Precision
+   ============================================ */
+
+html[data-theme="aiox"] .glass-input {
+  font-family: var(--font-family-mono);
+  font-size: 0.7rem;
+  border-radius: 0;
+  background: var(--aiox-surface);
+  border: 1px solid rgba(156, 156, 156, 0.15);
+}
+
+html[data-theme="aiox"] .glass-input:focus {
+  border-color: var(--aiox-lime) !important;
+  box-shadow: 0 0 0 1px var(--aiox-lime) !important;
+}
+
+html[data-theme="aiox"] .glass-input::placeholder {
+  color: var(--aiox-gray-dim);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+html[data-theme="aiox"] textarea.glass-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ============================================
+   BADGES — Cockpit Labels
+   ============================================ */
+
+html[data-theme="aiox"] .glass-badge {
+  font-family: var(--font-family-mono);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 0;
+  backdrop-filter: none;
+}
+
+html[data-theme="aiox"] .glass-badge-squad {
+  background: var(--aiox-neon-dim);
+  color: var(--aiox-lime);
+  border: 1px solid rgba(209, 255, 0, 0.2);
+}
+
+/* ============================================
+   PANELS & SIDEBAR — Solid Dark
+   ============================================ */
+
+html[data-theme="aiox"] .glass-panel {
+  border-radius: 0;
+}
+
+/* ============================================
+   DIALOG / MODAL — Cockpit Overlay
+   ============================================ */
+
+html[data-theme="aiox"] [role="dialog"] {
+  border-radius: 0;
+  border: 1px solid rgba(156, 156, 156, 0.15);
+}
+
+/* ============================================
+   TABLES — Data-Dense Cockpit
+   ============================================ */
+
+html[data-theme="aiox"] table {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  border-collapse: collapse;
+}
+
+html[data-theme="aiox"] th {
+  background: var(--aiox-surface);
+  border-bottom: 1px solid rgba(156, 156, 156, 0.15);
+  font-size: 0.55rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.75rem 1.25rem;
+  color: var(--aiox-gray-dim);
+}
+
+html[data-theme="aiox"] td {
+  border-bottom: 1px solid rgba(156, 156, 156, 0.10);
+  padding: 0.75rem 1.25rem;
+}
+
+html[data-theme="aiox"] tr:hover td {
+  background: rgba(209, 255, 0, 0.02);
+}
+
+/* Tabular numbers for data columns */
+html[data-theme="aiox"] td[class*="num"],
+html[data-theme="aiox"] td[class*="count"],
+html[data-theme="aiox"] td[class*="value"] {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ============================================
+   TOAST — Cockpit Notifications
+   ============================================ */
+
+html[data-theme="aiox"] [role="alert"] {
+  border-radius: 0;
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+}
+
+/* ============================================
+   HEADINGS — Display Font
+   ============================================ */
+
+html[data-theme="aiox"] h1,
+html[data-theme="aiox"] h2 {
+  font-family: var(--font-family-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+}
+
+html[data-theme="aiox"] h1 {
+  font-size: var(--font-size-2xl);
+  line-height: 1;
+}
+
+html[data-theme="aiox"] h2 {
+  font-size: var(--font-size-xl);
+  line-height: 1.05;
+}
+
+/* ============================================
+   LABELS & META — Mono Uppercase
+   ============================================ */
+
+html[data-theme="aiox"] .section-label,
+html[data-theme="aiox"] label,
+html[data-theme="aiox"] legend {
+  font-family: var(--font-family-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================
+   SCROLLBAR — Cockpit Style
+   ============================================ */
+
+html[data-theme="aiox"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html[data-theme="aiox"] ::-webkit-scrollbar-track {
+  background: var(--aiox-dark);
+}
+
+html[data-theme="aiox"] ::-webkit-scrollbar-thumb {
+  background: rgba(156, 156, 156, 0.15);
+  border-radius: 4px;
+}
+
+html[data-theme="aiox"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 156, 156, 0.25);
+}
+
+/* ============================================
+   SELECTION — Lime on Dark
+   ============================================ */
+
+html[data-theme="aiox"] ::selection {
+  background: var(--aiox-dark);
+  color: var(--aiox-lime);
+}
+
+/* ============================================
+   FOCUS — Lime Ring
+   ============================================ */
+
+html[data-theme="aiox"] *:focus-visible {
+  outline: 2px solid rgba(209, 255, 0, 0.5);
+  outline-offset: 2px;
+}
+
+html[data-theme="aiox"] input:focus-visible,
+html[data-theme="aiox"] textarea:focus-visible,
+html[data-theme="aiox"] select:focus-visible {
+  outline: none;
+}
+
+/* ============================================
+   REDUCED MOTION — Accessibility
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="aiox"] *,
+  html[data-theme="aiox"] *::before,
+  html[data-theme="aiox"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

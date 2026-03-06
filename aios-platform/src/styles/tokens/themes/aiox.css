@@ -1,0 +1,1514 @@
+/* ============================================
+   AIOX DARK COCKPIT THEME
+   High contrast dark theme with neon lime accents.
+   Aesthetic: technical premium, precision grid, restrained neon.
+   Applied via data-theme="aiox" on <html>
+   Also adds .dark class so Tailwind dark: utilities work.
+
+   Source: ds-tokens.md (AIOX Design Tokens - Visual SSOT)
+   Brandbook: https://brand.aioxsquad.ai/
+
+   SPECIFICITY NOTE:
+   We use `html[data-theme="aiox"]` (0-1-1) to beat
+   `.dark` (0-1-0) from dark.css regardless of import order.
+   ============================================ */
+
+/* ============================================
+   TIER 1 — Token overrides (ALL semantic + component)
+   ============================================ */
+
+html[data-theme="aiox"] {
+  /* ----- AIOX Palette Primitives ----- */
+  --aiox-lime: #D1FF00;
+  --aiox-dark: #050505;
+  --aiox-void: #000000;
+  --aiox-surface: #0F0F11;
+  --aiox-surface-alt: #1C1E19;
+  --aiox-surface-hover: #1C1E19;
+  --aiox-surface-deep: oklch(0.1457 0.0043 285.86);
+  --aiox-surface-panel: oklch(0.1785 0.0041 285.98);
+  --aiox-surface-console: oklch(0.184 0.0081 118.61);
+  --aiox-surface-hover-strong: oklch(0.1971 0.006 285.84);
+  --aiox-surface-overlay: rgba(15, 15, 17, 0.92);
+  --aiox-cream: #F4F4E8;
+  --aiox-cream-alt: #F5F4E7;
+  --aiox-warm-white: #FFFFED;
+  --aiox-blue: #0099FF;
+  --aiox-flare: #ED4609;
+  --aiox-ink: oklch(0.235 0.0116 122.3);
+
+  /* ----- Brandbook Gray Scale ----- */
+  --aiox-gray-charcoal: #3D3D3D;
+  --aiox-gray-dim: #696969;
+  --aiox-gray-muted: #999999;
+  --aiox-gray-silver: #BDBDBD;
+
+  /* ----- Neon / Glow Tokens ----- */
+  --aiox-neon-dim: rgba(209, 255, 0, 0.15);
+  --aiox-neon-glow: rgba(209, 255, 0, 0.4);
+  --aiox-lime-glow: rgba(209, 255, 0, 0.25);
+  --aiox-lime-glow-soft: rgba(209, 255, 0, 0.1);
+
+  /* ----- Typography (Brandbook fonts) ----- */
+  --font-family-display: 'TASAOrbiterDisplay', system-ui, sans-serif;
+  --font-family-sans: 'Geist', system-ui, sans-serif;
+  --font-family-mono: 'Roboto Mono', 'SF Mono', monospace;
+
+  /* ----- Background layers (semantic) ----- */
+  --color-background-primary: rgba(15, 15, 17, 0.85);
+  --color-background-secondary: rgba(28, 30, 25, 0.70);
+  --color-background-tertiary: rgba(15, 15, 17, 0.55);
+  --color-background-base: #050505;
+  --color-background-hover: rgba(209, 255, 0, 0.06);
+  --color-background-active: rgba(209, 255, 0, 0.10);
+  --color-background-disabled: rgba(255, 255, 255, 0.03);
+
+  /* ----- Text (cream on dark) ----- */
+  --color-text-primary: #ffffed;
+  --color-text-secondary: #9c9c9c;
+  --color-text-tertiary: #858585;
+  --color-text-disabled: #6D6D6D;
+  --color-text-inverse: #050505;
+
+  /* ----- Borders (lime-tinted structure) ----- */
+  --color-border-default: #2a2a2c;
+  --color-border-subtle: rgba(156, 156, 156, 0.12);
+  --color-border-strong: rgba(209, 255, 0, 0.20);
+  --color-border-focus: rgba(209, 255, 0, 0.50);
+
+  /* ----- Accent (lime — NOT blue) ----- */
+  --color-accent: #D1FF00;
+  --color-accent-subtle: rgba(209, 255, 0, 0.15);
+  --color-selection-bg: rgba(209, 255, 0, 0.25);
+  --color-selection-text: #ffffed;
+
+  /* ----- Status (muted for cockpit — only error stays vivid) ----- */
+  --color-status-success: #858585;
+  --color-status-warning: #858585;
+  --color-status-error: #EF4444;
+  --color-status-info: #858585;
+  --color-status-success-muted: #6D6D6D;
+  --color-status-warning-muted: #6D6D6D;
+  --color-status-error-muted: #EF4444;
+  --color-status-info-muted: #6D6D6D;
+
+  /* ----- Glass Backgrounds (solid dark, minimal translucency) ----- */
+  --glass-background-panel: rgba(15, 15, 17, 0.92);
+  --glass-background-panel-hover: rgba(28, 30, 25, 0.95);
+  --glass-background-card: rgba(15, 15, 17, 0.88);
+  --glass-background-card-active: linear-gradient(
+    135deg,
+    rgba(209, 255, 0, 0.10) 0%,
+    rgba(209, 255, 0, 0.04) 100%
+  );
+  --glass-background-input: rgba(5, 5, 5, 0.90);
+  --glass-background-button: rgba(28, 30, 25, 0.65);
+  --glass-background-button-primary: linear-gradient(135deg, #D1FF00, #a8cc00);
+  --glass-background-button-primary-hover: linear-gradient(135deg, #e0ff33, #D1FF00);
+
+  /* ----- Glass Blur (subtle, cockpit precision) ----- */
+  --glass-blur-default: 10px;
+  --glass-blur-strong: 20px;
+  --glass-blur-maximum: 30px;
+  --glass-blur-subtle: 5px;
+  --glass-saturate-default: 120%;
+
+  /* ----- Glass borders ----- */
+  --glass-border-color: rgba(156, 156, 156, 0.24);
+  --glass-border-color-subtle: rgba(156, 156, 156, 0.12);
+
+  /* ----- Glass Shadows (lime glow accents) ----- */
+  --glass-shadow-default:
+    0 0 0 1px rgba(209, 255, 0, 0.06) inset,
+    0 4px 16px rgba(0, 0, 0, 0.50);
+  --glass-shadow-large:
+    0 0 0 1px rgba(209, 255, 0, 0.08) inset,
+    0 8px 32px rgba(0, 0, 0, 0.60),
+    0 0 40px rgba(209, 255, 0, 0.04);
+  --glass-shadow-hover:
+    0 0 0 1px rgba(209, 255, 0, 0.12) inset,
+    0 12px 40px rgba(0, 0, 0, 0.65),
+    0 0 60px rgba(209, 255, 0, 0.08);
+
+  /* ----- Component: Button (lime) ----- */
+  --button-primary-text: #050505;
+  --button-focus-ring: rgba(209, 255, 0, 0.40);
+  --button-danger-bg: rgba(239, 68, 68, 0.10);
+  --button-danger-text: #EF4444;
+  --button-danger-bg-hover: rgba(239, 68, 68, 0.20);
+  --button-danger-border: rgba(239, 68, 68, 0.20);
+  --button-ghost-hover: rgba(255, 255, 255, 0.05);
+
+  /* ----- Component: Input (lime focus) ----- */
+  --input-focus-ring: rgba(209, 255, 0, 0.30);
+  --input-error-ring: rgba(239, 68, 68, 0.30);
+  --input-error-border: rgba(239, 68, 68, 0.50);
+  --input-error-border-focus: #EF4444;
+  --input-error-text: #EF4444;
+  --input-success-ring: rgba(74, 222, 128, 0.30);
+  --input-success-border: rgba(74, 222, 128, 0.50);
+  --input-success-border-focus: #4ADE80;
+  --input-success-text: #4ADE80;
+  --input-required-text: #EF4444;
+
+  /* ----- Component: Sidebar (lime accent) ----- */
+  --sidebar-active-bg: rgba(209, 255, 0, 0.10);
+  --sidebar-active-border: rgba(209, 255, 0, 0.30);
+  --sidebar-active-text: #D1FF00;
+  --sidebar-active-kbd-bg: rgba(209, 255, 0, 0.15);
+  --sidebar-active-kbd-text: #D1FF00;
+  --sidebar-logo-gradient: linear-gradient(to bottom right, #D1FF00, #a8cc00);
+
+  /* ----- Component: Loader (lime) ----- */
+  --loader-ring: rgba(209, 255, 0, 0.15);
+  --loader-arc: #D1FF00;
+  --loader-dot-from: #D1FF00;
+  --loader-dot-to: #a8cc00;
+
+  /* ----- Component: Progress (ALL lime — cockpit monochrome) ----- */
+  --progress-default: #D1FF00;
+  --progress-success: #D1FF00;
+  --progress-warning: rgba(209, 255, 0, 0.50);
+  --progress-error: #EF4444;
+  --progress-info: #D1FF00;
+  --progress-track: rgba(255, 255, 255, 0.06);
+  --progress-default-glow: rgba(209, 255, 0, 0.40);
+  --progress-success-glow: rgba(209, 255, 0, 0.40);
+  --progress-warning-glow: rgba(209, 255, 0, 0.20);
+  --progress-error-glow: rgba(239, 68, 68, 0.40);
+  --progress-info-glow: rgba(209, 255, 0, 0.40);
+
+  /* ----- Component: Badge (lime) ----- */
+  --badge-count-bg: #D1FF00;
+  --badge-count-text: #050505;
+
+  /* ----- Component: Toast (muted — error vivid only) ----- */
+  --toast-success-bg: rgba(209, 255, 0, 0.06);
+  --toast-success-border: rgba(209, 255, 0, 0.15);
+  --toast-success-text: #D1FF00;
+  --toast-error-bg: rgba(239, 68, 68, 0.10);
+  --toast-error-border: rgba(239, 68, 68, 0.25);
+  --toast-error-text: #EF4444;
+  --toast-warning-bg: rgba(133, 133, 133, 0.08);
+  --toast-warning-border: rgba(133, 133, 133, 0.20);
+  --toast-warning-text: #9c9c9c;
+  --toast-info-bg: rgba(133, 133, 133, 0.08);
+  --toast-info-border: rgba(133, 133, 133, 0.20);
+  --toast-info-text: #9c9c9c;
+
+  /* ----- Component: Status dot (muted — only error stays vivid) ----- */
+  --status-dot-idle: #4a4a4a;
+  --status-dot-working: #D1FF00;
+  --status-dot-waiting: #858585;
+  --status-dot-error: #EF4444;
+  --status-dot-success: #D1FF00;
+  --status-dot-offline: #4a4a4a;
+  --status-dot-working-glow: rgba(209, 255, 0, 0.40);
+  --status-dot-waiting-glow: rgba(133, 133, 133, 0.30);
+  --status-dot-error-glow: rgba(239, 68, 68, 0.50);
+  --status-dot-success-glow: rgba(209, 255, 0, 0.40);
+
+  /* ----- Squads: ALL neutralized (lime accent, no vivid colors) ----- */
+  --squad-copywriting-default: #858585;
+  --squad-copywriting-muted: #6D6D6D;
+  --squad-copywriting-end: #6D6D6D;
+  --squad-copywriting-gradient: linear-gradient(90deg, #858585, #6D6D6D);
+  --squad-design-default: #858585;
+  --squad-design-muted: #6D6D6D;
+  --squad-design-end: #6D6D6D;
+  --squad-design-gradient: linear-gradient(90deg, #858585, #6D6D6D);
+  --squad-creator-default: #858585;
+  --squad-creator-muted: #6D6D6D;
+  --squad-creator-end: #6D6D6D;
+  --squad-creator-gradient: linear-gradient(90deg, #858585, #6D6D6D);
+  --squad-orchestrator-default: #858585;
+  --squad-orchestrator-muted: #6D6D6D;
+  --squad-orchestrator-end: #6D6D6D;
+  --squad-orchestrator-gradient: linear-gradient(90deg, #858585, #6D6D6D);
+  --squad-content-default: #858585;
+  --squad-content-muted: #6D6D6D;
+  --squad-content-end: #6D6D6D;
+  --squad-content-gradient: linear-gradient(90deg, #858585, #6D6D6D);
+  --squad-development-default: #858585;
+  --squad-development-muted: #6D6D6D;
+  --squad-development-end: #6D6D6D;
+  --squad-development-gradient: linear-gradient(90deg, #858585, #6D6D6D);
+  --squad-engineering-default: #858585;
+  --squad-engineering-muted: #6D6D6D;
+  --squad-engineering-end: #6D6D6D;
+  --squad-engineering-gradient: linear-gradient(90deg, #858585, #6D6D6D);
+  --squad-analytics-default: #858585;
+  --squad-analytics-muted: #6D6D6D;
+  --squad-analytics-end: #6D6D6D;
+  --squad-analytics-gradient: linear-gradient(90deg, #858585, #6D6D6D);
+  --squad-marketing-default: #858585;
+  --squad-marketing-muted: #6D6D6D;
+  --squad-marketing-end: #6D6D6D;
+  --squad-marketing-gradient: linear-gradient(90deg, #858585, #6D6D6D);
+  --squad-advisory-default: #858585;
+  --squad-advisory-muted: #6D6D6D;
+  --squad-advisory-end: #6D6D6D;
+  --squad-advisory-gradient: linear-gradient(90deg, #858585, #6D6D6D);
+  --squad-default-default: #6D6D6D;
+  --squad-default-muted: #4a4a4a;
+  --squad-default-end: #4a4a4a;
+  --squad-default-gradient: linear-gradient(90deg, #6D6D6D, #4a4a4a);
+
+  /* ----- Tiers: neutralized ----- */
+  --tier-0-default: #858585;
+  --tier-0-muted: #6D6D6D;
+  --tier-0-end: #6D6D6D;
+  --tier-1-default: #858585;
+  --tier-1-muted: #6D6D6D;
+  --tier-1-end: #6D6D6D;
+  --tier-2-default: #858585;
+  --tier-2-muted: #6D6D6D;
+  --tier-2-end: #6D6D6D;
+
+  /* ----- Scrollbar ----- */
+  scrollbar-color: rgba(209, 255, 0, 0.16) transparent;
+
+  /* ----- Chart colors (monochrome lime cockpit) ----- */
+  --chart-line: #D1FF00;
+  --chart-line-fill: rgba(209, 255, 0, 0.08);
+  --chart-bar-1: rgba(209, 255, 0, 0.80);
+  --chart-bar-2: rgba(209, 255, 0, 0.60);
+  --chart-bar-3: rgba(209, 255, 0, 0.45);
+  --chart-bar-4: rgba(209, 255, 0, 0.30);
+  --chart-bar-5: rgba(156, 156, 156, 0.40);
+  --chart-bar-6: rgba(156, 156, 156, 0.25);
+  --chart-donut-1: #D1FF00;
+  --chart-donut-2: #858585;
+  --chart-donut-3: #6D6D6D;
+  --chart-donut-4: #4a4a4a;
+  --chart-donut-5: #2a2a2c;
+  --chart-sparkline: #D1FF00;
+  --chart-progress-ring: #D1FF00;
+  --chart-ring-bg: rgba(209, 255, 0, 0.06);
+  --chart-grid: rgba(209, 255, 0, 0.05);
+  --chart-text: rgba(209, 255, 0, 0.60);
+  --chart-text-dim: rgba(209, 255, 0, 0.40);
+
+  /* ----- Kanban column indicators (neutralized) ----- */
+  --kanban-backlog: #858585;
+  --kanban-in-progress: #D1FF00;
+  --kanban-ai-review: #858585;
+  --kanban-human-review: #858585;
+  --kanban-pr-created: #858585;
+  --kanban-done: rgba(209, 255, 0, 0.60);
+  --kanban-error: #EF4444;
+  --kanban-drop-ring: rgba(209, 255, 0, 0.30);
+  --kanban-drop-bg: rgba(209, 255, 0, 0.05);
+
+  /* ----- Kanban story card badges (neutralized monochrome) ----- */
+  --kanban-badge-bg: rgba(156, 156, 156, 0.10);
+  --kanban-badge-text: #9c9c9c;
+
+  /* ----- Kanban priority dots (neutralized — only critical stays red) ----- */
+  --kanban-priority-bg: #6D6D6D;
+
+  /* ----- Terminal (lime prompt, cockpit aesthetic) ----- */
+  --terminal-prompt: #D1FF00;
+  --terminal-success: rgba(209, 255, 0, 0.70);
+  --terminal-error: #EF4444;
+  --terminal-text: #9c9c9c;
+  --terminal-cursor: #D1FF00;
+  --terminal-active-ring: rgba(209, 255, 0, 0.20);
+  --terminal-status-active: #D1FF00;
+  --terminal-activity-dot: #D1FF00;
+  --terminal-activity-bg: rgba(209, 255, 0, 0.80);
+  --terminal-ansi-yellow: #9c9c9c;
+  --terminal-ansi-blue: #9c9c9c;
+  --terminal-ansi-purple: #9c9c9c;
+  --terminal-ansi-cyan: #9c9c9c;
+  --terminal-ansi-dim: #6D6D6D;
+
+  /* ----- World map domain colors (monochrome cockpit) ----- */
+  --world-content-tile: #858585;
+  --world-content-border: #6D6D6D;
+  --world-content-agent: #D1FF00;
+  --world-content-floor: #0F0F11;
+  --world-sales-tile: #858585;
+  --world-sales-border: #6D6D6D;
+  --world-sales-agent: #D1FF00;
+  --world-sales-floor: #0F0F11;
+  --world-dev-tile: #D1FF00;
+  --world-dev-border: #a8cc00;
+  --world-dev-agent: #D1FF00;
+  --world-dev-floor: #0F0F11;
+  --world-design-tile: #858585;
+  --world-design-border: #6D6D6D;
+  --world-design-agent: #D1FF00;
+  --world-design-floor: #0F0F11;
+  --world-data-tile: #6D6D6D;
+  --world-data-border: #4a4a4a;
+  --world-data-agent: #D1FF00;
+  --world-data-floor: #0F0F11;
+  --world-ops-tile: #6D6D6D;
+  --world-ops-border: #4a4a4a;
+  --world-ops-agent: #D1FF00;
+  --world-ops-floor: #0F0F11;
+
+  /* ----- World workflow status (neutralized) ----- */
+  --world-status-active: #D1FF00;
+  --world-status-completed: #858585;
+  --world-status-failed: #EF4444;
+}
+
+/* ============================================
+   TIER 2 — Dark cockpit background
+   Void base with restrained lime glow.
+   ============================================ */
+
+html[data-theme="aiox"] .app-background {
+  background: #050505 !important;
+}
+
+html[data-theme="aiox"] .app-background::before {
+  background:
+    /* Lime glow — top-center (restrained) */
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(209, 255, 0, 0.06) 0%, transparent 60%),
+    /* Subtle warm — bottom-left */
+    radial-gradient(ellipse 40% 40% at 10% 85%, rgba(237, 70, 9, 0.03) 0%, transparent 45%),
+    /* Void base */
+    linear-gradient(180deg, #050505 0%, #0F0F11 40%, #0a0a0c 100%) !important;
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+/* Film grain texture */
+html[data-theme="aiox"] .app-background::after {
+  opacity: 0.05 !important;
+}
+
+/* ============================================
+   TIER 3 — Component overrides
+   Kill all hardcoded blue values in liquid-glass.css
+   ============================================ */
+
+/* --- Sidebar --- */
+html[data-theme="aiox"] aside {
+  background: rgba(5, 5, 5, 0.95) !important;
+  backdrop-filter: blur(10px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(120%) !important;
+  border-color: #2a2a2c !important;
+}
+
+/* --- Header --- */
+html[data-theme="aiox"] header {
+  background: rgba(5, 5, 5, 0.92) !important;
+  backdrop-filter: blur(10px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(120%) !important;
+  border-color: #2a2a2c !important;
+}
+
+/* --- Status bar (footer) --- */
+html[data-theme="aiox"] footer[role="status"] {
+  background: rgba(5, 5, 5, 0.95) !important;
+  backdrop-filter: blur(10px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(120%) !important;
+  border-color: #2a2a2c !important;
+}
+
+/* --- Glass card active (kills blue fallback on line 77 of liquid-glass.css) --- */
+html[data-theme="aiox"] .glass-card-active {
+  box-shadow: 0 4px 16px rgba(209, 255, 0, 0.15) !important;
+}
+
+/* --- Glass card hover (lime glow) --- */
+html[data-theme="aiox"] .glass-card:hover {
+  border-color: rgba(209, 255, 0, 0.20) !important;
+  box-shadow:
+    0 0 0 1px rgba(209, 255, 0, 0.08) inset,
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(209, 255, 0, 0.06) !important;
+}
+
+/* --- Glass input focus (kills blue fallback on line 184) --- */
+html[data-theme="aiox"] .glass-input:focus {
+  border-color: rgba(209, 255, 0, 0.50) !important;
+  box-shadow: 0 0 0 4px rgba(209, 255, 0, 0.15) !important;
+}
+
+/* --- Glass button primary (lime bg, dark text) --- */
+html[data-theme="aiox"] .glass-button-primary {
+  background: linear-gradient(135deg, #D1FF00, #a8cc00) !important;
+  color: #050505 !important;
+  font-weight: 600;
+}
+html[data-theme="aiox"] .glass-button-primary:hover {
+  background: linear-gradient(135deg, #e0ff33, #D1FF00) !important;
+  box-shadow: 0 0 20px rgba(209, 255, 0, 0.25), 0 0 60px rgba(209, 255, 0, 0.10) !important;
+}
+
+/* --- Message bubble user (dark text on lime) --- */
+html[data-theme="aiox"] .message-bubble-user {
+  background: linear-gradient(135deg, #D1FF00, #a8cc00) !important;
+  color: #050505 !important;
+}
+
+/* --- Workflow canvas (kills blue gradients on lines 757-759) --- */
+html[data-theme="aiox"] .workflow-canvas {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(209, 255, 0, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(156, 156, 156, 0.02) 0%, transparent 40%),
+    radial-gradient(circle at 20% 80%, rgba(74, 222, 128, 0.02) 0%, transparent 40%) !important;
+}
+
+/* --- Workflow minimap viewport (kills blue fallback on line 866) --- */
+html[data-theme="aiox"] .workflow-minimap-viewport {
+  border-color: rgba(209, 255, 0, 0.50) !important;
+  background: rgba(209, 255, 0, 0.10) !important;
+}
+
+/* --- Workflow connection active (kills blue glow on line 913) --- */
+html[data-theme="aiox"] .workflow-connection.active {
+  filter: drop-shadow(0 0 4px rgba(209, 255, 0, 0.40)) !important;
+}
+
+/* --- Workflow agent card selected (kills blue border/shadow on lines 939-940) --- */
+html[data-theme="aiox"] .workflow-agent-card.selected {
+  border-color: rgba(209, 255, 0, 0.50) !important;
+  box-shadow: 0 0 0 2px rgba(209, 255, 0, 0.15) !important;
+}
+
+/* --- Scrollbar --- */
+html[data-theme="aiox"] .glass-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(209, 255, 0, 0.12);
+}
+html[data-theme="aiox"] .glass-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(209, 255, 0, 0.24);
+}
+
+/* --- Modal/overlay backdrop --- */
+html[data-theme="aiox"] .bg-black\/80 {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+  backdrop-filter: blur(8px) !important;
+}
+html[data-theme="aiox"] .bg-black\/50 {
+  background-color: rgba(0, 0, 0, 0.60) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+/* --- Selection (lime) --- */
+html[data-theme="aiox"] ::selection {
+  background: rgba(209, 255, 0, 0.30);
+  color: #ffffed;
+}
+
+/* --- Select/dropdown elements --- */
+html[data-theme="aiox"] select,
+html[data-theme="aiox"] select option {
+  background-color: rgba(15, 15, 17, 0.95);
+  color: #ffffed;
+}
+
+/* --- Focus ring (lime) --- */
+html[data-theme="aiox"] *:focus-visible {
+  outline-color: rgba(209, 255, 0, 0.50);
+}
+
+/* ============================================
+   TIER 4 — Targeted Tailwind class overrides
+   Only override blue used as ACCENT, not for
+   squad/status functional colors.
+   ============================================ */
+
+/* --- ThemeToggle: dark mode thumb gradient (blue→purple → lime) --- */
+html[data-theme="aiox"] .from-blue-500.to-purple-600 {
+  --tw-gradient-from: #D1FF00 !important;
+  --tw-gradient-to: #a8cc00 !important;
+}
+
+/* --- ThemeToggle: dark mode track gradient --- */
+html[data-theme="aiox"] .from-blue-500.to-purple-600 {
+  background: linear-gradient(to bottom right, #D1FF00, #a8cc00) !important;
+}
+
+/* --- Ring utilities (focus rings should be lime) --- */
+html[data-theme="aiox"] .ring-blue-500,
+html[data-theme="aiox"] .focus\:ring-blue-500:focus {
+  --tw-ring-color: rgba(209, 255, 0, 0.40) !important;
+}
+
+/* ============================================
+   TIER 5 — TOTAL NEUTRAL OVERRIDE
+   Neutralize ALL hardcoded Tailwind color utilities.
+   AIOX Cockpit: lime accent only, everything else gray/muted.
+   Palette:
+     Accent:   #D1FF00 (lime — the ONLY pop of color)
+     Bright:   #ffffed / #F4F4E8 (cream text)
+     Muted:    #858585 / #9c9c9c (secondary text)
+     Dim:      #6D6D6D / #4a4a4a (tertiary/disabled)
+     Surface:  #1C1E19 / #0F0F11 (elevated/base)
+     Border:   #2a2a2c / rgba(156,156,156,0.12)
+   ============================================ */
+
+/* ---- TEXT: all vivid color classes → muted gray ---- */
+html[data-theme="aiox"] [class*="text-blue-"],
+html[data-theme="aiox"] [class*="text-purple-"],
+html[data-theme="aiox"] [class*="text-violet-"],
+html[data-theme="aiox"] [class*="text-pink-"],
+html[data-theme="aiox"] [class*="text-rose-"],
+html[data-theme="aiox"] [class*="text-fuchsia-"],
+html[data-theme="aiox"] [class*="text-cyan-"],
+html[data-theme="aiox"] [class*="text-sky-"],
+html[data-theme="aiox"] [class*="text-indigo-"],
+html[data-theme="aiox"] [class*="text-teal-"],
+html[data-theme="aiox"] [class*="text-emerald-"] {
+  color: #9c9c9c !important;
+}
+html[data-theme="aiox"] [class*="text-orange-"],
+html[data-theme="aiox"] [class*="text-amber-"],
+html[data-theme="aiox"] [class*="text-yellow-"] {
+  color: #9c9c9c !important;
+}
+html[data-theme="aiox"] [class*="text-red-"] {
+  color: #EF4444 !important;  /* keep error red */
+}
+html[data-theme="aiox"] [class*="text-green-"] {
+  color: #9c9c9c !important;
+}
+html[data-theme="aiox"] [class*="text-lime-"] {
+  color: #D1FF00 !important;  /* preserve lime */
+}
+
+/* ---- BACKGROUND: all vivid bg classes → neutral surfaces ---- */
+/* NOTE: only override background-color, NOT color. Text color is
+   handled by the text-* overrides above to avoid conflicting with
+   text-white or other text classes on the same element. */
+html[data-theme="aiox"] [class*="bg-blue-"],
+html[data-theme="aiox"] [class*="bg-purple-"],
+html[data-theme="aiox"] [class*="bg-violet-"],
+html[data-theme="aiox"] [class*="bg-pink-"],
+html[data-theme="aiox"] [class*="bg-rose-"],
+html[data-theme="aiox"] [class*="bg-fuchsia-"],
+html[data-theme="aiox"] [class*="bg-cyan-"],
+html[data-theme="aiox"] [class*="bg-sky-"],
+html[data-theme="aiox"] [class*="bg-indigo-"],
+html[data-theme="aiox"] [class*="bg-teal-"],
+html[data-theme="aiox"] [class*="bg-emerald-"] {
+  background-color: rgba(156, 156, 156, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="bg-orange-"],
+html[data-theme="aiox"] [class*="bg-amber-"],
+html[data-theme="aiox"] [class*="bg-yellow-"] {
+  background-color: rgba(156, 156, 156, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="bg-red-"] {
+  background-color: rgba(239, 68, 68, 0.10) !important;
+}
+html[data-theme="aiox"] [class*="bg-green-"] {
+  background-color: rgba(156, 156, 156, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="bg-lime-"] {
+  background-color: rgba(209, 255, 0, 0.10) !important;
+}
+
+/* ---- BORDER: all vivid border colors → neutral ---- */
+html[data-theme="aiox"] [class*="border-blue-"],
+html[data-theme="aiox"] [class*="border-purple-"],
+html[data-theme="aiox"] [class*="border-violet-"],
+html[data-theme="aiox"] [class*="border-pink-"],
+html[data-theme="aiox"] [class*="border-rose-"],
+html[data-theme="aiox"] [class*="border-fuchsia-"],
+html[data-theme="aiox"] [class*="border-cyan-"],
+html[data-theme="aiox"] [class*="border-sky-"],
+html[data-theme="aiox"] [class*="border-indigo-"],
+html[data-theme="aiox"] [class*="border-teal-"],
+html[data-theme="aiox"] [class*="border-emerald-"],
+html[data-theme="aiox"] [class*="border-orange-"],
+html[data-theme="aiox"] [class*="border-amber-"],
+html[data-theme="aiox"] [class*="border-yellow-"],
+html[data-theme="aiox"] [class*="border-red-"],
+html[data-theme="aiox"] [class*="border-green-"] {
+  border-color: #2a2a2c !important;
+}
+
+/* ---- BORDER-L (KPI card left accent borders) → lime ---- */
+html[data-theme="aiox"] [class*="border-l-blue-"],
+html[data-theme="aiox"] [class*="border-l-purple-"],
+html[data-theme="aiox"] [class*="border-l-cyan-"],
+html[data-theme="aiox"] [class*="border-l-red-"],
+html[data-theme="aiox"] [class*="border-l-green-"],
+html[data-theme="aiox"] [class*="border-l-orange-"],
+html[data-theme="aiox"] [class*="border-l-yellow-"],
+html[data-theme="aiox"] [class*="border-l-pink-"],
+html[data-theme="aiox"] [class*="border-l-indigo-"],
+html[data-theme="aiox"] [class*="border-l-teal-"],
+html[data-theme="aiox"] [class*="border-l-emerald-"],
+html[data-theme="aiox"] [class*="border-l-amber-"] {
+  border-left-color: rgba(209, 255, 0, 0.30) !important;
+}
+
+html[data-theme="aiox"] [class*="border-b-blue-"],
+html[data-theme="aiox"] [class*="border-b-purple-"],
+html[data-theme="aiox"] [class*="border-b-cyan-"],
+html[data-theme="aiox"] [class*="border-b-green-"],
+html[data-theme="aiox"] [class*="border-b-orange-"] {
+  border-bottom-color: rgba(209, 255, 0, 0.20) !important;
+}
+
+html[data-theme="aiox"] [class*="border-t-blue-"],
+html[data-theme="aiox"] [class*="border-t-purple-"],
+html[data-theme="aiox"] [class*="border-t-cyan-"] {
+  border-top-color: transparent !important;
+}
+
+/* ---- GRADIENT: all vivid gradients → neutral dark ---- */
+html[data-theme="aiox"] [class*="from-blue-"],
+html[data-theme="aiox"] [class*="from-purple-"],
+html[data-theme="aiox"] [class*="from-violet-"],
+html[data-theme="aiox"] [class*="from-pink-"],
+html[data-theme="aiox"] [class*="from-rose-"],
+html[data-theme="aiox"] [class*="from-fuchsia-"],
+html[data-theme="aiox"] [class*="from-cyan-"],
+html[data-theme="aiox"] [class*="from-sky-"],
+html[data-theme="aiox"] [class*="from-indigo-"],
+html[data-theme="aiox"] [class*="from-teal-"],
+html[data-theme="aiox"] [class*="from-emerald-"],
+html[data-theme="aiox"] [class*="from-orange-"],
+html[data-theme="aiox"] [class*="from-amber-"],
+html[data-theme="aiox"] [class*="from-yellow-"],
+html[data-theme="aiox"] [class*="from-red-"],
+html[data-theme="aiox"] [class*="from-green-"] {
+  --tw-gradient-from: #1C1E19 !important;
+}
+
+html[data-theme="aiox"] [class*="via-blue-"],
+html[data-theme="aiox"] [class*="via-purple-"],
+html[data-theme="aiox"] [class*="via-cyan-"],
+html[data-theme="aiox"] [class*="via-green-"],
+html[data-theme="aiox"] [class*="via-orange-"],
+html[data-theme="aiox"] [class*="via-yellow-"],
+html[data-theme="aiox"] [class*="via-red-"],
+html[data-theme="aiox"] [class*="via-pink-"],
+html[data-theme="aiox"] [class*="via-indigo-"],
+html[data-theme="aiox"] [class*="via-sky-"],
+html[data-theme="aiox"] [class*="via-amber-"],
+html[data-theme="aiox"] [class*="via-emerald-"],
+html[data-theme="aiox"] [class*="via-teal-"] {
+  --tw-gradient-via: #2a2a2c !important;
+}
+
+html[data-theme="aiox"] [class*="to-blue-"],
+html[data-theme="aiox"] [class*="to-purple-"],
+html[data-theme="aiox"] [class*="to-violet-"],
+html[data-theme="aiox"] [class*="to-pink-"],
+html[data-theme="aiox"] [class*="to-rose-"],
+html[data-theme="aiox"] [class*="to-fuchsia-"],
+html[data-theme="aiox"] [class*="to-cyan-"],
+html[data-theme="aiox"] [class*="to-sky-"],
+html[data-theme="aiox"] [class*="to-indigo-"],
+html[data-theme="aiox"] [class*="to-emerald-"],
+html[data-theme="aiox"] [class*="to-lime-"],
+html[data-theme="aiox"] [class*="to-amber-"],
+html[data-theme="aiox"] [class*="to-orange-"],
+html[data-theme="aiox"] [class*="to-yellow-"],
+html[data-theme="aiox"] [class*="to-red-"],
+html[data-theme="aiox"] [class*="to-green-"] {
+  --tw-gradient-to: #2a2a2c !important;
+}
+
+/* ---- RING / FOCUS / ACCENT ---- */
+html[data-theme="aiox"] [class*="ring-blue-"],
+html[data-theme="aiox"] [class*="ring-purple-"],
+html[data-theme="aiox"] [class*="ring-cyan-"],
+html[data-theme="aiox"] [class*="ring-red-"],
+html[data-theme="aiox"] [class*="ring-green-"],
+html[data-theme="aiox"] [class*="ring-orange-"],
+html[data-theme="aiox"] [class*="ring-yellow-"],
+html[data-theme="aiox"] [class*="ring-pink-"],
+html[data-theme="aiox"] [class*="ring-indigo-"] {
+  --tw-ring-color: rgba(209, 255, 0, 0.20) !important;
+}
+
+html[data-theme="aiox"] [class*="focus\\:ring-blue-"]:focus,
+html[data-theme="aiox"] [class*="focus\\:ring-cyan-"]:focus,
+html[data-theme="aiox"] [class*="focus\\:ring-green-"]:focus {
+  --tw-ring-color: rgba(209, 255, 0, 0.30) !important;
+}
+
+html[data-theme="aiox"] [class*="focus\\:border-blue-"]:focus,
+html[data-theme="aiox"] [class*="focus\\:border-cyan-"]:focus {
+  border-color: rgba(209, 255, 0, 0.40) !important;
+}
+
+html[data-theme="aiox"] [class*="accent-blue"],
+html[data-theme="aiox"] [class*="accent-purple"],
+html[data-theme="aiox"] [class*="accent-cyan"] { accent-color: #D1FF00 !important; }
+
+/* ---- SHADOW: colored shadows → neutral ---- */
+html[data-theme="aiox"] [class*="shadow-blue-"],
+html[data-theme="aiox"] [class*="shadow-purple-"],
+html[data-theme="aiox"] [class*="shadow-cyan-"],
+html[data-theme="aiox"] [class*="shadow-red-"],
+html[data-theme="aiox"] [class*="shadow-green-"],
+html[data-theme="aiox"] [class*="shadow-orange-"] {
+  --tw-shadow-color: rgba(209, 255, 0, 0.08) !important;
+}
+
+/* ---- DECORATION / DIVIDE ---- */
+html[data-theme="aiox"] [class*="divide-blue-"] > * + * { border-color: #2a2a2c !important; }
+html[data-theme="aiox"] [class*="decoration-blue-"] { text-decoration-color: rgba(209, 255, 0, 0.30) !important; }
+
+/* ---- SVG icon color enforcement ---- */
+html[data-theme="aiox"] svg { color: inherit; }
+
+/* ---- Spinner / loader overrides ---- */
+html[data-theme="aiox"] [class*="animate-spin"] {
+  border-color: rgba(209, 255, 0, 0.15) !important;
+  border-top-color: #D1FF00 !important;
+}
+
+/* ============================================
+   TIER 5b — Avatar gradient overrides
+   Force all avatar bg-gradient circles to neutral
+   ============================================ */
+html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-orange-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-purple-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-cyan-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-blue-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-green-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-amber-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-red-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-pink-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-indigo-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-orange-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-purple-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-cyan-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-blue-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-green-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-red-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-yellow-"] {
+  background: linear-gradient(135deg, #1C1E19, #2a2a2c) !important;
+}
+
+/* ============================================
+   TIER 5c — Progress bars & fills → lime
+   ============================================ */
+html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-blue-"][class*="to-purple-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-blue-"][class*="via-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-orange-"][class*="to-"],
+html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-green-"][class*="to-"] {
+  background: linear-gradient(90deg, rgba(209, 255, 0, 0.60), rgba(209, 255, 0, 0.30)) !important;
+}
+
+/* Progress bar fills (h-full bars) */
+html[data-theme="aiox"] [class*="h-full"][class*="bg-gradient-to-r"],
+html[data-theme="aiox"] [class*="h-full"][class*="bg-blue-"],
+html[data-theme="aiox"] [class*="h-full"][class*="bg-green-"],
+html[data-theme="aiox"] [class*="h-full"][class*="bg-orange-"],
+html[data-theme="aiox"] [class*="h-full"][class*="bg-purple-"],
+html[data-theme="aiox"] [class*="h-full"][class*="bg-cyan-"],
+html[data-theme="aiox"] [class*="h-full"][class*="bg-yellow-"] {
+  background: linear-gradient(90deg, #D1FF00, rgba(209, 255, 0, 0.50)) !important;
+}
+
+/* ============================================
+   TIER 5d — Small colored dots & status dots
+   ============================================ */
+html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-gradient-to-r"],
+html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-blue-"],
+html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-purple-"],
+html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-cyan-"],
+html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-orange-"],
+html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-yellow-"],
+html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-pink-"] {
+  background: #858585 !important;
+}
+/* Keep functional status dots */
+html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-green-"] {
+  background: #4ADE80 !important;
+}
+html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-red-"] {
+  background: #EF4444 !important;
+}
+
+/* Notification badges */
+html[data-theme="aiox"] span[class*="bg-red-500"][class*="rounded-full"] {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #EF4444 !important;
+}
+
+/* ============================================
+   TIER 5e — Tab & indicator overrides
+   ============================================ */
+html[data-theme="aiox"] [class*="h-0.5"][class*="bg-blue-"],
+html[data-theme="aiox"] [class*="h-0.5"][class*="bg-green-"],
+html[data-theme="aiox"] [class*="border-b-2"][class*="border-blue-"] {
+  background-color: #D1FF00 !important;
+  border-color: #D1FF00 !important;
+}
+
+/* ============================================
+   TIER 5f — Solid bg-color-500 overrides
+   ============================================ */
+html[data-theme="aiox"] .bg-blue-500,
+html[data-theme="aiox"] .bg-purple-500,
+html[data-theme="aiox"] .bg-indigo-500 {
+  background-color: rgba(156, 156, 156, 0.10) !important;
+}
+html[data-theme="aiox"] .bg-green-500,
+html[data-theme="aiox"] .bg-emerald-500,
+html[data-theme="aiox"] .bg-teal-500 {
+  background-color: rgba(156, 156, 156, 0.10) !important;
+}
+html[data-theme="aiox"] .bg-red-500,
+html[data-theme="aiox"] .bg-rose-500 {
+  background-color: rgba(239, 68, 68, 0.10) !important;
+}
+html[data-theme="aiox"] .bg-orange-500,
+html[data-theme="aiox"] .bg-amber-500,
+html[data-theme="aiox"] .bg-yellow-500 {
+  background-color: rgba(156, 156, 156, 0.10) !important;
+}
+html[data-theme="aiox"] .bg-cyan-500,
+html[data-theme="aiox"] .bg-sky-500 {
+  background-color: rgba(156, 156, 156, 0.10) !important;
+}
+html[data-theme="aiox"] .bg-pink-500,
+html[data-theme="aiox"] .bg-fuchsia-500 {
+  background-color: rgba(156, 156, 156, 0.10) !important;
+}
+
+/* bg-*-400 variants */
+html[data-theme="aiox"] .bg-orange-400,
+html[data-theme="aiox"] .bg-purple-400,
+html[data-theme="aiox"] .bg-cyan-400,
+html[data-theme="aiox"] .bg-blue-400,
+html[data-theme="aiox"] .bg-green-400 {
+  background-color: rgba(156, 156, 156, 0.10) !important;
+}
+
+/* Toggles and switches */
+html[data-theme="aiox"] [class*="checked"][class*="bg-blue-"],
+html[data-theme="aiox"] button[class*="bg-blue-500"] {
+  background-color: #D1FF00 !important;
+  color: #050505 !important;
+}
+
+/* ============================================
+   TIER 5g — Chart / data-viz → desaturate
+   Catches both recharts library and custom SVG charts
+   ============================================ */
+html[data-theme="aiox"] [class*="chart-"],
+html[data-theme="aiox"] [class*="Chart"] canvas,
+html[data-theme="aiox"] [class*="recharts"] {
+  filter: saturate(0.15) brightness(0.9) contrast(1.1);
+}
+
+/* Custom SVG charts — override inline stroke/fill hex colors */
+html[data-theme="aiox"] svg[class*="chart"] line,
+html[data-theme="aiox"] svg[class*="chart"] path,
+html[data-theme="aiox"] svg[class*="chart"] circle {
+  stroke: #D1FF00 !important;
+}
+
+/* SVG elements with inline style colors inside chart containers */
+html[data-theme="aiox"] div[class*="chart"] svg,
+html[data-theme="aiox"] div[class*="Chart"] svg {
+  filter: saturate(0.15) brightness(0.9);
+}
+
+/* Kanban column color indicators (inline style hex) */
+html[data-theme="aiox"] [style*="background-color: #3b82f6"],
+html[data-theme="aiox"] [style*="background-color: #a855f7"],
+html[data-theme="aiox"] [style*="background-color: #f97316"],
+html[data-theme="aiox"] [style*="background-color: #22c55e"],
+html[data-theme="aiox"] [style*="background-color: #10b981"],
+html[data-theme="aiox"] [style*="background-color: #ef4444"],
+html[data-theme="aiox"] [style*="background-color: #6b7280"],
+html[data-theme="aiox"] [style*="backgroundColor"] {
+  filter: saturate(0) brightness(0.6) !important;
+}
+
+/* ============================================
+   TIER 5h — Inline style box-shadow override
+   Catches glow values set via style={{boxShadow:...}}
+   ============================================ */
+html[data-theme="aiox"] [style*="box-shadow"],
+html[data-theme="aiox"] [style*="boxShadow"] {
+  filter: saturate(0.1) brightness(0.85) !important;
+}
+
+/* Exempt elements from filter */
+html[data-theme="aiox"] [style*="box-shadow"] img,
+html[data-theme="aiox"] [style*="box-shadow"] svg,
+html[data-theme="aiox"] [style*="boxShadow"] img,
+html[data-theme="aiox"] [style*="boxShadow"] svg {
+  filter: none !important;
+}
+
+/* ============================================
+   TIER 5i — World/Gather sprites → desaturate
+   ============================================ */
+html[data-theme="aiox"] svg[class*="agent-sprite"],
+html[data-theme="aiox"] [class*="world-"] svg,
+html[data-theme="aiox"] [class*="World"] svg,
+html[data-theme="aiox"] [class*="Gather"] svg,
+html[data-theme="aiox"] [class*="room-"] svg,
+html[data-theme="aiox"] [class*="Room"] svg,
+html[data-theme="aiox"] [class*="sprite"] svg {
+  filter: saturate(0.1) brightness(0.85) !important;
+}
+
+/* ============================================
+   TIER 5j — Workflow node glow overrides
+   All squad type glows → subtle lime
+   ============================================ */
+html[data-theme="aiox"] .workflow-node-glow.copywriting,
+html[data-theme="aiox"] .workflow-node-glow.design,
+html[data-theme="aiox"] .workflow-node-glow.creator,
+html[data-theme="aiox"] .workflow-node-glow.orchestrator,
+html[data-theme="aiox"] .workflow-node-glow.content,
+html[data-theme="aiox"] .workflow-node-glow.engineering,
+html[data-theme="aiox"] .workflow-node-glow.analytics,
+html[data-theme="aiox"] .workflow-node-glow.marketing,
+html[data-theme="aiox"] .workflow-node-glow.advisory {
+  background: radial-gradient(circle, rgba(209, 255, 0, 0.06) 0%, transparent 70%);
+}
+
+/* ============================================
+   TIER 5k — Text on neutralized backgrounds
+   Ensure readability when bg was overridden
+   ============================================ */
+html[data-theme="aiox"] .bg-blue-500 .text-white,
+html[data-theme="aiox"] .bg-red-500 .text-white,
+html[data-theme="aiox"] .bg-green-500 .text-white,
+html[data-theme="aiox"] .bg-purple-500 .text-white {
+  color: #ffffed !important;
+}
+
+/* ============================================
+   TIER 5m — Kanban story card badges (monochrome override)
+   ============================================ */
+html[data-theme="aiox"] .kanban-badge {
+  background-color: rgba(156, 156, 156, 0.10) !important;
+  color: #9c9c9c !important;
+}
+html[data-theme="aiox"] .kanban-badge-fix {
+  background-color: rgba(239, 68, 68, 0.10) !important;
+  color: #EF4444 !important;
+}
+html[data-theme="aiox"] .kanban-badge-bob {
+  background-color: rgba(209, 255, 0, 0.10) !important;
+  color: #D1FF00 !important;
+}
+
+/* ---- Priority dots (monochrome — critical stays red) ---- */
+html[data-theme="aiox"] .kanban-priority-low { --kanban-priority-bg: #4a4a4a; }
+html[data-theme="aiox"] .kanban-priority-medium { --kanban-priority-bg: #858585; }
+html[data-theme="aiox"] .kanban-priority-high { --kanban-priority-bg: #D1FF00; }
+html[data-theme="aiox"] .kanban-priority-critical { --kanban-priority-bg: #EF4444; }
+
+/* ============================================
+   AIOX — Performance: reduced motion
+   ============================================ */
+
+/* ============================================
+   TIER 6 — BRANDBOOK MOTION & PATTERNS
+   Source: brand.aioxsquad.ai
+   ============================================ */
+
+/* ─── Kanban drop highlight (theme-aware) ─── */
+html[data-theme="aiox"] .kanban-drop-highlight {
+  --tw-ring-color: var(--kanban-drop-ring, rgba(209, 255, 0, 0.30));
+  background-color: var(--kanban-drop-bg, rgba(209, 255, 0, 0.05));
+}
+html[data-theme="aiox"] .kanban-drop-zone {
+  background-color: var(--kanban-drop-bg, rgba(209, 255, 0, 0.05));
+}
+
+/* ─── P2: Accent Line hover on nav items ─── */
+html[data-theme="aiox"] .aiox-nav-item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: #D1FF00;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--bb-dur-fast, 0.2s) var(--bb-ease-decel, cubic-bezier(0, 0, 0.2, 1));
+}
+html[data-theme="aiox"] .aiox-nav-item:hover::after {
+  transform: scaleX(1);
+}
+
+/* ─── P4: Grid Patterns ─── */
+
+html[data-theme="aiox"] .pattern-dot-grid {
+  background-image: radial-gradient(circle, rgba(209, 255, 0, 0.15) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+html[data-theme="aiox"] .pattern-dot-grid--dense {
+  background-image: radial-gradient(circle, rgba(209, 255, 0, 0.15) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+html[data-theme="aiox"] .pattern-dot-grid--sparse {
+  background-image: radial-gradient(circle, rgba(209, 255, 0, 0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+html[data-theme="aiox"] .pattern-crosshair-grid {
+  background-image:
+    linear-gradient(rgba(209, 255, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(209, 255, 0, 0.06) 1px, transparent 1px),
+    radial-gradient(circle, rgba(209, 255, 0, 0.20) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 80px 80px;
+}
+html[data-theme="aiox"] .pattern-crosshair-grid--tight {
+  background-image:
+    linear-gradient(rgba(209, 255, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(209, 255, 0, 0.06) 1px, transparent 1px),
+    radial-gradient(circle, rgba(209, 255, 0, 0.20) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 40px 40px;
+}
+
+html[data-theme="aiox"] .pattern-wireframe-perspective {
+  background-image:
+    linear-gradient(rgba(209, 255, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(209, 255, 0, 0.05) 1px, transparent 1px),
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(209, 255, 0, 0.08), transparent 70%);
+  background-size: 60px 60px, 60px 60px, 100% 100%;
+}
+
+/* ─── P4: HUD Frames ─── */
+
+html[data-theme="aiox"] .frame-bracket {
+  position: relative;
+}
+html[data-theme="aiox"] .frame-bracket::before,
+html[data-theme="aiox"] .frame-bracket::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: #D1FF00;
+  border-style: solid;
+}
+html[data-theme="aiox"] .frame-bracket::before {
+  top: 0;
+  left: 0;
+  border-width: 2px 0 0 2px;
+}
+html[data-theme="aiox"] .frame-bracket::after {
+  bottom: 0;
+  right: 0;
+  border-width: 0 2px 2px 0;
+}
+
+html[data-theme="aiox"] .frame-bracket--full {
+  position: relative;
+}
+html[data-theme="aiox"] .frame-bracket--full::before,
+html[data-theme="aiox"] .frame-bracket--full::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: #D1FF00;
+  border-style: solid;
+  pointer-events: none;
+}
+html[data-theme="aiox"] .frame-bracket--full::before {
+  top: 0;
+  left: 0;
+  border-width: 2px 0 0 2px;
+  box-shadow: calc(100% - 16px + 100cqw - 100cqw) 0 0 -14px inset;
+}
+html[data-theme="aiox"] .frame-bracket--full::after {
+  bottom: 0;
+  right: 0;
+  border-width: 0 2px 2px 0;
+}
+
+html[data-theme="aiox"] .frame-tech {
+  clip-path: polygon(
+    12px 0, calc(100% - 12px) 0, 100% 12px,
+    100% calc(100% - 12px), calc(100% - 12px) 100%,
+    12px 100%, 0 calc(100% - 12px), 0 12px
+  );
+  border: 1px solid rgba(209, 255, 0, 0.30);
+}
+html[data-theme="aiox"] .frame-tech--sm {
+  clip-path: polygon(
+    8px 0, calc(100% - 8px) 0, 100% 8px,
+    100% calc(100% - 8px), calc(100% - 8px) 100%,
+    8px 100%, 0 calc(100% - 8px), 0 8px
+  );
+  border: 1px solid rgba(209, 255, 0, 0.30);
+}
+html[data-theme="aiox"] .frame-tech--lg {
+  clip-path: polygon(
+    20px 0, calc(100% - 20px) 0, 100% 20px,
+    100% calc(100% - 20px), calc(100% - 20px) 100%,
+    20px 100%, 0 calc(100% - 20px), 0 20px
+  );
+  border: 1px solid rgba(209, 255, 0, 0.30);
+}
+
+html[data-theme="aiox"] .frame-notch-tr {
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+}
+html[data-theme="aiox"] .frame-notch-bl {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+}
+html[data-theme="aiox"] .frame-notch-both {
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+}
+
+/* ─── P4: Hazard / Warning ─── */
+
+html[data-theme="aiox"] .pattern-hazard {
+  background: repeating-linear-gradient(
+    -45deg,
+    #D1FF00 0,
+    #D1FF00 10px,
+    #050505 10px,
+    #050505 20px
+  );
+}
+html[data-theme="aiox"] .pattern-hazard--thin {
+  background: repeating-linear-gradient(
+    -45deg,
+    #D1FF00 0,
+    #D1FF00 5px,
+    #050505 5px,
+    #050505 10px
+  );
+}
+html[data-theme="aiox"] .pattern-hazard--subtle {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(209, 255, 0, 0.15) 0,
+    rgba(209, 255, 0, 0.15) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+html[data-theme="aiox"] .bar-warning {
+  background: #D1FF00;
+  height: 4px;
+  width: 100%;
+}
+
+/* ─── P4: Circuit Traces ─── */
+
+html[data-theme="aiox"] .pattern-circuit-h {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='20'%3E%3Cpath d='M0 10h30l5-5h20l5 5h60' stroke='%23D1FF00' stroke-opacity='0.15' fill='none' stroke-width='1'/%3E%3Ccircle cx='30' cy='10' r='2' fill='%23D1FF00' fill-opacity='0.20'/%3E%3Ccircle cx='60' cy='10' r='2' fill='%23D1FF00' fill-opacity='0.20'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 120px 20px;
+}
+
+html[data-theme="aiox"] .pattern-circuit-board {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M0 40h20l5-5h10l5 5h40M40 0v20l-5 5v10l5 5v40' stroke='%23D1FF00' stroke-opacity='0.10' fill='none' stroke-width='1'/%3E%3Ccircle cx='20' cy='40' r='2' fill='%23D1FF00' fill-opacity='0.15'/%3E%3Ccircle cx='40' cy='20' r='2' fill='%23D1FF00' fill-opacity='0.15'/%3E%3Ccircle cx='60' cy='40' r='2' fill='%23D1FF00' fill-opacity='0.15'/%3E%3Ccircle cx='40' cy='60' r='2' fill='%23D1FF00' fill-opacity='0.15'/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+/* ─── P4: Textures ─── */
+
+html[data-theme="aiox"] .pattern-scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(209, 255, 0, 0.03) 1px,
+    rgba(209, 255, 0, 0.03) 2px
+  );
+  background-size: 100% 2px;
+  pointer-events: none;
+}
+html[data-theme="aiox"] .pattern-scanlines--heavy {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 0px,
+    rgba(209, 255, 0, 0.06) 0px,
+    rgba(209, 255, 0, 0.06) 1px
+  );
+  background-size: 100% 1px;
+  pointer-events: none;
+}
+
+html[data-theme="aiox"] .pattern-noise {
+  position: relative;
+}
+html[data-theme="aiox"] .pattern-noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+}
+
+html[data-theme="aiox"] .pattern-data-rain {
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      rgba(209, 255, 0, 0.04) 3px,
+      rgba(209, 255, 0, 0.04) 4px
+    ),
+    linear-gradient(180deg, rgba(209, 255, 0, 0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+html[data-theme="aiox"] .pattern-industrial {
+  background: linear-gradient(
+    135deg,
+    rgba(156, 156, 156, 0.04) 0%,
+    rgba(156, 156, 156, 0.08) 25%,
+    rgba(156, 156, 156, 0.04) 50%,
+    rgba(156, 156, 156, 0.08) 75%,
+    rgba(156, 156, 156, 0.04) 100%
+  );
+}
+
+/* ─── P4: Dividers ─── */
+
+html[data-theme="aiox"] .divider-tech {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(209, 255, 0, 0.30) 40%,
+    rgba(209, 255, 0, 0.30) 60%,
+    transparent 100%
+  );
+}
+
+html[data-theme="aiox"] .divider-arrow {
+  height: 1px;
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(209, 255, 0, 0.25) 50%,
+    transparent 100%
+  );
+}
+html[data-theme="aiox"] .divider-arrow::after {
+  content: '';
+  position: absolute;
+  right: 50%;
+  top: -3px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid rgba(209, 255, 0, 0.40);
+  transform: translateX(50%);
+}
+
+html[data-theme="aiox"] .divider-dashed {
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(209, 255, 0, 0.25) 0,
+    rgba(209, 255, 0, 0.25) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+}
+
+html[data-theme="aiox"] .divider-double {
+  height: 5px;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(209, 255, 0, 0.20) 30%, rgba(209, 255, 0, 0.20) 70%, transparent 100%) top / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 0%, rgba(209, 255, 0, 0.20) 30%, rgba(209, 255, 0, 0.20) 70%, transparent 100%) bottom / 100% 1px no-repeat;
+}
+
+/* ─── P6: Glitch Reveal ─── */
+
+@keyframes aioxGlitchReveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    filter: hue-rotate(0deg);
+    transform: skewX(0deg);
+  }
+  10% {
+    clip-path: inset(0 80% 0 0);
+    filter: hue-rotate(90deg);
+    transform: skewX(-2deg);
+  }
+  20% {
+    clip-path: inset(0 60% 0 0);
+    filter: hue-rotate(0deg);
+    transform: skewX(1deg);
+  }
+  30% {
+    clip-path: inset(0 40% 0 0);
+    filter: hue-rotate(180deg);
+    transform: skewX(-1deg);
+  }
+  50% {
+    clip-path: inset(0 20% 0 0);
+    filter: hue-rotate(0deg);
+    transform: skewX(0.5deg);
+  }
+  70% {
+    clip-path: inset(0 5% 0 0);
+    filter: hue-rotate(0deg);
+    transform: skewX(-0.3deg);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    filter: hue-rotate(0deg);
+    transform: skewX(0deg);
+  }
+}
+
+html[data-theme="aiox"] .aiox-glitch-reveal {
+  animation: aioxGlitchReveal 2s var(--bb-ease-smooth, cubic-bezier(0.25, 0.1, 0.25, 1)) forwards;
+}
+
+/* Scanline overlay for glitch */
+html[data-theme="aiox"] .aiox-glitch-reveal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 1px,
+    rgba(209, 255, 0, 0.03) 1px,
+    rgba(209, 255, 0, 0.03) 2px
+  );
+  pointer-events: none;
+  animation: aioxScanlineFade 2s ease-out forwards;
+}
+
+@keyframes aioxScanlineFade {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ─── P7: Component Transitions ─── */
+
+/* Card hover with brandbook easing */
+html[data-theme="aiox"] .glass-card {
+  transition:
+    transform var(--bb-dur-fast, 0.2s) var(--bb-ease-smooth, cubic-bezier(0.25, 0.1, 0.25, 1)),
+    border-color var(--bb-dur-fast, 0.2s) var(--bb-ease-smooth, cubic-bezier(0.25, 0.1, 0.25, 1)),
+    box-shadow var(--bb-dur-fast, 0.2s) var(--bb-ease-smooth, cubic-bezier(0.25, 0.1, 0.25, 1));
+}
+html[data-theme="aiox"] .glass-card:hover {
+  transform: translateY(-1px);
+}
+
+/* Dropdown animation */
+html[data-theme="aiox"] [data-state="open"] > [data-radix-popper-content-wrapper],
+html[data-theme="aiox"] [data-state="open"][role="listbox"],
+html[data-theme="aiox"] [data-state="open"][role="menu"] {
+  animation: aioxDropdownIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes aioxDropdownIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Button hover */
+html[data-theme="aiox"] .glass-button {
+  transition: all var(--bb-dur-fast, 0.2s) var(--bb-ease-smooth, cubic-bezier(0.25, 0.1, 0.25, 1));
+}
+
+/* ─── P8: Logo Dissolve ─── */
+
+@keyframes aioxLogoDissolve {
+  0% { opacity: 1; filter: brightness(1); }
+  20% { opacity: 0.9; filter: brightness(1.2); }
+  30% { opacity: 1; filter: brightness(0.9); }
+  40% { opacity: 0.7; filter: brightness(1.3); }
+  55% { opacity: 0.8; filter: brightness(1); }
+  70% { opacity: 0.3; filter: brightness(1.5); }
+  85% { opacity: 0.1; filter: brightness(0.8); }
+  100% { opacity: 0; filter: brightness(0); }
+}
+
+html[data-theme="aiox"] .aiox-logo-dissolve {
+  animation: aioxLogoDissolve 3s var(--bb-ease-smooth, cubic-bezier(0.25, 0.1, 0.25, 1)) forwards;
+}
+
+/* ─── P8: Speed Lines ─── */
+
+@keyframes aioxSpeedLinesDraw {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+html[data-theme="aiox"] .aiox-speed-lines {
+  position: relative;
+}
+html[data-theme="aiox"] .aiox-speed-lines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(209, 255, 0, 0.20) 30%, rgba(209, 255, 0, 0.40) 50%, transparent 100%) 0 30% / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 10%, rgba(209, 255, 0, 0.15) 40%, rgba(209, 255, 0, 0.30) 60%, transparent 90%) 0 50% / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 5%, rgba(209, 255, 0, 0.25) 35%, rgba(209, 255, 0, 0.45) 55%, transparent 95%) 0 70% / 100% 1px no-repeat;
+  animation: aioxSpeedLinesDraw 2s var(--bb-ease-decel, cubic-bezier(0, 0, 0.2, 1)) forwards;
+  pointer-events: none;
+}
+
+/* ─── P8: Morphing Square ─── */
+
+@keyframes aioxMorphSquare {
+  0%, 100% {
+    border-radius: 0;
+    transform: rotate(0deg);
+  }
+  25% {
+    border-radius: 25%;
+    transform: rotate(45deg);
+  }
+  50% {
+    border-radius: 50%;
+    transform: rotate(90deg);
+  }
+  75% {
+    border-radius: 25%;
+    transform: rotate(135deg);
+  }
+}
+
+html[data-theme="aiox"] .aiox-morph-square {
+  animation: aioxMorphSquare 3.5s var(--bb-ease-smooth, cubic-bezier(0.25, 0.1, 0.25, 1)) infinite;
+}
+
+/* ============================================
+   AIOX — Performance: reduced motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="aiox"] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html[data-theme="aiox"] .app-background::before {
+    animation: none !important;
+  }
+}
