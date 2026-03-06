@@ -3,12 +3,12 @@ import { persist } from 'zustand/middleware';
 import { safePersistStorage } from '../lib/safeStorage';
 import type { UIState } from '../types';
 
-type ThemeType = 'light' | 'dark' | 'system' | 'matrix' | 'glass';
+type ThemeType = 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox';
 
 type ViewType =
-  | 'chat' | 'dashboard' | 'settings' | 'orchestrator' | 'world'
+  | 'chat' | 'dashboard' | 'cockpit' | 'settings' | 'orchestrator' | 'world'
   | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor'
-  | 'insights' | 'context' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories';
+  | 'insights' | 'context' | 'knowledge' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories';
 export type SettingsSection = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
 interface UIActions {
@@ -42,24 +42,33 @@ const getSystemTheme = (): 'light' | 'dark' => {
 const applyTheme = (theme: ThemeType) => {
   const html = document.documentElement;
 
+  // Enable smooth transition between themes
+  html.classList.add('theme-transitioning');
+
   // Clean up all theme states
   html.classList.remove('dark');
   html.removeAttribute('data-theme');
 
   if (theme === 'matrix') {
-    // Matrix needs .dark for Tailwind dark: utilities + data-theme for CSS overrides
     html.classList.add('dark');
     html.setAttribute('data-theme', 'matrix');
   } else if (theme === 'glass') {
-    // Glass uses dark mode with colorful gradient blobs (original vibrant dark look)
     html.classList.add('dark');
     html.setAttribute('data-theme', 'glass');
+  } else if (theme === 'aiox') {
+    html.classList.add('dark');
+    html.setAttribute('data-theme', 'aiox');
   } else {
     const effectiveTheme = theme === 'system' ? getSystemTheme() : theme;
     if (effectiveTheme === 'dark') {
       html.classList.add('dark');
     }
   }
+
+  // Remove transition class after animation completes
+  setTimeout(() => {
+    html.classList.remove('theme-transitioning');
+  }, 450);
 };
 
 export const useUIStore = create<UIState & UIActions>()(
@@ -95,11 +104,13 @@ export const useUIStore = create<UIState & UIActions>()(
 
       toggleTheme: () => {
         const currentTheme = get().theme;
-        // Cycle: light -> dark -> glass -> matrix -> light
+        // Cycle: light -> dark -> glass -> matrix -> aiox -> light
         // (system resolves to its effective theme first)
         let newTheme: ThemeType;
-        if (currentTheme === 'matrix') {
+        if (currentTheme === 'aiox') {
           newTheme = 'light';
+        } else if (currentTheme === 'matrix') {
+          newTheme = 'aiox';
         } else if (currentTheme === 'glass') {
           newTheme = 'matrix';
         } else {

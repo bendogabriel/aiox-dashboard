@@ -19,6 +19,8 @@ import {
   Menu,
   X,
   BookOpen,
+  Database,
+  Gauge,
 } from 'lucide-react';
 import { GlassCard, GlassButton, AioxLogo } from '../ui';
 import { useUIStore } from '../../stores/uiStore';
@@ -38,6 +40,7 @@ const navItems = [
   // Core views (pre-existing)
   { id: 'chat' as const, icon: MessageSquare, label: 'Chat', shortcut: 'H', separator: false },
   { id: 'dashboard' as const, icon: BarChart3, label: 'Dashboard', shortcut: 'D', separator: false },
+  { id: 'cockpit' as const, icon: Gauge, label: 'Cockpit', shortcut: 'P', separator: false },
   { id: 'world' as const, icon: Globe, label: 'World', shortcut: 'W', separator: true },
   // PRD views
   { id: 'kanban' as const, icon: LayoutDashboard, label: 'Kanban', shortcut: 'K', separator: false },
@@ -47,6 +50,7 @@ const navItems = [
   { id: 'monitor' as const, icon: Activity, label: 'Monitor', shortcut: 'M', separator: false },
   { id: 'insights' as const, icon: TrendingUp, label: 'Insights', shortcut: 'I', separator: false },
   { id: 'context' as const, icon: Brain, label: 'Context', shortcut: 'C', separator: false },
+  { id: 'knowledge' as const, icon: Database, label: 'Knowledge', shortcut: 'N', separator: false },
   { id: 'roadmap' as const, icon: Map, label: 'Roadmap', shortcut: 'R', separator: false },
   { id: 'squads' as const, icon: Network, label: 'Squads', shortcut: 'Q', separator: false },
   { id: 'stories' as const, icon: BookOpen, label: 'Stories', shortcut: 'Y', separator: false },
@@ -54,19 +58,46 @@ const navItems = [
   { id: 'settings' as const, icon: Settings, label: 'Settings', shortcut: 'S', separator: false },
 ] as const;
 
-// Navigation component — vertical list
+// Stagger container variants for nav items (brandbook stagger)
+const navContainerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.04,
+    },
+  },
+};
+
+const navItemVariants = {
+  hidden: { opacity: 0, x: -8 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.2,
+      ease: [0, 0, 0.2, 1], // --bb-ease-decel
+    },
+  },
+};
+
+// Navigation component — vertical list with stagger animation
 function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
   const { currentView, setCurrentView } = useUIStore();
 
   return (
     <nav className="flex-1 p-2 overflow-y-auto glass-scrollbar" aria-label="Navegacao principal">
-      <div className="space-y-0.5">
+      <motion.div
+        className="space-y-0.5"
+        variants={navContainerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentView === item.id;
 
           return (
-            <div key={item.id}>
+            <motion.div key={item.id} variants={navItemVariants}>
             {item.separator && (
               <div className={cn('my-2', collapsed ? 'mx-2' : 'mx-3', 'border-t border-white/10')} />
             )}
@@ -74,7 +105,7 @@ function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
               onClick={() => setCurrentView(item.id)}
               title={collapsed ? `${item.label} (${item.shortcut})` : undefined}
               className={cn(
-                'w-full flex items-center gap-3 rounded-xl transition-all text-left group',
+                'aiox-nav-item w-full flex items-center gap-3 rounded-xl transition-all text-left group relative',
                 collapsed ? 'justify-center p-2.5' : 'px-3 py-2',
                 isActive
                   ? 'glass-card border text-primary'
@@ -111,10 +142,10 @@ function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
                 </>
               )}
             </button>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
     </nav>
   );
 }

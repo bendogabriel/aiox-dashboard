@@ -5,6 +5,7 @@ import { AppLayout } from './components/layout';
 import { ChatContainer } from './components/chat';
 import { PageLoader, ErrorBoundary } from './components/ui';
 import { useUIStore } from './stores/uiStore';
+import { useUrlSync } from './hooks/useUrlSync';
 
 // Lazy load heavy components
 const DashboardOverview = lazy(() =>
@@ -76,6 +77,14 @@ const StoriesView = lazy(() =>
   import('./components/stories').then((m) => ({ default: m.StoryList }))
 );
 
+const KnowledgeView = lazy(() =>
+  import('./components/knowledge/KnowledgeView')
+);
+
+const CockpitDashboard = lazy(() =>
+  import('./components/dashboard/CockpitDashboard')
+);
+
 // View map — maps ViewType to lazy component
 const viewMap: Record<string, ComponentType> = {
   dashboard: DashboardOverview,
@@ -94,6 +103,8 @@ const viewMap: Record<string, ComponentType> = {
   orchestrator: TaskOrchestrator,
   world: GatherWorld,
   stories: StoriesView,
+  knowledge: KnowledgeView,
+  cockpit: CockpitDashboard,
 };
 
 // Loading messages per view
@@ -115,6 +126,8 @@ const viewLoaderMessages: Record<string, string> = {
   github: 'Carregando GitHub...',
   qa: 'Carregando QA...',
   stories: 'Carregando stories...',
+  knowledge: 'Carregando base de conhecimento...',
+  cockpit: 'Initializing cockpit...',
 };
 
 // Create a client
@@ -135,14 +148,18 @@ function ViewLoader({ view }: { view: string }) {
 }
 
 // Wrapped view with motion animation + Suspense
+// Uses brandbook tokens: --bb-ease-decel for entry, --bb-ease-accel for exit
 function ViewWrapper({ viewKey, children }: { viewKey: string; children: React.ReactNode }) {
   return (
     <motion.div
       key={viewKey}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{
+        duration: 0.2,
+        ease: [0, 0, 0.2, 1], // --bb-ease-decel
+      }}
       className="h-full"
     >
       <Suspense fallback={<ViewLoader view={viewKey} />}>
@@ -154,6 +171,9 @@ function ViewWrapper({ viewKey, children }: { viewKey: string; children: React.R
 
 function AppContent() {
   const { workflowViewOpen, setWorkflowViewOpen, currentView } = useUIStore();
+
+  // Bidirectional URL <-> store sync (deep links, browser history)
+  useUrlSync();
 
   // Resolve view component — default to ChatContainer
   const ViewComponent = viewMap[currentView];
