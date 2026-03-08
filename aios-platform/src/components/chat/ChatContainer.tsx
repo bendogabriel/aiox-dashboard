@@ -49,6 +49,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { apiClient } from '../../services/api/client';
 import { cn, squadLabels, getTierTheme } from '../../lib/utils';
 import { ICON_SIZES, getIconComponent } from '../../lib/icons';
+import { getSquadImageUrl } from '../../lib/agent-avatars';
 import type { Squad, SquadType, Agent, AgentSummary, AgentTier, AgentCommand, ChatSession, Message } from '../../types';
 import { getSquadType } from '../../types';
 
@@ -81,17 +82,35 @@ export function ChatContainer() {
   const [chatSidebarOpen, setChatSidebarOpen] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeSession?.messages]);
 
+  // Track scroll position for scroll-to-bottom button
+  useEffect(() => {
+    const el = scrollAreaRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const gap = el.scrollHeight - el.scrollTop - el.clientHeight;
+      setShowScrollBtn(gap > 200);
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   // Show loading while agent data is being fetched (prevents flash of EmptyChat)
   if (!selectedAgent && isAgentLoading && selectedAgentId) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-2 border-[#0099FF] border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -135,7 +154,7 @@ export function ChatContainer() {
         />
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto glass-scrollbar px-4 md:px-6 py-4">
+        <div ref={scrollAreaRef} className="flex-1 overflow-y-auto glass-scrollbar px-4 md:px-6 py-4 relative">
           {activeSession?.messages && activeSession.messages.length > 0 ? (
             <div className="min-h-full flex flex-col justify-end">
               <SmartMessageList
@@ -147,6 +166,26 @@ export function ChatContainer() {
           ) : (
             <WelcomeMessage agent={selectedAgent} />
           )}
+
+          {/* Scroll to bottom floating button */}
+          <AnimatePresence>
+            {showScrollBtn && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                onClick={scrollToBottom}
+                className="sticky bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-white/70 hover:text-white text-xs transition-colors shadow-lg"
+                title="Ir para o final"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="7 13 12 18 17 13" />
+                  <polyline points="7 6 12 11 17 6" />
+                </svg>
+                Novas mensagens
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Input Area */}
@@ -160,6 +199,7 @@ export function ChatContainer() {
           />
         </div>
       </div>
+
     </div>
   );
 }
@@ -228,7 +268,7 @@ function ChatConversationPanel({
                 className={cn(
                   'w-full text-left px-3 py-2.5 rounded-lg transition-all group relative',
                   isActive
-                    ? 'bg-blue-500/10 border border-blue-500/20'
+                    ? 'bg-[#D1FF00]/10 border border-[#D1FF00]/20'
                     : 'hover:bg-white/5 border border-transparent'
                 )}
               >
@@ -252,7 +292,7 @@ function ChatConversationPanel({
                   <div className="flex-1 min-w-0">
                     <p className={cn(
                       'text-sm font-medium truncate',
-                      isActive ? 'text-blue-400' : 'text-primary'
+                      isActive ? 'text-[#D1FF00]' : 'text-primary'
                     )}>
                       {session.agentName}
                     </p>
@@ -474,7 +514,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
               variant="ghost"
               size="icon"
               onClick={() => setShowSearch(!showSearch)}
-              className={cn(showSearch && 'bg-blue-500/10 text-blue-500')}
+              className={cn(showSearch && 'bg-[#0099FF]/10 text-[#0099FF]')}
               aria-label="Buscar"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -562,7 +602,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
               variant="ghost"
               size="icon"
               onClick={() => setShowMenu(!showMenu)}
-              className={cn(showMenu && 'bg-blue-500/10 text-blue-500')}
+              className={cn(showMenu && 'bg-[#0099FF]/10 text-[#0099FF]')}
               aria-label="Menu"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -859,7 +899,7 @@ function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
               <div className="flex-1 overflow-y-auto glass-scrollbar p-4">
                 {isLoading ? (
                   <div className="text-center py-8 text-tertiary">
-                    <div className="animate-spin h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2" />
+                    <div className="animate-spin h-6 w-6 border-2 border-[#0099FF] border-t-transparent rounded-full mx-auto mb-2" />
                     <p className="text-sm">Carregando...</p>
                   </div>
                 ) : (
@@ -998,7 +1038,7 @@ function TabButton({
       className={cn(
         'flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors',
         active
-          ? 'text-blue-400 border-b-2 border-blue-400 bg-blue-500/5'
+          ? 'text-[#D1FF00] border-b-2 border-[#D1FF00] bg-[#D1FF00]/5'
           : 'text-tertiary hover:text-secondary hover:bg-white/5'
       )}
     >
@@ -1006,7 +1046,7 @@ function TabButton({
       {count > 0 && (
         <span className={cn(
           'px-1.5 py-0.5 rounded-full text-[10px] font-bold',
-          active ? 'bg-blue-500/20 text-blue-400' : 'bg-white/10 text-tertiary'
+          active ? 'bg-[#D1FF00]/20 text-[#D1FF00]' : 'bg-white/10 text-tertiary'
         )}>
           {count}
         </span>
@@ -1027,11 +1067,11 @@ function CommandItem({
   onUse: () => void;
 }) {
   const typeColors: Record<string, string> = {
-    action: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400',
-    command: 'bg-purple-500/10 border-purple-500/20 text-purple-400',
-    prompt: 'bg-green-500/10 border-green-500/20 text-green-400',
-    task: 'bg-orange-500/10 border-orange-500/20 text-orange-400',
-    workflow: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400',
+    action: 'bg-[#D1FF00]/10 border-[#D1FF00]/20 text-[#D1FF00]',
+    command: 'bg-[#0099FF]/10 border-[#0099FF]/20 text-[#0099FF]',
+    prompt: 'bg-[#BDBDBD]/10 border-[#BDBDBD]/20 text-[#BDBDBD]',
+    task: 'bg-[#ED4609]/10 border-[#ED4609]/20 text-[#ED4609]',
+    workflow: 'bg-[#0099FF]/10 border-[#0099FF]/20 text-[#0099FF]',
   };
 
   const typeLabels: Record<string, string> = {
@@ -1054,7 +1094,7 @@ function CommandItem({
         {typeLabels[type]}
       </span>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-mono text-primary group-hover:text-blue-400 transition-colors">
+        <p className="text-sm font-mono text-primary group-hover:text-[#D1FF00] transition-colors">
           {command}
         </p>
         {description && (
@@ -1070,7 +1110,7 @@ function CommandItem({
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
-        className="text-tertiary group-hover:text-blue-400 flex-shrink-0 mt-1 transition-colors"
+        className="text-tertiary group-hover:text-[#D1FF00] flex-shrink-0 mt-1 transition-colors"
       >
         <polyline points="9 18 15 12 9 6" />
       </svg>
@@ -1446,7 +1486,7 @@ function EmptyChat() {
   if (agentsLoading || squadsLoading) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-2 border-[#0099FF] border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -1459,7 +1499,7 @@ function EmptyChat() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-6 text-center"
       >
-        <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mx-auto mb-4">
+        <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#D1FF00] to-[#a8cc00] flex items-center justify-center mx-auto mb-4">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
           </svg>
@@ -1485,15 +1525,23 @@ function EmptyChat() {
                 onClick={() => setSelectedSquadId(squad.id)}
                 className={cn(
                   'glass-card rounded-xl p-4 text-left transition-all group',
-                  'hover:bg-white/10 hover:border-blue-500/30',
+                  'hover:bg-white/10 hover:border-[#D1FF00]/30',
                   'border border-white/10'
                 )}
               >
                 <div className="flex items-start gap-3">
-                  {(() => { const Icon = getIconComponent(squad.icon || 'Bot'); return <Icon size={ICON_SIZES['2xl']} className="text-secondary" />; })()}
+                  {getSquadImageUrl(squad.id) ? (
+                    <img
+                      src={getSquadImageUrl(squad.id)}
+                      alt={squad.name}
+                      className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                    />
+                  ) : (
+                    (() => { const Icon = getIconComponent(squad.icon || 'Bot'); return <Icon size={ICON_SIZES['2xl']} className="text-secondary" />; })()
+                  )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-primary text-sm font-semibold truncate group-hover:text-blue-400 transition-colors">
+                      <h3 className="text-primary text-sm font-semibold truncate group-hover:text-[#D1FF00] transition-colors">
                         {squad.name}
                       </h3>
                       <Badge variant="squad" squadType={squadType} size="sm">

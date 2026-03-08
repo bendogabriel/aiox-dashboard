@@ -1,5 +1,5 @@
 import type { DomainId } from './world-layout';
-import { domains } from './world-layout';
+import { useDomains } from './DomainContext';
 
 interface RoomEnvironmentProps {
   domain: DomainId;
@@ -14,6 +14,7 @@ const WINDOW_H = 48;
 const WINDOW_GAP = 160;
 
 export function RoomEnvironment({ domain, roomWidth }: RoomEnvironmentProps) {
+  const domains = useDomains();
   const d = domains[domain];
 
   // Darken the domain color for wall
@@ -234,6 +235,7 @@ function WallClock({ color }: { color: string }) {
 
 /** Domain name plaque on wall */
 function DomainPlaque({ domain }: { domain: DomainId }) {
+  const domains = useDomains();
   const d = domains[domain];
   return (
     <div

@@ -10,8 +10,10 @@ import {
   Mic,
   Ban,
 } from 'lucide-react';
-import { GlassCard, Badge, StatusDot, SectionLabel } from '../ui';
+import { GlassCard, Badge, StatusDot, SectionLabel, Avatar } from '../ui';
 import { cn, formatRelativeTime } from '../../lib/utils';
+import { hasAgentAvatar } from '../../lib/agent-avatars';
+import { getSquadType } from '../../types';
 import type { Agent, AgentTier } from '../../types';
 
 interface AgentDetailPanelProps {
@@ -50,9 +52,18 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
       <Section delay={0}>
         <GlassCard padding="lg">
           <div className="flex items-center gap-4">
-            <div className={cn('w-14 h-14 rounded-xl flex items-center justify-center', tier.bg)}>
-              <Bot size={28} className={tier.color} />
-            </div>
+            {hasAgentAvatar(agent.name) || hasAgentAvatar(agent.id) ? (
+              <Avatar
+                name={agent.name}
+                agentId={agent.id}
+                size="2xl"
+                squadType={getSquadType(agent.squad)}
+              />
+            ) : (
+              <div className={cn('w-14 h-14 rounded-xl flex items-center justify-center', tier.bg)}>
+                <Bot size={28} className={tier.color} />
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <h2 className="text-lg font-semibold text-primary">{agent.name}</h2>
               <p className="text-sm text-secondary">{agent.title || 'Agent'}</p>

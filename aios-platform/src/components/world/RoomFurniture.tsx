@@ -4,7 +4,7 @@ import {
   meetingTableSvg, waterCoolerSvg, printerSvg, stickyWallSvg, cabinetSvg, projectorScreenSvg,
 } from './pixel-sprites';
 import type { FurnitureItem, DomainId } from './world-layout';
-import { domains } from './world-layout';
+import { useDomains } from './DomainContext';
 
 interface RoomFurnitureProps {
   items: FurnitureItem[];
@@ -57,6 +57,7 @@ function getFurnitureSvg(type: FurnitureItem['type'], color: string): string {
 }
 
 export function RoomFurniture({ items, domain, tileSize }: RoomFurnitureProps) {
+  const domains = useDomains();
   const domainCfg = domains[domain];
 
   return (

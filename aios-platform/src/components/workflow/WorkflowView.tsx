@@ -847,27 +847,134 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
     resetOrchestration();
   };
 
-  // Simulate real-time updates
+  // Simulate real-time updates — advances through all nodes sequentially
   useEffect(() => {
     if (!isPlaying) return;
 
+    // Node execution order and their dependencies
+    const nodeOrder = [
+      'node-copy-1',   // Headlines (starts active at 65%)
+      'node-copy-2',   // Body Copy (waits for copy-1)
+      'node-design',   // Visual Design (waits for copy-2)
+      'node-creator',  // Social Content (waits for design)
+      'node-review',   // Final Review (waits for creator)
+      'node-end',      // Done
+    ];
+
     const interval = setInterval(() => {
       setMission((prev) => {
-        const currentNode = prev.nodes.find((n) => n.id === 'node-copy-1');
-        if (currentNode && currentNode.progress !== undefined && currentNode.progress < 100) {
+        // Find the currently active agent node
+        const activeNode = prev.nodes.find(
+          (n) => n.status === 'active' && n.progress !== undefined && n.progress < 100
+        );
+
+        if (activeNode) {
+          // Increment active node progress
+          const newProgress = Math.min((activeNode.progress || 0) + 2, 100);
+          const isComplete = newProgress >= 100;
+
+          // Figure out what comes next
+          const activeIndex = nodeOrder.indexOf(activeNode.id);
+          const nextNodeId = activeIndex >= 0 && activeIndex < nodeOrder.length - 1
+            ? nodeOrder[activeIndex + 1]
+            : null;
+
+          // Update corresponding edge when node completes
+          const completedEdgeSource = activeNode.id;
+
           return {
             ...prev,
             progress: Math.min(prev.progress + 1, 100),
-            nodes: prev.nodes.map((n) =>
-              n.id === 'node-copy-1'
-                ? { ...n, progress: Math.min((n.progress || 0) + 2, 100) }
-                : n
-            ),
+            nodes: prev.nodes.map((n) => {
+              if (n.id === activeNode.id) {
+                return {
+                  ...n,
+                  progress: newProgress,
+                  status: isComplete ? 'completed' as const : n.status,
+                  currentAction: isComplete ? 'Tarefa concluída' : n.currentAction,
+                  completedAt: isComplete ? new Date().toISOString() : n.completedAt,
+                };
+              }
+              // Activate next node when current completes
+              if (isComplete && nextNodeId && n.id === nextNodeId) {
+                if (n.type === 'checkpoint' || n.type === 'end') {
+                  return { ...n, status: 'completed' as const };
+                }
+                return {
+                  ...n,
+                  status: 'active' as const,
+                  progress: 0,
+                  currentAction: n.id === 'node-copy-2' ? 'Escrevendo body copy...'
+                    : n.id === 'node-design' ? 'Criando layout da landing page...'
+                    : n.id === 'node-creator' ? 'Produzindo conteúdo para redes sociais...'
+                    : n.currentAction,
+                  startedAt: new Date().toISOString(),
+                };
+              }
+              return n;
+            }),
+            edges: prev.edges.map((e) => {
+              // Mark edge from completed node as completed
+              if (isComplete && e.source === completedEdgeSource) {
+                return { ...e, status: 'completed' as const, animated: false };
+              }
+              // Activate edges FROM the next node
+              if (isComplete && nextNodeId && e.source === nextNodeId && e.status === 'idle') {
+                return { ...e, status: 'active' as const, animated: true };
+              }
+              return e;
+            }),
+            agents: prev.agents.map((a) => {
+              // Update agent status based on node
+              const agentNode = prev.nodes.find((n) => n.agentName === a.name);
+              if (!agentNode) return a;
+              if (agentNode.id === activeNode.id && isComplete) {
+                return { ...a, status: 'completed' as const, currentTask: 'Concluído' };
+              }
+              if (isComplete && nextNodeId) {
+                const nextNode = prev.nodes.find((n) => n.id === nextNodeId);
+                if (nextNode && nextNode.agentName === a.name) {
+                  return { ...a, status: 'working' as const, currentTask: nextNode.currentAction || 'Trabalhando...' };
+                }
+              }
+              return a;
+            }),
           };
         }
+
+        // Check if mission is complete (all agent nodes completed)
+        const allDone = prev.nodes
+          .filter((n) => n.type === 'agent')
+          .every((n) => n.status === 'completed');
+
+        if (allDone && prev.status !== 'completed') {
+          return {
+            ...prev,
+            status: 'completed' as const,
+            progress: 100,
+            estimatedTimeRemaining: 0,
+            nodes: prev.nodes.map((n) =>
+              n.type === 'end' || n.type === 'checkpoint'
+                ? { ...n, status: 'completed' as const }
+                : n
+            ),
+            edges: prev.edges.map((e) => ({ ...e, status: 'completed' as const, animated: false })),
+          };
+        }
+
         return prev;
       });
-    }, 1000);
+
+      // Also update operations sidebar
+      setOperations((prev) =>
+        prev.map((op) => {
+          if (op.status === 'running') {
+            return { ...op, duration: (op.duration || 0) + 1 };
+          }
+          return op;
+        })
+      );
+    }, 800);
 
     return () => clearInterval(interval);
   }, [isPlaying]);
@@ -878,6 +985,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
     setMission(createMockMission(workflowType));
     setOperations(createMockOperations());
     setSelectedNodeId(null);
+    setIsPlaying(true);
   };
 
   const selectedNode = selectedNodeId
@@ -905,10 +1013,10 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
         className="relative z-10 m-4 flex-1 flex flex-col backdrop-blur-2xl border border-white/20 rounded-3xl overflow-hidden shadow-2xl"
         style={{
           background: `
-            radial-gradient(ellipse 60% 40% at 0% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-            radial-gradient(ellipse 50% 60% at 100% 0%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+            radial-gradient(ellipse 60% 40% at 0% 100%, rgba(209, 255, 0, 0.08) 0%, transparent 50%),
+            radial-gradient(ellipse 50% 60% at 100% 0%, rgba(0, 153, 255, 0.06) 0%, transparent 50%),
             radial-gradient(ellipse 80% 80% at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 70%),
-            rgba(30, 30, 40, 0.65)
+            rgba(20, 20, 25, 0.75)
           `,
           boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 25px 50px -12px rgba(0, 0, 0, 0.4)'
         }}
@@ -995,7 +1103,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                         setOrchestrationDemand('');
                         setShowOrchestrationDialog(true);
                       }}
-                      className="bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-purple-500/30"
+                      className="bg-gradient-to-r from-[#D1FF00]/20 to-[#0099FF]/20 border-[#D1FF00]/30"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-1">
                         <circle cx="12" cy="12" r="3" />
@@ -1317,27 +1425,27 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Squad indicators instead of agent avatars */}
+              {/* Squad indicators */}
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-gradient-to-r from-orange-500 to-amber-500" />
+                <span className="h-2 w-2 rounded-full bg-[#999999]" />
                 <span className="text-[10px] text-white/50">
                   {mission.agents.filter(a => a.squadType === 'copywriting').length} Copy
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" />
+                <span className="h-2 w-2 rounded-full bg-[#D1FF00]" />
                 <span className="text-[10px] text-white/50">
                   {mission.agents.filter(a => a.squadType === 'design').length} Design
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-500" />
+                <span className="h-2 w-2 rounded-full bg-[#ED4609]" />
                 <span className="text-[10px] text-white/50">
                   {mission.agents.filter(a => a.squadType === 'creator').length} Creator
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500" />
+                <span className="h-2 w-2 rounded-full bg-[#D1FF00]" />
                 <span className="text-[10px] text-white/50">
                   {mission.agents.filter(a => a.squadType === 'orchestrator').length} Orch
                 </span>
@@ -1464,12 +1572,12 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
               className="w-full max-w-lg rounded-2xl p-6"
               style={{
                 background: 'linear-gradient(135deg, rgba(30, 30, 35, 0.95) 0%, rgba(20, 20, 25, 0.98) 100%)',
-                border: '1px solid rgba(139, 92, 246, 0.3)',
-                boxShadow: '0 25px 50px -12px rgba(139, 92, 246, 0.2)',
+                border: '1px solid rgba(209, 255, 0, 0.3)',
+                boxShadow: '0 25px 50px -12px rgba(209, 255, 0, 0.15)',
               }}
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#D1FF00] to-[#0099FF] flex items-center justify-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                     <circle cx="12" cy="12" r="3" />
                     <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />

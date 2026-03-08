@@ -34,8 +34,30 @@ function ErrorCard({ error }: { error: BobError }) {
   );
 }
 
+// ---------- Demo Pipeline ----------
+function createDemoPipeline(): Pipeline {
+  return {
+    status: 'active',
+    currentPhase: 'phase-discovery',
+    phases: [
+      { id: 'phase-discovery', label: 'Discovery', status: 'in_progress', progress: 0 },
+      { id: 'phase-research', label: 'Research', status: 'pending' },
+      { id: 'phase-roundtable', label: 'Roundtable', status: 'pending' },
+      { id: 'phase-epic', label: 'Create Epic', status: 'pending' },
+    ],
+    agents: [
+      { id: 'agent-aria', name: 'Aria', task: 'Analyzing system architecture', status: 'working' },
+      { id: 'agent-atlas', name: 'Atlas', task: 'Waiting for discovery phase', status: 'waiting' },
+      { id: 'agent-dex', name: 'Dex', task: 'Waiting for research', status: 'waiting' },
+      { id: 'agent-morgan', name: 'Morgan', task: 'Waiting for roundtable', status: 'waiting' },
+    ],
+    errors: [],
+    decisions: [],
+  };
+}
+
 // ---------- Inactive State ----------
-function InactiveState() {
+function InactiveState({ onStartDemo }: { onStartDemo: () => void }) {
   return (
     <div className="h-full flex items-center justify-center">
       <motion.div
@@ -47,9 +69,13 @@ function InactiveState() {
           <Cpu className="h-8 w-8 text-tertiary" />
         </div>
         <h2 className="text-lg font-semibold text-primary mb-1">No active orchestration</h2>
-        <p className="text-sm text-secondary">
+        <p className="text-sm text-secondary mb-5">
           Bob orchestration will appear here when a pipeline is running.
         </p>
+        <GlassButton variant="primary" onClick={onStartDemo}>
+          <Cpu className="h-4 w-4 mr-2" />
+          Iniciar Orquestração Demo
+        </GlassButton>
       </motion.div>
     </div>
   );
@@ -126,10 +152,76 @@ function ActiveState({
   );
 }
 
+// ---------- Demo simulation runner ----------
+function useDemoSimulation() {
+  const { setPipeline, addLogEntry, handleBobEvent, updateElapsed } = useBobStore();
+
+  const startDemo = () => {
+    const demoPipeline = createDemoPipeline();
+    setPipeline(demoPipeline);
+
+    let elapsed = 0;
+
+    // Phase progression schedule (seconds → action)
+    const schedule: Array<{ at: number; action: () => void }> = [
+      // Discovery phase progresses
+      { at: 2, action: () => addLogEntry({ id: 'log-1', timestamp: new Date().toISOString(), message: 'Starting system architecture analysis...', agent: 'Aria', type: 'action' }) },
+      { at: 5, action: () => handleBobEvent({ type: 'BobPhaseChange', data: { phaseId: 'phase-discovery', status: 'completed' } }) },
+      { at: 5, action: () => addLogEntry({ id: 'log-2', timestamp: new Date().toISOString(), message: 'Discovery complete. 12 modules identified.', agent: 'Aria', type: 'info' }) },
+      { at: 5, action: () => handleBobEvent({ type: 'BobAgentCompleted', data: { agentId: 'agent-aria' } }) },
+      // Research phase starts
+      { at: 6, action: () => handleBobEvent({ type: 'BobPhaseChange', data: { phaseId: 'phase-research', status: 'in_progress' } }) },
+      { at: 6, action: () => addLogEntry({ id: 'log-3', timestamp: new Date().toISOString(), message: 'Researching best practices and competitive analysis...', agent: 'Atlas', type: 'action' }) },
+      { at: 8, action: () => handleBobEvent({ type: 'BobSurfaceDecision', data: { id: 'dec-1', message: 'Use microservices or monolith architecture?', severity: 'warning', timestamp: new Date().toISOString(), resolved: false } }) },
+      { at: 11, action: () => handleBobEvent({ type: 'BobPhaseChange', data: { phaseId: 'phase-research', status: 'completed' } }) },
+      { at: 11, action: () => handleBobEvent({ type: 'BobAgentCompleted', data: { agentId: 'agent-atlas' } }) },
+      { at: 11, action: () => addLogEntry({ id: 'log-4', timestamp: new Date().toISOString(), message: 'Research complete. 5 recommendations ready.', agent: 'Atlas', type: 'info' }) },
+      // Roundtable phase starts
+      { at: 12, action: () => handleBobEvent({ type: 'BobPhaseChange', data: { phaseId: 'phase-roundtable', status: 'in_progress' } }) },
+      { at: 12, action: () => addLogEntry({ id: 'log-5', timestamp: new Date().toISOString(), message: 'Cross-functional review started. Evaluating proposals...', agent: 'Dex', type: 'action' }) },
+      { at: 16, action: () => handleBobEvent({ type: 'BobPhaseChange', data: { phaseId: 'phase-roundtable', status: 'completed' } }) },
+      { at: 16, action: () => handleBobEvent({ type: 'BobAgentCompleted', data: { agentId: 'agent-dex' } }) },
+      { at: 16, action: () => addLogEntry({ id: 'log-6', timestamp: new Date().toISOString(), message: 'Roundtable consensus reached. Ready for epic creation.', agent: 'Dex', type: 'info' }) },
+      // Create Epic phase
+      { at: 17, action: () => handleBobEvent({ type: 'BobPhaseChange', data: { phaseId: 'phase-epic', status: 'in_progress' } }) },
+      { at: 17, action: () => addLogEntry({ id: 'log-7', timestamp: new Date().toISOString(), message: 'Creating epic with 8 stories and acceptance criteria...', agent: 'Morgan', type: 'action' }) },
+      { at: 21, action: () => handleBobEvent({ type: 'BobPhaseChange', data: { phaseId: 'phase-epic', status: 'completed' } }) },
+      { at: 21, action: () => handleBobEvent({ type: 'BobAgentCompleted', data: { agentId: 'agent-morgan' } }) },
+      { at: 21, action: () => addLogEntry({ id: 'log-8', timestamp: new Date().toISOString(), message: 'Epic created with 8 stories. Pipeline complete!', agent: 'Morgan', type: 'info' }) },
+    ];
+
+    const timer = setInterval(() => {
+      elapsed++;
+      updateElapsed(elapsed, elapsed);
+
+      // Execute scheduled actions
+      schedule
+        .filter((s) => s.at === elapsed)
+        .forEach((s) => s.action());
+
+      // Stop when all phases are done
+      if (elapsed > 22) {
+        clearInterval(timer);
+        useBobStore.setState((state) => ({
+          pipeline: state.pipeline
+            ? { ...state.pipeline, status: 'completed' as const }
+            : null,
+        }));
+      }
+    }, 1000);
+
+    // Store timer id for cleanup
+    return timer;
+  };
+
+  return { startDemo };
+}
+
 // ---------- Main Component ----------
 export default function BobOrchestration() {
   const { isActive, pipeline, sessionElapsed, storyElapsed, setPipeline, resolveDecision } =
     useBobStore();
+  const { startDemo } = useDemoSimulation();
 
   const handleReset = () => {
     setPipeline(null);
@@ -141,7 +233,7 @@ export default function BobOrchestration() {
       {isActive && pipeline && (
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <Cpu className="h-5 w-5 text-blue-400" />
+            <Cpu className="h-5 w-5 text-[#D1FF00]" />
             <h1 className="text-xl font-bold text-primary">Bob Orchestration</h1>
             <Badge
               variant="status"
@@ -183,7 +275,7 @@ export default function BobOrchestration() {
             exit={{ opacity: 0 }}
             className="flex-1"
           >
-            <InactiveState />
+            <InactiveState onStartDemo={startDemo} />
           </motion.div>
         ) : (
           <motion.div

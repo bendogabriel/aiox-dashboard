@@ -1,15 +1,19 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useAgentById, useAgentCommands } from '../../hooks/useAgents';
 import { useChat } from '../../hooks/useChat';
 import { GlassButton } from '../ui';
 import { domainSpriteColors, tierBadge, agentSpriteRects } from './pixel-sprites';
-import { rooms, domains } from './world-layout';
+import { rooms } from './world-layout';
 import type { DomainId } from './world-layout';
+import { useDomains } from './DomainContext';
 import type { AgentTier, AgentCommand } from '../../types';
+import { useMonitorStore, type MonitorEvent } from '../../stores/monitorStore';
+import { useAgentActivityStore } from '../../stores/agentActivityStore';
+import { getAgentAvatarUrl } from '../../lib/agent-avatars';
 
-type PanelTab = 'chat' | 'profile' | 'commands';
+type PanelTab = 'chat' | 'profile' | 'commands' | 'activity';
 
 interface AgentInteractionPanelProps {
   agentId: string;
@@ -30,6 +34,7 @@ export function AgentInteractionPanel({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const domains = useDomains();
   const roomConfig = rooms.find((r) => r.squadId === roomId);
   const domain: DomainId = roomConfig?.domain || 'dev';
   const domainCfg = domains[domain];
@@ -87,8 +92,28 @@ export function AgentInteractionPanel({
 
   const messages = activeSession?.messages || [];
 
+  // Agent activity from monitor
+  const monitorEvents = useMonitorStore((s) => s.events);
+  const liveActivity = useAgentActivityStore((s) =>
+    agent?.name ? s.getActivity(agent.name) : undefined
+  );
+
+  // Filter events for this agent
+  const agentEvents = useMemo(() => {
+    if (!agent?.name) return [];
+    const name = agent.name.toLowerCase();
+    return monitorEvents
+      .filter((e) => {
+        const eName = e.agent.toLowerCase();
+        return eName.includes(name) || name.includes(eName.replace(/^@/, '').replace(/\s*\(.*\)/, ''));
+      })
+      .slice(-50) // Last 50 events
+      .reverse();
+  }, [monitorEvents, agent?.name]);
+
   const tabs: Array<{ id: PanelTab; label: string; icon: string }> = [
     { id: 'chat', label: 'Chat', icon: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' },
+    { id: 'activity', label: 'Live', icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8' },
     { id: 'profile', label: 'Perfil', icon: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2' },
     { id: 'commands', label: 'Cmds', icon: 'M4 17l6-6-6-6M12 19h8' },
   ];
@@ -105,25 +130,38 @@ export function AgentInteractionPanel({
       <div className="flex-shrink-0 p-3 border-b border-glass-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div
-              className="rounded-lg flex items-center justify-center"
-              style={{
-                width: 36,
-                height: 36,
-                background: `${domainCfg.tileColor}22`,
-              }}
-            >
-              <svg
-                width={24}
-                height={24}
-                viewBox="0 0 16 16"
-                style={{ imageRendering: 'pixelated' }}
+            {getAgentAvatarUrl(agentId) ? (
+              <img
+                src={getAgentAvatarUrl(agentId)}
+                alt={agent?.name || agentId}
+                className="rounded-lg object-cover"
+                style={{
+                  width: 36,
+                  height: 36,
+                  border: `1.5px solid ${domainCfg.tileColor}44`,
+                }}
+              />
+            ) : (
+              <div
+                className="rounded-lg flex items-center justify-center"
+                style={{
+                  width: 36,
+                  height: 36,
+                  background: `${domainCfg.tileColor}22`,
+                }}
               >
-                {agentSpriteRects(spriteColors).map((r, i) => (
-                  <rect key={i} x={r.x} y={r.y} width={r.w} height={r.h} fill={r.fill} />
-                ))}
-              </svg>
-            </div>
+                <svg
+                  width={24}
+                  height={24}
+                  viewBox="0 0 16 16"
+                  style={{ imageRendering: 'pixelated' }}
+                >
+                  {agentSpriteRects(spriteColors).map((r, i) => (
+                    <rect key={i} x={r.x} y={r.y} width={r.w} height={r.h} fill={r.fill} />
+                  ))}
+                </svg>
+              </div>
+            )}
 
             <div>
               <h3 className="text-xs font-semibold text-primary leading-tight">
@@ -198,19 +236,28 @@ export function AgentInteractionPanel({
                 {messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center py-8">
                     <div
-                      className="rounded-xl p-3 mb-3"
+                      className="rounded-xl p-3 mb-3 overflow-hidden"
                       style={{ background: `${domainCfg.tileColor}11` }}
                     >
-                      <svg
-                        width={32}
-                        height={32}
-                        viewBox="0 0 16 16"
-                        style={{ imageRendering: 'pixelated' }}
-                      >
-                        {agentSpriteRects(spriteColors).map((r, i) => (
-                          <rect key={i} x={r.x} y={r.y} width={r.w} height={r.h} fill={r.fill} />
-                        ))}
-                      </svg>
+                      {getAgentAvatarUrl(agentId) ? (
+                        <img
+                          src={getAgentAvatarUrl(agentId)}
+                          alt={agent?.name || agentId}
+                          className="rounded-lg object-cover"
+                          style={{ width: 48, height: 48 }}
+                        />
+                      ) : (
+                        <svg
+                          width={32}
+                          height={32}
+                          viewBox="0 0 16 16"
+                          style={{ imageRendering: 'pixelated' }}
+                        >
+                          {agentSpriteRects(spriteColors).map((r, i) => (
+                            <rect key={i} x={r.x} y={r.y} width={r.w} height={r.h} fill={r.fill} />
+                          ))}
+                        </svg>
+                      )}
                     </div>
                     <p className="text-[11px] text-secondary font-medium mb-1">
                       Conversar com {agent?.name || 'Agent'}
@@ -298,6 +345,65 @@ export function AgentInteractionPanel({
                 </div>
               </div>
             </motion.div>
+          ) : activeTab === 'activity' ? (
+            <motion.div
+              key="activity"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 overflow-y-auto glass-scrollbar p-3 space-y-1"
+            >
+              {/* Live status */}
+              {liveActivity?.isActive && (
+                <motion.div
+                  className="rounded-xl p-3 mb-3"
+                  style={{
+                    background: `${domainCfg.tileColor}11`,
+                    border: `1px solid ${domainCfg.tileColor}22`,
+                  }}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <div className="flex items-center gap-2">
+                    <motion.div
+                      className="w-2 h-2 rounded-full"
+                      style={{ background: '#10B981' }}
+                      animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
+                      transition={{ duration: 1.2, repeat: Infinity }}
+                    />
+                    <span className="text-[11px] font-semibold text-primary">
+                      {liveActivity.action}
+                    </span>
+                  </div>
+                  {liveActivity.tool && (
+                    <span className="text-[9px] text-tertiary mt-1 block font-mono">
+                      tool: {liveActivity.tool}
+                    </span>
+                  )}
+                </motion.div>
+              )}
+
+              {/* Events timeline */}
+              {agentEvents.length > 0 ? (
+                <div className="space-y-0.5">
+                  {agentEvents.map((event, i) => (
+                    <ActivityEventRow key={event.id || i} event={event} domainColor={domainCfg.tileColor} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center py-8">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-tertiary mb-2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8" />
+                  </svg>
+                  <p className="text-[11px] text-secondary font-medium mb-1">
+                    Sem atividade recente
+                  </p>
+                  <p className="text-[10px] text-tertiary max-w-[200px]">
+                    Quando o agente estiver trabalhando, a atividade em tempo real aparecerá aqui
+                  </p>
+                </div>
+              )}
+            </motion.div>
           ) : activeTab === 'profile' ? (
             <motion.div
               key="profile"
@@ -314,6 +420,22 @@ export function AgentInteractionPanel({
                 </div>
               ) : agent ? (
                 <>
+                  {/* Agent Avatar Card */}
+                  {getAgentAvatarUrl(agentId) && (
+                    <div className="flex flex-col items-center mb-2">
+                      <img
+                        src={getAgentAvatarUrl(agentId)}
+                        alt={agent.name}
+                        className="rounded-xl object-cover shadow-lg"
+                        style={{
+                          width: 120,
+                          height: 120,
+                          border: `2px solid ${domainCfg.tileColor}33`,
+                        }}
+                      />
+                    </div>
+                  )}
+
                   {agent.description && (
                     <div>
                       <p className="text-[10px] font-semibold text-secondary uppercase tracking-wider mb-1.5">
@@ -415,5 +537,70 @@ export function AgentInteractionPanel({
         </AnimatePresence>
       </div>
     </motion.div>
+  );
+}
+
+// Timeline row for an individual monitor event
+function ActivityEventRow({ event, domainColor }: { event: MonitorEvent; domainColor: string }) {
+  const typeColors: Record<MonitorEvent['type'], string> = {
+    tool_call: '#10B981',
+    message: '#8B5CF6',
+    error: '#EF4444',
+    system: '#6B7280',
+  };
+
+  const typeIcons: Record<MonitorEvent['type'], string> = {
+    tool_call: 'M13 2L3 14h9l-1 8 10-12h-9l1-8', // bolt
+    message: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z', // chat
+    error: 'M12 9v2m0 4h.01M10.29 3.86l-8.3 14.4A1 1 0 0 0 2.85 20h18.3a1 1 0 0 0 .86-1.74l-8.3-14.4a1 1 0 0 0-1.72 0z', // triangle alert
+    system: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33', // gear
+  };
+
+  const color = typeColors[event.type];
+  const time = new Date(event.timestamp).toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+
+  // Truncate description
+  const desc = event.description.length > 60
+    ? event.description.slice(0, 57) + '...'
+    : event.description;
+
+  return (
+    <div className="flex items-start gap-2 py-1.5 px-2 rounded-lg hover:bg-white/5 transition-colors group">
+      {/* Type icon */}
+      <div
+        className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center mt-0.5"
+        style={{ background: `${color}15` }}
+      >
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5">
+          <path d={typeIcons[event.type]} />
+        </svg>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] text-primary truncate">{desc}</p>
+        <div className="flex items-center gap-1.5 mt-0.5">
+          <span className="text-[9px] text-tertiary font-mono">{time}</span>
+          {event.duration != null && (
+            <span className="text-[9px] text-tertiary">
+              {event.duration}ms
+            </span>
+          )}
+          {event.success === false && (
+            <span className="text-[9px] font-bold" style={{ color: '#EF4444' }}>FAIL</span>
+          )}
+        </div>
+      </div>
+
+      {/* Status dot */}
+      <div
+        className="flex-shrink-0 w-1.5 h-1.5 rounded-full mt-1.5"
+        style={{ background: event.success === false ? '#EF4444' : color }}
+      />
+    </div>
   );
 }

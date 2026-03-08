@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { motion } from 'framer-motion';
@@ -13,10 +14,10 @@ interface StoryCardProps {
 }
 
 const categoryColors: Record<Story['category'], string> = {
-  feature: 'bg-blue-500/15 text-blue-400',
-  fix: 'bg-red-500/15 text-red-400',
-  refactor: 'bg-amber-500/15 text-amber-400',
-  docs: 'bg-green-500/15 text-green-400',
+  feature: 'kanban-badge kanban-badge-feature',
+  fix: 'kanban-badge kanban-badge-fix',
+  refactor: 'kanban-badge kanban-badge-refactor',
+  docs: 'kanban-badge kanban-badge-docs',
 };
 
 const categoryLabels: Record<Story['category'], string> = {
@@ -27,16 +28,16 @@ const categoryLabels: Record<Story['category'], string> = {
 };
 
 const complexityColors: Record<Story['complexity'], string> = {
-  simple: 'bg-green-500/15 text-green-400',
-  standard: 'bg-yellow-500/15 text-yellow-400',
-  complex: 'bg-red-500/15 text-red-400',
+  simple: 'kanban-badge kanban-badge-simple',
+  standard: 'kanban-badge kanban-badge-standard',
+  complex: 'kanban-badge kanban-badge-complex',
 };
 
 const priorityIndicators: Record<Story['priority'], { color: string; label: string }> = {
-  low: { color: 'bg-gray-400', label: 'Low' },
-  medium: { color: 'bg-blue-400', label: 'Medium' },
-  high: { color: 'bg-orange-400', label: 'High' },
-  critical: { color: 'bg-red-500', label: 'Critical' },
+  low: { color: 'kanban-priority-dot kanban-priority-low', label: 'Low' },
+  medium: { color: 'kanban-priority-dot kanban-priority-medium', label: 'Medium' },
+  high: { color: 'kanban-priority-dot kanban-priority-high', label: 'High' },
+  critical: { color: 'kanban-priority-dot kanban-priority-critical', label: 'Critical' },
 };
 
 const progressVariant = (progress: number) => {
@@ -46,7 +47,7 @@ const progressVariant = (progress: number) => {
   return 'default' as const;
 };
 
-export function StoryCard({ story, onClick, isDragOverlay = false }: StoryCardProps) {
+export const StoryCard = memo(function StoryCard({ story, onClick, isDragOverlay = false }: StoryCardProps) {
   const {
     attributes,
     listeners,
@@ -72,10 +73,16 @@ export function StoryCard({ story, onClick, isDragOverlay = false }: StoryCardPr
   if (isDragOverlay) {
     return (
       <div
-        className="w-[280px]"
-        style={{ transform: 'rotate(3deg) scale(1.05)', opacity: 0.9 }}
+        className="w-[280px] rounded-xl shadow-2xl shadow-black/40 ring-2 ring-blue-500/40"
+        style={{
+          transform: 'rotate(2deg) scale(1.05)',
+          background: 'rgba(30, 30, 40, 0.95)',
+          backdropFilter: 'blur(8px)',
+        }}
       >
-        <StoryCardContent story={story} priority={priority} />
+        <div className="p-3">
+          <StoryCardContent story={story} priority={priority} />
+        </div>
       </div>
     );
   }
@@ -123,7 +130,7 @@ export function StoryCard({ story, onClick, isDragOverlay = false }: StoryCardPr
       </motion.div>
     </div>
   );
-}
+});
 
 function StoryCardContent({
   story,
@@ -165,7 +172,7 @@ function StoryCardContent({
         {/* Bob orchestrated indicator */}
         {story.bobOrchestrated && (
           <span
-            className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-500/15 text-purple-400"
+            className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium kanban-badge kanban-badge-bob"
             title="Bob Orchestrated"
           >
             <Zap size={10} className="mr-0.5" />

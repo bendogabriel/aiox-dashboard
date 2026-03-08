@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Bot, Clock, AlertTriangle } from 'lucide-react';
-import { GlassCard, Badge, StatusDot, ProgressBar } from '../ui';
+import { GlassCard, Badge, StatusDot, ProgressBar, Avatar } from '../ui';
 import type { StatusType } from '../ui/StatusDot';
 import { cn, formatRelativeTime } from '../../lib/utils';
 
@@ -87,14 +87,14 @@ export const AgentMonitorCard = memo(function AgentMonitorCard({
       onClick={onClick}
       aria-label={`Agent ${agent.name} - ${agent.status}`}
     >
-      {/* Header: name + status + model */}
+      {/* Header: avatar + name + status + model */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 min-w-0">
-          <StatusDot
-            status={statusType}
-            size="md"
-            glow={isActive || isError}
-            pulse={isActive}
+          <Avatar
+            name={agent.name}
+            agentId={agent.id}
+            size="sm"
+            status={isActive ? 'online' : isError ? 'busy' : undefined}
           />
           <span className="text-sm font-semibold text-primary truncate">
             {agent.name}

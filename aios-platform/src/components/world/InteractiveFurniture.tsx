@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { FurnitureItem, DomainId } from './world-layout';
-import { domains } from './world-layout';
+import { useDomains } from './DomainContext';
 
 interface InteractiveFurnitureProps {
   item: FurnitureItem;
@@ -54,6 +54,7 @@ const FURNITURE_SIZES: Record<FurnitureItem['type'], { w: number; h: number }> =
 
 export function InteractiveFurniture({ item, domain, tileSize }: InteractiveFurnitureProps) {
   const [hovered, setHovered] = useState(false);
+  const domains = useDomains();
   const info = FURNITURE_INFO[item.type];
   const size = FURNITURE_SIZES[item.type];
   const d = domains[domain];

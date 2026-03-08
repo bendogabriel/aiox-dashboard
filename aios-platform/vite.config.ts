@@ -13,11 +13,11 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'AIOS Core - AI Agent Platform',
-        short_name: 'AIOS Core',
+        name: 'AIOX - AI Agent Platform',
+        short_name: 'AIOX',
         description: 'Interface para orquestração de agentes de IA',
-        theme_color: '#1e40af',
-        background_color: '#0f172a',
+        theme_color: '#0F0F11',
+        background_color: '#050505',
         display: 'standalone',
         orientation: 'portrait-primary',
         scope: '/',
@@ -95,6 +95,16 @@ export default defineConfig({
     port: 5173,
     allowedHosts: ['host.docker.internal'],
     proxy: {
+      '/edge-tts': {
+        target: 'http://127.0.0.1:5174',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/edge-tts/, ''),
+      },
+      '/fal-proxy': {
+        target: 'https://fal.run',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/fal-proxy/, ''),
+      },
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,

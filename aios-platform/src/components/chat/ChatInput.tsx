@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import { useState, useRef, useEffect, useMemo, KeyboardEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassButton } from '../ui';
 import { cn } from '../../lib/utils';
+import { useVoiceStore } from '../../stores/voiceStore';
 import type { MessageAttachment } from '../../types';
+import { SlashCommandMenu, type SlashCommand } from './SlashCommandMenu';
 
 interface ChatInputProps {
   onSend: (message: string, attachments?: MessageAttachment[]) => void;
@@ -112,14 +114,33 @@ export function ChatInput({
 }: ChatInputProps) {
   const [message, setMessage] = useState('');
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessingFiles, setIsProcessingFiles] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
+
+  // Slash command menu state
+  const slashMenuVisible = useMemo(() => {
+    if (!message.startsWith('/')) return false;
+    // Only show if cursor is still in the slash command part
+    const spaceIdx = message.indexOf(' ');
+    return spaceIdx === -1; // No space yet = still typing the command
+  }, [message]);
+
+  const slashQuery = useMemo(() => {
+    if (!slashMenuVisible) return '';
+    return message.slice(1); // Remove the leading "/"
+  }, [slashMenuVisible, message]);
+
+  const handleSlashSelect = (cmd: SlashCommand) => {
+    setMessage(cmd.command + ' ');
+    textareaRef.current?.focus();
+  };
+
+  const handleSlashClose = () => {
+    // Do nothing special - just let user keep typing
+  };
 
   // Auto-resize textarea
   useEffect(() => {
@@ -129,25 +150,6 @@ export function ChatInput({
       textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
     }
   }, [message]);
-
-  // Recording timer
-  useEffect(() => {
-    if (isRecording) {
-      recordingIntervalRef.current = setInterval(() => {
-        setRecordingTime((prev) => prev + 1);
-      }, 1000);
-    } else {
-      if (recordingIntervalRef.current) {
-        clearInterval(recordingIntervalRef.current);
-      }
-      setRecordingTime(0);
-    }
-    return () => {
-      if (recordingIntervalRef.current) {
-        clearInterval(recordingIntervalRef.current);
-      }
-    };
-  }, [isRecording]);
 
   // Cleanup previews on unmount
   useEffect(() => {
@@ -251,20 +253,8 @@ export function ChatInput({
     });
   };
 
-  const toggleRecording = () => {
-    if (isRecording) {
-      // Stop recording - simulate transcription
-      setIsRecording(false);
-      setMessage((prev) => prev + (prev ? ' ' : '') + '[Audio transcrito]');
-    } else {
-      setIsRecording(true);
-    }
-  };
-
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  const activateVoiceMode = () => {
+    useVoiceStore.getState().activate();
   };
 
   const handleSend = async () => {
@@ -309,9 +299,17 @@ export function ChatInput({
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    // Let slash command menu handle navigation keys
+    if (slashMenuVisible && (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Tab')) {
+      return; // SlashCommandMenu handles these via window listener
+    }
     if (e.key === 'Enter' && !e.shiftKey) {
+      if (slashMenuVisible) return; // Let menu handle Enter
       e.preventDefault();
       handleSend();
+    }
+    if (e.key === 'Escape' && slashMenuVisible) {
+      return; // Let menu handle Escape
     }
   };
 
@@ -438,41 +436,14 @@ export function ChatInput({
         )}
       </AnimatePresence>
 
-      {/* Recording Indicator */}
-      <AnimatePresence>
-        {isRecording && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="px-2 pb-2"
-          >
-            <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20">
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ repeat: Infinity, duration: 1 }}
-                className="h-3 w-3 rounded-full bg-red-500"
-                aria-hidden="true"
-              />
-              <span className="text-sm text-red-500 font-medium">
-                Gravando...
-              </span>
-              <span className="text-sm text-red-400 font-mono">
-                {formatTime(recordingTime)}
-              </span>
-              <div className="flex-1" />
-              <span className="text-xs text-tertiary">
-                Clique no botao para parar
-              </span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Screen reader announcement for recording state */}
-      <div aria-live="polite" aria-atomic="true" className="sr-only">
-        {isRecording && `Gravando audio: ${formatTime(recordingTime)}`}
-      </div>
+      {/* Slash Command Autocomplete */}
+      <SlashCommandMenu
+        query={slashQuery}
+        isVisible={slashMenuVisible}
+        onSelect={handleSlashSelect}
+        onClose={handleSlashClose}
+        anchor="top"
+      />
 
       <div className="flex items-end gap-2">
         {/* Attachment Button */}
@@ -484,7 +455,7 @@ export function ChatInput({
             'h-10 w-10 md:h-10 md:w-10 flex-shrink-0 touch-manipulation',
             pendingFiles.length > 0 && 'text-blue-500 bg-blue-500/10'
           )}
-          disabled={disabled || isRecording}
+          disabled={disabled}
           onClick={() => fileInputRef.current?.click()}
         >
           <AttachIcon aria-hidden="true" />
@@ -498,7 +469,7 @@ export function ChatInput({
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder || defaultPlaceholder}
-            disabled={disabled || isRecording}
+            disabled={disabled}
             rows={1}
             className={cn(
               'w-full resize-none bg-transparent',
@@ -507,24 +478,21 @@ export function ChatInput({
               'py-2.5 px-1',
               'text-sm leading-relaxed',
               'max-h-[200px]',
-              (disabled || isRecording) && 'opacity-50 cursor-not-allowed'
+              disabled && 'opacity-50 cursor-not-allowed'
             )}
           />
         </div>
 
-        {/* Voice Button */}
+        {/* Voice Mode Button */}
         <GlassButton
           variant="ghost"
           size="icon"
-          aria-label={isRecording ? 'Parar gravacao' : 'Gravar audio'}
-          className={cn(
-            'h-10 w-10 flex-shrink-0 touch-manipulation',
-            isRecording && 'text-red-500 bg-red-500/10'
-          )}
+          aria-label="Ativar modo voz"
+          className="h-10 w-10 flex-shrink-0 touch-manipulation"
           disabled={disabled}
-          onClick={toggleRecording}
+          onClick={activateVoiceMode}
         >
-          {isRecording ? <StopIcon aria-hidden="true" /> : <MicIcon aria-hidden="true" />}
+          <MicIcon aria-hidden="true" />
         </GlassButton>
 
         {/* Send/Stop Button */}
@@ -549,7 +517,7 @@ export function ChatInput({
               isProcessingFiles && 'opacity-50'
             )}
             onClick={handleSend}
-            disabled={disabled || isRecording || isProcessingFiles || (!message.trim() && pendingFiles.length === 0)}
+            disabled={disabled || isProcessingFiles || (!message.trim() && pendingFiles.length === 0)}
           >
             {isProcessingFiles ? (
               <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" aria-hidden="true" />

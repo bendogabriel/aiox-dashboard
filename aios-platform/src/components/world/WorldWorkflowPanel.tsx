@@ -7,11 +7,14 @@ import {
   Megaphone,
   Rocket,
   Wrench,
+  Activity,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { ICON_SIZES } from '../../lib/icons';
-import { domains, rooms } from './world-layout';
+import { rooms } from './world-layout';
 import type { DomainId } from './world-layout';
+import { useDomains } from './DomainContext';
+import { useMonitorStore } from '../../stores/monitorStore';
 
 // ── Types ──
 
@@ -111,12 +114,18 @@ function getDomainForSquad(squadId: string): DomainId {
   return room?.domain || 'ops';
 }
 
-const statusColorMap: Record<WorkflowStep['status'], string> = {
-  pending: 'rgba(255,255,255,0.2)',
-  active: '#54A0FF',
-  completed: '#2ED573',
-  failed: '#FF6B6B',
-};
+function useStatusColorMap() {
+  const style = typeof document !== 'undefined' ? getComputedStyle(document.documentElement) : null;
+  const active = style?.getPropertyValue('--world-status-active').trim() || '#54A0FF';
+  const completed = style?.getPropertyValue('--world-status-completed').trim() || '#2ED573';
+  const failed = style?.getPropertyValue('--world-status-failed').trim() || '#FF6B6B';
+  return {
+    pending: 'rgba(255,255,255,0.2)',
+    active,
+    completed,
+    failed,
+  } as Record<WorkflowStep['status'], string>;
+}
 
 // ── Component ──
 
@@ -133,8 +142,13 @@ export function WorldWorkflowPanel({
   onHighlightRooms,
   onRoomClick,
 }: WorldWorkflowPanelProps) {
+  const domains = useDomains();
+  const statusColorMap = useStatusColorMap();
   const [selectedWorkflow, setSelectedWorkflow] = useState<string | null>(null);
   const [hoveredStep, setHoveredStep] = useState<string | null>(null);
+
+  const monitorConnected = useMonitorStore((s) => s.connected);
+  const eventCount = useMonitorStore((s) => s.events.length);
 
   const activeCount = useMemo(
     () => businessWorkflows.filter((w) => w.status === 'active').length,
@@ -177,6 +191,21 @@ export function WorldWorkflowPanel({
             >
               {activeCount} active
             </motion.span>
+          )}
+          {/* Live monitor indicator */}
+          {monitorConnected && (
+            <div className="flex items-center gap-1 ml-2">
+              <motion.div
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ backgroundColor: '#10B981' }}
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+              <span className="text-[8px] text-white/40 font-mono">LIVE</span>
+              {eventCount > 0 && (
+                <span className="text-[8px] text-white/30 font-mono">{eventCount}</span>
+              )}
+            </div>
           )}
         </div>
         <motion.svg
@@ -231,8 +260,8 @@ export function WorldWorkflowPanel({
                     <span
                       className="ml-auto px-1.5 py-0.5 rounded text-[8px] font-bold uppercase"
                       style={{
-                        background: wf.status === 'active' ? '#54A0FF22' : 'rgba(255,255,255,0.06)',
-                        color: wf.status === 'active' ? '#54A0FF' : 'rgba(255,255,255,0.4)',
+                        background: wf.status === 'active' ? `${statusColorMap.active}22` : 'rgba(255,255,255,0.06)',
+                        color: wf.status === 'active' ? statusColorMap.active : 'rgba(255,255,255,0.4)',
                       }}
                     >
                       {wf.status}
@@ -267,13 +296,13 @@ export function WorldWorkflowPanel({
                                   background: step.status === 'active'
                                     ? domainCfg.tileColor
                                     : step.status === 'completed'
-                                      ? '#2ED57344'
+                                      ? `${statusColorMap.completed}44`
                                       : 'rgba(255,255,255,0.08)',
                                   border: `2px solid ${statusColorMap[step.status]}`,
                                 }}
                               >
                                 {step.status === 'completed' && (
-                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2ED573" strokeWidth="3">
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={statusColorMap.completed} strokeWidth="3">
                                     <polyline points="20 6 9 17 4 12" />
                                   </svg>
                                 )}
@@ -285,7 +314,7 @@ export function WorldWorkflowPanel({
                                   />
                                 )}
                                 {step.status === 'failed' && (
-                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" strokeWidth="3">
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={statusColorMap.failed} strokeWidth="3">
                                     <line x1="18" y1="6" x2="6" y2="18" />
                                     <line x1="6" y1="6" x2="18" y2="18" />
                                   </svg>
@@ -345,37 +374,59 @@ export function WorldWorkflowPanel({
                             </AnimatePresence>
                           </motion.div>
 
-                          {/* Arrow connector */}
-                          {!isLast && (
-                            <div className="mx-1 flex items-center">
-                              <div
-                                className="h-px flex-1"
-                                style={{
-                                  width: 16,
-                                  background:
-                                    step.status === 'completed'
-                                      ? '#2ED57366'
-                                      : step.status === 'active'
-                                        ? '#54A0FF44'
-                                        : 'rgba(255,255,255,0.1)',
-                                }}
-                              />
-                              <svg width="6" height="8" viewBox="0 0 6 8" style={{ marginLeft: -1 }}>
-                                <path
-                                  d="M1 1 L5 4 L1 7"
-                                  fill="none"
-                                  stroke={
-                                    step.status === 'completed'
-                                      ? '#2ED57366'
-                                      : step.status === 'active'
-                                        ? '#54A0FF44'
-                                        : 'rgba(255,255,255,0.1)'
-                                  }
-                                  strokeWidth="1.5"
+                          {/* Arrow connector with data flow animation */}
+                          {!isLast && (() => {
+                            const nextStep = wf.steps[idx + 1];
+                            const isFlowing = step.status === 'completed' && (nextStep?.status === 'active' || nextStep?.status === 'completed');
+                            const connectorColor = step.status === 'completed'
+                              ? `${statusColorMap.completed}66`
+                              : step.status === 'active'
+                                ? `${statusColorMap.active}44`
+                                : 'rgba(255,255,255,0.1)';
+
+                            return (
+                              <div className="mx-1 flex items-center relative">
+                                {/* Base connector line */}
+                                <div
+                                  className="h-px flex-1"
+                                  style={{
+                                    width: 16,
+                                    background: connectorColor,
+                                  }}
                                 />
-                              </svg>
-                            </div>
-                          )}
+                                {/* Data flow pulse — animated dot traveling along connector */}
+                                {isFlowing && (
+                                  <motion.div
+                                    className="absolute top-1/2 -translate-y-1/2 rounded-full"
+                                    style={{
+                                      width: 4,
+                                      height: 4,
+                                      background: statusColorMap.completed,
+                                      boxShadow: `0 0 6px ${statusColorMap.completed}`,
+                                    }}
+                                    animate={{
+                                      left: [-2, 18],
+                                      opacity: [0, 1, 1, 0],
+                                    }}
+                                    transition={{
+                                      duration: 1.2,
+                                      repeat: Infinity,
+                                      ease: 'linear',
+                                      repeatDelay: 0.5,
+                                    }}
+                                  />
+                                )}
+                                <svg width="6" height="8" viewBox="0 0 6 8" style={{ marginLeft: -1 }}>
+                                  <path
+                                    d="M1 1 L5 4 L1 7"
+                                    fill="none"
+                                    stroke={connectorColor}
+                                    strokeWidth="1.5"
+                                  />
+                                </svg>
+                              </div>
+                            );
+                          })()}
                         </div>
                       );
                     })}

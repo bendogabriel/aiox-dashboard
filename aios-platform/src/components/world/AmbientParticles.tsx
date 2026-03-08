@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { DomainId } from './world-layout';
-import { domains } from './world-layout';
+import { useDomains } from './DomainContext';
 
 interface AmbientParticlesProps {
   domain: DomainId;
@@ -42,6 +42,7 @@ function hashNum(seed: number): number {
 }
 
 export function AmbientParticles({ domain, roomWidth, roomHeight }: AmbientParticlesProps) {
+  const domains = useDomains();
   const d = domains[domain];
   const chars = DOMAIN_CHARS[domain];
 

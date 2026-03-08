@@ -17,7 +17,7 @@
 /* ============================================
    BRUTALIST RESET — Zero Radius on Containers
    Targets containers, cards, buttons, inputs, panels.
-   Preserves: dots, indicators, pings, spinners, avatars, SVG.
+   Preserves: dots, indicators, pings, spinners, SVG.
    ============================================ */
 
 html[data-theme="aiox"] div,
@@ -33,6 +33,10 @@ html[data-theme="aiox"] input,
 html[data-theme="aiox"] select,
 html[data-theme="aiox"] textarea,
 html[data-theme="aiox"] a,
+html[data-theme="aiox"] span,
+html[data-theme="aiox"] kbd,
+html[data-theme="aiox"] li,
+html[data-theme="aiox"] p,
 html[data-theme="aiox"] [role="dialog"],
 html[data-theme="aiox"] [role="tablist"],
 html[data-theme="aiox"] [role="tab"],
@@ -42,7 +46,7 @@ html[data-theme="aiox"] [role="listbox"] {
   border-radius: 0 !important;
 }
 
-/* Preserve round shapes: status dots, pings, spinners, avatars */
+/* Preserve round shapes: status dots, pings, spinners */
 html[data-theme="aiox"] .status-online,
 html[data-theme="aiox"] .status-busy,
 html[data-theme="aiox"] .status-offline,
@@ -53,11 +57,19 @@ html[data-theme="aiox"] [class*="rounded-full"]:is(
   border-radius: 9999px !important;
 }
 
-/* Small indicator dots (h-2 w-2, h-3 w-3) always round */
-html[data-theme="aiox"] span[class*="rounded-full"][class*="h-2"],
-html[data-theme="aiox"] span[class*="rounded-full"][class*="h-3"],
-html[data-theme="aiox"] span[class*="rounded-full"][class*="w-2"],
-html[data-theme="aiox"] span[class*="rounded-full"][class*="w-3"] {
+/* Small indicator dots (h-2 w-2, h-3 w-3, h-4 w-4) always round */
+html[data-theme="aiox"] span[class*="rounded-full"][class*="h-2"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="h-3"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="w-2"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="w-3"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="h-4"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="w-4"]:not([class*="px-"]) {
+  border-radius: 9999px !important;
+}
+
+/* Toggle switch knobs stay round */
+html[data-theme="aiox"] [role="switch"] span,
+html[data-theme="aiox"] [data-state] > span[class*="rounded-full"][class*="block"] {
   border-radius: 9999px !important;
 }
 
@@ -67,10 +79,13 @@ html[data-theme="aiox"] .animate-spin {
   border-radius: 9999px !important;
 }
 
-/* Avatar circles stay round */
-html[data-theme="aiox"] [class*="avatar"],
-html[data-theme="aiox"] img[class*="rounded-full"] {
-  border-radius: 9999px !important;
+/* Avatar: brutalist square shape (not round) */
+html[data-theme="aiox"] [class*="avatar"] img,
+html[data-theme="aiox"] [class*="avatar"] div[class*="rounded-full"] {
+  border-radius: 0 !important;
+}
+html[data-theme="aiox"] img[class*="rounded-full"][alt] {
+  border-radius: 0 !important;
 }
 
 /* Scrollbar thumb: tiny radius for usability */
@@ -269,9 +284,33 @@ html[data-theme="aiox"] button[class*="text-xs"] {
   letter-spacing: 0.08em;
 }
 
-/* Generic buttons and links that look like buttons */
+/* Generic buttons inherit mono font */
 html[data-theme="aiox"] button {
   font-family: var(--font-family-mono);
+}
+
+/* Action buttons get uppercase. Discriminator: inline-flex = action button,
+   w-full + flex + text-left = content-wrapper button (file lists, cards).
+   GlassButton always renders with inline-flex. */
+html[data-theme="aiox"] .glass-button,
+html[data-theme="aiox"] .glass-button-primary,
+html[data-theme="aiox"] button[class*="inline-flex"],
+html[data-theme="aiox"] nav button {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Content-wrapper buttons: restore mixed-case for file lists, card items.
+   These are w-full + text-left buttons used as clickable rows (NOT nav items). */
+html[data-theme="aiox"] button[class*="text-left"] {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Sidebar nav ALWAYS uppercase (higher specificity to win over content-wrapper) */
+html[data-theme="aiox"] nav[aria-label] button {
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
 }
 
 /* ============================================
@@ -305,7 +344,7 @@ html[data-theme="aiox"] textarea.glass-input {
 }
 
 /* All native inputs/selects */
-html[data-theme="aiox"] input,
+html[data-theme="aiox"] input:not([type="color"]),
 html[data-theme="aiox"] select,
 html[data-theme="aiox"] textarea {
   font-family: var(--font-family-mono);
@@ -313,11 +352,31 @@ html[data-theme="aiox"] textarea {
   border: 1px solid rgba(156, 156, 156, 0.15);
 }
 
+/* Color picker — preserve native rendering */
+html[data-theme="aiox"] input[type="color"] {
+  background: transparent;
+  border: 1px solid rgba(156, 156, 156, 0.15);
+  padding: 2px;
+  cursor: pointer;
+}
+
 html[data-theme="aiox"] input:focus,
 html[data-theme="aiox"] select:focus,
 html[data-theme="aiox"] textarea:focus {
   border-color: var(--aiox-lime);
   box-shadow: 0 0 0 1px var(--aiox-lime);
+}
+
+/* Native select dropdown options — ensure readability in dark theme */
+html[data-theme="aiox"] select {
+  color: var(--aiox-cream);
+  cursor: pointer;
+}
+
+html[data-theme="aiox"] select option {
+  background-color: #111;
+  color: #e5e5e5;
+  padding: 0.5rem;
 }
 
 /* ============================================
@@ -353,6 +412,33 @@ html[data-theme="aiox"] .message-bubble-agent {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+/* Markdown content inside agent bubbles */
+html[data-theme="aiox"] .message-bubble-agent .markdown-content {
+  color: var(--aiox-cream);
+}
+
+html[data-theme="aiox"] .message-bubble-agent .markdown-content a {
+  color: var(--aiox-lime);
+}
+
+html[data-theme="aiox"] .message-bubble-agent .markdown-content blockquote {
+  border-left-color: rgba(209, 255, 0, 0.3);
+  background: rgba(209, 255, 0, 0.03);
+}
+
+html[data-theme="aiox"] .message-bubble-agent .markdown-content hr {
+  border-color: rgba(156, 156, 156, 0.15);
+}
+
+/* Audio/video players in AIOX theme */
+html[data-theme="aiox"] .message-bubble-agent audio {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-theme="aiox"] .message-bubble-agent video {
+  border-radius: 0;
 }
 
 /* ============================================
@@ -506,6 +592,19 @@ html[data-theme="aiox"] h2 {
   line-height: 1.05;
 }
 
+/* Card-level headings with text-sm/text-xs — reset display font overrides */
+html[data-theme="aiox"] h2[class*="text-sm"],
+html[data-theme="aiox"] h2[class*="text-xs"],
+html[data-theme="aiox"] h3[class*="text-sm"],
+html[data-theme="aiox"] h3[class*="text-xs"] {
+  font-family: var(--font-family-mono);
+  font-size: inherit;
+  font-weight: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: inherit;
+}
+
 /* ============================================
    LABELS & META — Mono Uppercase
    ============================================ */
@@ -614,6 +713,123 @@ html[data-theme="aiox"] input:focus-visible,
 html[data-theme="aiox"] textarea:focus-visible,
 html[data-theme="aiox"] select:focus-visible {
   outline: none !important;
+}
+
+/* ============================================
+   REDUCED MOTION — Accessibility
+   ============================================ */
+
+/* ============================================
+   COLOR REMAPPING — AIOX Palette Enforcement
+   Overrides Tailwind color utilities to map to
+   the AIOX palette when data-theme="aiox" is active.
+
+   Palette:
+   - Lime:    #D1FF00 (primary accent)
+   - Red:     #FF3B30 (errors, critical)
+   - Amber:   #FFB800 (warnings, in-progress)
+   - Surface: #0a0a0a / rgba(255,255,255,0.05) (neutral bg)
+   - Gray:    #666 (dim labels)
+   ============================================ */
+
+/* --- Success / Active / Online → Lime --- */
+html[data-theme="aiox"] [class*="bg-green-500\/1"] {
+  background-color: rgba(209, 255, 0, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-green-4"],
+html[data-theme="aiox"] [class*="text-green-5"] {
+  color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="border-green-500"] {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+}
+
+/* --- Info / Default → Lime dim --- */
+html[data-theme="aiox"] [class*="bg-blue-500\/1"] {
+  background-color: rgba(209, 255, 0, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="text-blue-4"],
+html[data-theme="aiox"] [class*="text-blue-5"] {
+  color: rgba(209, 255, 0, 0.7) !important;
+}
+html[data-theme="aiox"] [class*="border-blue-500"] {
+  border-color: rgba(209, 255, 0, 0.15) !important;
+}
+
+/* Solid blue backgrounds (progress dots, indicators) → lime */
+html[data-theme="aiox"] [class*="bg-blue-500"]:not([class*="/"]) {
+  background-color: #D1FF00 !important;
+}
+
+/* --- Cyan → Lime --- */
+html[data-theme="aiox"] [class*="bg-cyan-500\/"] {
+  background-color: rgba(209, 255, 0, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="bg-cyan-4"] {
+  background-color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="text-cyan-4"],
+html[data-theme="aiox"] [class*="text-cyan-5"] {
+  color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="border-cyan-500"] {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+}
+
+/* --- Purple → Surface muted --- */
+html[data-theme="aiox"] [class*="bg-purple-500\/1"] {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+html[data-theme="aiox"] [class*="text-purple-4"],
+html[data-theme="aiox"] [class*="text-purple-5"] {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+html[data-theme="aiox"] [class*="border-purple-500"] {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* --- Error / Critical → AIOX Red --- */
+html[data-theme="aiox"] [class*="bg-red-500\/1"] {
+  background-color: rgba(255, 59, 48, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-red-4"],
+html[data-theme="aiox"] [class*="text-red-5"] {
+  color: #FF3B30 !important;
+}
+html[data-theme="aiox"] [class*="border-red-500"] {
+  border-color: rgba(255, 59, 48, 0.2) !important;
+}
+
+/* --- Warning / In-Progress → AIOX Amber --- */
+html[data-theme="aiox"] [class*="bg-yellow-500\/"],
+html[data-theme="aiox"] [class*="bg-amber-500\/"] {
+  background-color: rgba(255, 184, 0, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-yellow-4"],
+html[data-theme="aiox"] [class*="text-yellow-6"],
+html[data-theme="aiox"] [class*="text-amber-4"] {
+  color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="border-yellow-500"],
+html[data-theme="aiox"] [class*="border-amber-500"] {
+  border-color: rgba(255, 184, 0, 0.2) !important;
+}
+
+/* --- Orange → AIOX Amber --- */
+html[data-theme="aiox"] [class*="bg-orange-500\/1"] {
+  background-color: rgba(255, 184, 0, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-orange-5"] {
+  color: #FFB800 !important;
+}
+
+/* --- Pink → Muted surface --- */
+html[data-theme="aiox"] [class*="bg-pink-500\/1"] {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+html[data-theme="aiox"] [class*="text-pink-4"],
+html[data-theme="aiox"] [class*="text-pink-5"] {
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
 /* ============================================

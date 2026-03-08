@@ -14,18 +14,18 @@ interface StyledSegment {
 
 const ANSI_COLOR_MAP: Record<number, string> = {
   30: 'text-black',
-  31: 'text-red-500',
-  32: 'text-green-500',
-  33: 'text-yellow-500',
-  34: 'text-blue-500',
-  35: 'text-purple-500',
-  36: 'text-cyan-500',
+  31: 'terminal-error',
+  32: 'terminal-prompt',
+  33: 'terminal-ansi-yellow',
+  34: 'terminal-ansi-blue',
+  35: 'terminal-ansi-purple',
+  36: 'terminal-ansi-cyan',
   37: 'text-white',
-  90: 'text-gray-500',
-  91: 'text-red-400',
-  92: 'text-green-400',
-  93: 'text-yellow-400',
-  94: 'text-blue-400',
+  90: 'terminal-ansi-dim',
+  91: 'terminal-error',
+  92: 'terminal-prompt',
+  93: 'terminal-ansi-yellow',
+  94: 'terminal-ansi-blue',
 };
 
 function parseAnsiLine(line: string): StyledSegment[] {
@@ -33,7 +33,7 @@ function parseAnsiLine(line: string): StyledSegment[] {
   // eslint-disable-next-line no-control-regex
   const ansiRegex = /\x1b\[(\d+(?:;\d+)*)m/g;
   let lastIndex = 0;
-  let currentClasses = 'text-gray-300';
+  let currentClasses = 'terminal-text';
   let match: RegExpExecArray | null;
 
   while ((match = ansiRegex.exec(line)) !== null) {
@@ -53,7 +53,7 @@ function parseAnsiLine(line: string): StyledSegment[] {
       } else if (ANSI_COLOR_MAP[code]) {
         // Replace existing text color
         currentClasses = currentClasses
-          .replace(/text-\S+/, ANSI_COLOR_MAP[code]);
+          .replace(/(?:text-\S+|terminal-\S+)/, ANSI_COLOR_MAP[code]);
       }
     }
 
@@ -74,10 +74,10 @@ function hasAnsiCodes(line: string): boolean {
 }
 
 function getHeuristicClass(line: string): string {
-  if (line.startsWith('$')) return 'text-green-400';
-  if (/^PASS|passed|✓/.test(line)) return 'text-green-300';
-  if (/FAIL|error|Error/.test(line)) return 'text-red-400';
-  return 'text-gray-300';
+  if (line.startsWith('$')) return 'terminal-prompt';
+  if (/^PASS|passed|✓/.test(line)) return 'terminal-success';
+  if (/FAIL|error|Error/.test(line)) return 'terminal-error';
+  return 'terminal-text';
 }
 
 function TerminalLine({ line }: { line: string }) {
@@ -143,7 +143,7 @@ export function TerminalOutput({ lines, isActive }: TerminalOutputProps) {
           <TerminalLine key={i} line={line} />
         ))}
         {isActive && (
-          <span className="text-green-400 animate-pulse">_</span>
+          <span className="terminal-cursor animate-pulse">_</span>
         )}
       </div>
 

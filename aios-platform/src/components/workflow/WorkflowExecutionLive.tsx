@@ -161,39 +161,39 @@ const STEP_TYPE_LABELS: Record<string, string> = {
 
 const SQUAD_STYLES: Record<string, { gradient: string; border: string; bg: string; text: string; glow: string }> = {
   copywriting: {
-    gradient: 'from-orange-500 to-amber-500',
-    border: 'border-l-orange-500',
-    bg: 'from-orange-500/20 to-amber-500/20',
-    text: 'text-orange-400',
-    glow: 'rgba(249, 115, 22, 0.3)'
+    gradient: 'from-[var(--color-accent,#D1FF00)] to-[color-mix(in_srgb,var(--color-accent,#D1FF00)_70%,#000)]',
+    border: 'border-l-[var(--color-accent,#D1FF00)]',
+    bg: 'from-[rgba(209,255,0,0.12)] to-[rgba(209,255,0,0.06)]',
+    text: 'text-[var(--color-accent,#D1FF00)]',
+    glow: 'rgba(209, 255, 0, 0.25)'
   },
   design: {
-    gradient: 'from-purple-500 to-pink-500',
-    border: 'border-l-purple-500',
-    bg: 'from-purple-500/20 to-pink-500/20',
-    text: 'text-purple-400',
-    glow: 'rgba(168, 85, 247, 0.3)'
+    gradient: 'from-[color-mix(in_srgb,var(--color-accent,#D1FF00)_80%,#000)] to-[color-mix(in_srgb,var(--color-accent,#D1FF00)_50%,#000)]',
+    border: 'border-l-[color-mix(in_srgb,var(--color-accent,#D1FF00)_80%,#858585)]',
+    bg: 'from-[rgba(209,255,0,0.10)] to-[rgba(209,255,0,0.04)]',
+    text: 'text-[color-mix(in_srgb,var(--color-accent,#D1FF00)_80%,#858585)]',
+    glow: 'rgba(209, 255, 0, 0.2)'
   },
   creator: {
-    gradient: 'from-green-500 to-emerald-500',
-    border: 'border-l-green-500',
-    bg: 'from-green-500/20 to-emerald-500/20',
-    text: 'text-green-400',
-    glow: 'rgba(34, 197, 94, 0.3)'
+    gradient: 'from-[color-mix(in_srgb,var(--color-accent,#D1FF00)_85%,#000)] to-[color-mix(in_srgb,var(--color-accent,#D1FF00)_55%,#000)]',
+    border: 'border-l-[var(--color-accent,#D1FF00)]',
+    bg: 'from-[rgba(209,255,0,0.12)] to-[rgba(209,255,0,0.06)]',
+    text: 'text-[var(--color-accent,#D1FF00)]',
+    glow: 'rgba(209, 255, 0, 0.25)'
   },
   orchestrator: {
-    gradient: 'from-cyan-500 to-blue-500',
-    border: 'border-l-cyan-500',
-    bg: 'from-cyan-500/20 to-blue-500/20',
-    text: 'text-cyan-400',
-    glow: 'rgba(6, 182, 212, 0.3)'
+    gradient: 'from-[var(--color-accent,#D1FF00)] to-[color-mix(in_srgb,var(--color-accent,#D1FF00)_65%,#000)]',
+    border: 'border-l-[var(--color-accent,#D1FF00)]',
+    bg: 'from-[rgba(209,255,0,0.14)] to-[rgba(209,255,0,0.08)]',
+    text: 'text-[var(--color-accent,#D1FF00)]',
+    glow: 'rgba(209, 255, 0, 0.3)'
   },
   default: {
-    gradient: 'from-gray-500 to-slate-500',
-    border: 'border-l-gray-500',
-    bg: 'from-gray-500/20 to-slate-500/20',
-    text: 'text-gray-400',
-    glow: 'rgba(156, 163, 175, 0.2)'
+    gradient: 'from-[var(--color-text-secondary,#858585)] to-[var(--color-text-tertiary,#6D6D6D)]',
+    border: 'border-l-[var(--color-text-secondary,#858585)]',
+    bg: 'from-[rgba(156,156,156,0.12)] to-[rgba(156,156,156,0.06)]',
+    text: 'text-[var(--color-text-secondary,#858585)]',
+    glow: 'rgba(156, 156, 156, 0.15)'
   },
 };
 
@@ -427,8 +427,8 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
         className="relative z-10 m-4 flex-1 flex flex-col backdrop-blur-2xl border border-white/10 rounded-3xl overflow-hidden"
         style={{
           background: `
-            radial-gradient(ellipse 60% 40% at 0% 100%, rgba(255, 90, 60, 0.12) 0%, transparent 50%),
-            radial-gradient(ellipse 50% 60% at 100% 0%, rgba(50, 180, 170, 0.10) 0%, transparent 50%),
+            radial-gradient(ellipse 60% 40% at 0% 100%, rgba(209, 255, 0, 0.06) 0%, transparent 50%),
+            radial-gradient(ellipse 50% 60% at 100% 0%, rgba(209, 255, 0, 0.05) 0%, transparent 50%),
             rgba(0, 0, 0, 0.75)
           `
         }}
@@ -438,16 +438,16 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
           <div className="flex items-center gap-4">
             <div className={cn(
               'w-10 h-10 rounded-xl flex items-center justify-center',
-              state.status === 'running' && 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20',
-              state.status === 'completed' && 'bg-gradient-to-br from-green-500/20 to-emerald-500/20',
+              state.status === 'running' && 'bg-[rgba(209,255,0,0.08)]',
+              state.status === 'completed' && 'bg-[rgba(209,255,0,0.06)]',
               state.status === 'failed' && 'bg-gradient-to-br from-red-500/20 to-rose-500/20',
-              (state.status === 'connecting' || state.status === 'created') && 'bg-gradient-to-br from-yellow-500/20 to-amber-500/20'
+              (state.status === 'connecting' || state.status === 'created') && 'bg-[rgba(209,255,0,0.10)]'
             )}>
               {(state.status === 'connecting' || state.status === 'created' || state.status === 'running') && (
                 <SpinnerIcon size={18} />
               )}
               {state.status === 'completed' && (
-                <span className="text-green-400"><CheckIcon size={18} /></span>
+                <span style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' }}><CheckIcon size={18} /></span>
               )}
               {state.status === 'failed' && (
                 <span className="text-red-400"><XIcon /></span>
@@ -507,12 +507,15 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
           <motion.div
             className={cn(
               'h-full',
-              state.status === 'failed' ? 'bg-gradient-to-r from-red-500 to-rose-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'
+              state.status === 'failed' && 'bg-gradient-to-r from-red-500 to-rose-500'
             )}
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.3 }}
-            style={{ boxShadow: state.status !== 'failed' ? '0 0 10px rgba(6, 182, 212, 0.5)' : '0 0 10px rgba(239, 68, 68, 0.5)' }}
+            style={{
+              ...( state.status !== 'failed' ? { background: 'linear-gradient(to right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))' } : {}),
+              boxShadow: state.status !== 'failed' ? '0 0 10px rgba(209, 255, 0, 0.3)' : '0 0 10px rgba(239, 68, 68, 0.5)'
+            }}
           />
         </div>
 
@@ -526,16 +529,16 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
             className="w-80 border-r border-white/10 flex flex-col overflow-hidden backdrop-blur-xl"
             style={{
               background: `
-                radial-gradient(ellipse 80% 50% at 0% 100%, rgba(255, 90, 60, 0.12) 0%, transparent 50%),
-                radial-gradient(ellipse 60% 80% at 100% 0%, rgba(140, 60, 180, 0.10) 0%, transparent 50%),
-                rgba(15, 15, 20, 0.65)
+                radial-gradient(ellipse 80% 50% at 0% 100%, rgba(209, 255, 0, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 80% at 100% 0%, rgba(209, 255, 0, 0.04) 0%, transparent 50%),
+                var(--glass-background-panel, rgba(15,15,17,0.92))
               `
             }}
           >
             {/* Execution Header */}
             <div className="p-4 border-b border-white/10">
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                <div className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))' }}>
                   <RocketIcon />
                 </div>
                 <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
@@ -551,13 +554,13 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                 <div
                   className="relative rounded-xl p-3 mb-3 transition-all"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%)',
-                    border: '1px solid rgba(139, 92, 246, 0.3)'
+                    background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.08) 0%, rgba(209, 255, 0, 0.04) 100%)',
+                    border: '1px solid rgba(209, 255, 0, 0.15)'
                   }}
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <SpinnerIcon size={14} />
-                    <span className="text-xs font-semibold text-purple-300">
+                    <span className="text-xs font-semibold" style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 65%, transparent)' }}>
                       {orchestrationPlan.phase === 'analyzing' ? 'Analisando demanda...' : 'Criando plano de execução...'}
                     </span>
                   </div>
@@ -572,16 +575,16 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                 <div
                   className="relative rounded-xl p-3 mb-3 transition-all"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%)',
-                    border: '1px solid rgba(139, 92, 246, 0.2)'
+                    background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, transparent 100%)',
+                    border: '1px solid rgba(209, 255, 0, 0.12)'
                   }}
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-400">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 65%, transparent)' }}>
                       <circle cx="12" cy="12" r="3" />
                       <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
                     </svg>
-                    <span className="text-xs font-semibold text-purple-300 uppercase tracking-wider">Análise do Orquestrador</span>
+                    <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 65%, transparent)' }}>Análise do Orquestrador</span>
                   </div>
                   <p className="text-xs text-white/70 leading-relaxed">{orchestrationPlan.analysis}</p>
                   {orchestrationPlan.expectedOutputs.length > 0 && (
@@ -589,7 +592,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                       <p className="text-[10px] text-white/60 mb-1">Outputs esperados:</p>
                       <div className="flex flex-wrap gap-1">
                         {orchestrationPlan.expectedOutputs.map((output, i) => (
-                          <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300">
+                          <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-[rgba(209,255,0,0.08)]" style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 65%, transparent)' }}>
                             {output}
                           </span>
                         ))}
@@ -603,8 +606,8 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
               <div
                 className="relative rounded-xl p-3 transition-all"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%)',
-                  border: '1px solid rgba(59, 130, 246, 0.2)'
+                  background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, rgba(209, 255, 0, 0.04) 100%)',
+                  border: '1px solid rgba(209, 255, 0, 0.12)'
                 }}
               >
                 <div className="space-y-2">
@@ -614,11 +617,11 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                   </div>
                   <div className="h-2 rounded-full bg-black/30 overflow-hidden">
                     <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"
+                      className="h-full rounded-full"
                       initial={{ width: 0 }}
                       animate={{ width: `${progress}%` }}
                       transition={{ duration: 0.5 }}
-                      style={{ boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)' }}
+                      style={{ background: 'linear-gradient(to right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))', boxShadow: '0 0 10px rgba(209, 255, 0, 0.3)' }}
                     />
                   </div>
                   <p className="text-[10px] text-white/60">
@@ -632,7 +635,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
             {/* Steps Log */}
             <div className="flex-1 overflow-hidden flex flex-col">
               <div className="px-4 pt-4 pb-2 flex items-center gap-2">
-                <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+                <div className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 80%, #000))' }}>
                   <ActivityIcon />
                 </div>
                 <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
@@ -687,11 +690,16 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                             <span
                               className={cn(
                                 'flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border',
-                                step.status === 'running' && 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-                                step.status === 'completed' && 'bg-green-500/20 text-green-400 border-green-500/30',
+                                step.status === 'running' && 'bg-[rgba(209,255,0,0.12)] border-[rgba(209,255,0,0.2)]',
+                                step.status === 'completed' && 'bg-[rgba(209,255,0,0.08)] border-[rgba(209,255,0,0.15)]',
                                 step.status === 'failed' && 'bg-red-500/20 text-red-400 border-red-500/30',
                                 step.status === 'pending' && 'bg-gray-500/20 text-gray-400 border-gray-500/30'
                               )}
+                              style={
+                                step.status === 'running' ? { color: 'var(--color-accent, #D1FF00)' } :
+                                step.status === 'completed' ? { color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' } :
+                                undefined
+                              }
                             >
                               {step.status === 'running' && <SpinnerIcon size={10} />}
                               {step.status === 'completed' && <CheckIcon size={10} />}
@@ -765,21 +773,30 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                 className="border-l border-white/10 flex flex-col overflow-hidden backdrop-blur-xl"
                 style={{
                   background: `
-                    radial-gradient(ellipse 80% 50% at 100% 100%, rgba(140, 60, 180, 0.12) 0%, transparent 50%),
-                    radial-gradient(ellipse 60% 80% at 0% 0%, rgba(60, 180, 200, 0.10) 0%, transparent 50%),
-                    rgba(15, 15, 20, 0.65)
+                    radial-gradient(ellipse 80% 50% at 100% 100%, rgba(209, 255, 0, 0.04) 0%, transparent 50%),
+                    radial-gradient(ellipse 60% 80% at 0% 0%, rgba(209, 255, 0, 0.05) 0%, transparent 50%),
+                    var(--glass-background-panel, rgba(15,15,17,0.92))
                   `
                 }}
               >
                 {/* Header */}
                 <div className="p-4 border-b border-white/10 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className={cn(
-                      'h-6 w-6 rounded-lg flex items-center justify-center',
-                      isStartNode && 'bg-gradient-to-br from-blue-500 to-cyan-500',
-                      isEndNode && (state.status === 'completed' ? 'bg-gradient-to-br from-green-500 to-emerald-500' : 'bg-gradient-to-br from-gray-500 to-slate-500'),
-                      !isStartNode && !isEndNode && 'bg-gradient-to-br from-cyan-500 to-blue-500'
-                    )}>
+                    <div
+                      className={cn(
+                        'h-6 w-6 rounded-lg flex items-center justify-center',
+                        isEndNode && state.status !== 'completed' && 'bg-gradient-to-br from-gray-500 to-slate-500'
+                      )}
+                      style={{
+                        background: isStartNode
+                          ? 'linear-gradient(to bottom right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))'
+                          : isEndNode && state.status === 'completed'
+                            ? 'linear-gradient(to bottom right, color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000), color-mix(in srgb, var(--color-accent, #D1FF00) 50%, #000))'
+                            : !isStartNode && !isEndNode
+                              ? 'linear-gradient(to bottom right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))'
+                              : undefined
+                      }}
+                    >
                       {isStartNode ? <RocketIcon /> : isEndNode ? <TargetIcon /> : <TargetIcon />}
                     </div>
                     <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
@@ -799,7 +816,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                     <>
                       {/* Workflow Info */}
                       <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
+                        <div className="h-12 w-12 rounded-xl flex items-center justify-center bg-[rgba(209,255,0,0.08)]">
                           <RocketIcon />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -813,12 +830,12 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                       <div
                         className="rounded-xl p-3"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, transparent 100%)',
-                          border: '1px solid rgba(59, 130, 246, 0.2)'
+                          background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, transparent 100%)',
+                          border: '1px solid rgba(209, 255, 0, 0.12)'
                         }}
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="h-5 w-5 rounded-md bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                          <div className="h-5 w-5 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))' }}>
                             <MessageIcon />
                           </div>
                           <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Demanda Solicitada</span>
@@ -832,12 +849,12 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                       <div
                         className="rounded-xl p-3"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, transparent 100%)',
+                          background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                           border: '1px solid rgba(255, 255, 255, 0.05)'
                         }}
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="h-5 w-5 rounded-md bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                          <div className="h-5 w-5 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, color-mix(in srgb, var(--color-accent, #D1FF00) 65%, #000), color-mix(in srgb, var(--color-accent, #D1FF00) 40%, #000))' }}>
                             <TargetIcon />
                           </div>
                           <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Outputs Esperados</span>
@@ -864,23 +881,23 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                       <div
                         className="rounded-xl p-3"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, transparent 100%)',
+                          background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                           border: '1px solid rgba(255, 255, 255, 0.05)'
                         }}
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="h-5 w-5 rounded-md bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                          <div className="h-5 w-5 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000), color-mix(in srgb, var(--color-accent, #D1FF00) 50%, #000))' }}>
                             <ClockIcon size={10} />
                           </div>
                           <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Status</span>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-center">
                           <div className="p-2 rounded-lg bg-white/5">
-                            <p className="text-lg font-bold text-green-400">{completedSteps}</p>
+                            <p className="text-lg font-bold" style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' }}>{completedSteps}</p>
                             <p className="text-[10px] text-white/60">Concluídos</p>
                           </div>
                           <div className="p-2 rounded-lg bg-white/5">
-                            <p className="text-lg font-bold text-orange-400">{runningSteps}</p>
+                            <p className="text-lg font-bold" style={{ color: 'var(--color-accent, #D1FF00)' }}>{runningSteps}</p>
                             <p className="text-[10px] text-white/60">Executando</p>
                           </div>
                           <div className="p-2 rounded-lg bg-white/5">
@@ -899,11 +916,11 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                       <div className="flex items-center gap-3">
                         <div className={cn(
                           'h-12 w-12 rounded-xl flex items-center justify-center',
-                          state.status === 'completed' && 'bg-gradient-to-br from-green-500/30 to-emerald-500/30',
+                          state.status === 'completed' && 'bg-[rgba(209,255,0,0.10)]',
                           state.status === 'failed' && 'bg-gradient-to-br from-red-500/30 to-rose-500/30',
-                          state.status === 'running' && 'bg-gradient-to-br from-orange-500/30 to-amber-500/30'
+                          state.status === 'running' && 'bg-[rgba(209,255,0,0.12)]'
                         )}>
-                          {state.status === 'completed' && <span className="text-green-400"><CheckIcon size={20} /></span>}
+                          {state.status === 'completed' && <span style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' }}><CheckIcon size={20} /></span>}
                           {state.status === 'failed' && <span className="text-red-400"><XIcon /></span>}
                           {state.status === 'running' && <SpinnerIcon size={20} />}
                         </div>
@@ -931,12 +948,12 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                       <div
                         className="rounded-xl p-3"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, transparent 100%)',
+                          background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                           border: '1px solid rgba(255, 255, 255, 0.05)'
                         }}
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="h-5 w-5 rounded-md bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                          <div className="h-5 w-5 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))' }}>
                             <MessageIcon />
                           </div>
                           <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Demanda Original</span>
@@ -950,12 +967,12 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                       <div
                         className="rounded-xl p-3"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, transparent 100%)',
+                          background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                           border: '1px solid rgba(255, 255, 255, 0.05)'
                         }}
                       >
                         <div className="flex items-center gap-2 mb-3">
-                          <div className="h-5 w-5 rounded-md bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                          <div className="h-5 w-5 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, color-mix(in srgb, var(--color-accent, #D1FF00) 65%, #000), color-mix(in srgb, var(--color-accent, #D1FF00) 40%, #000))' }}>
                             <FileTextIcon />
                           </div>
                           <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Produção de Cada Etapa</span>
@@ -991,13 +1008,13 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                         <div
                           className="rounded-xl p-3"
                           style={{
-                            background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, transparent 100%)',
-                            border: '1px solid rgba(34, 197, 94, 0.2)'
+                            background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, transparent 100%)',
+                            border: '1px solid rgba(209, 255, 0, 0.12)'
                           }}
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <div className="h-5 w-5 rounded-md bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                              <div className="h-5 w-5 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000), color-mix(in srgb, var(--color-accent, #D1FF00) 50%, #000))' }}>
                                 <CheckIcon size={10} />
                               </div>
                               <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Resultado Final</span>
@@ -1010,8 +1027,9 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                                   onClick={() => handleCopy(response)}
                                   className={cn(
                                     'p-1.5 rounded-lg transition-all',
-                                    copiedText === response ? 'bg-green-500/20 text-green-400' : 'hover:bg-white/10 text-white/60 hover:text-white'
+                                    copiedText === response ? 'bg-[rgba(209,255,0,0.08)]' : 'hover:bg-white/10 text-white/60 hover:text-white'
                                   )}
+                                  style={copiedText === response ? { color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' } : undefined}
                                   aria-label="Copiar resultado"
                                 >
                                   {copiedText === response ? <CheckIcon size={12} /> : <CopyIcon />}
@@ -1097,20 +1115,20 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                           <div
                             className="rounded-xl p-3 space-y-2"
                             style={{
-                              background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%)',
-                              border: '1px solid rgba(249, 115, 22, 0.2)'
+                              background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.08) 0%, rgba(209, 255, 0, 0.04) 100%)',
+                              border: '1px solid rgba(209, 255, 0, 0.15)'
                             }}
                           >
                             <div className="flex items-center gap-2">
                               <SpinnerIcon size={14} />
-                              <span className="text-xs font-semibold text-orange-400">Processando...</span>
+                              <span className="text-xs font-semibold" style={{ color: 'var(--color-accent, #D1FF00)' }}>Processando...</span>
                             </div>
                             <div className="h-2 rounded-full bg-black/30 overflow-hidden">
                               <motion.div
-                                className="h-full rounded-full bg-gradient-to-r from-orange-500 to-amber-400"
+                                className="h-full rounded-full"
                                 animate={{ x: ['-100%', '100%'] }}
                                 transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-                                style={{ width: '50%', boxShadow: '0 0 10px rgba(249, 115, 22, 0.5)' }}
+                                style={{ width: '50%', background: 'linear-gradient(to right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))', boxShadow: '0 0 10px rgba(209, 255, 0, 0.3)' }}
                               />
                             </div>
                           </div>
@@ -1128,12 +1146,12 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                         <div
                           className="rounded-xl p-3"
                           style={{
-                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, transparent 100%)',
-                            border: '1px solid rgba(59, 130, 246, 0.2)'
+                            background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, transparent 100%)',
+                            border: '1px solid rgba(209, 255, 0, 0.12)'
                           }}
                         >
                           <div className="flex items-center gap-2 mb-2">
-                            <div className="h-5 w-5 rounded-md bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                            <div className="h-5 w-5 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))' }}>
                               <MessageIcon />
                             </div>
                             <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Solicitação Recebida</span>
@@ -1153,12 +1171,12 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                             <div
                               className="rounded-xl p-3"
                               style={{
-                                background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, transparent 100%)',
+                                background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                                 border: '1px solid rgba(255, 255, 255, 0.05)'
                               }}
                             >
                               <div className="flex items-center gap-2 mb-2">
-                                <div className="h-5 w-5 rounded-md bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                                <div className="h-5 w-5 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, color-mix(in srgb, var(--color-accent, #D1FF00) 65%, #000), color-mix(in srgb, var(--color-accent, #D1FF00) 40%, #000))' }}>
                                   <ActivityIcon />
                                 </div>
                                 <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Contexto Recebido</span>
@@ -1186,12 +1204,12 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                           <div
                             className="rounded-xl p-3"
                             style={{
-                              background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.08) 0%, transparent 100%)',
+                              background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                               border: '1px solid rgba(255, 255, 255, 0.05)'
                             }}
                           >
                             <div className="flex items-center gap-2 mb-2">
-                              <div className="h-5 w-5 rounded-md bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
+                              <div className="h-5 w-5 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, color-mix(in srgb, var(--color-accent, #D1FF00) 80%, #000), color-mix(in srgb, var(--color-accent, #D1FF00) 55%, #000))' }}>
                                 <CpuIcon />
                               </div>
                               <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Papel no Workflow</span>
@@ -1205,13 +1223,13 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                           <div
                             className="rounded-xl p-3"
                             style={{
-                              background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, transparent 100%)',
-                              border: '1px solid rgba(34, 197, 94, 0.2)'
+                              background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, transparent 100%)',
+                              border: '1px solid rgba(209, 255, 0, 0.12)'
                             }}
                           >
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2">
-                                <div className="h-5 w-5 rounded-md bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                                <div className="h-5 w-5 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000), color-mix(in srgb, var(--color-accent, #D1FF00) 50%, #000))' }}>
                                   <FileTextIcon />
                                 </div>
                                 <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Output Produzido</span>
@@ -1220,8 +1238,9 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                                 onClick={() => handleCopy(response)}
                                 className={cn(
                                   'p-1.5 rounded-lg transition-all',
-                                  copiedText === response ? 'bg-green-500/20 text-green-400' : 'hover:bg-white/10 text-white/60 hover:text-white'
+                                  copiedText === response ? 'bg-[rgba(209,255,0,0.08)]' : 'hover:bg-white/10 text-white/60 hover:text-white'
                                 )}
+                                style={copiedText === response ? { color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' } : undefined}
                                 aria-label="Copiar output"
                               >
                                 {copiedText === response ? <CheckIcon size={12} /> : <CopyIcon />}
@@ -1238,12 +1257,12 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                           <div
                             className="rounded-xl p-3"
                             style={{
-                              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%)',
+                              background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                               border: '1px solid rgba(255, 255, 255, 0.05)'
                             }}
                           >
                             <div className="flex items-center gap-2 mb-2">
-                              <div className="h-5 w-5 rounded-md bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+                              <div className="h-5 w-5 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, color-mix(in srgb, var(--color-accent, #D1FF00) 60%, #000), color-mix(in srgb, var(--color-accent, #D1FF00) 40%, #000))' }}>
                                 <CpuIcon />
                               </div>
                               <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Modelo LLM</span>
@@ -1316,25 +1335,28 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
         {(state.status === 'completed' || state.status === 'failed') && (
           <div className={cn(
             'border-t border-white/10 p-4 flex items-center justify-between flex-shrink-0',
-            state.status === 'completed' && 'bg-gradient-to-r from-green-500/10 to-transparent',
+            state.status === 'completed' && 'bg-[rgba(209,255,0,0.06)]',
             state.status === 'failed' && 'bg-gradient-to-r from-red-500/10 to-transparent'
           )}>
             <div className="flex items-center gap-3">
               <div className={cn(
                 'w-10 h-10 rounded-xl flex items-center justify-center',
-                state.status === 'completed' ? 'bg-gradient-to-br from-green-500/30 to-emerald-500/30' : 'bg-gradient-to-br from-red-500/30 to-rose-500/30'
+                state.status === 'completed' ? 'bg-[rgba(209,255,0,0.10)]' : 'bg-gradient-to-br from-red-500/30 to-rose-500/30'
               )}>
                 {state.status === 'completed' ? (
-                  <span className="text-green-400"><CheckIcon size={18} /></span>
+                  <span style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' }}><CheckIcon size={18} /></span>
                 ) : (
                   <span className="text-red-400"><XIcon /></span>
                 )}
               </div>
               <div>
-                <p className={cn(
-                  'font-semibold',
-                  state.status === 'completed' ? 'text-green-400' : 'text-red-400'
-                )}>
+                <p
+                  className={cn(
+                    'font-semibold',
+                    state.status !== 'completed' && 'text-red-400'
+                  )}
+                  style={state.status === 'completed' ? { color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' } : undefined}
+                >
                   {state.status === 'completed' ? 'Execução Concluída!' : 'Execução Falhou'}
                 </p>
                 <p className="text-xs text-white/50">

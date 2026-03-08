@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { GlassCard, GlassButton, GlassInput, ThemeToggleSwitch } from '../ui';
@@ -11,6 +12,8 @@ import { CategoryManager } from './CategoryManager';
 import { MemoryManager } from './MemoryManager';
 import { WorkflowManager } from './WorkflowManager';
 import { apiClient } from '../../services/api/client';
+import { useNotificationPrefsStore } from '../../stores/notificationPrefsStore';
+import { useToastStore } from '../../stores/toastStore';
 
 // Icons
 const UserIcon = () => (
@@ -344,10 +347,30 @@ function DashboardSettings() {
 function ProfileSettings() {
   const [name, setName] = useState('Rafael Costa');
   const [email, setEmail] = useState('rafael@example.com');
-  const { success } = useToast();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { success, error: showError } = useToast();
 
   const handleSave = () => {
     success('Salvo!', 'Perfil atualizado com sucesso');
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showError('Formato inválido', 'Selecione um arquivo JPG ou PNG');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      showError('Arquivo muito grande', 'O tamanho máximo é 2MB');
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    setAvatarUrl(url);
+    success('Foto atualizada', 'A foto do perfil foi alterada');
   };
 
   return (
@@ -355,11 +378,22 @@ function ProfileSettings() {
       <GlassCard>
         {/* Avatar */}
         <div className="flex items-center gap-4 mb-6">
-          <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
-            {name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+          <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+            ) : (
+              name.split(' ').map(n => n[0]).join('').slice(0, 2)
+            )}
           </div>
           <div>
-            <GlassButton variant="ghost" size="sm">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png"
+              className="hidden"
+              onChange={handlePhotoChange}
+            />
+            <GlassButton variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()}>
               Alterar foto
             </GlassButton>
             <p className="text-xs text-tertiary mt-1">JPG, PNG. Max 2MB</p>
@@ -396,7 +430,7 @@ function ProfileSettings() {
             label="Idioma"
             description="Idioma da interface"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar idioma">
+              <select className="p-2 rounded-lg text-sm border border-white/10 bg-[#1a1a1a] text-white cursor-pointer" aria-label="Selecionar idioma">
                 <option value="pt-BR">Português (BR)</option>
                 <option value="en">English</option>
                 <option value="es">Español</option>
@@ -408,7 +442,7 @@ function ProfileSettings() {
             label="Fuso horário"
             description="Para exibição de datas e horários"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar fuso horário">
+              <select className="p-2 rounded-lg text-sm border border-white/10 bg-[#1a1a1a] text-white cursor-pointer" aria-label="Selecionar fuso horário">
                 <option value="America/Sao_Paulo">São Paulo (GMT-3)</option>
                 <option value="America/New_York">New York (GMT-5)</option>
                 <option value="Europe/London">London (GMT+0)</option>
@@ -803,7 +837,7 @@ function APISettings() {
             label="Modelo padrão"
             description="Modelo usado quando não especificado"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar modelo padrão">
+              <select className="p-2 rounded-lg text-sm border border-white/10 bg-[#1a1a1a] text-white cursor-pointer" aria-label="Selecionar modelo padrão">
                 <option value="claude-sonnet">Claude Sonnet 4</option>
                 <option value="claude-opus">Claude Opus 4</option>
                 <option value="gpt-4o">GPT-4o</option>
@@ -830,7 +864,7 @@ function APISettings() {
             label="Max tokens"
             description="Limite de tokens por resposta"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar max tokens">
+              <select className="p-2 rounded-lg text-sm border border-white/10 bg-[#1a1a1a] text-white cursor-pointer" aria-label="Selecionar max tokens">
                 <option value="2048">2048</option>
                 <option value="4096">4096</option>
                 <option value="8192">8192</option>
@@ -846,19 +880,22 @@ function APISettings() {
         </GlassButton>
       </div>
 
-      {/* Add API Key Modal */}
-      <AnimatePresence>
-        {showAddModal && (
-          <AddAPIKeyModal
-            providers={filteredProviders}
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-            onAddProvider={addProvider}
-            onAddCustom={addCustomKey}
-            onClose={() => setShowAddModal(false)}
-          />
-        )}
-      </AnimatePresence>
+      {/* Add API Key Modal — portaled to body to avoid transform ancestor breaking fixed positioning */}
+      {createPortal(
+        <AnimatePresence>
+          {showAddModal && (
+            <AddAPIKeyModal
+              providers={filteredProviders}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+              onAddProvider={addProvider}
+              onAddCustom={addCustomKey}
+              onClose={() => setShowAddModal(false)}
+            />
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </div>
   );
 }
@@ -1053,6 +1090,7 @@ function AppearanceSettings() {
     { id: 'dark' as const, label: 'Escuro', description: 'Interface escura para conforto visual' },
     { id: 'glass' as const, label: 'Liquid Glass', description: 'Painéis de vidro fosco sobre fundo colorido vibrante' },
     { id: 'matrix' as const, label: 'Matrix', description: 'Verde neon sobre preto — modo hacker' },
+    { id: 'aiox' as const, label: 'AIOX Cockpit', description: 'Dark cockpit com acento neon lime — técnico premium' },
     { id: 'system' as const, label: 'Sistema', description: 'Segue as preferências do sistema' },
   ];
 
@@ -1067,16 +1105,17 @@ function AppearanceSettings() {
           <ThemeToggleSwitch />
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {themes.map((t) => {
             const isActive = theme === t.id;
             const isMatrixCard = t.id === 'matrix';
             const isGlassCard = t.id === 'glass';
+            const isAioxCard = t.id === 'aiox';
             return (
               <button
                 key={t.id}
                 onClick={() => {
-                  setTheme(t.id as 'light' | 'dark' | 'system' | 'matrix' | 'glass');
+                  setTheme(t.id as 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox');
                   success('Tema alterado', `Tema ${t.label} aplicado`);
                 }}
                 className={cn(
@@ -1085,6 +1124,8 @@ function AppearanceSettings() {
                     ? 'border-green-500 bg-green-500/10'
                     : isActive && isGlassCard
                     ? 'border-purple-500 bg-purple-500/10'
+                    : isActive && isAioxCard
+                    ? 'border-[#D1FF00] bg-[#D1FF00]/10'
                     : isActive
                     ? 'border-blue-500 bg-blue-500/10'
                     : 'border-transparent glass-subtle hover:border-white/20'
@@ -1098,7 +1139,7 @@ function AppearanceSettings() {
                 {isActive && (
                   <div className={cn(
                     'mt-2',
-                    isMatrixCard ? 'text-green-500' : isGlassCard ? 'text-purple-500' : 'text-blue-500'
+                    isMatrixCard ? 'text-green-500' : isGlassCard ? 'text-purple-500' : isAioxCard ? 'text-[#D1FF00]' : 'text-blue-500'
                   )}>
                     <CheckIcon />
                   </div>
@@ -1135,13 +1176,19 @@ function AppearanceSettings() {
             label="Densidade"
             description="Espaçamento entre elementos"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar densidade">
+              <select className="p-2 rounded-lg text-sm border border-white/10 bg-[#1a1a1a] text-white cursor-pointer" aria-label="Selecionar densidade">
                 <option value="comfortable">Confortável</option>
                 <option value="compact">Compacto</option>
               </select>
             }
           />
         </div>
+      </GlassCard>
+
+      <GlassCard>
+        <h2 className="text-lg font-semibold text-primary mb-4">Cor de Acento</h2>
+        <p className="text-xs text-tertiary mb-4">Escolha uma cor de destaque para botões e indicadores</p>
+        <AccentColorPicker />
       </GlassCard>
 
       <GlassCard>
@@ -1152,7 +1199,7 @@ function AppearanceSettings() {
             label="Tamanho da fonte"
             description="Tamanho base do texto"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar tamanho da fonte">
+              <select className="p-2 rounded-lg text-sm border border-white/10 bg-[#1a1a1a] text-white cursor-pointer" aria-label="Selecionar tamanho da fonte">
                 <option value="sm">Pequeno</option>
                 <option value="md">Médio</option>
                 <option value="lg">Grande</option>
@@ -1164,7 +1211,7 @@ function AppearanceSettings() {
             label="Fonte do código"
             description="Fonte para blocos de código"
             action={
-              <select className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm" aria-label="Selecionar fonte do código">
+              <select className="p-2 rounded-lg text-sm border border-white/10 bg-[#1a1a1a] text-white cursor-pointer" aria-label="Selecionar fonte do código">
                 <option value="fira">Fira Code</option>
                 <option value="jetbrains">JetBrains Mono</option>
                 <option value="source">Source Code Pro</option>
@@ -1177,8 +1224,78 @@ function AppearanceSettings() {
   );
 }
 
+const accentPresets = [
+  { label: 'Blue', value: '#3B82F6' },
+  { label: 'Purple', value: '#8B5CF6' },
+  { label: 'Emerald', value: '#10B981' },
+  { label: 'Rose', value: '#F43F5E' },
+  { label: 'Amber', value: '#F59E0B' },
+  { label: 'Cyan', value: '#06B6D4' },
+  { label: 'Lime', value: '#D1FF00' },
+  { label: 'Orange', value: '#F97316' },
+];
+
+function AccentColorPicker() {
+  const [active, setActive] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('aios-accent-color') || '#3B82F6';
+    }
+    return '#3B82F6';
+  });
+
+  const applyAccent = (color: string) => {
+    setActive(color);
+    localStorage.setItem('aios-accent-color', color);
+    document.documentElement.style.setProperty('--color-accent', color);
+    document.documentElement.style.setProperty('--color-accent-light', color + '33');
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        {accentPresets.map((preset) => (
+          <button
+            key={preset.value}
+            onClick={() => applyAccent(preset.value)}
+            className={cn(
+              'w-8 h-8 rounded-lg border-2 transition-all hover:scale-110',
+              active === preset.value ? 'border-white shadow-lg scale-110' : 'border-transparent'
+            )}
+            style={{ backgroundColor: preset.value }}
+            title={preset.label}
+            aria-label={`Cor ${preset.label}`}
+          />
+        ))}
+      </div>
+      <div className="flex items-center gap-3">
+        <label className="text-xs text-secondary" htmlFor="custom-accent">Custom:</label>
+        <input
+          id="custom-accent"
+          type="color"
+          value={active}
+          onChange={(e) => applyAccent(e.target.value)}
+          className="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent"
+        />
+        <span className="text-xs text-tertiary font-mono">{active}</span>
+      </div>
+    </div>
+  );
+}
+
 // Notification Settings
 function NotificationSettings() {
+  const prefs = useNotificationPrefsStore();
+  const enableDesktop = useToastStore((s) => s.enableDesktopNotifications);
+
+  const handlePushToggle = async (enabled: boolean) => {
+    prefs.setPref('pushEnabled', enabled);
+    if (enabled) {
+      await enableDesktop();
+    } else {
+      useToastStore.getState().setDesktopNotifications(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <GlassCard>
@@ -1188,13 +1305,15 @@ function NotificationSettings() {
           <SettingToggle
             label="Ativar notificações"
             description="Receber notificações no navegador"
-            defaultChecked={true}
+            defaultChecked={prefs.pushEnabled}
+            onChange={handlePushToggle}
           />
 
           <SettingToggle
             label="Sons"
             description="Tocar som ao receber notificação"
-            defaultChecked={false}
+            defaultChecked={prefs.soundEnabled}
+            onChange={(v) => prefs.setPref('soundEnabled', v)}
           />
         </div>
       </GlassCard>
@@ -1206,25 +1325,29 @@ function NotificationSettings() {
           <SettingToggle
             label="Execuções concluídas"
             description="Quando um agent terminar uma tarefa"
-            defaultChecked={true}
+            defaultChecked={prefs.executionComplete}
+            onChange={(v) => prefs.setPref('executionComplete', v)}
           />
 
           <SettingToggle
             label="Erros"
             description="Quando ocorrer um erro de execução"
-            defaultChecked={true}
+            defaultChecked={prefs.errors}
+            onChange={(v) => prefs.setPref('errors', v)}
           />
 
           <SettingToggle
             label="Mensagens de agents"
             description="Quando um agent enviar uma mensagem"
-            defaultChecked={true}
+            defaultChecked={prefs.agentMessages}
+            onChange={(v) => prefs.setPref('agentMessages', v)}
           />
 
           <SettingToggle
             label="Atualizações do sistema"
             description="Novidades e atualizações da plataforma"
-            defaultChecked={false}
+            defaultChecked={prefs.systemUpdates}
+            onChange={(v) => prefs.setPref('systemUpdates', v)}
           />
         </div>
       </GlassCard>
@@ -1236,13 +1359,15 @@ function NotificationSettings() {
           <SettingToggle
             label="Resumo diário"
             description="Receber resumo das atividades por email"
-            defaultChecked={false}
+            defaultChecked={prefs.dailySummary}
+            onChange={(v) => prefs.setPref('dailySummary', v)}
           />
 
           <SettingToggle
             label="Alertas importantes"
             description="Receber alertas críticos por email"
-            defaultChecked={true}
+            defaultChecked={prefs.criticalAlerts}
+            onChange={(v) => prefs.setPref('criticalAlerts', v)}
           />
         </div>
       </GlassCard>

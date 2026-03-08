@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { AgentSummary } from '../../types';
+import type { AgentLiveActivity } from '../../stores/agentActivityStore';
 import type { DomainId, FurnitureItem } from './world-layout';
 import { furnitureTemplates, ROOM_COLS, ROOM_ROWS } from './world-layout';
 
 // ── Types ──
 
-export type AgentActivity = 'idle' | 'walking' | 'at-furniture' | 'chatting';
+export type AgentActivity = 'idle' | 'walking' | 'at-furniture' | 'chatting' | 'live-working';
 export type FacingDirection = 'left' | 'right';
 export type BubbleContent = 'thinking' | 'eureka' | 'code' | 'money' | 'chart' | 'chat';
 
@@ -209,6 +210,7 @@ function furnitureWaypoints(domain: DomainId): Array<{ x: number; y: number; lab
 export function useAgentMovement(
   agents: AgentSummary[] | undefined,
   domain: DomainId,
+  liveActivities?: Map<string, AgentLiveActivity>,
 ): Map<string, AgentMovementState> {
   const [movementMap, setMovementMap] = useState<Map<string, AgentMovementState>>(new Map());
   const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
@@ -489,5 +491,43 @@ export function useAgentMovement(
     };
   }, [agents, homePositions, pickNextAction]);
 
-  return movementMap;
+  // Merge live activity data: override activityLabel for agents with real-time data
+  const mergedMap = useMemo(() => {
+    if (!liveActivities || liveActivities.size === 0) return movementMap;
+
+    const merged = new Map(movementMap);
+    merged.forEach((state, agentId) => {
+      // Try to find a matching live activity by agent name
+      const agent = agents?.find((a) => a.id === agentId);
+      if (!agent) return;
+
+      // Search by normalized name
+      const nameLower = agent.name.toLowerCase();
+      for (const [, liveActivity] of liveActivities) {
+        const liveNameLower = liveActivity.agentName.toLowerCase();
+        if (
+          liveNameLower.includes(nameLower) ||
+          nameLower.includes(liveNameLower) ||
+          liveActivity.agentName.toLowerCase() === nameLower
+        ) {
+          if (liveActivity.isActive) {
+            // Override with live activity — keep position, change behavior
+            merged.set(agentId, {
+              ...state,
+              activity: 'live-working',
+              activityLabel: liveActivity.action,
+              bubble: liveActivity.type === 'tool_call' ? 'code'
+                : liveActivity.type === 'error' ? 'eureka'
+                : 'thinking',
+            });
+          }
+          break;
+        }
+      }
+    });
+
+    return merged;
+  }, [movementMap, liveActivities, agents]);
+
+  return mergedMap;
 }

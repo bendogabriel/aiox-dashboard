@@ -10,6 +10,7 @@ import { ToastContainer, KeyboardShortcuts, PWAUpdatePrompt, SkipLinks } from '.
 import { OnboardingTour } from '../onboarding';
 import { StatusBar } from '../status-bar/StatusBar';
 import { ProjectTabs } from '../project-tabs/ProjectTabs';
+import { GlobalVoiceProvider } from '../voice';
 import { useUIStore } from '../../stores/uiStore';
 import { useGlobalKeyboardShortcuts } from '../../hooks/useGlobalKeyboardShortcuts';
 import { cn } from '../../lib/utils';
@@ -24,7 +25,7 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const { sidebarCollapsed, activityPanelOpen, agentExplorerOpen, setAgentExplorerOpen, currentView, theme } = useUIStore();
+  const { sidebarCollapsed, activityPanelOpen, agentExplorerOpen, setAgentExplorerOpen, currentView, theme, focusMode } = useUIStore();
   const globalSearch = useGlobalSearch();
   const [showShortcuts, setShowShortcuts] = useState(false);
   const isMatrix = theme === 'matrix';
@@ -56,27 +57,32 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div
         className={cn(
           'grid h-screen transition-all duration-300 ease-out',
-          // Mobile: single column (sidebar is a drawer)
-          'grid-cols-1',
-          // Desktop: sidebar + content
-          sidebarCollapsed
-            ? 'md:grid-cols-[72px_1fr]'
-            : 'md:grid-cols-[220px_1fr]',
-          // Desktop with activity panel (not on settings)
-          showActivityPanel && !sidebarCollapsed && 'lg:grid-cols-[220px_1fr_320px]',
-          showActivityPanel && sidebarCollapsed && 'lg:grid-cols-[72px_1fr_320px]'
+          // Focus mode: full width, no sidebar/activity
+          focusMode
+            ? 'grid-cols-1'
+            : cn(
+                // Mobile: single column (sidebar is a drawer)
+                'grid-cols-1',
+                // Desktop: sidebar + content
+                sidebarCollapsed
+                  ? 'md:grid-cols-[72px_1fr]'
+                  : 'md:grid-cols-[220px_1fr]',
+                // Desktop with activity panel (not on settings)
+                showActivityPanel && !sidebarCollapsed && 'lg:grid-cols-[220px_1fr_320px]',
+                showActivityPanel && sidebarCollapsed && 'lg:grid-cols-[72px_1fr_320px]'
+              ),
         )}
       >
         {/* Sidebar (Desktop: grid item, Mobile: drawer handled inside component) */}
-        <Sidebar />
+        {!focusMode && <Sidebar />}
 
         {/* Main Content Area */}
         <div className="flex flex-col h-screen overflow-hidden">
-          {/* Header */}
-          <Header />
+          {/* Header — hidden in focus mode */}
+          {!focusMode && <Header />}
 
           {/* Project Tabs */}
-          <ProjectTabs />
+          {!focusMode && <ProjectTabs />}
 
           {/* Main Content */}
           <main id="main-content" className="flex-1 overflow-hidden p-4 pb-20 md:p-6 md:pb-6" aria-label="Conteúdo principal">
@@ -91,9 +97,9 @@ export function AppLayout({ children }: AppLayoutProps) {
           </main>
         </div>
 
-        {/* Activity Panel - Hidden on settings view */}
+        {/* Activity Panel - Hidden on settings view and focus mode */}
         <AnimatePresence>
-          {showActivityPanel && (
+          {showActivityPanel && !focusMode && (
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -135,10 +141,13 @@ export function AppLayout({ children }: AppLayoutProps) {
       <PWAUpdatePrompt />
 
       {/* Mobile Bottom Navigation */}
-      <MobileNav />
+      {!focusMode && <MobileNav />}
+
+      {/* Global Voice — FAB + overlay accessible from any view (Cmd+J) */}
+      <GlobalVoiceProvider />
 
       {/* Status Bar */}
-      <StatusBar />
+      {!focusMode && <StatusBar />}
     </div>
   );
 }

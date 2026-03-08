@@ -56,3 +56,9 @@ export {
   useExecuteWorkflow,
   useCancelExecution,
 } from './useWorkflows';
+export { useSpeechRecognition } from './useSpeechRecognition';
+export { useSpeechSynthesis } from './useSpeechSynthesis';
+export { useTTS } from './useTTS';
+export { useAudioCapture } from './useAudioCapture';
+export { useVoiceVisualization } from './useVoiceVisualization';
+export { useVoiceMode } from './useVoiceMode';

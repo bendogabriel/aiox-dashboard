@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { DomainId } from './world-layout';
-import { domains } from './world-layout';
+import { useDomains } from './DomainContext';
+import { useMonitorStore, type MonitorEvent } from '../../stores/monitorStore';
 
 interface WorldNotification {
   id: string;
@@ -37,13 +38,73 @@ const DEMO_NOTIFICATIONS: Array<Omit<WorldNotification, 'id' | 'timestamp'>> = [
   { message: 'creative-studio generating thumbnails', domain: 'design', type: 'task' },
 ];
 
+// Map agent name to a plausible domain
+function agentToDomain(agent: string): DomainId {
+  const a = agent.toLowerCase();
+  if (a.includes('dev') || a.includes('dex') || a.includes('architect') || a.includes('aria')) return 'dev';
+  if (a.includes('design') || a.includes('brad') || a.includes('dan')) return 'design';
+  if (a.includes('data') || a.includes('dara') || a.includes('analyst')) return 'data';
+  if (a.includes('ops') || a.includes('gage') || a.includes('devops')) return 'ops';
+  if (a.includes('sale') || a.includes('funnel') || a.includes('media')) return 'sales';
+  return 'content';
+}
+
+// Map monitor event to notification type
+function eventToType(event: MonitorEvent): WorldNotification['type'] {
+  if (event.type === 'error') return 'warning';
+  if (event.success === true) return 'success';
+  if (event.type === 'tool_call') return 'task';
+  return 'info';
+}
+
 export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) {
+  const domains = useDomains();
   const [notifications, setNotifications] = useState<WorldNotification[]>([]);
   const [, setDemoIdx] = useState(0);
   const counterRef = useRef(0);
+  const monitorConnected = useMonitorStore((s) => s.connected);
+  const monitorEvents = useMonitorStore((s) => s.events);
+  const lastEventCountRef = useRef(0);
 
-  // Auto-generate demo notifications for ambience
+  // When connected to monitor, use real events
   useEffect(() => {
+    if (!monitorConnected) return;
+
+    if (monitorEvents.length > lastEventCountRef.current) {
+      const newEvents = monitorEvents.slice(lastEventCountRef.current);
+      lastEventCountRef.current = monitorEvents.length;
+
+      // Only show significant events (not every tool call)
+      const significant = newEvents.filter(
+        (e) => e.type === 'error' || e.success !== undefined || e.type === 'message'
+      );
+
+      if (significant.length > 0) {
+        const latest = significant[significant.length - 1];
+        counterRef.current += 1;
+        const desc = latest.description.length > 50
+          ? latest.description.slice(0, 47) + '...'
+          : latest.description;
+
+        const notif: WorldNotification = {
+          id: `live-${counterRef.current}-${Date.now()}`,
+          message: `${latest.agent}: ${desc}`,
+          domain: agentToDomain(latest.agent),
+          type: eventToType(latest),
+          timestamp: Date.now(),
+        };
+
+        setNotifications((prev) => [notif, ...prev].slice(0, maxVisible + 2));
+      }
+    } else if (monitorEvents.length < lastEventCountRef.current) {
+      lastEventCountRef.current = monitorEvents.length;
+    }
+  }, [monitorEvents.length, monitorConnected, maxVisible]);
+
+  // Auto-generate demo notifications for ambience (only when not connected)
+  useEffect(() => {
+    if (monitorConnected) return;
+
     const interval = setInterval(() => {
       setDemoIdx((prev) => {
         const idx = prev % DEMO_NOTIFICATIONS.length;
@@ -65,7 +126,7 @@ export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) 
     }, 8000 + Math.random() * 7000);
 
     return () => clearInterval(interval);
-  }, [maxVisible]);
+  }, [maxVisible, monitorConnected]);
 
   // Auto-dismiss after 6 seconds
   useEffect(() => {
@@ -81,8 +142,24 @@ export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) 
   return (
     <div
       className="absolute top-4 right-4 flex flex-col gap-1.5 z-30 pointer-events-none"
-      style={{ maxWidth: 260 }}
+      style={{ maxWidth: 280 }}
     >
+      {/* Live indicator when connected */}
+      {monitorConnected && notifications.length > 0 && (
+        <motion.div
+          className="flex items-center gap-1 self-end mr-1 pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <motion.div
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ background: '#10B981' }}
+            animate={{ opacity: [1, 0.3, 1] }}
+            transition={{ duration: 1.2, repeat: Infinity }}
+          />
+          <span className="text-[7px] font-bold" style={{ color: '#10B981' }}>LIVE FEED</span>
+        </motion.div>
+      )}
       <AnimatePresence mode="popLayout">
         {notifications.slice(0, maxVisible).map((notif) => {
           const d = domains[notif.domain];

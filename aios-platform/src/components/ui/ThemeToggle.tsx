@@ -59,16 +59,19 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
 
   const isMatrix = theme === 'matrix';
   const isGlass = theme === 'glass';
-  const effectiveTheme = theme === 'system' ? getSystemTheme() : ((theme === 'matrix' || theme === 'glass') ? 'dark' : theme);
+  const isAiox = theme === 'aiox';
+  const effectiveTheme = theme === 'system' ? getSystemTheme() : ((theme === 'matrix' || theme === 'glass' || theme === 'aiox') ? 'dark' : theme);
   const isDark = effectiveTheme === 'dark';
 
   const handleToggle = () => {
     if (showDropdown) {
       setIsOpen(!isOpen);
     } else {
-      // Cycle: light -> dark -> glass -> matrix -> light
-      if (isMatrix) {
+      // Cycle: light -> dark -> glass -> matrix -> aiox -> light
+      if (isAiox) {
         setTheme('light');
+      } else if (isMatrix) {
+        setTheme('aiox');
       } else if (isGlass) {
         setTheme('matrix');
       } else if (isDark) {
@@ -79,7 +82,7 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
     }
   };
 
-  const handleSelectTheme = (newTheme: 'light' | 'dark' | 'system' | 'matrix' | 'glass') => {
+  const handleSelectTheme = (newTheme: 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox') => {
     setTheme(newTheme);
     setIsOpen(false);
   };
@@ -103,7 +106,20 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
         {/* Animated icon container */}
         <div className="relative w-full h-full flex items-center justify-center">
           <AnimatePresence mode="wait">
-            {isMatrix ? (
+            {isAiox ? (
+              <motion.div
+                key="aiox"
+                initial={{ scale: 0, rotate: -180, opacity: 0 }}
+                animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                exit={{ scale: 0, rotate: 180, opacity: 0 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="text-[#D1FF00]"
+              >
+                <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+              </motion.div>
+            ) : isMatrix ? (
               <motion.div
                 key="matrix"
                 initial={{ scale: 0, rotate: -180, opacity: 0 }}
@@ -172,7 +188,7 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
         <motion.div
           className={cn(
             'absolute inset-0 rounded-xl opacity-20 pointer-events-none',
-            isMatrix ? 'bg-green-500' : isGlass ? 'bg-purple-500' : isDark ? 'bg-blue-500' : 'bg-amber-500'
+            isAiox ? 'bg-[#D1FF00]' : isMatrix ? 'bg-green-500' : isGlass ? 'bg-purple-500' : isDark ? 'bg-blue-500' : 'bg-amber-500'
           )}
           initial={false}
           animate={{
@@ -231,6 +247,18 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
               onClick={() => handleSelectTheme('matrix')}
               accentColor="green"
             />
+            <ThemeOption
+              icon={
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+              }
+              label="AIOX Cockpit"
+              description="Dark cockpit, lime neon"
+              isSelected={theme === 'aiox'}
+              onClick={() => handleSelectTheme('aiox')}
+              accentColor="lime"
+            />
             <div className="h-px bg-white/10 my-1" />
             <ThemeOption
               icon={<SystemIcon />}
@@ -252,7 +280,7 @@ interface ThemeOptionProps {
   description?: string;
   isSelected: boolean;
   onClick: () => void;
-  accentColor?: 'blue' | 'green' | 'purple';
+  accentColor?: 'blue' | 'green' | 'purple' | 'lime';
 }
 
 function ThemeOption({ icon, label, description, isSelected, onClick, accentColor = 'blue' }: ThemeOptionProps) {
@@ -260,6 +288,7 @@ function ThemeOption({ icon, label, description, isSelected, onClick, accentColo
     green: { bg: 'bg-green-500/15', text: 'text-green-500' },
     purple: { bg: 'bg-purple-500/15', text: 'text-purple-500' },
     blue: { bg: 'bg-blue-500/15', text: 'text-blue-500' },
+    lime: { bg: 'bg-[#D1FF00]/15', text: 'text-[#D1FF00]' },
   };
   const colorClasses = colorMap[accentColor];
 
@@ -308,7 +337,7 @@ export function ThemeToggleSwitch() {
   };
 
   const effectiveTheme = theme === 'system' ? getSystemTheme() : theme;
-  const isDark = effectiveTheme === 'dark';
+  const isDark = effectiveTheme === 'dark' || effectiveTheme === 'matrix' || effectiveTheme === 'glass' || effectiveTheme === 'aiox';
 
   const handleToggle = () => {
     setTheme(isDark ? 'light' : 'dark');

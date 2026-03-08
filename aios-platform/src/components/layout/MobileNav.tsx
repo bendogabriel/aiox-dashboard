@@ -48,10 +48,11 @@ const WorldIcon = () => (
   </svg>
 );
 
-type ViewType = 'chat' | 'world' | 'orchestrator' | 'dashboard' | 'settings';
+// Subset of views available in mobile bottom nav
+type MobileViewType = 'chat' | 'world' | 'orchestrator' | 'dashboard' | 'settings';
 
 interface NavItem {
-  id: ViewType;
+  id: MobileViewType;
   icon: React.ReactNode;
   label: string;
 }

@@ -8,7 +8,7 @@ import {
   GitBranch,
   Network,
 } from 'lucide-react';
-import { GlassCard, GlassButton, GlassInput, Badge, StatusDot, SectionLabel } from '../ui';
+import { GlassCard, GlassButton, GlassInput, Badge, StatusDot, SectionLabel, Avatar } from '../ui';
 import { SquadOrgChart } from '../squads/SquadOrgChart';
 import { AgentDetailPanel } from '../squads/AgentDetailPanel';
 import { ConnectionsMap } from '../squads/ConnectionsMap';
@@ -16,6 +16,8 @@ import { SquadStatsPanel } from '../squads/SquadStatsPanel';
 import { useSquads, useSquadStats } from '../../hooks/useSquads';
 import { useAgents, useAgent } from '../../hooks/useAgents';
 import { cn } from '../../lib/utils';
+import { hasAgentAvatar, getSquadImageUrl } from '../../lib/agent-avatars';
+import { getSquadType } from '../../types';
 import { mockConnections } from '../../mocks/squads'; // TODO: Replace with API when backend supports GET /api/squads/:id/connections
 import type { Squad, AgentSummary, Agent } from '../../types';
 
@@ -182,9 +184,17 @@ export default function SquadsView() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-cyan-500/15 flex items-center justify-center">
-                        <Users size={16} className="text-cyan-400" />
-                      </div>
+                      {getSquadImageUrl(squad.id) ? (
+                        <img
+                          src={getSquadImageUrl(squad.id)}
+                          alt={squad.name}
+                          className="w-8 h-8 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-lg bg-cyan-500/15 flex items-center justify-center">
+                          <Users size={16} className="text-cyan-400" />
+                        </div>
+                      )}
                       <div>
                         <p className="text-sm font-medium text-primary">{squad.name}</p>
                         <p className="text-[10px] text-tertiary font-mono">{squad.id}</p>
@@ -218,9 +228,17 @@ export default function SquadsView() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-gray-500/15 flex items-center justify-center">
-                        <Users size={16} className="text-gray-400" />
-                      </div>
+                      {getSquadImageUrl(squad.id) ? (
+                        <img
+                          src={getSquadImageUrl(squad.id)}
+                          alt={squad.name}
+                          className="w-8 h-8 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-lg bg-gray-500/15 flex items-center justify-center">
+                          <Users size={16} className="text-gray-400" />
+                        </div>
+                      )}
                       <div>
                         <p className="text-sm font-medium text-primary">{squad.name}</p>
                         <p className="text-[10px] text-tertiary font-mono">{squad.id}</p>
@@ -256,9 +274,17 @@ export default function SquadsView() {
         {/* Squad Header */}
         <GlassCard padding="lg">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-cyan-500/15 flex items-center justify-center">
-              <Users size={24} className="text-cyan-400" />
-            </div>
+            {getSquadImageUrl(selectedSquad.id) ? (
+              <img
+                src={getSquadImageUrl(selectedSquad.id)}
+                alt={selectedSquad.name}
+                className="w-12 h-12 rounded-xl object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-xl bg-cyan-500/15 flex items-center justify-center">
+                <Users size={24} className="text-cyan-400" />
+              </div>
+            )}
             <div>
               <h2 className="text-lg font-semibold text-primary">{selectedSquad.name}</h2>
               <p className="text-sm text-secondary">{selectedSquad.description}</p>
@@ -317,9 +343,18 @@ export default function SquadsView() {
                     motionProps={{ transition: { delay: i * 0.03 } }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center', tier.bg)}>
-                        <Bot size={18} className={tier.color} />
-                      </div>
+                      {hasAgentAvatar(agent.name) || hasAgentAvatar(agent.id) ? (
+                        <Avatar
+                          name={agent.name}
+                          agentId={agent.id}
+                          size="lg"
+                          squadType={getSquadType(agent.squad)}
+                        />
+                      ) : (
+                        <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center', tier.bg)}>
+                          <Bot size={18} className={tier.color} />
+                        </div>
+                      )}
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-primary">{agent.name}</p>
                         <p className="text-xs text-secondary truncate">{agent.title || 'Agent'}</p>

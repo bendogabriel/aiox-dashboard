@@ -244,7 +244,7 @@ export function ConversationHistory() {
               className={cn(
                 "p-1.5 rounded-md transition-colors",
                 showSearch
-                  ? "text-blue-400 bg-blue-500/10"
+                  ? "text-[#0099FF] bg-[#0099FF]/10"
                   : "text-secondary hover:text-primary hover:bg-white/5"
               )}
               title="Buscar conversas"
@@ -282,7 +282,7 @@ export function ConversationHistory() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar em conversas..."
-                className="w-full px-3 py-1.5 text-xs bg-white/5 border border-white/10 rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus:border-blue-500/50"
+                className="w-full px-3 py-1.5 text-xs bg-white/5 border border-white/10 rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus:border-[#0099FF]/50"
                 autoFocus
                 aria-label="Buscar em conversas"
               />

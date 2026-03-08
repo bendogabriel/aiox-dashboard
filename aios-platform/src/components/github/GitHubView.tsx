@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  AlertTriangle,
   RefreshCw,
   GitCommit,
   GitPullRequest,
@@ -47,10 +46,39 @@ interface Issue {
   url: string;
 }
 
+// ─── Demo Data ───────────────────────────────────────────────
+const demoCommits: Commit[] = [
+  { sha: 'a1b2c3d', message: 'feat: add kanban board filters and search', author: 'dex-dev', date: new Date(Date.now() - 2*3600000).toISOString(), url: '#', refs: ['HEAD -> master', 'origin/master'] },
+  { sha: 'e4f5g6h', message: 'fix: resolve Map constructor conflict in RoadmapView', author: 'dex-dev', date: new Date(Date.now() - 5*3600000).toISOString(), url: '#', refs: [] },
+  { sha: 'i7j8k9l', message: 'feat: implement activity timeline with demo data', author: 'dex-dev', date: new Date(Date.now() - 8*3600000).toISOString(), url: '#', refs: [] },
+  { sha: 'm0n1o2p', message: 'refactor: notification preferences store with persist', author: 'dex-dev', date: new Date(Date.now() - 24*3600000).toISOString(), url: '#', refs: ['tag: v0.4.2'] },
+  { sha: 'q3r4s5t', message: 'feat: add accent color picker to settings', author: 'aria-design', date: new Date(Date.now() - 26*3600000).toISOString(), url: '#', refs: [] },
+  { sha: 'u6v7w8x', message: 'fix: Charts.tsx JSX fragment wrapper', author: 'dex-dev', date: new Date(Date.now() - 30*3600000).toISOString(), url: '#', refs: [] },
+  { sha: 'y9z0a1b', message: 'feat: AI recommendations in InsightsView', author: 'aria-design', date: new Date(Date.now() - 48*3600000).toISOString(), url: '#', refs: [] },
+  { sha: 'c2d3e4f', message: 'chore: update dependencies and fix type errors', author: 'gage-devops', date: new Date(Date.now() - 72*3600000).toISOString(), url: '#', refs: ['tag: v0.4.1'] },
+];
+
+const demoPulls: PullRequest[] = [
+  { number: 52, title: 'feat: kanban board advanced filters', state: 'OPEN', author: { login: 'dex-dev' }, createdAt: new Date(Date.now() - 3600000).toISOString(), headRefName: 'feat/kanban-filters', url: '#' },
+  { number: 51, title: 'feat: activity timeline with mock data', state: 'MERGED', author: { login: 'dex-dev' }, createdAt: new Date(Date.now() - 12*3600000).toISOString(), headRefName: 'feat/activity-timeline', url: '#' },
+  { number: 50, title: 'fix: roadmap Map constructor collision', state: 'MERGED', author: { login: 'dex-dev' }, createdAt: new Date(Date.now() - 24*3600000).toISOString(), headRefName: 'fix/roadmap-map', url: '#' },
+  { number: 49, title: 'feat: notification preferences with persistence', state: 'MERGED', author: { login: 'dex-dev' }, createdAt: new Date(Date.now() - 48*3600000).toISOString(), headRefName: 'feat/notification-prefs', url: '#' },
+  { number: 48, title: 'refactor: URL sync for chat sub-routes', state: 'OPEN', author: { login: 'river-sm' }, createdAt: new Date(Date.now() - 2*3600000).toISOString(), headRefName: 'feat/url-sync-chat', url: '#' },
+];
+
+const demoIssues: Issue[] = [
+  { number: 23, title: 'Dashboard shows skeleton forever without API', state: 'open', author: { login: 'pax-po' }, createdAt: new Date(Date.now() - 6*3600000).toISOString(), labels: [{ name: 'bug', color: 'EF4444' }, { name: 'P1', color: 'FF6B6B' }], url: '#' },
+  { number: 22, title: 'Add mock data for all views', state: 'open', author: { login: 'pax-po' }, createdAt: new Date(Date.now() - 12*3600000).toISOString(), labels: [{ name: 'enhancement', color: '3B82F6' }], url: '#' },
+  { number: 21, title: 'Browser back navigation in chat', state: 'closed', author: { login: 'river-sm' }, createdAt: new Date(Date.now() - 48*3600000).toISOString(), labels: [{ name: 'bug', color: 'EF4444' }, { name: 'UX', color: 'A855F7' }], url: '#' },
+  { number: 20, title: 'AIOX cockpit theme: font loading fails', state: 'open', author: { login: 'aria-design' }, createdAt: new Date(Date.now() - 72*3600000).toISOString(), labels: [{ name: 'bug', color: 'EF4444' }, { name: 'theme', color: 'F59E0B' }], url: '#' },
+  { number: 19, title: 'Knowledge graph visualization needs WebGL', state: 'open', author: { login: 'aria-architect' }, createdAt: new Date(Date.now() - 96*3600000).toISOString(), labels: [{ name: 'enhancement', color: '3B82F6' }, { name: 'P2', color: 'F59E0B' }], url: '#' },
+];
+
 export default function GitHubView() {
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('commits');
+  const [demoMode, setDemoMode] = useState(false);
 
   const [commits, setCommits] = useState<Commit[]>([]);
   const [pulls, setPulls] = useState<PullRequest[]>([]);
@@ -99,14 +127,27 @@ export default function GitHubView() {
     }
   }, []);
 
+  const activateDemoMode = useCallback(() => {
+    setDemoMode(true);
+    setIsConnected(true);
+    setUsername('demo-user');
+    setCommits(demoCommits);
+    setPulls(demoPulls);
+    setIssues(demoIssues);
+    setErrors({ commits: '', pulls: '', issues: '' });
+  }, []);
+
   const refreshAll = useCallback(async () => {
     setIsRefreshing(true);
     const connected = await checkGitHubStatus();
     if (connected) {
+      setDemoMode(false);
       await Promise.all([fetchTab('commits'), fetchTab('pulls'), fetchTab('issues')]);
+    } else {
+      activateDemoMode();
     }
     setIsRefreshing(false);
-  }, [checkGitHubStatus, fetchTab]);
+  }, [checkGitHubStatus, fetchTab, activateDemoMode]);
 
   useEffect(() => {
     refreshAll();
@@ -125,31 +166,7 @@ export default function GitHubView() {
   }
 
   if (!isConnected) {
-    return (
-      <div className="h-full flex items-center justify-center p-6">
-        <GlassCard padding="lg" className="text-center max-w-md">
-          <AlertTriangle size={40} className="text-yellow-400 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold text-primary mb-2">GitHub Not Connected</h2>
-          <p className="text-sm text-secondary mb-4">
-            Run{' '}
-            <code className="glass-subtle px-2 py-0.5 rounded text-xs font-mono">
-              gh auth login
-            </code>{' '}
-            in your terminal to connect.
-          </p>
-          <GlassButton variant="primary" onClick={refreshAll} disabled={isRefreshing}>
-            {isRefreshing ? (
-              <>
-                <RefreshCw size={14} className="animate-spin mr-2" />
-                Checking...
-              </>
-            ) : (
-              'Retry'
-            )}
-          </GlassButton>
-        </GlassCard>
-      </div>
-    );
+    return null;
   }
 
   const tabs: { id: TabType; label: string; icon: typeof GitCommit; count?: number }[] = [
@@ -163,7 +180,14 @@ export default function GitHubView() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-primary">GitHub</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-primary">GitHub</h1>
+            {demoMode && (
+              <Badge variant="status" status="warning" size="sm">
+                Demo
+              </Badge>
+            )}
+          </div>
           <p className="text-secondary text-sm mt-0.5">
             {REPO}
             {username && (

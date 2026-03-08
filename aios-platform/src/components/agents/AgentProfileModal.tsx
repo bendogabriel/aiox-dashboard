@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassButton, Avatar, Badge } from '../ui';
 import { cn } from '../../lib/utils';
+import { getIconComponent } from '../../lib/icons';
 import { getSquadType } from '../../types';
 import type { SquadType } from '../../types';
+import { getAgentAvatarUrl } from '../../lib/agent-avatars';
 
 // Focus trap hook for accessibility
 function useFocusTrap(isActive: boolean) {
@@ -116,25 +119,29 @@ interface AgentProfileAgent {
     background?: string;
   };
   corePrinciples?: Array<string | { principle: string }>;
-  frameworks?: string[];
-  hasVoiceDna?: boolean;
-  hasAntiPatterns?: boolean;
-  hasIntegration?: boolean;
-  config?: {
-    anti_patterns?: {
-      never_do?: string[];
+  mindSource?: {
+    name?: string;
+    credentials?: string[];
+    frameworks?: string[];
+  };
+  voiceDna?: {
+    sentenceStarters?: string[];
+    vocabulary?: {
+      alwaysUse?: string[];
+      neverUse?: string[];
     };
-    voice_dna?: {
-      sentence_starters?: string[];
-      vocabulary?: {
-        always_use?: string[];
-        never_use?: string[];
-      };
-    };
-    integration?: {
-      receives_from?: string[];
-      handoff_to?: string[];
-    };
+  };
+  antiPatterns?: {
+    neverDo?: string[];
+  };
+  integration?: {
+    receivesFrom?: string[];
+    handoffTo?: string[];
+  };
+  quality?: {
+    hasVoiceDna: boolean;
+    hasAntiPatterns: boolean;
+    hasIntegration: boolean;
   };
 }
 
@@ -147,9 +154,9 @@ interface AgentProfileModalProps {
 
 // Tier configuration
 const tierConfig = {
-  0: { label: 'Orchestrator', color: 'from-cyan-500 to-blue-500', bg: 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400' },
-  1: { label: 'Master', color: 'from-purple-500 to-pink-500', bg: 'bg-purple-500/10 border-purple-500/30 text-purple-400' },
-  2: { label: 'Specialist', color: 'from-orange-500 to-amber-500', bg: 'bg-orange-500/10 border-orange-500/30 text-orange-400' },
+  0: { label: 'Orchestrator', color: 'from-[#D1FF00] to-[#a8cc00]', bg: 'bg-[#D1FF00]/10 border-[#D1FF00]/30 text-[#D1FF00]' },
+  1: { label: 'Master', color: 'from-[#0099FF] to-[#0077cc]', bg: 'bg-[#0099FF]/10 border-[#0099FF]/30 text-[#0099FF]' },
+  2: { label: 'Specialist', color: 'from-[#ED4609] to-[#c43a07]', bg: 'bg-[#ED4609]/10 border-[#ED4609]/30 text-[#ED4609]' },
 };
 
 export function AgentProfileModal({ agent, isOpen, onClose, onStartChat }: AgentProfileModalProps) {
@@ -173,23 +180,23 @@ export function AgentProfileModal({ agent, isOpen, onClose, onStartChat }: Agent
   const tabs = [
     { id: 'overview', label: 'Visão Geral', icon: <PrincipleIcon /> },
     { id: 'commands', label: 'Comandos', icon: <CommandIcon />, count: agent.commands?.length },
-    { id: 'voice', label: 'Voz & Estilo', icon: <VoiceIcon />, disabled: !agent.hasVoiceDna },
-    { id: 'integration', label: 'Integrações', icon: <LinkIcon />, disabled: !agent.hasIntegration },
+    { id: 'voice', label: 'Voz & Estilo', icon: <VoiceIcon />, disabled: !agent.quality?.hasVoiceDna && !agent.voiceDna },
+    { id: 'integration', label: 'Integrações', icon: <LinkIcon />, disabled: !agent.quality?.hasIntegration && !agent.integration },
   ];
 
-  return (
+  // Portal to document.body to escape any ancestor transform/will-change
+  // that would break fixed positioning (e.g. framer-motion ViewWrapper)
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop */}
           <motion.div
+            key="agent-profile-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-          />
-
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
           {/* Modal */}
           <motion.div
             ref={focusTrapRef}
@@ -197,67 +204,82 @@ export function AgentProfileModal({ agent, isOpen, onClose, onStartChat }: Agent
             aria-modal="true"
             aria-labelledby={modalTitleId}
             onKeyDown={handleKeyDown}
+            onClick={(e) => e.stopPropagation()}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[700px] md:max-h-[85vh] z-50 flex flex-col rounded-2xl overflow-hidden"
+            className="w-full md:w-[700px] max-h-[85vh] flex flex-col rounded-2xl overflow-hidden"
             style={{
               background: 'linear-gradient(135deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.98) 100%)',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
             }}
           >
-            {/* Header */}
-            <div className="relative p-6 border-b border-white/10">
-              {/* Tier gradient accent */}
-              <div className={cn('absolute top-0 left-0 right-0 h-1 bg-gradient-to-r', tier.color)} />
+            {/* Close button — floating over hero */}
+            <button
+              onClick={onClose}
+              aria-label="Fechar modal"
+              className="absolute top-4 right-4 z-10 p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/20 transition-colors backdrop-blur-sm"
+            >
+              <CloseIcon aria-hidden="true" />
+            </button>
 
-              <div className="flex items-start gap-4">
-                {/* Avatar */}
-                {agent.icon ? (
+            {/* Hero Avatar Section */}
+            <div className="relative flex flex-col items-center pt-8 pb-6 border-b border-white/10">
+              {/* Background gradient accent */}
+              <div
+                className={cn('absolute inset-0 opacity-20 bg-gradient-to-b', tier.color)}
+                style={{ maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)' }}
+              />
+
+              {/* Avatar — large hero size */}
+              <div className="relative">
+                {getAgentAvatarUrl(agent.id) ? (
+                  <img
+                    src={getAgentAvatarUrl(agent.id)}
+                    alt={agent.name}
+                    className="h-36 w-36 rounded-2xl object-cover ring-2 ring-white/20 shadow-2xl"
+                    style={{ boxShadow: '0 0 40px rgba(209, 255, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4)' }}
+                  />
+                ) : agent.icon ? (
                   <div className={cn(
-                    'h-16 w-16 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0',
+                    'h-36 w-36 rounded-2xl flex items-center justify-center',
                     `bg-gradient-to-br ${tier.color}`
                   )}>
-                    {agent.icon}
+                    {(() => { const Icon = getIconComponent(agent.icon); return <Icon size={56} />; })()}
                   </div>
                 ) : (
-                  <Avatar name={agent.name} size="xl" squadType={squadType} />
+                  <div className="h-36 w-36">
+                    <Avatar name={agent.name} size="xl" squadType={squadType} className="!h-36 !w-36 !text-4xl !rounded-2xl" />
+                  </div>
                 )}
+                {/* Tier badge on avatar */}
+                <span className={cn(
+                  'absolute -bottom-2 left-1/2 -translate-x-1/2 text-[10px] px-3 py-1 rounded-full border font-bold whitespace-nowrap',
+                  tier.bg
+                )}>
+                  {tier.label}
+                </span>
+              </div>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h2 id={modalTitleId} className="text-xl font-bold text-white">{agent.name}</h2>
-                    <span className={cn('text-[10px] px-2 py-0.5 rounded-full border font-medium', tier.bg)}>
-                      {tier.label}
-                    </span>
-                  </div>
-                  <p className="text-white/60 text-sm mt-0.5">{agent.title}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge variant="squad" squadType={squadType} size="sm">
-                      {agent.squad}
-                    </Badge>
-                    {(agent.commandCount ?? 0) > 0 && (
-                      <span className="text-xs text-white/40">{agent.commandCount} comandos</span>
-                    )}
-                  </div>
+              {/* Name & title */}
+              <div className="text-center mt-5 px-6 relative">
+                <h2 id={modalTitleId} className="text-2xl font-bold text-white">{agent.name}</h2>
+                <p className="text-white/60 text-sm mt-1">{agent.title}</p>
+                <div className="flex items-center justify-center gap-3 mt-3">
+                  <Badge variant="squad" squadType={squadType} size="sm">
+                    {agent.squad}
+                  </Badge>
+                  {(agent.commandCount ?? 0) > 0 && (
+                    <span className="text-xs text-white/40">{agent.commandCount} comandos</span>
+                  )}
                 </div>
-
-                {/* Close button */}
-                <button
-                  onClick={onClose}
-                  aria-label="Fechar modal"
-                  className="p-2 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  <CloseIcon aria-hidden="true" />
-                </button>
               </div>
 
               {/* When to use */}
               {agent.whenToUse && (
-                <div className="mt-4 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                  <p className="text-sm text-blue-300 leading-relaxed">
+                <div className="mt-4 mx-6 p-3 rounded-xl bg-[#0099FF]/10 border border-[#0099FF]/20 relative">
+                  <p className="text-sm text-[#0099FF] leading-relaxed">
                     <span className="font-semibold">Quando usar:</span> {agent.whenToUse}
                   </p>
                 </div>
@@ -295,7 +317,7 @@ export function AgentProfileModal({ agent, isOpen, onClose, onStartChat }: Agent
                   {activeTab === tab.id && (
                     <motion.div
                       layoutId="activeTab"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#D1FF00] to-[#a8cc00]"
                       aria-hidden="true"
                     />
                   )}
@@ -337,14 +359,24 @@ export function AgentProfileModal({ agent, isOpen, onClose, onStartChat }: Agent
               </GlassButton>
             </div>
           </motion.div>
-        </>
+          </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
 // Tab: Overview
 function TabOverview({ agent }: { agent: AgentProfileAgent }) {
+  const hasPersonaFields = agent.persona && (
+    agent.persona.role || agent.persona.style || agent.persona.focus ||
+    agent.persona.identity || agent.persona.background
+  );
+  const hasPrinciples = agent.corePrinciples && agent.corePrinciples.length > 0;
+  const hasFrameworks = agent.mindSource?.frameworks && agent.mindSource.frameworks.length > 0;
+  const hasAntiPatterns = agent.antiPatterns?.neverDo && agent.antiPatterns.neverDo.length > 0;
+  const hasAnyContent = hasPersonaFields || hasPrinciples || hasFrameworks || hasAntiPatterns || agent.whenToUse;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -352,26 +384,34 @@ function TabOverview({ agent }: { agent: AgentProfileAgent }) {
       exit={{ opacity: 0, y: -10 }}
       className="space-y-6"
     >
+      {!hasAnyContent && (
+        <div className="text-center py-8">
+          <PrincipleIcon />
+          <p className="mt-3 text-sm text-white/40">Detalhes do perfil não disponíveis para este agente</p>
+          <p className="text-xs text-white/25 mt-1">{agent.title || agent.name}</p>
+        </div>
+      )}
+
       {/* Persona */}
-      {agent.persona && (
+      {hasPersonaFields && (
         <Section title="Persona" icon={<VoiceIcon />}>
           <div className="grid grid-cols-2 gap-3">
-            {agent.persona.role && (
-              <InfoCard label="Papel" value={agent.persona.role} />
+            {agent.persona!.role && (
+              <InfoCard label="Papel" value={agent.persona!.role} />
             )}
-            {agent.persona.style && (
-              <InfoCard label="Estilo" value={agent.persona.style} />
+            {agent.persona!.style && (
+              <InfoCard label="Estilo" value={agent.persona!.style} />
             )}
-            {agent.persona.focus && (
-              <InfoCard label="Foco" value={agent.persona.focus} />
+            {agent.persona!.focus && (
+              <InfoCard label="Foco" value={agent.persona!.focus} />
             )}
-            {agent.persona.identity && (
-              <InfoCard label="Identidade" value={agent.persona.identity} />
+            {agent.persona!.identity && (
+              <InfoCard label="Identidade" value={agent.persona!.identity} />
             )}
           </div>
-          {agent.persona.background && (
+          {agent.persona!.background && (
             <p className="text-sm text-white/60 mt-3 leading-relaxed whitespace-pre-line">
-              {agent.persona.background}
+              {agent.persona!.background}
             </p>
           )}
         </Section>
@@ -383,7 +423,7 @@ function TabOverview({ agent }: { agent: AgentProfileAgent }) {
           <ul className="space-y-2">
             {agent.corePrinciples.map((principle: string | { principle: string }, i: number) => (
               <li key={i} className="flex items-start gap-2">
-                <span className="text-blue-400 mt-1">•</span>
+                <span className="text-[#D1FF00] mt-1">•</span>
                 <span className="text-sm text-white/70">
                   {typeof principle === 'string' ? principle : principle.principle}
                 </span>
@@ -394,13 +434,13 @@ function TabOverview({ agent }: { agent: AgentProfileAgent }) {
       )}
 
       {/* Frameworks */}
-      {agent.frameworks && agent.frameworks.length > 0 && (
+      {agent.mindSource?.frameworks && agent.mindSource.frameworks.length > 0 && (
         <Section title="Frameworks & Metodologias" icon={<FrameworkIcon />}>
           <div className="flex flex-wrap gap-2">
-            {agent.frameworks.map((framework: string, i: number) => (
+            {agent.mindSource.frameworks.map((framework: string, i: number) => (
               <span
                 key={i}
-                className="px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-300 text-sm"
+                className="px-3 py-1.5 rounded-lg bg-[#0099FF]/10 border border-[#0099FF]/20 text-[#0099FF] text-sm"
               >
                 {framework}
               </span>
@@ -410,10 +450,10 @@ function TabOverview({ agent }: { agent: AgentProfileAgent }) {
       )}
 
       {/* Anti-patterns */}
-      {agent.hasAntiPatterns && agent.config?.anti_patterns && (
+      {agent.antiPatterns?.neverDo && agent.antiPatterns.neverDo.length > 0 && (
         <Section title="Anti-Patterns (O que NÃO fazer)" icon={<WarningIcon />} variant="warning">
           <ul className="space-y-2">
-            {agent.config.anti_patterns.never_do?.slice(0, 5).map((item: string, i: number) => (
+            {agent.antiPatterns.neverDo.slice(0, 5).map((item: string, i: number) => (
               <li key={i} className="flex items-start gap-2">
                 <span className="text-red-400 mt-1">{'\u2715'}</span>
                 <span className="text-sm text-white/70">{item}</span>
@@ -449,7 +489,7 @@ function TabCommands({ agent }: { agent: AgentProfileAgent }) {
             className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
           >
             <div className="flex items-center gap-2 mb-1">
-              <code className="text-sm font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">
+              <code className="text-sm font-mono text-[#D1FF00] bg-[#D1FF00]/10 px-2 py-0.5 rounded">
                 {cmd.command}
               </code>
             </div>
@@ -463,7 +503,7 @@ function TabCommands({ agent }: { agent: AgentProfileAgent }) {
 
 // Tab: Voice & Style
 function TabVoice({ agent }: { agent: AgentProfileAgent }) {
-  const voiceDna = agent.config?.voice_dna;
+  const voiceDna = agent.voiceDna;
 
   if (!voiceDna) {
     return (
@@ -482,11 +522,11 @@ function TabVoice({ agent }: { agent: AgentProfileAgent }) {
       className="space-y-6"
     >
       {/* Sentence starters */}
-      {voiceDna.sentence_starters && (
+      {voiceDna.sentenceStarters && (
         <Section title="Frases de Abertura" icon={<VoiceIcon />}>
           <div className="space-y-2">
-            {voiceDna.sentence_starters.slice(0, 6).map((starter: string, i: number) => (
-              <div key={i} className="p-2 rounded-lg bg-white/5 border-l-2 border-blue-500/50">
+            {voiceDna.sentenceStarters.slice(0, 6).map((starter: string, i: number) => (
+              <div key={i} className="p-2 rounded-lg bg-white/5 border-l-2 border-[#0099FF]/50">
                 <p className="text-sm text-white/70 italic">"{starter}..."</p>
               </div>
             ))}
@@ -497,21 +537,21 @@ function TabVoice({ agent }: { agent: AgentProfileAgent }) {
       {/* Vocabulary */}
       {voiceDna.vocabulary && (
         <div className="grid grid-cols-2 gap-4">
-          {voiceDna.vocabulary.always_use && (
+          {voiceDna.vocabulary.alwaysUse && (
             <Section title="Sempre Usar" icon={<PrincipleIcon />} compact>
               <div className="flex flex-wrap gap-1.5">
-                {voiceDna.vocabulary.always_use.slice(0, 10).map((word: string, i: number) => (
-                  <span key={i} className="px-2 py-1 rounded bg-green-500/10 text-green-400 text-xs">
+                {voiceDna.vocabulary.alwaysUse.slice(0, 10).map((word: string, i: number) => (
+                  <span key={i} className="px-2 py-1 rounded bg-[#D1FF00]/10 text-[#D1FF00] text-xs">
                     {word}
                   </span>
                 ))}
               </div>
             </Section>
           )}
-          {voiceDna.vocabulary.never_use && (
+          {voiceDna.vocabulary.neverUse && (
             <Section title="Nunca Usar" icon={<WarningIcon />} compact variant="warning">
               <div className="flex flex-wrap gap-1.5">
-                {voiceDna.vocabulary.never_use.slice(0, 10).map((word: string, i: number) => (
+                {voiceDna.vocabulary.neverUse.slice(0, 10).map((word: string, i: number) => (
                   <span key={i} className="px-2 py-1 rounded bg-red-500/10 text-red-400 text-xs line-through">
                     {word}
                   </span>
@@ -527,7 +567,7 @@ function TabVoice({ agent }: { agent: AgentProfileAgent }) {
 
 // Tab: Integration
 function TabIntegration({ agent }: { agent: AgentProfileAgent }) {
-  const integration = agent.config?.integration;
+  const integration = agent.integration;
 
   if (!integration) {
     return (
@@ -546,12 +586,12 @@ function TabIntegration({ agent }: { agent: AgentProfileAgent }) {
       className="space-y-6"
     >
       {/* Receives from */}
-      {integration.receives_from && integration.receives_from.length > 0 && (
+      {integration.receivesFrom && integration.receivesFrom.length > 0 && (
         <Section title="Recebe de" icon={<LinkIcon />}>
           <div className="flex flex-wrap gap-2">
-            {integration.receives_from.map((agent: string, i: number) => (
-              <span key={i} className="px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm">
-                ← {agent}
+            {integration.receivesFrom.map((agentName: string, i: number) => (
+              <span key={i} className="px-3 py-1.5 rounded-lg bg-[#0099FF]/10 border border-[#0099FF]/20 text-[#0099FF] text-sm">
+                {'\u2190'} {agentName}
               </span>
             ))}
           </div>
@@ -559,12 +599,12 @@ function TabIntegration({ agent }: { agent: AgentProfileAgent }) {
       )}
 
       {/* Hands off to */}
-      {integration.handoff_to && integration.handoff_to.length > 0 && (
+      {integration.handoffTo && integration.handoffTo.length > 0 && (
         <Section title="Entrega para" icon={<LinkIcon />}>
           <div className="flex flex-wrap gap-2">
-            {integration.handoff_to.map((agent: string, i: number) => (
-              <span key={i} className="px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20 text-green-300 text-sm">
-                {agent} →
+            {integration.handoffTo.map((agentName: string, i: number) => (
+              <span key={i} className="px-3 py-1.5 rounded-lg bg-[#D1FF00]/10 border border-[#D1FF00]/20 text-[#D1FF00] text-sm">
+                {agentName} {'\u2192'}
               </span>
             ))}
           </div>

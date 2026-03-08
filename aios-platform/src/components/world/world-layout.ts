@@ -106,6 +106,16 @@ export const domains: Record<DomainId, DomainConfig> = {
   },
 };
 
+/** CSS var name mapping for theme-aware domain colors */
+export const domainCSSVars: Record<DomainId, { tile: string; border: string; agent: string; floor: string }> = {
+  content: { tile: '--world-content-tile', border: '--world-content-border', agent: '--world-content-agent', floor: '--world-content-floor' },
+  sales: { tile: '--world-sales-tile', border: '--world-sales-border', agent: '--world-sales-agent', floor: '--world-sales-floor' },
+  dev: { tile: '--world-dev-tile', border: '--world-dev-border', agent: '--world-dev-agent', floor: '--world-dev-floor' },
+  design: { tile: '--world-design-tile', border: '--world-design-border', agent: '--world-design-agent', floor: '--world-design-floor' },
+  data: { tile: '--world-data-tile', border: '--world-data-border', agent: '--world-data-agent', floor: '--world-data-floor' },
+  ops: { tile: '--world-ops-tile', border: '--world-ops-border', agent: '--world-ops-agent', floor: '--world-ops-floor' },
+};
+
 // Room positions on the isometric world grid
 // Grouped by domain clusters
 export const rooms: RoomConfig[] = [

@@ -1,11 +1,14 @@
 import { cn } from '../../lib/utils';
+import { getAgentAvatarUrl } from '../../lib/agent-avatars';
+import { getSquadTheme } from '../../lib/theme';
 import type { SquadType } from '../../types';
 
 export interface AvatarProps {
   src?: string;
   alt?: string;
   name?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  agentId?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   squadType?: SquadType;
   status?: 'online' | 'busy' | 'offline';
   className?: string;
@@ -16,6 +19,7 @@ const sizeClasses = {
   md: 'h-10 w-10 text-sm',
   lg: 'h-12 w-12 text-base',
   xl: 'h-16 w-16 text-lg',
+  '2xl': 'h-20 w-20 text-xl',
 };
 
 const statusSizeClasses = {
@@ -23,21 +27,12 @@ const statusSizeClasses = {
   md: 'h-2.5 w-2.5 -bottom-0.5 -right-0.5',
   lg: 'h-3 w-3 -bottom-0.5 -right-0.5',
   xl: 'h-3.5 w-3.5 -bottom-1 -right-1',
+  '2xl': 'h-4 w-4 -bottom-1 -right-1',
 };
 
-const squadGradients: Record<SquadType, string> = {
-  copywriting: 'from-orange-400 to-amber-500',
-  design: 'from-purple-400 to-violet-500',
-  creator: 'from-green-400 to-emerald-500',
-  orchestrator: 'from-cyan-400 to-blue-500',
-  content: 'from-red-400 to-rose-500',
-  development: 'from-blue-400 to-sky-500',
-  engineering: 'from-indigo-400 to-violet-500',
-  analytics: 'from-teal-400 to-emerald-500',
-  marketing: 'from-pink-400 to-rose-500',
-  advisory: 'from-yellow-400 to-amber-500',
-  default: 'from-gray-400 to-slate-500',
-};
+function getAvatarGradientClasses(squadType: SquadType): string {
+  return getSquadTheme(squadType).gradient;
+}
 
 function getInitials(name: string): string {
   return name
@@ -52,6 +47,7 @@ export function Avatar({
   src,
   alt,
   name,
+  agentId,
   size = 'md',
   squadType = 'default',
   status,
@@ -59,11 +55,14 @@ export function Avatar({
 }: AvatarProps) {
   const showStatus = status !== undefined;
 
+  // Resolve avatar: explicit src > agent avatar > initials fallback
+  const resolvedSrc = src || (agentId ? getAgentAvatarUrl(agentId) : undefined) || (name ? getAgentAvatarUrl(name) : undefined);
+
   return (
     <div className={cn('relative inline-flex', className)}>
-      {src ? (
+      {resolvedSrc ? (
         <img
-          src={src}
+          src={resolvedSrc}
           alt={alt || name || 'Avatar'}
           className={cn(
             'rounded-full object-cover',
@@ -76,7 +75,7 @@ export function Avatar({
           className={cn(
             'rounded-full flex items-center justify-center font-medium text-white',
             'bg-gradient-to-br',
-            squadGradients[squadType],
+            getAvatarGradientClasses(squadType),
             sizeClasses[size]
           )}
         >

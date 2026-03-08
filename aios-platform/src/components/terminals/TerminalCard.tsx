@@ -38,7 +38,7 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
         'overflow-hidden flex flex-col',
         !listMode && 'h-[280px]',
         listMode && 'h-auto',
-        isActive && 'ring-1 ring-green-500/20',
+        isActive && 'ring-1 terminal-ring-active',
       )}
       aria-label={`Terminal ${session.agent} - ${session.status}`}
     >
@@ -97,18 +97,18 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
               {visibleLines.map((line, i) => (
                 <div key={i} className="whitespace-pre-wrap">
                   {line.startsWith('$') ? (
-                    <span className="text-green-400">{line}</span>
+                    <span className="terminal-prompt">{line}</span>
                   ) : line.startsWith('PASS') || line.includes('passed') || line.startsWith('\u2713') ? (
-                    <span className="text-green-300">{line}</span>
+                    <span className="terminal-success">{line}</span>
                   ) : line.startsWith('FAIL') || line.includes('error') || line.includes('Error') ? (
-                    <span className="text-red-400">{line}</span>
+                    <span className="terminal-error">{line}</span>
                   ) : (
-                    <span className="text-gray-300">{line}</span>
+                    <span className="terminal-text">{line}</span>
                   )}
                 </div>
               ))}
               {isActive && (
-                <span className="text-green-400 animate-pulse">_</span>
+                <span className="terminal-cursor animate-pulse">_</span>
               )}
             </div>
           </motion.div>
@@ -136,14 +136,14 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
         <div className="flex items-center gap-1.5">
           {isActive && (
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full terminal-activity-dot opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 terminal-activity-dot-bg" />
             </span>
           )}
           <span
             className={cn(
               'text-[10px] font-medium capitalize',
-              isActive ? 'text-green-400' : 'text-tertiary',
+              isActive ? 'terminal-status-active' : 'text-tertiary',
             )}
           >
             {session.status}

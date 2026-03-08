@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Map,
+  Map as MapIcon,
   Plus,
   Circle,
   CheckCircle,
   Loader,
   X,
+  LayoutGrid,
+  GanttChart,
 } from 'lucide-react';
 import { GlassCard, GlassButton, Badge, SectionLabel } from '../ui';
-import { useRoadmapStore, type RoadmapFeature } from '../../stores/roadmapStore';
+import { useRoadmapStore, type RoadmapFeature, type Quarter } from '../../stores/roadmapStore';
 import { cn } from '../../lib/utils';
 
 // --- Priority Config ---
@@ -246,10 +248,140 @@ function AddFeatureForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: 
   );
 }
 
+// --- Timeline View ---
+
+const quarterColors: Record<Quarter, string> = {
+  Q1: '#22C55E',
+  Q2: '#3B82F6',
+  Q3: '#A855F7',
+  Q4: '#F59E0B',
+};
+
+const statusBarStyle = {
+  planned: 'opacity-40',
+  in_progress: 'opacity-70 animate-pulse',
+  done: 'opacity-100',
+};
+
+function TimelineView({ features }: { features: RoadmapFeature[] }) {
+  const quarters: Quarter[] = ['Q1', 'Q2', 'Q3', 'Q4'];
+
+  // Group by squad then by quarter
+  const squads = useMemo(() => {
+    const map = new Map<string, RoadmapFeature[]>();
+    features.forEach((f) => {
+      const squad = f.squad || 'Other';
+      if (!map.has(squad)) map.set(squad, []);
+      map.get(squad)!.push(f);
+    });
+    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
+  }, [features]);
+
+  return (
+    <div className="space-y-2">
+      {/* Quarter headers */}
+      <div className="flex">
+        <div className="w-36 flex-shrink-0" />
+        <div className="flex-1 grid grid-cols-4 gap-px">
+          {quarters.map((q) => (
+            <div key={q} className="text-center py-2">
+              <span
+                className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full"
+                style={{ color: quarterColors[q], background: `${quarterColors[q]}15` }}
+              >
+                {q} 2026
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Swim lanes by squad */}
+      {squads.map(([squad, squadFeatures], si) => (
+        <motion.div
+          key={squad}
+          initial={{ opacity: 0, x: -12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: si * 0.06 }}
+          className="flex border-t border-white/5"
+        >
+          {/* Squad label */}
+          <div className="w-36 flex-shrink-0 py-3 pr-3">
+            <span className="text-xs font-medium text-secondary capitalize truncate block">
+              {squad}
+            </span>
+          </div>
+
+          {/* Quarter grid */}
+          <div className="flex-1 grid grid-cols-4 gap-px py-2">
+            {quarters.map((q) => {
+              const items = squadFeatures.filter((f) => f.quarter === q);
+              return (
+                <div key={q} className="px-1 space-y-1 min-h-[32px]">
+                  {items.map((feature, fi) => {
+                    const pConfig = priorityConfig[feature.priority];
+                    return (
+                      <motion.div
+                        key={feature.id}
+                        initial={{ scaleX: 0, opacity: 0 }}
+                        animate={{ scaleX: 1, opacity: 1 }}
+                        transition={{ delay: si * 0.06 + fi * 0.04 + 0.2, duration: 0.4, ease: [0, 0, 0.2, 1] }}
+                        style={{ transformOrigin: 'left' }}
+                        className="group relative"
+                      >
+                        <div
+                          className={cn(
+                            'h-7 rounded flex items-center px-2 gap-1.5 cursor-default transition-all',
+                            'hover:ring-1 hover:ring-white/20',
+                            statusBarStyle[feature.status],
+                          )}
+                          style={{ background: `${quarterColors[q]}25`, borderLeft: `3px solid ${quarterColors[q]}` }}
+                          title={`${feature.title} — ${statusLabels[feature.status]}`}
+                        >
+                          {feature.status === 'done' && <CheckCircle size={10} className="text-green-400 flex-shrink-0" />}
+                          {feature.status === 'in_progress' && <Loader size={10} className="text-blue-400 flex-shrink-0 animate-spin" />}
+                          <span className="text-[10px] text-primary truncate font-medium">{feature.title}</span>
+                        </div>
+
+                        {/* Tooltip on hover */}
+                        <div className="absolute left-0 bottom-full mb-1 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="rounded-lg px-2.5 py-1.5 text-[10px] whitespace-nowrap shadow-lg" style={{ background: 'rgba(0,0,0,0.9)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div className="font-medium text-white">{feature.title}</div>
+                            <div className="text-white/50 mt-0.5">{feature.description}</div>
+                            <div className="flex gap-2 mt-1">
+                              <span className={pConfig.textColor}>{pConfig.label}</span>
+                              <span className="text-white/40">{statusLabels[feature.status]}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      ))}
+
+      {/* Legend */}
+      <div className="flex items-center gap-4 pt-4 border-t border-white/5">
+        <span className="text-[10px] text-tertiary">Status:</span>
+        {Object.entries(statusLabels).map(([key, label]) => (
+          <div key={key} className="flex items-center gap-1.5">
+            <div className={cn('w-3 h-3 rounded bg-blue-500/50', statusBarStyle[key as keyof typeof statusBarStyle])} />
+            <span className="text-[10px] text-secondary">{label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // --- Main Component ---
 
 export default function RoadmapView() {
-  const { features, filter, setFilter, addFeature } = useRoadmapStore();
+  const { features, filter, setFilter, addFeature, viewMode, setViewMode } = useRoadmapStore();
   const [showAddForm, setShowAddForm] = useState(false);
 
   const filtered = filter === 'all' ? features : features.filter((f) => f.priority === filter);
@@ -266,13 +398,30 @@ export default function RoadmapView() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <Map size={22} className="text-indigo-400" />
+          <MapIcon size={22} className="text-indigo-400" />
           <h1 className="text-xl font-semibold text-primary">Product Roadmap</h1>
           <Badge variant="count" size="sm">{features.length}</Badge>
         </div>
-        <GlassButton size="sm" leftIcon={<Plus size={14} />} onClick={() => setShowAddForm(true)}>
-          Add Feature
-        </GlassButton>
+        <div className="flex items-center gap-2">
+          {/* View mode toggle */}
+          <div className="flex items-center rounded-lg border border-white/10 overflow-hidden">
+            <button
+              onClick={() => setViewMode('timeline')}
+              className={cn('px-2.5 py-1.5 text-xs flex items-center gap-1.5 transition-colors', viewMode === 'timeline' ? 'bg-white/15 text-primary' : 'text-tertiary hover:text-secondary')}
+            >
+              <GanttChart size={13} /> Timeline
+            </button>
+            <button
+              onClick={() => setViewMode('cards')}
+              className={cn('px-2.5 py-1.5 text-xs flex items-center gap-1.5 transition-colors', viewMode === 'cards' ? 'bg-white/15 text-primary' : 'text-tertiary hover:text-secondary')}
+            >
+              <LayoutGrid size={13} /> Cards
+            </button>
+          </div>
+          <GlassButton size="sm" leftIcon={<Plus size={14} />} onClick={() => setShowAddForm(true)}>
+            Add Feature
+          </GlassButton>
+        </div>
       </div>
 
       {/* Add Feature Form */}
@@ -296,17 +445,25 @@ export default function RoadmapView() {
         ))}
       </div>
 
-      {/* Priority Grid */}
-      {filter === 'all' ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <PrioritySection priority="must" features={grouped.must} />
-          <PrioritySection priority="should" features={grouped.should} />
-          <PrioritySection priority="could" features={grouped.could} />
-          <PrioritySection priority="wont" features={grouped.wont} />
-        </div>
-      ) : (
-        <PrioritySection priority={filter as keyof typeof priorityConfig} features={filtered} />
-      )}
+      {/* Content */}
+      <AnimatePresence mode="wait">
+        {viewMode === 'timeline' ? (
+          <motion.div key="timeline" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <TimelineView features={filtered} />
+          </motion.div>
+        ) : filter === 'all' ? (
+          <motion.div key="cards-all" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <PrioritySection priority="must" features={grouped.must} />
+            <PrioritySection priority="should" features={grouped.should} />
+            <PrioritySection priority="could" features={grouped.could} />
+            <PrioritySection priority="wont" features={grouped.wont} />
+          </motion.div>
+        ) : (
+          <motion.div key={`cards-${filter}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <PrioritySection priority={filter as keyof typeof priorityConfig} features={filtered} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

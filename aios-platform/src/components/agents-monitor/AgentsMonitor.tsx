@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Play, Pause, RefreshCw, Moon } from 'lucide-react';
+import { Bot, Play, Pause, RefreshCw, Moon, FlaskConical } from 'lucide-react';
 import { GlassButton, Badge, StatusDot, SectionLabel } from '../ui';
 import { AgentMonitorCard, type AgentMonitorData } from './AgentMonitorCard';
 import { AgentActivityTimeline } from './AgentActivityTimeline';
@@ -8,9 +8,240 @@ import { AgentPerformanceStats } from './AgentPerformanceStats';
 import { useAgents } from '../../hooks/useAgents';
 import { useAgentPerformance, useAgentActivity } from '../../hooks/useAnalytics';
 import type { AgentPerformance } from '../../services/api/analytics';
+import type { AgentActivityEntry } from '../../types';
 import { cn } from '../../lib/utils';
 
 const POLLING_INTERVAL = 5000;
+
+// ---------------------------------------------------------------------------
+// Demo fallback data – shown when the API is unavailable
+// ---------------------------------------------------------------------------
+
+const demoAgents: AgentMonitorData[] = [
+  {
+    id: 'dex-dev',
+    name: 'Dex (Dev)',
+    status: 'working',
+    phase: 'Implementing Story 3.2',
+    progress: 65,
+    story: 'STORY-3.2',
+    lastActivity: new Date(Date.now() - 30_000).toISOString(),
+    model: 'sonnet',
+    squad: 'full-stack-dev',
+    totalExecutions: 142,
+    successRate: 97,
+    avgResponseTime: 1200,
+  },
+  {
+    id: 'kent-beck',
+    name: 'Kent Beck (QA)',
+    status: 'working',
+    phase: 'Writing tests',
+    progress: 40,
+    story: 'STORY-3.2',
+    lastActivity: new Date(Date.now() - 45_000).toISOString(),
+    model: 'opus',
+    squad: 'full-stack-dev',
+    totalExecutions: 89,
+    successRate: 99,
+    avgResponseTime: 2400,
+  },
+  {
+    id: 'aria-architect',
+    name: 'Aria (Architect)',
+    status: 'idle',
+    phase: '',
+    progress: 0,
+    story: '',
+    lastActivity: new Date(Date.now() - 600_000).toISOString(),
+    model: 'opus',
+    squad: 'full-stack-dev',
+    totalExecutions: 56,
+    successRate: 100,
+    avgResponseTime: 3100,
+  },
+  {
+    id: 'pax-po',
+    name: 'Pax (PO)',
+    status: 'idle',
+    phase: '',
+    progress: 0,
+    story: '',
+    lastActivity: new Date(Date.now() - 900_000).toISOString(),
+    model: 'sonnet',
+    squad: 'full-stack-dev',
+    totalExecutions: 34,
+    successRate: 94,
+    avgResponseTime: 1800,
+  },
+  {
+    id: 'river-sm',
+    name: 'River (SM)',
+    status: 'working',
+    phase: 'Creating Story 3.3',
+    progress: 20,
+    story: 'EPIC-3',
+    lastActivity: new Date(Date.now() - 15_000).toISOString(),
+    model: 'haiku',
+    squad: 'full-stack-dev',
+    totalExecutions: 71,
+    successRate: 96,
+    avgResponseTime: 800,
+  },
+  {
+    id: 'gage-devops',
+    name: 'Gage (DevOps)',
+    status: 'idle',
+    phase: '',
+    progress: 0,
+    story: '',
+    lastActivity: new Date(Date.now() - 1_200_000).toISOString(),
+    model: 'sonnet',
+    squad: 'full-stack-dev',
+    totalExecutions: 48,
+    successRate: 100,
+    avgResponseTime: 950,
+  },
+  {
+    id: 'morgan-pm',
+    name: 'Morgan (PM)',
+    status: 'idle',
+    phase: '',
+    progress: 0,
+    story: '',
+    lastActivity: new Date(Date.now() - 1_800_000).toISOString(),
+    model: 'opus',
+    squad: 'full-stack-dev',
+    totalExecutions: 62,
+    successRate: 98,
+    avgResponseTime: 2700,
+  },
+  {
+    id: 'quinn-qa',
+    name: 'Quinn (QA)',
+    status: 'error',
+    phase: 'QA Gate failed',
+    progress: 85,
+    story: 'STORY-3.1',
+    lastActivity: new Date(Date.now() - 120_000).toISOString(),
+    model: 'sonnet',
+    squad: 'full-stack-dev',
+    totalExecutions: 103,
+    successRate: 91,
+    avgResponseTime: 1500,
+  },
+  {
+    id: 'brad-frost',
+    name: 'Brad Frost (DS)',
+    status: 'idle',
+    phase: '',
+    progress: 0,
+    story: '',
+    lastActivity: new Date(Date.now() - 2_400_000).toISOString(),
+    model: 'sonnet',
+    squad: 'design-system',
+    totalExecutions: 27,
+    successRate: 100,
+    avgResponseTime: 1100,
+  },
+  {
+    id: 'dan-mall',
+    name: 'Dan Mall (DS)',
+    status: 'working',
+    phase: 'Component audit',
+    progress: 80,
+    story: 'STORY-DS-1.4',
+    lastActivity: new Date(Date.now() - 60_000).toISOString(),
+    model: 'opus',
+    squad: 'design-system',
+    totalExecutions: 38,
+    successRate: 95,
+    avgResponseTime: 2200,
+  },
+];
+
+const demoActivity: AgentActivityEntry[] = [
+  {
+    id: 'demo-act-1',
+    agentId: 'dex-dev',
+    timestamp: new Date(Date.now() - 30_000).toISOString(),
+    action: 'Committed feat: implement agent monitor cards [Story 3.2]',
+    status: 'success',
+    duration: 4500,
+  },
+  {
+    id: 'demo-act-2',
+    agentId: 'kent-beck',
+    timestamp: new Date(Date.now() - 45_000).toISOString(),
+    action: 'Running unit tests for AgentMonitorCard',
+    status: 'success',
+    duration: 12300,
+  },
+  {
+    id: 'demo-act-3',
+    agentId: 'quinn-qa',
+    timestamp: new Date(Date.now() - 120_000).toISOString(),
+    action: 'QA Gate — accessibility check failed (missing aria-labels)',
+    status: 'error',
+    duration: 8700,
+  },
+  {
+    id: 'demo-act-4',
+    agentId: 'river-sm',
+    timestamp: new Date(Date.now() - 150_000).toISOString(),
+    action: 'Created draft for Story 3.3: Agent Performance Dashboard',
+    status: 'success',
+    duration: 3200,
+  },
+  {
+    id: 'demo-act-5',
+    agentId: 'dex-dev',
+    timestamp: new Date(Date.now() - 300_000).toISOString(),
+    action: 'Refactored useAgents hook to support polling interval',
+    status: 'success',
+    duration: 6100,
+  },
+  {
+    id: 'demo-act-6',
+    agentId: 'dan-mall',
+    timestamp: new Date(Date.now() - 360_000).toISOString(),
+    action: 'Auditing GlassCard component for token compliance',
+    status: 'success',
+    duration: 5400,
+  },
+  {
+    id: 'demo-act-7',
+    agentId: 'aria-architect',
+    timestamp: new Date(Date.now() - 600_000).toISOString(),
+    action: 'Approved architecture for analytics service layer',
+    status: 'success',
+    duration: 15200,
+  },
+  {
+    id: 'demo-act-8',
+    agentId: 'quinn-qa',
+    timestamp: new Date(Date.now() - 660_000).toISOString(),
+    action: 'QA Gate — Story 3.1 lint & typecheck passed',
+    status: 'success',
+    duration: 9800,
+  },
+  {
+    id: 'demo-act-9',
+    agentId: 'morgan-pm',
+    timestamp: new Date(Date.now() - 900_000).toISOString(),
+    action: 'Updated Epic 3 execution plan with revised estimates',
+    status: 'success',
+    duration: 4100,
+  },
+  {
+    id: 'demo-act-10',
+    agentId: 'gage-devops',
+    timestamp: new Date(Date.now() - 1_200_000).toISOString(),
+    action: 'Deployed staging build v0.4.2 via CI/CD pipeline',
+    status: 'success',
+    duration: 22400,
+  },
+];
 
 // Map API data to monitor format, using analytics for performance enrichment
 function mapToMonitorData(
@@ -53,12 +284,15 @@ export default function AgentsMonitor() {
     [perfData]
   );
 
-  // Map API agents with analytics enrichment
+  // Map API agents with analytics enrichment; fall back to demo data
+  const isDemo = !apiAgents || apiAgents.length === 0;
+
   const agents: AgentMonitorData[] = useMemo(() => {
     if (apiAgents && apiAgents.length > 0) {
       return apiAgents.map((a) => mapToMonitorData(a, perfLookup));
     }
-    return [];
+    // Fallback to demo data when API is unavailable
+    return demoAgents;
   }, [apiAgents, perfLookup]);
 
   const activeAgents = agents.filter(
@@ -66,7 +300,7 @@ export default function AgentsMonitor() {
   );
   const standbyAgents = agents.filter((a) => a.status === 'idle');
 
-  const activity = activityData || [];
+  const activity = activityData && activityData.length > 0 ? activityData : isDemo ? demoActivity : [];
 
   const handleRefresh = useCallback(() => {
     refetch();
@@ -85,6 +319,12 @@ export default function AgentsMonitor() {
           <Badge variant="status" status="online" size="sm">
             {activeAgents.length}/{agents.length} active
           </Badge>
+          {isDemo && (
+            <Badge variant="default" size="sm" className="flex items-center gap-1 text-yellow-400 bg-yellow-500/10">
+              <FlaskConical className="h-3 w-3" />
+              Demo
+            </Badge>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <GlassButton

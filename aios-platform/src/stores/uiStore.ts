@@ -1,13 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { safePersistStorage } from '../lib/safeStorage';
+import { playSound } from '../hooks/useSound';
 import type { UIState } from '../types';
 
 type ThemeType = 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox';
 
 type ViewType =
   | 'chat' | 'dashboard' | 'cockpit' | 'settings' | 'orchestrator' | 'world'
-  | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor'
+  | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor' | 'timeline'
   | 'insights' | 'context' | 'knowledge' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories';
 export type SettingsSection = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
@@ -32,6 +33,8 @@ interface UIActions {
   setWorldZoom: (zoom: 'map' | 'room') => void;
   enterRoom: (roomId: string) => void;
   exitRoom: () => void;
+  setFocusMode: (enabled: boolean) => void;
+  toggleFocusMode: () => void;
 }
 
 const getSystemTheme = (): 'light' | 'dark' => {
@@ -87,6 +90,7 @@ export const useUIStore = create<UIState & UIActions>()(
       settingsSection: 'dashboard' as SettingsSection,
       selectedRoomId: null,
       worldZoom: 'map' as const,
+      focusMode: false,
 
       // Actions
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
@@ -129,15 +133,26 @@ export const useUIStore = create<UIState & UIActions>()(
 
       toggleWorkflowView: () => set((state) => ({ workflowViewOpen: !state.workflowViewOpen })),
 
-      setAgentExplorerOpen: (open) => set({ agentExplorerOpen: open }),
+      setAgentExplorerOpen: (open) => {
+        playSound(open ? 'open' : 'close');
+        set({ agentExplorerOpen: open });
+      },
 
-      toggleAgentExplorer: () => set((state) => ({ agentExplorerOpen: !state.agentExplorerOpen })),
+      toggleAgentExplorer: () => {
+        const wasOpen = get().agentExplorerOpen;
+        playSound(wasOpen ? 'close' : 'open');
+        set({ agentExplorerOpen: !wasOpen });
+      },
 
       setMobileMenuOpen: (open) => set({ mobileMenuOpen: open }),
 
       toggleMobileMenu: () => set((state) => ({ mobileMenuOpen: !state.mobileMenuOpen })),
 
-      setCurrentView: (view) => set({ currentView: view }),
+      setCurrentView: (view) => {
+        const prev = get().currentView;
+        if (prev !== view) playSound('navigate');
+        set({ currentView: view });
+      },
 
       setSettingsSection: (section) => set({ settingsSection: section }),
 
@@ -148,6 +163,27 @@ export const useUIStore = create<UIState & UIActions>()(
       enterRoom: (roomId) => set({ selectedRoomId: roomId, worldZoom: 'room', selectedSquadId: roomId }),
 
       exitRoom: () => set({ selectedRoomId: null, worldZoom: 'map', selectedAgentId: null }),
+
+      setFocusMode: (enabled) => {
+        if (enabled) {
+          playSound('open');
+          set({ focusMode: true, sidebarCollapsed: true, activityPanelOpen: false });
+        } else {
+          playSound('close');
+          set({ focusMode: false });
+        }
+      },
+
+      toggleFocusMode: () => {
+        const wasFocus = get().focusMode;
+        if (!wasFocus) {
+          playSound('open');
+          set({ focusMode: true, sidebarCollapsed: true, activityPanelOpen: false });
+        } else {
+          playSound('close');
+          set({ focusMode: false });
+        }
+      },
     }),
     {
       name: 'aios-ui-store',

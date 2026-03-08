@@ -10,7 +10,7 @@
     <meta name="description" content="Interface para orquestração de agentes de IA - Comunicação centralizada com squads de copywriting, design, creator e orchestrator" />
 
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#1e40af" />
+    <meta name="theme-color" content="#0F0F11" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -21,7 +21,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="mask-icon" href="/icon.svg" color="#1e40af" />
+    <link rel="mask-icon" href="/icon.svg" color="#D1FF00" />
 
     <!-- Open Graph / Social -->
     <meta property="og:type" content="website" />
@@ -36,7 +36,7 @@
         background: #f5f5f7;
       }
       html.dark {
-        background: #0f172a;
+        background: #050505;
       }
       /* PWA Splash Screen */
       #pwa-splash {
@@ -45,32 +45,75 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        background: #050505;
         z-index: 9999;
-        transition: opacity 0.3s ease-out;
+        transition: opacity 0.4s cubic-bezier(0, 0, 0.2, 1);
       }
       #pwa-splash.hide {
         opacity: 0;
         pointer-events: none;
       }
+      #pwa-splash .splash-mark {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
       #pwa-splash svg {
         width: 80px;
         height: 80px;
-        animation: pulse 2s infinite;
+        animation: aioxBrandReveal 1.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
       }
-      @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.1); opacity: 0.8; }
+      #pwa-splash .splash-glow {
+        position: absolute;
+        inset: -20px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(209, 255, 0, 0.15) 0%, transparent 70%);
+        animation: aioxGlowPulse 2.4s cubic-bezier(0.25, 0.1, 0.25, 1) 0.6s infinite;
+        opacity: 0;
+      }
+      @keyframes aioxBrandReveal {
+        0% {
+          opacity: 0;
+          transform: scale(0.8);
+          filter: brightness(0.5);
+        }
+        40% {
+          opacity: 1;
+          transform: scale(1.02);
+          filter: brightness(1.2);
+        }
+        60% {
+          transform: scale(0.98);
+          filter: brightness(1);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+          filter: brightness(1);
+        }
+      }
+      @keyframes aioxGlowPulse {
+        0%, 100% {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.1);
+        }
       }
     </style>
   </head>
   <body>
     <!-- PWA Splash Screen -->
     <div id="pwa-splash">
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="32" cy="32" r="26" stroke="white" stroke-width="2.5"/>
-        <path fill="white" d="M32 11 L37 21 L33.5 21 L48 51 L39 51 L33.5 29 L30.5 29 L25 51 L16 51 L30.5 21 L27 21 Z"/>
-      </svg>
+      <div class="splash-mark">
+        <div class="splash-glow"></div>
+        <svg viewBox="0 0 377 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill="white" d="M0 310.6H376.464L188.219 9.4L0 310.6ZM96.047 257.35L188.219 109.875L280.392 257.35H96.047Z"/>
+        </svg>
+      </div>
     </div>
 
     <div id="root"></div>

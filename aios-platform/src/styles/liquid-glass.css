@@ -6,6 +6,19 @@
 @import './tokens/index.css';
 
 /* ============================================
+   THEME TRANSITIONS - Smooth color morphing
+   ============================================ */
+
+/* All color properties transition smoothly on theme change */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 0.4s ease, color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.4s ease, fill 0.3s ease, stroke 0.3s ease !important;
+}
+
+/* ============================================
    BASE LAYER - CSS Variable Aliases
    ============================================ */
 
@@ -23,6 +36,54 @@
   --transition-slow: var(--duration-slow) var(--easing-default);
   --transition-spring: var(--duration-slower) var(--easing-spring);
 }
+
+/* Kanban drop-zone defaults (overridden per theme) */
+.kanban-drop-highlight {
+  --tw-ring-color: rgba(59, 130, 246, 0.30);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+.kanban-drop-zone {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Kanban story card badge defaults (overridden per theme) */
+.kanban-badge {
+  background-color: var(--kanban-badge-bg, rgba(59, 130, 246, 0.15));
+  color: var(--kanban-badge-text, #60a5fa);
+}
+.kanban-badge-feature { --kanban-badge-bg: rgba(59, 130, 246, 0.15); --kanban-badge-text: #60a5fa; }
+.kanban-badge-fix { --kanban-badge-bg: rgba(239, 68, 68, 0.15); --kanban-badge-text: #f87171; }
+.kanban-badge-refactor { --kanban-badge-bg: rgba(245, 158, 11, 0.15); --kanban-badge-text: #fbbf24; }
+.kanban-badge-docs { --kanban-badge-bg: rgba(34, 197, 94, 0.15); --kanban-badge-text: #4ade80; }
+.kanban-badge-simple { --kanban-badge-bg: rgba(34, 197, 94, 0.15); --kanban-badge-text: #4ade80; }
+.kanban-badge-standard { --kanban-badge-bg: rgba(234, 179, 8, 0.15); --kanban-badge-text: #facc15; }
+.kanban-badge-complex { --kanban-badge-bg: rgba(239, 68, 68, 0.15); --kanban-badge-text: #f87171; }
+.kanban-badge-bob { --kanban-badge-bg: rgba(168, 85, 247, 0.15); --kanban-badge-text: #a78bfa; }
+
+/* Kanban priority dot defaults */
+.kanban-priority-dot {
+  background-color: var(--kanban-priority-bg, #9ca3af);
+}
+.kanban-priority-low { --kanban-priority-bg: #9ca3af; }
+.kanban-priority-medium { --kanban-priority-bg: #60a5fa; }
+.kanban-priority-high { --kanban-priority-bg: #fb923c; }
+.kanban-priority-critical { --kanban-priority-bg: #ef4444; }
+
+/* Terminal color defaults (overridden per theme) */
+.terminal-prompt { color: var(--terminal-prompt, #4ade80); }
+.terminal-success { color: var(--terminal-success, #86efac); }
+.terminal-error { color: var(--terminal-error, #f87171); }
+.terminal-text { color: var(--terminal-text, #d1d5db); }
+.terminal-cursor { color: var(--terminal-cursor, #4ade80); }
+.terminal-ring-active { --tw-ring-color: var(--terminal-active-ring, rgba(34, 197, 94, 0.20)); }
+.terminal-status-active { color: var(--terminal-status-active, #4ade80); }
+.terminal-activity-dot { background-color: var(--terminal-activity-dot, #4ade80); }
+.terminal-activity-dot-bg { background-color: var(--terminal-activity-bg, #22c55e); }
+.terminal-ansi-yellow { color: var(--terminal-ansi-yellow, #facc15); }
+.terminal-ansi-blue { color: var(--terminal-ansi-blue, #3b82f6); }
+.terminal-ansi-purple { color: var(--terminal-ansi-purple, #a855f7); }
+.terminal-ansi-cyan { color: var(--terminal-ansi-cyan, #06b6d4); }
+.terminal-ansi-dim { color: var(--terminal-ansi-dim, #6b7280); }
 
 /* ============================================
    GLASS COMPONENT CLASSES

@@ -1,8 +1,9 @@
-import { lazy, Suspense, memo, useState } from 'react';
+import { lazy, Suspense, memo, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { Avatar, Badge } from '../ui';
 import { cn, formatRelativeTime } from '../../lib/utils';
+import { getAgentAvatarUrl } from '../../lib/agent-avatars';
 import type { Message, MessageAttachment, SquadType } from '../../types';
 
 // Lazy load heavy markdown renderer
@@ -56,6 +57,7 @@ export const MessageBubble = memo(function MessageBubble({
       {showAvatar && !isUser && (
         <Avatar
           name={message.agentName || 'Agent'}
+          agentId={message.agentId || message.agentName}
           size="sm"
           squadType={(message.squadType as SquadType) || 'default'}
           className="flex-shrink-0 mt-1"
@@ -79,33 +81,49 @@ export const MessageBubble = memo(function MessageBubble({
         )}
 
         {/* Bubble */}
-        <div
-          className={cn(
-            'rounded-2xl px-4 py-3 max-w-full',
-            isUser
-              ? 'message-bubble-user rounded-br-md'
-              : 'message-bubble-agent glass rounded-bl-md'
-          )}
-        >
-          <MessageContent
-            content={message.content}
-            isStreaming={message.isStreaming}
-            isUser={isUser}
-          />
+        <div className="relative group/msg">
+          <div
+            className={cn(
+              'rounded-2xl px-4 py-3 max-w-full',
+              isUser
+                ? 'message-bubble-user rounded-br-md'
+                : 'message-bubble-agent glass rounded-bl-md'
+            )}
+          >
+            <MessageContent
+              content={message.content}
+              isStreaming={message.isStreaming}
+              isUser={isUser}
+            />
 
-          {/* Attachments */}
-          {message.attachments && message.attachments.length > 0 && (
-            <MessageAttachments attachments={message.attachments} />
+            {/* Attachments */}
+            {message.attachments && message.attachments.length > 0 && (
+              <MessageAttachments attachments={message.attachments} />
+            )}
+          </div>
+
+          {/* Copy message button — appears on hover */}
+          {!message.isStreaming && (
+            <CopyMessageButton content={message.content} isUser={isUser} />
           )}
         </div>
 
-        {/* Timestamp */}
+        {/* Timestamp with full date tooltip */}
         {showTimestamp && (
           <span
             className={cn(
-              'text-[10px] text-tertiary',
+              'text-[10px] text-tertiary cursor-default',
               isUser ? 'mr-1 text-right' : 'ml-1'
             )}
+            title={new Date(message.timestamp).toLocaleString('pt-BR', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+            })}
           >
             {formatRelativeTime(message.timestamp)}
           </span>
@@ -132,6 +150,74 @@ interface MessageContentProps {
   isUser?: boolean;
 }
 
+// Copy message button — hover overlay
+function CopyMessageButton({ content, isUser }: { content: string; isUser: boolean }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(async () => {
+    await navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [content]);
+
+  return (
+    <button
+      onClick={handleCopy}
+      className={cn(
+        'absolute -bottom-1 opacity-0 group-hover/msg:opacity-100 transition-all duration-200',
+        'flex items-center gap-1 px-2 py-1 rounded-md text-[10px]',
+        'bg-white/10 hover:bg-white/20 text-white/60 hover:text-white/90 backdrop-blur-sm',
+        'border border-white/10',
+        copied && 'bg-green-500/15 text-green-400 border-green-500/20',
+        isUser ? 'right-0' : 'left-0'
+      )}
+      title="Copiar mensagem"
+    >
+      {copied ? (
+        <>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Copiado
+        </>
+      ) : (
+        <>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+          </svg>
+          Copiar
+        </>
+      )}
+    </button>
+  );
+}
+
+// Checklist progress bar
+function ChecklistProgress({ content }: { content: string }) {
+  const checked = (content.match(/- \[x\]/gi) || []).length;
+  const unchecked = (content.match(/- \[ \]/g) || []).length;
+  const total = checked + unchecked;
+
+  if (total === 0) return null;
+
+  const pct = Math.round((checked / total) * 100);
+
+  return (
+    <div className="flex items-center gap-2 mb-3">
+      <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-[#D1FF00] rounded-full transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <span className="text-[10px] text-white/50 font-mono whitespace-nowrap">
+        {checked}/{total}
+      </span>
+    </div>
+  );
+}
+
 function MessageContent({ content, isStreaming, isUser }: MessageContentProps) {
   if (!content && isStreaming) {
     return <TypingIndicator />;
@@ -153,6 +239,7 @@ function MessageContent({ content, isStreaming, isUser }: MessageContentProps) {
   // For agent messages or user messages with markdown, use full Markdown rendering (lazy loaded)
   return (
     <div className="relative">
+      <ChecklistProgress content={content} />
       <Suspense fallback={<MarkdownFallback content={content} />}>
         <MarkdownRenderer content={content} />
       </Suspense>
@@ -168,7 +255,9 @@ interface MessageAttachmentsProps {
 
 function MessageAttachments({ attachments }: MessageAttachmentsProps) {
   const images = attachments.filter(a => a.type === 'image');
-  const files = attachments.filter(a => a.type !== 'image');
+  const videos = attachments.filter(a => a.type === 'video');
+  const audios = attachments.filter(a => a.type === 'audio');
+  const files = attachments.filter(a => a.type !== 'image' && a.type !== 'video' && a.type !== 'audio');
 
   return (
     <div className="mt-3 space-y-2">
@@ -185,6 +274,16 @@ function MessageAttachments({ attachments }: MessageAttachmentsProps) {
           ))}
         </div>
       )}
+
+      {/* Video players */}
+      {videos.map((vid) => (
+        <VideoAttachment key={vid.id} attachment={vid} />
+      ))}
+
+      {/* Audio players */}
+      {audios.map((aud) => (
+        <AudioAttachment key={aud.id} attachment={aud} />
+      ))}
 
       {/* File list */}
       {files.length > 0 && (
@@ -295,6 +394,68 @@ function ImageAttachment({ attachment }: { attachment: MessageAttachment }) {
   );
 }
 
+// Video attachment with player
+function VideoAttachment({ attachment }: { attachment: MessageAttachment }) {
+  const videoUrl = attachment.url || (attachment.data ? `data:${attachment.mimeType};base64,${attachment.data}` : '');
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="rounded-lg overflow-hidden border border-white/10"
+    >
+      <video
+        src={videoUrl}
+        controls
+        preload="metadata"
+        poster={attachment.thumbnailUrl}
+        className="w-full max-h-[400px]"
+        style={{ background: 'rgba(0,0,0,0.3)' }}
+      >
+        <track kind="captions" />
+        Seu navegador não suporta o elemento de vídeo.
+      </video>
+      <div className="flex items-center justify-between px-3 py-1.5 bg-white/[0.03]">
+        <span className="text-xs text-tertiary truncate">{attachment.name}</span>
+        <span className="text-[10px] text-tertiary">{formatFileSize(attachment.size)}</span>
+      </div>
+    </motion.div>
+  );
+}
+
+// Audio attachment with player
+function AudioAttachment({ attachment }: { attachment: MessageAttachment }) {
+  const audioUrl = attachment.url || (attachment.data ? `data:${attachment.mimeType};base64,${attachment.data}` : '');
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10"
+    >
+      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-purple-500/15 flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-400">
+          <path d="M9 18V5l12-2v13" />
+          <circle cx="6" cy="18" r="3" />
+          <circle cx="18" cy="16" r="3" />
+        </svg>
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs text-secondary mb-1 truncate">{attachment.name}</p>
+        <audio src={audioUrl} controls preload="metadata" className="w-full h-8" style={{ colorScheme: 'dark' }}>
+          Seu navegador não suporta o elemento de áudio.
+        </audio>
+      </div>
+    </motion.div>
+  );
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 // File attachment with download
 function FileAttachment({ attachment }: { attachment: MessageAttachment }) {
   const fileUrl = attachment.url || (attachment.data ? `data:${attachment.mimeType};base64,${attachment.data}` : '');
@@ -306,12 +467,6 @@ function FileAttachment({ attachment }: { attachment: MessageAttachment }) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
-
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   const getFileIcon = () => {

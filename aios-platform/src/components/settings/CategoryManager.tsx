@@ -141,7 +141,7 @@ export function CategoryManager() {
       squadType: newCategory.squadType,
     });
 
-    setNewCategory({ name: '', icon: '\u{1F4C2}', squadType: 'orchestrator' });
+    setNewCategory({ name: '', icon: 'FolderOpen', squadType: 'orchestrator' });
     setShowNewCategory(false);
     success('Categoria criada', `Categoria "${newCategory.name}" foi criada`);
   };
@@ -306,7 +306,7 @@ export function CategoryManager() {
                 }) as unknown as (event: MouseEvent | TouchEvent | PointerEvent) => void}
                 className="px-3 py-1.5 rounded-lg border border-white/20 bg-white/5 text-sm text-primary cursor-grab hover:border-white/40 transition-colors"
               >
-                {squad.icon} {squad.name}
+                {(() => { const Icon = getIconComponent(squad.icon || 'Package'); return <Icon size={14} className="inline-block mr-1" />; })()} {squad.name}
               </motion.div>
             ))}
           </div>
@@ -481,7 +481,7 @@ function CategoryItem({
                       <div className="text-white/30">
                         <GripIcon />
                       </div>
-                      <span className="text-base">{squad.icon}</span>
+                      <span className="text-base">{(() => { const Icon = getIconComponent(squad.icon || 'Package'); return <Icon size={16} />; })()}</span>
                       <span className="text-sm text-primary flex-1">{squad.name}</span>
                       <span className="text-xs text-tertiary">{squad.agentCount} agents</span>
                     </Reorder.Item>

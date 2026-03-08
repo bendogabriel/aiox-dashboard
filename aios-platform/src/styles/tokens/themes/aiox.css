@@ -82,15 +82,15 @@ html[data-theme="aiox"] {
   --color-selection-bg: rgba(209, 255, 0, 0.25);
   --color-selection-text: #ffffed;
 
-  /* ----- Status (muted for cockpit — only error stays vivid) ----- */
-  --color-status-success: #858585;
-  --color-status-warning: #858585;
+  /* ----- Status (brandbook palette) ----- */
+  --color-status-success: #4ADE80;
+  --color-status-warning: #f59e0b;
   --color-status-error: #EF4444;
-  --color-status-info: #858585;
-  --color-status-success-muted: #6D6D6D;
-  --color-status-warning-muted: #6D6D6D;
-  --color-status-error-muted: #EF4444;
-  --color-status-info-muted: #6D6D6D;
+  --color-status-info: #0099FF;
+  --color-status-success-muted: rgba(74, 222, 128, 0.60);
+  --color-status-warning-muted: rgba(245, 158, 11, 0.60);
+  --color-status-error-muted: rgba(239, 68, 68, 0.60);
+  --color-status-info-muted: rgba(0, 153, 255, 0.60);
 
   /* ----- Glass Backgrounds (solid dark, minimal translucency) ----- */
   --glass-background-panel: rgba(15, 15, 17, 0.92);
@@ -182,88 +182,88 @@ html[data-theme="aiox"] {
   --badge-count-bg: #D1FF00;
   --badge-count-text: #050505;
 
-  /* ----- Component: Toast (muted — error vivid only) ----- */
+  /* ----- Component: Toast (brandbook palette) ----- */
   --toast-success-bg: rgba(209, 255, 0, 0.06);
   --toast-success-border: rgba(209, 255, 0, 0.15);
   --toast-success-text: #D1FF00;
   --toast-error-bg: rgba(239, 68, 68, 0.10);
   --toast-error-border: rgba(239, 68, 68, 0.25);
   --toast-error-text: #EF4444;
-  --toast-warning-bg: rgba(133, 133, 133, 0.08);
-  --toast-warning-border: rgba(133, 133, 133, 0.20);
-  --toast-warning-text: #9c9c9c;
-  --toast-info-bg: rgba(133, 133, 133, 0.08);
-  --toast-info-border: rgba(133, 133, 133, 0.20);
-  --toast-info-text: #9c9c9c;
+  --toast-warning-bg: rgba(245, 158, 11, 0.08);
+  --toast-warning-border: rgba(245, 158, 11, 0.20);
+  --toast-warning-text: #f59e0b;
+  --toast-info-bg: rgba(0, 153, 255, 0.08);
+  --toast-info-border: rgba(0, 153, 255, 0.20);
+  --toast-info-text: #0099FF;
 
-  /* ----- Component: Status dot (muted — only error stays vivid) ----- */
-  --status-dot-idle: #4a4a4a;
+  /* ----- Component: Status dot (brandbook palette) ----- */
+  --status-dot-idle: #3D3D3D;
   --status-dot-working: #D1FF00;
-  --status-dot-waiting: #858585;
+  --status-dot-waiting: #f59e0b;
   --status-dot-error: #EF4444;
-  --status-dot-success: #D1FF00;
-  --status-dot-offline: #4a4a4a;
+  --status-dot-success: #4ADE80;
+  --status-dot-offline: #3D3D3D;
   --status-dot-working-glow: rgba(209, 255, 0, 0.40);
-  --status-dot-waiting-glow: rgba(133, 133, 133, 0.30);
+  --status-dot-waiting-glow: rgba(245, 158, 11, 0.40);
   --status-dot-error-glow: rgba(239, 68, 68, 0.50);
-  --status-dot-success-glow: rgba(209, 255, 0, 0.40);
+  --status-dot-success-glow: rgba(74, 222, 128, 0.40);
 
-  /* ----- Squads: ALL neutralized (lime accent, no vivid colors) ----- */
-  --squad-copywriting-default: #858585;
-  --squad-copywriting-muted: #6D6D6D;
-  --squad-copywriting-end: #6D6D6D;
-  --squad-copywriting-gradient: linear-gradient(90deg, #858585, #6D6D6D);
-  --squad-design-default: #858585;
-  --squad-design-muted: #6D6D6D;
-  --squad-design-end: #6D6D6D;
-  --squad-design-gradient: linear-gradient(90deg, #858585, #6D6D6D);
-  --squad-creator-default: #858585;
-  --squad-creator-muted: #6D6D6D;
-  --squad-creator-end: #6D6D6D;
-  --squad-creator-gradient: linear-gradient(90deg, #858585, #6D6D6D);
-  --squad-orchestrator-default: #858585;
-  --squad-orchestrator-muted: #6D6D6D;
-  --squad-orchestrator-end: #6D6D6D;
-  --squad-orchestrator-gradient: linear-gradient(90deg, #858585, #6D6D6D);
-  --squad-content-default: #858585;
-  --squad-content-muted: #6D6D6D;
-  --squad-content-end: #6D6D6D;
-  --squad-content-gradient: linear-gradient(90deg, #858585, #6D6D6D);
-  --squad-development-default: #858585;
-  --squad-development-muted: #6D6D6D;
-  --squad-development-end: #6D6D6D;
-  --squad-development-gradient: linear-gradient(90deg, #858585, #6D6D6D);
-  --squad-engineering-default: #858585;
-  --squad-engineering-muted: #6D6D6D;
-  --squad-engineering-end: #6D6D6D;
-  --squad-engineering-gradient: linear-gradient(90deg, #858585, #6D6D6D);
-  --squad-analytics-default: #858585;
-  --squad-analytics-muted: #6D6D6D;
-  --squad-analytics-end: #6D6D6D;
-  --squad-analytics-gradient: linear-gradient(90deg, #858585, #6D6D6D);
-  --squad-marketing-default: #858585;
-  --squad-marketing-muted: #6D6D6D;
-  --squad-marketing-end: #6D6D6D;
-  --squad-marketing-gradient: linear-gradient(90deg, #858585, #6D6D6D);
-  --squad-advisory-default: #858585;
-  --squad-advisory-muted: #6D6D6D;
-  --squad-advisory-end: #6D6D6D;
-  --squad-advisory-gradient: linear-gradient(90deg, #858585, #6D6D6D);
-  --squad-default-default: #6D6D6D;
-  --squad-default-muted: #4a4a4a;
-  --squad-default-end: #4a4a4a;
-  --squad-default-gradient: linear-gradient(90deg, #6D6D6D, #4a4a4a);
+  /* ----- Squads: Brandbook palette (lime / blue / flare / gray families) ----- */
+  --squad-orchestrator-default: #D1FF00;
+  --squad-orchestrator-muted: #a8cc00;
+  --squad-orchestrator-end: #a8cc00;
+  --squad-orchestrator-gradient: linear-gradient(90deg, #D1FF00, #a8cc00);
+  --squad-design-default: #a8cc00;
+  --squad-design-muted: #859E00;
+  --squad-design-end: #859E00;
+  --squad-design-gradient: linear-gradient(90deg, #a8cc00, #859E00);
+  --squad-development-default: #0099FF;
+  --squad-development-muted: #0077CC;
+  --squad-development-end: #0077CC;
+  --squad-development-gradient: linear-gradient(90deg, #0099FF, #0077CC);
+  --squad-engineering-default: #0077CC;
+  --squad-engineering-muted: #005EA6;
+  --squad-engineering-end: #005EA6;
+  --squad-engineering-gradient: linear-gradient(90deg, #0077CC, #005EA6);
+  --squad-analytics-default: #3DB2FF;
+  --squad-analytics-muted: #2D8FCC;
+  --squad-analytics-end: #2D8FCC;
+  --squad-analytics-gradient: linear-gradient(90deg, #3DB2FF, #2D8FCC);
+  --squad-content-default: #ED4609;
+  --squad-content-muted: #BD3807;
+  --squad-content-end: #BD3807;
+  --squad-content-gradient: linear-gradient(90deg, #ED4609, #BD3807);
+  --squad-creator-default: #F06838;
+  --squad-creator-muted: #C0532D;
+  --squad-creator-end: #C0532D;
+  --squad-creator-gradient: linear-gradient(90deg, #F06838, #C0532D);
+  --squad-marketing-default: #C04D26;
+  --squad-marketing-muted: #9A3B1E;
+  --squad-marketing-end: #9A3B1E;
+  --squad-marketing-gradient: linear-gradient(90deg, #C04D26, #9A3B1E);
+  --squad-copywriting-default: #BDBDBD;
+  --squad-copywriting-muted: #999999;
+  --squad-copywriting-end: #999999;
+  --squad-copywriting-gradient: linear-gradient(90deg, #BDBDBD, #999999);
+  --squad-advisory-default: #999999;
+  --squad-advisory-muted: #696969;
+  --squad-advisory-end: #696969;
+  --squad-advisory-gradient: linear-gradient(90deg, #999999, #696969);
+  --squad-default-default: #696969;
+  --squad-default-muted: #3D3D3D;
+  --squad-default-end: #3D3D3D;
+  --squad-default-gradient: linear-gradient(90deg, #696969, #3D3D3D);
 
-  /* ----- Tiers: neutralized ----- */
-  --tier-0-default: #858585;
-  --tier-0-muted: #6D6D6D;
-  --tier-0-end: #6D6D6D;
-  --tier-1-default: #858585;
-  --tier-1-muted: #6D6D6D;
-  --tier-1-end: #6D6D6D;
-  --tier-2-default: #858585;
-  --tier-2-muted: #6D6D6D;
-  --tier-2-end: #6D6D6D;
+  /* ----- Tiers: Brandbook palette (lime / blue / gray hierarchy) ----- */
+  --tier-0-default: #D1FF00;
+  --tier-0-muted: #a8cc00;
+  --tier-0-end: #a8cc00;
+  --tier-1-default: #0099FF;
+  --tier-1-muted: #0077CC;
+  --tier-1-end: #0077CC;
+  --tier-2-default: #BDBDBD;
+  --tier-2-muted: #999999;
+  --tier-2-end: #999999;
 
   /* ----- Scrollbar ----- */
   scrollbar-color: rgba(209, 255, 0, 0.16) transparent;
@@ -289,23 +289,23 @@ html[data-theme="aiox"] {
   --chart-text: rgba(209, 255, 0, 0.60);
   --chart-text-dim: rgba(209, 255, 0, 0.40);
 
-  /* ----- Kanban column indicators (neutralized) ----- */
-  --kanban-backlog: #858585;
+  /* ----- Kanban column indicators (brandbook palette) ----- */
+  --kanban-backlog: #696969;
   --kanban-in-progress: #D1FF00;
-  --kanban-ai-review: #858585;
-  --kanban-human-review: #858585;
-  --kanban-pr-created: #858585;
+  --kanban-ai-review: #0099FF;
+  --kanban-human-review: #BDBDBD;
+  --kanban-pr-created: #999999;
   --kanban-done: rgba(209, 255, 0, 0.60);
   --kanban-error: #EF4444;
   --kanban-drop-ring: rgba(209, 255, 0, 0.30);
   --kanban-drop-bg: rgba(209, 255, 0, 0.05);
 
-  /* ----- Kanban story card badges (neutralized monochrome) ----- */
+  /* ----- Kanban story card badges ----- */
   --kanban-badge-bg: rgba(156, 156, 156, 0.10);
   --kanban-badge-text: #9c9c9c;
 
-  /* ----- Kanban priority dots (neutralized — only critical stays red) ----- */
-  --kanban-priority-bg: #6D6D6D;
+  /* ----- Kanban priority dots ----- */
+  --kanban-priority-bg: #C49A3C;
 
   /* ----- Terminal (lime prompt, cockpit aesthetic) ----- */
   --terminal-prompt: #D1FF00;
@@ -317,41 +317,41 @@ html[data-theme="aiox"] {
   --terminal-status-active: #D1FF00;
   --terminal-activity-dot: #D1FF00;
   --terminal-activity-bg: rgba(209, 255, 0, 0.80);
-  --terminal-ansi-yellow: #9c9c9c;
-  --terminal-ansi-blue: #9c9c9c;
-  --terminal-ansi-purple: #9c9c9c;
-  --terminal-ansi-cyan: #9c9c9c;
-  --terminal-ansi-dim: #6D6D6D;
+  --terminal-ansi-yellow: #f59e0b;
+  --terminal-ansi-blue: #0099FF;
+  --terminal-ansi-purple: #BDBDBD;
+  --terminal-ansi-cyan: #0099FF;
+  --terminal-ansi-dim: #696969;
 
-  /* ----- World map domain colors (monochrome cockpit) ----- */
-  --world-content-tile: #858585;
-  --world-content-border: #6D6D6D;
+  /* ----- World map domain colors (brandbook palette) ----- */
+  --world-content-tile: #ED4609;
+  --world-content-border: #BD3807;
   --world-content-agent: #D1FF00;
   --world-content-floor: #0F0F11;
-  --world-sales-tile: #858585;
-  --world-sales-border: #6D6D6D;
+  --world-sales-tile: #BDBDBD;
+  --world-sales-border: #999999;
   --world-sales-agent: #D1FF00;
   --world-sales-floor: #0F0F11;
   --world-dev-tile: #D1FF00;
   --world-dev-border: #a8cc00;
   --world-dev-agent: #D1FF00;
   --world-dev-floor: #0F0F11;
-  --world-design-tile: #858585;
-  --world-design-border: #6D6D6D;
+  --world-design-tile: #a8cc00;
+  --world-design-border: #859E00;
   --world-design-agent: #D1FF00;
   --world-design-floor: #0F0F11;
-  --world-data-tile: #6D6D6D;
-  --world-data-border: #4a4a4a;
+  --world-data-tile: #0099FF;
+  --world-data-border: #0077CC;
   --world-data-agent: #D1FF00;
   --world-data-floor: #0F0F11;
-  --world-ops-tile: #6D6D6D;
-  --world-ops-border: #4a4a4a;
+  --world-ops-tile: #0077CC;
+  --world-ops-border: #005EA6;
   --world-ops-agent: #D1FF00;
   --world-ops-floor: #0F0F11;
 
-  /* ----- World workflow status (neutralized) ----- */
+  /* ----- World workflow status (brandbook) ----- */
   --world-status-active: #D1FF00;
-  --world-status-completed: #858585;
+  --world-status-completed: #4ADE80;
   --world-status-failed: #EF4444;
 }
 
@@ -532,193 +532,25 @@ html[data-theme="aiox"] .focus\:ring-blue-500:focus {
 }
 
 /* ============================================
-   TIER 5 — TOTAL NEUTRAL OVERRIDE
-   Neutralize ALL hardcoded Tailwind color utilities.
-   AIOX Cockpit: lime accent only, everything else gray/muted.
-   Palette:
-     Accent:   #D1FF00 (lime — the ONLY pop of color)
-     Bright:   #ffffed / #F4F4E8 (cream text)
-     Muted:    #858585 / #9c9c9c (secondary text)
-     Dim:      #6D6D6D / #4a4a4a (tertiary/disabled)
-     Surface:  #1C1E19 / #0F0F11 (elevated/base)
-     Border:   #2a2a2c / rgba(156,156,156,0.12)
+   TIER 5 — Selective AIOX overrides
+   Only override accent/interactive elements to lime.
+   Functional squad/status/tier colors flow through
+   Tier 1 CSS variables — NOT neutralized here.
    ============================================ */
 
-/* ---- TEXT: all vivid color classes → muted gray ---- */
-html[data-theme="aiox"] [class*="text-blue-"],
-html[data-theme="aiox"] [class*="text-purple-"],
-html[data-theme="aiox"] [class*="text-violet-"],
-html[data-theme="aiox"] [class*="text-pink-"],
-html[data-theme="aiox"] [class*="text-rose-"],
-html[data-theme="aiox"] [class*="text-fuchsia-"],
-html[data-theme="aiox"] [class*="text-cyan-"],
-html[data-theme="aiox"] [class*="text-sky-"],
-html[data-theme="aiox"] [class*="text-indigo-"],
-html[data-theme="aiox"] [class*="text-teal-"],
-html[data-theme="aiox"] [class*="text-emerald-"] {
-  color: #9c9c9c !important;
-}
-html[data-theme="aiox"] [class*="text-orange-"],
-html[data-theme="aiox"] [class*="text-amber-"],
-html[data-theme="aiox"] [class*="text-yellow-"] {
-  color: #9c9c9c !important;
-}
-html[data-theme="aiox"] [class*="text-red-"] {
-  color: #EF4444 !important;  /* keep error red */
-}
-html[data-theme="aiox"] [class*="text-green-"] {
-  color: #9c9c9c !important;
-}
-html[data-theme="aiox"] [class*="text-lime-"] {
-  color: #D1FF00 !important;  /* preserve lime */
+/* ---- SVG icon color enforcement ---- */
+html[data-theme="aiox"] svg { color: inherit; }
+
+/* ---- Spinner / loader overrides ---- */
+html[data-theme="aiox"] [class*="animate-spin"] {
+  border-color: rgba(209, 255, 0, 0.15) !important;
+  border-top-color: #D1FF00 !important;
 }
 
-/* ---- BACKGROUND: all vivid bg classes → neutral surfaces ---- */
-/* NOTE: only override background-color, NOT color. Text color is
-   handled by the text-* overrides above to avoid conflicting with
-   text-white or other text classes on the same element. */
-html[data-theme="aiox"] [class*="bg-blue-"],
-html[data-theme="aiox"] [class*="bg-purple-"],
-html[data-theme="aiox"] [class*="bg-violet-"],
-html[data-theme="aiox"] [class*="bg-pink-"],
-html[data-theme="aiox"] [class*="bg-rose-"],
-html[data-theme="aiox"] [class*="bg-fuchsia-"],
-html[data-theme="aiox"] [class*="bg-cyan-"],
-html[data-theme="aiox"] [class*="bg-sky-"],
-html[data-theme="aiox"] [class*="bg-indigo-"],
-html[data-theme="aiox"] [class*="bg-teal-"],
-html[data-theme="aiox"] [class*="bg-emerald-"] {
-  background-color: rgba(156, 156, 156, 0.08) !important;
-}
-html[data-theme="aiox"] [class*="bg-orange-"],
-html[data-theme="aiox"] [class*="bg-amber-"],
-html[data-theme="aiox"] [class*="bg-yellow-"] {
-  background-color: rgba(156, 156, 156, 0.08) !important;
-}
-html[data-theme="aiox"] [class*="bg-red-"] {
-  background-color: rgba(239, 68, 68, 0.10) !important;
-}
-html[data-theme="aiox"] [class*="bg-green-"] {
-  background-color: rgba(156, 156, 156, 0.08) !important;
-}
-html[data-theme="aiox"] [class*="bg-lime-"] {
-  background-color: rgba(209, 255, 0, 0.10) !important;
-}
-
-/* ---- BORDER: all vivid border colors → neutral ---- */
-html[data-theme="aiox"] [class*="border-blue-"],
-html[data-theme="aiox"] [class*="border-purple-"],
-html[data-theme="aiox"] [class*="border-violet-"],
-html[data-theme="aiox"] [class*="border-pink-"],
-html[data-theme="aiox"] [class*="border-rose-"],
-html[data-theme="aiox"] [class*="border-fuchsia-"],
-html[data-theme="aiox"] [class*="border-cyan-"],
-html[data-theme="aiox"] [class*="border-sky-"],
-html[data-theme="aiox"] [class*="border-indigo-"],
-html[data-theme="aiox"] [class*="border-teal-"],
-html[data-theme="aiox"] [class*="border-emerald-"],
-html[data-theme="aiox"] [class*="border-orange-"],
-html[data-theme="aiox"] [class*="border-amber-"],
-html[data-theme="aiox"] [class*="border-yellow-"],
-html[data-theme="aiox"] [class*="border-red-"],
-html[data-theme="aiox"] [class*="border-green-"] {
-  border-color: #2a2a2c !important;
-}
-
-/* ---- BORDER-L (KPI card left accent borders) → lime ---- */
-html[data-theme="aiox"] [class*="border-l-blue-"],
-html[data-theme="aiox"] [class*="border-l-purple-"],
-html[data-theme="aiox"] [class*="border-l-cyan-"],
-html[data-theme="aiox"] [class*="border-l-red-"],
-html[data-theme="aiox"] [class*="border-l-green-"],
-html[data-theme="aiox"] [class*="border-l-orange-"],
-html[data-theme="aiox"] [class*="border-l-yellow-"],
-html[data-theme="aiox"] [class*="border-l-pink-"],
-html[data-theme="aiox"] [class*="border-l-indigo-"],
-html[data-theme="aiox"] [class*="border-l-teal-"],
-html[data-theme="aiox"] [class*="border-l-emerald-"],
-html[data-theme="aiox"] [class*="border-l-amber-"] {
-  border-left-color: rgba(209, 255, 0, 0.30) !important;
-}
-
-html[data-theme="aiox"] [class*="border-b-blue-"],
-html[data-theme="aiox"] [class*="border-b-purple-"],
-html[data-theme="aiox"] [class*="border-b-cyan-"],
-html[data-theme="aiox"] [class*="border-b-green-"],
-html[data-theme="aiox"] [class*="border-b-orange-"] {
-  border-bottom-color: rgba(209, 255, 0, 0.20) !important;
-}
-
-html[data-theme="aiox"] [class*="border-t-blue-"],
-html[data-theme="aiox"] [class*="border-t-purple-"],
-html[data-theme="aiox"] [class*="border-t-cyan-"] {
-  border-top-color: transparent !important;
-}
-
-/* ---- GRADIENT: all vivid gradients → neutral dark ---- */
-html[data-theme="aiox"] [class*="from-blue-"],
-html[data-theme="aiox"] [class*="from-purple-"],
-html[data-theme="aiox"] [class*="from-violet-"],
-html[data-theme="aiox"] [class*="from-pink-"],
-html[data-theme="aiox"] [class*="from-rose-"],
-html[data-theme="aiox"] [class*="from-fuchsia-"],
-html[data-theme="aiox"] [class*="from-cyan-"],
-html[data-theme="aiox"] [class*="from-sky-"],
-html[data-theme="aiox"] [class*="from-indigo-"],
-html[data-theme="aiox"] [class*="from-teal-"],
-html[data-theme="aiox"] [class*="from-emerald-"],
-html[data-theme="aiox"] [class*="from-orange-"],
-html[data-theme="aiox"] [class*="from-amber-"],
-html[data-theme="aiox"] [class*="from-yellow-"],
-html[data-theme="aiox"] [class*="from-red-"],
-html[data-theme="aiox"] [class*="from-green-"] {
-  --tw-gradient-from: #1C1E19 !important;
-}
-
-html[data-theme="aiox"] [class*="via-blue-"],
-html[data-theme="aiox"] [class*="via-purple-"],
-html[data-theme="aiox"] [class*="via-cyan-"],
-html[data-theme="aiox"] [class*="via-green-"],
-html[data-theme="aiox"] [class*="via-orange-"],
-html[data-theme="aiox"] [class*="via-yellow-"],
-html[data-theme="aiox"] [class*="via-red-"],
-html[data-theme="aiox"] [class*="via-pink-"],
-html[data-theme="aiox"] [class*="via-indigo-"],
-html[data-theme="aiox"] [class*="via-sky-"],
-html[data-theme="aiox"] [class*="via-amber-"],
-html[data-theme="aiox"] [class*="via-emerald-"],
-html[data-theme="aiox"] [class*="via-teal-"] {
-  --tw-gradient-via: #2a2a2c !important;
-}
-
-html[data-theme="aiox"] [class*="to-blue-"],
-html[data-theme="aiox"] [class*="to-purple-"],
-html[data-theme="aiox"] [class*="to-violet-"],
-html[data-theme="aiox"] [class*="to-pink-"],
-html[data-theme="aiox"] [class*="to-rose-"],
-html[data-theme="aiox"] [class*="to-fuchsia-"],
-html[data-theme="aiox"] [class*="to-cyan-"],
-html[data-theme="aiox"] [class*="to-sky-"],
-html[data-theme="aiox"] [class*="to-indigo-"],
-html[data-theme="aiox"] [class*="to-emerald-"],
-html[data-theme="aiox"] [class*="to-lime-"],
-html[data-theme="aiox"] [class*="to-amber-"],
-html[data-theme="aiox"] [class*="to-orange-"],
-html[data-theme="aiox"] [class*="to-yellow-"],
-html[data-theme="aiox"] [class*="to-red-"],
-html[data-theme="aiox"] [class*="to-green-"] {
-  --tw-gradient-to: #2a2a2c !important;
-}
-
-/* ---- RING / FOCUS / ACCENT ---- */
+/* ---- RING / FOCUS / ACCENT → lime ---- */
 html[data-theme="aiox"] [class*="ring-blue-"],
 html[data-theme="aiox"] [class*="ring-purple-"],
 html[data-theme="aiox"] [class*="ring-cyan-"],
-html[data-theme="aiox"] [class*="ring-red-"],
-html[data-theme="aiox"] [class*="ring-green-"],
-html[data-theme="aiox"] [class*="ring-orange-"],
-html[data-theme="aiox"] [class*="ring-yellow-"],
-html[data-theme="aiox"] [class*="ring-pink-"],
 html[data-theme="aiox"] [class*="ring-indigo-"] {
   --tw-ring-color: rgba(209, 255, 0, 0.20) !important;
 }
@@ -738,102 +570,7 @@ html[data-theme="aiox"] [class*="accent-blue"],
 html[data-theme="aiox"] [class*="accent-purple"],
 html[data-theme="aiox"] [class*="accent-cyan"] { accent-color: #D1FF00 !important; }
 
-/* ---- SHADOW: colored shadows → neutral ---- */
-html[data-theme="aiox"] [class*="shadow-blue-"],
-html[data-theme="aiox"] [class*="shadow-purple-"],
-html[data-theme="aiox"] [class*="shadow-cyan-"],
-html[data-theme="aiox"] [class*="shadow-red-"],
-html[data-theme="aiox"] [class*="shadow-green-"],
-html[data-theme="aiox"] [class*="shadow-orange-"] {
-  --tw-shadow-color: rgba(209, 255, 0, 0.08) !important;
-}
-
-/* ---- DECORATION / DIVIDE ---- */
-html[data-theme="aiox"] [class*="divide-blue-"] > * + * { border-color: #2a2a2c !important; }
-html[data-theme="aiox"] [class*="decoration-blue-"] { text-decoration-color: rgba(209, 255, 0, 0.30) !important; }
-
-/* ---- SVG icon color enforcement ---- */
-html[data-theme="aiox"] svg { color: inherit; }
-
-/* ---- Spinner / loader overrides ---- */
-html[data-theme="aiox"] [class*="animate-spin"] {
-  border-color: rgba(209, 255, 0, 0.15) !important;
-  border-top-color: #D1FF00 !important;
-}
-
-/* ============================================
-   TIER 5b — Avatar gradient overrides
-   Force all avatar bg-gradient circles to neutral
-   ============================================ */
-html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-orange-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-purple-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-cyan-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-blue-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-green-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-amber-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-red-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-pink-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-br"][class*="from-indigo-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-orange-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-purple-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-cyan-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-blue-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-green-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-red-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-yellow-"] {
-  background: linear-gradient(135deg, #1C1E19, #2a2a2c) !important;
-}
-
-/* ============================================
-   TIER 5c — Progress bars & fills → lime
-   ============================================ */
-html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-blue-"][class*="to-purple-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-blue-"][class*="via-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-orange-"][class*="to-"],
-html[data-theme="aiox"] [class*="bg-gradient-to-r"][class*="from-green-"][class*="to-"] {
-  background: linear-gradient(90deg, rgba(209, 255, 0, 0.60), rgba(209, 255, 0, 0.30)) !important;
-}
-
-/* Progress bar fills (h-full bars) */
-html[data-theme="aiox"] [class*="h-full"][class*="bg-gradient-to-r"],
-html[data-theme="aiox"] [class*="h-full"][class*="bg-blue-"],
-html[data-theme="aiox"] [class*="h-full"][class*="bg-green-"],
-html[data-theme="aiox"] [class*="h-full"][class*="bg-orange-"],
-html[data-theme="aiox"] [class*="h-full"][class*="bg-purple-"],
-html[data-theme="aiox"] [class*="h-full"][class*="bg-cyan-"],
-html[data-theme="aiox"] [class*="h-full"][class*="bg-yellow-"] {
-  background: linear-gradient(90deg, #D1FF00, rgba(209, 255, 0, 0.50)) !important;
-}
-
-/* ============================================
-   TIER 5d — Small colored dots & status dots
-   ============================================ */
-html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-gradient-to-r"],
-html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-blue-"],
-html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-purple-"],
-html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-cyan-"],
-html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-orange-"],
-html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-yellow-"],
-html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-pink-"] {
-  background: #858585 !important;
-}
-/* Keep functional status dots */
-html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-green-"] {
-  background: #4ADE80 !important;
-}
-html[data-theme="aiox"] span[class*="rounded-full"][class*="bg-red-"] {
-  background: #EF4444 !important;
-}
-
-/* Notification badges */
-html[data-theme="aiox"] span[class*="bg-red-500"][class*="rounded-full"] {
-  background: rgba(239, 68, 68, 0.15) !important;
-  color: #EF4444 !important;
-}
-
-/* ============================================
-   TIER 5e — Tab & indicator overrides
-   ============================================ */
+/* ---- Tab & indicator underlines → lime ---- */
 html[data-theme="aiox"] [class*="h-0.5"][class*="bg-blue-"],
 html[data-theme="aiox"] [class*="h-0.5"][class*="bg-green-"],
 html[data-theme="aiox"] [class*="border-b-2"][class*="border-blue-"] {
@@ -841,148 +578,11 @@ html[data-theme="aiox"] [class*="border-b-2"][class*="border-blue-"] {
   border-color: #D1FF00 !important;
 }
 
-/* ============================================
-   TIER 5f — Solid bg-color-500 overrides
-   ============================================ */
-html[data-theme="aiox"] .bg-blue-500,
-html[data-theme="aiox"] .bg-purple-500,
-html[data-theme="aiox"] .bg-indigo-500 {
-  background-color: rgba(156, 156, 156, 0.10) !important;
-}
-html[data-theme="aiox"] .bg-green-500,
-html[data-theme="aiox"] .bg-emerald-500,
-html[data-theme="aiox"] .bg-teal-500 {
-  background-color: rgba(156, 156, 156, 0.10) !important;
-}
-html[data-theme="aiox"] .bg-red-500,
-html[data-theme="aiox"] .bg-rose-500 {
-  background-color: rgba(239, 68, 68, 0.10) !important;
-}
-html[data-theme="aiox"] .bg-orange-500,
-html[data-theme="aiox"] .bg-amber-500,
-html[data-theme="aiox"] .bg-yellow-500 {
-  background-color: rgba(156, 156, 156, 0.10) !important;
-}
-html[data-theme="aiox"] .bg-cyan-500,
-html[data-theme="aiox"] .bg-sky-500 {
-  background-color: rgba(156, 156, 156, 0.10) !important;
-}
-html[data-theme="aiox"] .bg-pink-500,
-html[data-theme="aiox"] .bg-fuchsia-500 {
-  background-color: rgba(156, 156, 156, 0.10) !important;
-}
+/* ---- DECORATION / DIVIDE ---- */
+html[data-theme="aiox"] [class*="divide-blue-"] > * + * { border-color: #2a2a2c !important; }
+html[data-theme="aiox"] [class*="decoration-blue-"] { text-decoration-color: rgba(209, 255, 0, 0.30) !important; }
 
-/* bg-*-400 variants */
-html[data-theme="aiox"] .bg-orange-400,
-html[data-theme="aiox"] .bg-purple-400,
-html[data-theme="aiox"] .bg-cyan-400,
-html[data-theme="aiox"] .bg-blue-400,
-html[data-theme="aiox"] .bg-green-400 {
-  background-color: rgba(156, 156, 156, 0.10) !important;
-}
-
-/* Toggles and switches */
-html[data-theme="aiox"] [class*="checked"][class*="bg-blue-"],
-html[data-theme="aiox"] button[class*="bg-blue-500"] {
-  background-color: #D1FF00 !important;
-  color: #050505 !important;
-}
-
-/* ============================================
-   TIER 5g — Chart / data-viz → desaturate
-   Catches both recharts library and custom SVG charts
-   ============================================ */
-html[data-theme="aiox"] [class*="chart-"],
-html[data-theme="aiox"] [class*="Chart"] canvas,
-html[data-theme="aiox"] [class*="recharts"] {
-  filter: saturate(0.15) brightness(0.9) contrast(1.1);
-}
-
-/* Custom SVG charts — override inline stroke/fill hex colors */
-html[data-theme="aiox"] svg[class*="chart"] line,
-html[data-theme="aiox"] svg[class*="chart"] path,
-html[data-theme="aiox"] svg[class*="chart"] circle {
-  stroke: #D1FF00 !important;
-}
-
-/* SVG elements with inline style colors inside chart containers */
-html[data-theme="aiox"] div[class*="chart"] svg,
-html[data-theme="aiox"] div[class*="Chart"] svg {
-  filter: saturate(0.15) brightness(0.9);
-}
-
-/* Kanban column color indicators (inline style hex) */
-html[data-theme="aiox"] [style*="background-color: #3b82f6"],
-html[data-theme="aiox"] [style*="background-color: #a855f7"],
-html[data-theme="aiox"] [style*="background-color: #f97316"],
-html[data-theme="aiox"] [style*="background-color: #22c55e"],
-html[data-theme="aiox"] [style*="background-color: #10b981"],
-html[data-theme="aiox"] [style*="background-color: #ef4444"],
-html[data-theme="aiox"] [style*="background-color: #6b7280"],
-html[data-theme="aiox"] [style*="backgroundColor"] {
-  filter: saturate(0) brightness(0.6) !important;
-}
-
-/* ============================================
-   TIER 5h — Inline style box-shadow override
-   Catches glow values set via style={{boxShadow:...}}
-   ============================================ */
-html[data-theme="aiox"] [style*="box-shadow"],
-html[data-theme="aiox"] [style*="boxShadow"] {
-  filter: saturate(0.1) brightness(0.85) !important;
-}
-
-/* Exempt elements from filter */
-html[data-theme="aiox"] [style*="box-shadow"] img,
-html[data-theme="aiox"] [style*="box-shadow"] svg,
-html[data-theme="aiox"] [style*="boxShadow"] img,
-html[data-theme="aiox"] [style*="boxShadow"] svg {
-  filter: none !important;
-}
-
-/* ============================================
-   TIER 5i — World/Gather sprites → desaturate
-   ============================================ */
-html[data-theme="aiox"] svg[class*="agent-sprite"],
-html[data-theme="aiox"] [class*="world-"] svg,
-html[data-theme="aiox"] [class*="World"] svg,
-html[data-theme="aiox"] [class*="Gather"] svg,
-html[data-theme="aiox"] [class*="room-"] svg,
-html[data-theme="aiox"] [class*="Room"] svg,
-html[data-theme="aiox"] [class*="sprite"] svg {
-  filter: saturate(0.1) brightness(0.85) !important;
-}
-
-/* ============================================
-   TIER 5j — Workflow node glow overrides
-   All squad type glows → subtle lime
-   ============================================ */
-html[data-theme="aiox"] .workflow-node-glow.copywriting,
-html[data-theme="aiox"] .workflow-node-glow.design,
-html[data-theme="aiox"] .workflow-node-glow.creator,
-html[data-theme="aiox"] .workflow-node-glow.orchestrator,
-html[data-theme="aiox"] .workflow-node-glow.content,
-html[data-theme="aiox"] .workflow-node-glow.engineering,
-html[data-theme="aiox"] .workflow-node-glow.analytics,
-html[data-theme="aiox"] .workflow-node-glow.marketing,
-html[data-theme="aiox"] .workflow-node-glow.advisory {
-  background: radial-gradient(circle, rgba(209, 255, 0, 0.06) 0%, transparent 70%);
-}
-
-/* ============================================
-   TIER 5k — Text on neutralized backgrounds
-   Ensure readability when bg was overridden
-   ============================================ */
-html[data-theme="aiox"] .bg-blue-500 .text-white,
-html[data-theme="aiox"] .bg-red-500 .text-white,
-html[data-theme="aiox"] .bg-green-500 .text-white,
-html[data-theme="aiox"] .bg-purple-500 .text-white {
-  color: #ffffed !important;
-}
-
-/* ============================================
-   TIER 5m — Kanban story card badges (monochrome override)
-   ============================================ */
+/* ---- Kanban badges ---- */
 html[data-theme="aiox"] .kanban-badge {
   background-color: rgba(156, 156, 156, 0.10) !important;
   color: #9c9c9c !important;
@@ -996,11 +596,110 @@ html[data-theme="aiox"] .kanban-badge-bob {
   color: #D1FF00 !important;
 }
 
-/* ---- Priority dots (monochrome — critical stays red) ---- */
+/* ---- Priority dots ---- */
 html[data-theme="aiox"] .kanban-priority-low { --kanban-priority-bg: #4a4a4a; }
 html[data-theme="aiox"] .kanban-priority-medium { --kanban-priority-bg: #858585; }
 html[data-theme="aiox"] .kanban-priority-high { --kanban-priority-bg: #D1FF00; }
 html[data-theme="aiox"] .kanban-priority-critical { --kanban-priority-bg: #EF4444; }
+
+/* ============================================
+   TIER 5b — Tailwind hardcoded color → Brandbook mapping
+   Maps vivid Tailwind utility colors to brandbook equivalents.
+   Only for components that bypass the CSS variable system.
+   ============================================ */
+
+/* ---- TEXT: map Tailwind colors to brandbook palette ---- */
+html[data-theme="aiox"] [class*="text-orange-"] { color: #ED4609 !important; }
+html[data-theme="aiox"] [class*="text-amber-"]  { color: #f59e0b !important; }
+html[data-theme="aiox"] [class*="text-yellow-"] { color: #f59e0b !important; }
+html[data-theme="aiox"] [class*="text-purple-"] { color: #BDBDBD !important; }
+html[data-theme="aiox"] [class*="text-violet-"] { color: #BDBDBD !important; }
+html[data-theme="aiox"] [class*="text-fuchsia-"] { color: #BDBDBD !important; }
+html[data-theme="aiox"] [class*="text-pink-"]   { color: #ED4609 !important; }
+html[data-theme="aiox"] [class*="text-rose-"]   { color: #EF4444 !important; }
+html[data-theme="aiox"] [class*="text-cyan-"]   { color: #0099FF !important; }
+html[data-theme="aiox"] [class*="text-sky-"]    { color: #0099FF !important; }
+html[data-theme="aiox"] [class*="text-blue-"]   { color: #0099FF !important; }
+html[data-theme="aiox"] [class*="text-indigo-"] { color: #0077CC !important; }
+html[data-theme="aiox"] [class*="text-teal-"]   { color: #0099FF !important; }
+html[data-theme="aiox"] [class*="text-emerald-"] { color: #4ADE80 !important; }
+html[data-theme="aiox"] [class*="text-green-"]  { color: #4ADE80 !important; }
+html[data-theme="aiox"] [class*="text-red-"]    { color: #EF4444 !important; }
+html[data-theme="aiox"] [class*="text-lime-"]   { color: #D1FF00 !important; }
+
+/* ---- BACKGROUND: map to brandbook with alpha ---- */
+html[data-theme="aiox"] [class*="bg-orange-"]  { background-color: rgba(237, 70, 9, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-amber-"]   { background-color: rgba(245, 158, 11, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-yellow-"]  { background-color: rgba(245, 158, 11, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-purple-"]  { background-color: rgba(189, 189, 189, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-violet-"]  { background-color: rgba(189, 189, 189, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-fuchsia-"] { background-color: rgba(189, 189, 189, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-pink-"]    { background-color: rgba(237, 70, 9, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-rose-"]    { background-color: rgba(239, 68, 68, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-cyan-"]    { background-color: rgba(0, 153, 255, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-sky-"]     { background-color: rgba(0, 153, 255, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-blue-"]    { background-color: rgba(0, 153, 255, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-indigo-"]  { background-color: rgba(0, 119, 204, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-teal-"]    { background-color: rgba(0, 153, 255, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-emerald-"] { background-color: rgba(74, 222, 128, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-green-"]   { background-color: rgba(74, 222, 128, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-red-"]     { background-color: rgba(239, 68, 68, 0.10) !important; }
+html[data-theme="aiox"] [class*="bg-lime-"]    { background-color: rgba(209, 255, 0, 0.10) !important; }
+
+/* ---- BORDER: map to brandbook ---- */
+html[data-theme="aiox"] [class*="border-orange-"]  { border-color: rgba(237, 70, 9, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-amber-"]   { border-color: rgba(245, 158, 11, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-yellow-"]  { border-color: rgba(245, 158, 11, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-purple-"]  { border-color: rgba(189, 189, 189, 0.20) !important; }
+html[data-theme="aiox"] [class*="border-violet-"]  { border-color: rgba(189, 189, 189, 0.20) !important; }
+html[data-theme="aiox"] [class*="border-pink-"]    { border-color: rgba(237, 70, 9, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-rose-"]    { border-color: rgba(239, 68, 68, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-cyan-"]    { border-color: rgba(0, 153, 255, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-sky-"]     { border-color: rgba(0, 153, 255, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-blue-"]    { border-color: rgba(0, 153, 255, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-indigo-"]  { border-color: rgba(0, 119, 204, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-teal-"]    { border-color: rgba(0, 153, 255, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-emerald-"] { border-color: rgba(74, 222, 128, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-green-"]   { border-color: rgba(74, 222, 128, 0.30) !important; }
+html[data-theme="aiox"] [class*="border-red-"]     { border-color: rgba(239, 68, 68, 0.30) !important; }
+
+/* ---- GRADIENT FROM/TO: map to brandbook ---- */
+html[data-theme="aiox"] [class*="from-orange-"] { --tw-gradient-from: rgba(237, 70, 9, 0.20) !important; }
+html[data-theme="aiox"] [class*="from-amber-"]  { --tw-gradient-from: rgba(245, 158, 11, 0.20) !important; }
+html[data-theme="aiox"] [class*="from-yellow-"] { --tw-gradient-from: rgba(245, 158, 11, 0.20) !important; }
+html[data-theme="aiox"] [class*="from-purple-"] { --tw-gradient-from: rgba(189, 189, 189, 0.15) !important; }
+html[data-theme="aiox"] [class*="from-violet-"] { --tw-gradient-from: rgba(189, 189, 189, 0.15) !important; }
+html[data-theme="aiox"] [class*="from-pink-"]   { --tw-gradient-from: rgba(237, 70, 9, 0.20) !important; }
+html[data-theme="aiox"] [class*="from-rose-"]   { --tw-gradient-from: rgba(239, 68, 68, 0.15) !important; }
+html[data-theme="aiox"] [class*="from-cyan-"]   { --tw-gradient-from: rgba(0, 153, 255, 0.20) !important; }
+html[data-theme="aiox"] [class*="from-sky-"]    { --tw-gradient-from: rgba(0, 153, 255, 0.20) !important; }
+html[data-theme="aiox"] [class*="from-blue-"]   { --tw-gradient-from: rgba(0, 153, 255, 0.20) !important; }
+html[data-theme="aiox"] [class*="from-indigo-"] { --tw-gradient-from: rgba(0, 119, 204, 0.20) !important; }
+html[data-theme="aiox"] [class*="from-teal-"]   { --tw-gradient-from: rgba(0, 153, 255, 0.20) !important; }
+html[data-theme="aiox"] [class*="from-emerald-"] { --tw-gradient-from: rgba(74, 222, 128, 0.15) !important; }
+html[data-theme="aiox"] [class*="from-green-"]  { --tw-gradient-from: rgba(74, 222, 128, 0.15) !important; }
+html[data-theme="aiox"] [class*="from-red-"]    { --tw-gradient-from: rgba(239, 68, 68, 0.15) !important; }
+html[data-theme="aiox"] [class*="to-orange-"]   { --tw-gradient-to: rgba(237, 70, 9, 0.10) !important; }
+html[data-theme="aiox"] [class*="to-amber-"]    { --tw-gradient-to: rgba(245, 158, 11, 0.10) !important; }
+html[data-theme="aiox"] [class*="to-purple-"]   { --tw-gradient-to: rgba(189, 189, 189, 0.08) !important; }
+html[data-theme="aiox"] [class*="to-violet-"]   { --tw-gradient-to: rgba(189, 189, 189, 0.08) !important; }
+html[data-theme="aiox"] [class*="to-pink-"]     { --tw-gradient-to: rgba(237, 70, 9, 0.10) !important; }
+html[data-theme="aiox"] [class*="to-rose-"]     { --tw-gradient-to: rgba(239, 68, 68, 0.08) !important; }
+html[data-theme="aiox"] [class*="to-cyan-"]     { --tw-gradient-to: rgba(0, 153, 255, 0.10) !important; }
+html[data-theme="aiox"] [class*="to-sky-"]      { --tw-gradient-to: rgba(0, 153, 255, 0.10) !important; }
+html[data-theme="aiox"] [class*="to-blue-"]     { --tw-gradient-to: rgba(0, 153, 255, 0.10) !important; }
+html[data-theme="aiox"] [class*="to-indigo-"]   { --tw-gradient-to: rgba(0, 119, 204, 0.10) !important; }
+html[data-theme="aiox"] [class*="to-teal-"]     { --tw-gradient-to: rgba(0, 153, 255, 0.10) !important; }
+html[data-theme="aiox"] [class*="to-emerald-"]  { --tw-gradient-to: rgba(74, 222, 128, 0.08) !important; }
+html[data-theme="aiox"] [class*="to-green-"]    { --tw-gradient-to: rgba(74, 222, 128, 0.08) !important; }
+html[data-theme="aiox"] [class*="to-red-"]      { --tw-gradient-to: rgba(239, 68, 68, 0.08) !important; }
+
+/* ---- Toggles/switches — keep lime ---- */
+html[data-theme="aiox"] [class*="checked"][class*="bg-blue-"],
+html[data-theme="aiox"] button[class*="bg-blue-500"] {
+  background-color: #D1FF00 !important;
+  color: #050505 !important;
+}
 
 /* ============================================
    AIOX — Performance: reduced motion

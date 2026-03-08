@@ -2,7 +2,10 @@ import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { GlassCard, Avatar, Badge } from '../ui';
 import { cn, getTierTheme } from '../../lib/utils';
+import { getIconComponent } from '../../lib/icons';
+import { hasAgentAvatar } from '../../lib/agent-avatars';
 import { useFavoritesStore } from '../../hooks/useFavorites';
+import { useUIStore } from '../../stores/uiStore';
 import type { AgentSummary, AgentTier } from '../../types';
 import { getSquadType as getSquadTypeUtil } from '../../types';
 
@@ -61,12 +64,19 @@ export const AgentCard = memo(function AgentCard({ agent, selected, compact = fa
         )}
       >
         <div className="flex items-center gap-3">
-          {agent.icon ? (
+          {hasAgentAvatar(agent.name) || hasAgentAvatar(agent.id) ? (
+            <Avatar
+              name={agent.name}
+              agentId={agent.id}
+              size="md"
+              squadType={squadType}
+            />
+          ) : agent.icon ? (
             <div className={cn(
-              'h-10 w-10 rounded-xl flex items-center justify-center text-lg',
+              'h-10 w-10 rounded-xl flex items-center justify-center',
               `bg-gradient-to-br ${getTierTheme(normalizedTier).gradient} bg-opacity-20`
             )}>
-              {agent.icon}
+              {(() => { const Icon = getIconComponent(agent.icon); return <Icon size={18} />; })()}
             </div>
           ) : (
             <Avatar
@@ -124,12 +134,19 @@ export const AgentCard = memo(function AgentCard({ agent, selected, compact = fa
         )}
       >
         <div className="flex items-start gap-4">
-          {agent.icon ? (
+          {hasAgentAvatar(agent.name) || hasAgentAvatar(agent.id) ? (
+            <Avatar
+              name={agent.name}
+              agentId={agent.id}
+              size="lg"
+              squadType={squadType}
+            />
+          ) : agent.icon ? (
             <div className={cn(
-              'h-14 w-14 rounded-xl flex items-center justify-center text-2xl flex-shrink-0',
+              'h-14 w-14 rounded-xl flex items-center justify-center flex-shrink-0',
               `bg-gradient-to-br ${getTierTheme(normalizedTier).gradient}`
             )}>
-              {agent.icon}
+              {(() => { const Icon = getIconComponent(agent.icon); return <Icon size={24} />; })()}
             </div>
           ) : (
             <Avatar
@@ -213,6 +230,7 @@ export const AgentExplorerCard = memo(function AgentExplorerCard({ agent, select
   const squadType = getSquadTypeUtil(agent.squad);
   const { isFavorite, toggleFavorite } = useFavoritesStore();
   const favorited = isFavorite(agent.id);
+  const isAiox = useUIStore((s) => s.theme) === 'aiox';
   // Normalize tier to valid value (0, 1, or 2)
   const normalizedTier: AgentTier = (agent.tier === 0 || agent.tier === 1 || agent.tier === 2) ? agent.tier : 2;
 
@@ -227,34 +245,45 @@ export const AgentExplorerCard = memo(function AgentExplorerCard({ agent, select
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02, y: -2 }}
+      whileHover={isAiox ? { scale: 1 } : { scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
-        'group relative rounded-2xl p-4 cursor-pointer transition-all duration-200 overflow-hidden',
-        'border border-white/10 hover:border-white/20',
-        selected && 'ring-2 ring-blue-500/50 border-blue-500/30'
+        'group relative p-4 cursor-pointer transition-all duration-200 overflow-hidden',
+        isAiox
+          ? 'border border-[rgba(156,156,156,0.15)] hover:border-[#D1FF00]/30'
+          : 'rounded-2xl border border-white/10 hover:border-white/20',
+        selected && (isAiox ? 'ring-2 ring-[#D1FF00]/50 border-[#D1FF00]/30' : 'ring-2 ring-blue-500/50 border-blue-500/30')
       )}
       style={{
-        background: `linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)`,
+        background: isAiox ? '#0a0a0a' : `linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)`,
       }}
     >
-      {/* Tier indicator gradient */}
+      {/* Tier indicator */}
       <div
         className={cn(
-          'absolute top-0 left-0 right-0 h-1 bg-gradient-to-r',
-          getTierTheme(normalizedTier).gradient
+          'absolute top-0 left-0 right-0 h-1',
+          isAiox ? 'bg-[#D1FF00]' : cn('bg-gradient-to-r', getTierTheme(normalizedTier).gradient)
         )}
       />
 
       <div className="flex items-start gap-3">
-        {/* Icon/Avatar */}
-        {agent.icon ? (
+        {/* Icon/Avatar — prioritize generated avatar over icon */}
+        {hasAgentAvatar(agent.name) || hasAgentAvatar(agent.id) ? (
+          <Avatar
+            name={agent.name}
+            agentId={agent.id}
+            size="2xl"
+            squadType={squadType}
+          />
+        ) : agent.icon ? (
           <div className={cn(
-            'h-12 w-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0',
-            `bg-gradient-to-br ${getTierTheme(normalizedTier).gradient}`
+            'h-12 w-12 flex items-center justify-center flex-shrink-0',
+            isAiox
+              ? 'bg-[#D1FF00]/15 border border-[rgba(156,156,156,0.15)]'
+              : `rounded-xl bg-gradient-to-br ${getTierTheme(normalizedTier).gradient}`
           )}>
-            {agent.icon}
+            {(() => { const Icon = getIconComponent(agent.icon); return <Icon size={22} />; })()}
           </div>
         ) : (
           <Avatar

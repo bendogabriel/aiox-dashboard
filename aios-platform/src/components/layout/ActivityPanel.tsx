@@ -332,16 +332,7 @@ function AgentInfoCard({ agent, squadType }: AgentInfoCardProps) {
   return (
     <GlassCard variant="subtle" padding="md">
       <div className="flex items-center gap-3">
-        {agent.icon ? (
-          <div className={cn(
-            'h-12 w-12 rounded-xl flex items-center justify-center text-xl',
-            `bg-gradient-to-br ${getTierTheme(normalizedTier).gradient}`
-          )}>
-            {agent.icon}
-          </div>
-        ) : (
-          <Avatar name={agent.name} size="lg" squadType={squadType} />
-        )}
+        <Avatar name={agent.name} agentId={agent.id} size="lg" squadType={squadType} />
         <div className="flex-1 min-w-0">
           <h4 className="text-primary font-medium truncate">{agent.name}</h4>
           <p className="text-tertiary text-xs truncate">{agent.title || agent.description}</p>

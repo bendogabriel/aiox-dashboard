@@ -3,11 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ICON_SIZES } from '../../lib/icons';
 import { useAgents } from '../../hooks/useAgents';
 import { useUIStore } from '../../stores/uiStore';
+import { useAgentActivityStore } from '../../stores/agentActivityStore';
 import { AgentSprite } from './AgentSprite';
 import { RoomFurniture } from './RoomFurniture';
 import { RoomEnvironment } from './RoomEnvironment';
 import { EmbeddedScreen } from './EmbeddedScreen';
 import { SpeechBubble } from './SpeechBubble';
+import { LiveSpeechBubble } from './LiveSpeechBubble';
 import { InteractionLine } from './InteractionLine';
 import { AgentEmotes, FloatingEmote } from './AgentEmotes';
 import { InteractiveFurniture } from './InteractiveFurniture';
@@ -15,8 +17,9 @@ import { AmbientParticles } from './AmbientParticles';
 import { useAgentMovement } from './useAgentMovement';
 import { useKeyboardNav } from './useKeyboardNav';
 import { useDayNightCycle } from './useDayNightCycle';
-import { rooms, domains, furnitureTemplates, ROOM_COLS, ROOM_ROWS } from './world-layout';
+import { rooms, furnitureTemplates, ROOM_COLS, ROOM_ROWS } from './world-layout';
 import type { DomainId } from './world-layout';
+import { useDomains } from './DomainContext';
 import type { AgentTier } from '../../types';
 
 interface RoomViewProps {
@@ -46,6 +49,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
   const [emoteAgent, setEmoteAgent] = useState<{ id: string; x: number; y: number } | null>(null);
   const [floatingEmotes, setFloatingEmotes] = useState<Array<{ id: string; emoteKey: string; x: number; y: number }>>([]);
 
+  const domains = useDomains();
   const roomConfig = rooms.find((r) => r.squadId === roomId);
   const domain: DomainId = roomConfig?.domain || 'dev';
   const domainCfg = domains[domain];
@@ -95,8 +99,11 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
     setIsDragging(false);
   }, []);
 
-  // Movement hook replaces static positioning
-  const movementMap = useAgentMovement(agents, domain);
+  // Live activity from real-time monitor events
+  const liveActivities = useAgentActivityStore((s) => s.activities);
+
+  // Movement hook with live activity integration
+  const movementMap = useAgentMovement(agents, domain, liveActivities);
 
   // Build sorted agent list for rendering
   const sortedAgents = useMemo(() => {
@@ -337,11 +344,12 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
               />
             ))}
 
-            {/* Agent sprites with movement */}
+            {/* Agent sprites with movement + live activity */}
             {sortedAgents.map((agent) => {
               const moveState = movementMap.get(agent.id);
               const ax = moveState?.x ?? 0;
               const ay = moveState?.y ?? 0;
+              const isLiveWorking = moveState?.activity === 'live-working';
 
               return (
                 <AgentSprite
@@ -349,7 +357,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
                   name={agent.name}
                   domain={domain}
                   tier={agent.tier as AgentTier}
-                  status="online"
+                  status={isLiveWorking ? 'busy' : 'online'}
                   x={ax}
                   y={ay}
                   selected={selectedAgentId === agent.id}
@@ -359,15 +367,32 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
                   facing={moveState?.facing}
                   activity={moveState?.activity}
                   activityLabel={moveState?.activityLabel}
+                  liveActive={isLiveWorking}
                 />
               );
             })}
 
-            {/* Speech bubbles for agents with active bubbles */}
+            {/* Speech bubbles — live activity takes priority over random bubbles */}
             {sortedAgents.map((agent) => {
               const moveState = movementMap.get(agent.id);
-              if (!moveState?.bubble) return null;
+              if (!moveState) return null;
 
+              // Live activity bubble: show real-time action
+              const agentActivity = useAgentActivityStore.getState().getActivity(agent.name);
+              if (agentActivity?.isActive) {
+                return (
+                  <LiveSpeechBubble
+                    key={`live-bubble-${agent.id}`}
+                    activity={agentActivity}
+                    x={moveState.x}
+                    y={moveState.y}
+                    color={domainCfg.tileColor}
+                  />
+                );
+              }
+
+              // Fallback: random speech bubble from movement
+              if (!moveState.bubble) return null;
               return (
                 <SpeechBubble
                   key={`bubble-${agent.id}`}

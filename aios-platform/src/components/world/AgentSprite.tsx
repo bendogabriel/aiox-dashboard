@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { agentSpriteRects, getAgentIdentity, domainSpriteColors, statusColors, tierBadge } from './pixel-sprites';
@@ -20,13 +20,14 @@ interface AgentSpriteProps {
   facing?: FacingDirection;
   activity?: AgentActivity;
   activityLabel?: string;
+  liveActive?: boolean;
 }
 
 const SPRITE_SCALE = 2.5;
 const SPRITE_W = 16 * SPRITE_SCALE;
 const SPRITE_H = 16 * SPRITE_SCALE;
 
-export function AgentSprite({
+export const AgentSprite = memo(function AgentSprite({
   name,
   domain,
   tier,
@@ -40,6 +41,7 @@ export function AgentSprite({
   facing = 'right',
   activity = 'idle',
   activityLabel,
+  liveActive = false,
 }: AgentSpriteProps) {
   const colors = domainSpriteColors[domain];
   const identity = useMemo(() => getAgentIdentity(name), [name]);
@@ -81,6 +83,25 @@ export function AgentSprite({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
+      {/* Live activity glow — pulsing ring when agent is doing real work */}
+      {liveActive && !selected && (
+        <motion.div
+          className="absolute rounded-full"
+          style={{
+            width: SPRITE_W + 16,
+            height: SPRITE_H + 16,
+            top: -8,
+            left: -8,
+            background: `radial-gradient(circle, ${colors.head}33 0%, transparent 70%)`,
+          }}
+          animate={{
+            opacity: [0.4, 0.8, 0.4],
+            scale: [0.95, 1.05, 0.95],
+          }}
+          transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      )}
+
       {/* Selection ring */}
       {selected && (
         <motion.div
@@ -108,7 +129,7 @@ export function AgentSprite({
         </span>
       )}
 
-      {/* Pixel art character with facing direction + walk bob */}
+      {/* Pixel art character with facing direction + walk bob + idle breathing */}
       <motion.svg
         width={SPRITE_W}
         height={SPRITE_H}
@@ -117,11 +138,15 @@ export function AgentSprite({
           imageRendering: 'pixelated',
           transform: flipX ? 'scaleX(-1)' : undefined,
         }}
-        animate={isWalking ? { y: [0, -2, 0] } : { y: 0 }}
+        animate={
+          isWalking
+            ? { y: [0, -2, 0] }
+            : { y: [0, -0.8, 0], scale: [1, 1.01, 1] }
+        }
         transition={
           isWalking
             ? { duration: 0.3, repeat: Infinity, ease: 'easeInOut' }
-            : { duration: 0.2 }
+            : { duration: 2.5 + (identity.hatStyle % 3) * 0.4, repeat: Infinity, ease: 'easeInOut' }
         }
       >
         {rects.map((r, i) => (
@@ -138,18 +163,20 @@ export function AgentSprite({
         ))}
       </motion.svg>
 
-      {/* Status dot */}
-      <div
+      {/* Status dot — reflects live activity */}
+      <motion.div
         className="absolute rounded-full"
         style={{
           width: 7,
           height: 7,
           bottom: 14,
           right: -2,
-          backgroundColor: statusColor,
+          backgroundColor: liveActive ? '#10B981' : statusColor,
           border: '1.5px solid rgba(0,0,0,0.3)',
-          boxShadow: `0 0 4px ${statusColor}88`,
+          boxShadow: liveActive ? '0 0 6px #10B98188' : `0 0 4px ${statusColor}88`,
         }}
+        animate={liveActive ? { scale: [1, 1.3, 1] } : {}}
+        transition={liveActive ? { duration: 1, repeat: Infinity } : {}}
       />
 
       {/* Busy typing animation */}
@@ -245,4 +272,4 @@ export function AgentSprite({
       </AnimatePresence>
     </motion.div>
   );
-}
+});

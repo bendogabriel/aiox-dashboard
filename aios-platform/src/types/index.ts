@@ -581,7 +581,7 @@ export interface ChatState {
 
 export type ViewType =
   | 'chat' | 'dashboard' | 'settings' | 'orchestrator' | 'world'  // existing
-  | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor'          // new
+  | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor' | 'timeline' // new
   | 'insights' | 'context' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories'; // new
 export type SettingsSectionType = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
@@ -591,11 +591,12 @@ export interface UIState {
   workflowViewOpen: boolean;
   agentExplorerOpen: boolean;
   mobileMenuOpen: boolean;
-  theme: 'light' | 'dark' | 'system' | 'matrix' | 'glass';
+  theme: 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox';
   selectedSquadId: string | null;
   selectedAgentId: string | null;
   currentView: ViewType;
   settingsSection: SettingsSectionType;
   selectedRoomId: string | null;
   worldZoom: 'map' | 'room';
+  focusMode: boolean;
 }

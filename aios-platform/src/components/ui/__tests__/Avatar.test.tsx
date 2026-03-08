@@ -86,17 +86,17 @@ describe('Avatar', () => {
     expect(container.firstChild).toHaveClass('custom-avatar');
   });
 
-  it('should apply squad gradient colors', () => {
+  it('should apply squad gradient colors via CSS variable classes', () => {
     const { container, rerender } = render(<Avatar name="Test" squadType="copywriting" />);
-    expect(container.querySelector('.from-orange-400')).toBeInTheDocument();
+    expect(container.querySelector('.from-squad-copywriting')).toBeInTheDocument();
 
     rerender(<Avatar name="Test" squadType="design" />);
-    expect(container.querySelector('.from-purple-400')).toBeInTheDocument();
+    expect(container.querySelector('.from-squad-design')).toBeInTheDocument();
 
     rerender(<Avatar name="Test" squadType="creator" />);
-    expect(container.querySelector('.from-green-400')).toBeInTheDocument();
+    expect(container.querySelector('.from-squad-creator')).toBeInTheDocument();
 
     rerender(<Avatar name="Test" squadType="orchestrator" />);
-    expect(container.querySelector('.from-cyan-400')).toBeInTheDocument();
+    expect(container.querySelector('.from-squad-orchestrator')).toBeInTheDocument();
   });
 });

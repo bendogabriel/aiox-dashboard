@@ -202,3 +202,36 @@ html[data-theme="aiox"] .text-gradient-neon {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* ============================================
+   AIOX LOGO HOVER — X Spin + Lime Color
+   ============================================ */
+
+.aiox-logo-hover .aiox-letter,
+.aiox-logo-hover .aiox-letter-x {
+  transition: fill 0.3s ease;
+}
+
+/* X spins 360deg around its own center (937.9, 160) */
+.aiox-logo-hover .aiox-letter-x {
+  transform-origin: 937.9px 160px;
+  transition: fill 0.3s ease, transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.aiox-logo-hover:hover .aiox-letter,
+.aiox-logo-hover:hover .aiox-letter-x {
+  fill: #D1FF00;
+}
+
+.aiox-logo-hover:hover .aiox-letter-x {
+  transform: rotate(360deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aiox-logo-hover .aiox-letter-x {
+    transition: fill 0.3s ease;
+  }
+  .aiox-logo-hover:hover .aiox-letter-x {
+    transform: none;
+  }
+}

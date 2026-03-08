@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { GlassButton } from '../ui';
 import { cn } from '../../lib/utils';
+import { CinematicIntro } from './CinematicIntro';
 
 // Icons
 const ArrowRightIcon = () => (
@@ -37,13 +38,15 @@ const CloseIcon = () => (
   </svg>
 );
 
-// Tour steps
+// Tour steps with optional DOM target selector for spotlight
 interface TourStep {
   id: string;
   title: string;
   description: string;
   icon: LucideIcon;
   position?: 'center' | 'left' | 'right';
+  target?: string; // CSS selector for spotlight highlight
+  shortcut?: string; // keyboard shortcut hint
 }
 
 const tourSteps: TourStep[] = [
@@ -60,6 +63,7 @@ const tourSteps: TourStep[] = [
     description: 'Na sidebar esquerda você encontra os Squads - equipes de agentes especializados em diferentes áreas como Copywriting, Design, YouTube e mais.',
     icon: Users,
     position: 'left',
+    target: 'nav[aria-label]',
   },
   {
     id: 'agents',
@@ -67,6 +71,7 @@ const tourSteps: TourStep[] = [
     description: 'Cada squad possui agentes com habilidades únicas. Selecione um agente para iniciar uma conversa e aproveitar sua expertise.',
     icon: Bot,
     position: 'left',
+    target: 'nav[aria-label]',
   },
   {
     id: 'chat',
@@ -85,16 +90,19 @@ const tourSteps: TourStep[] = [
   {
     id: 'search',
     title: 'Busca Global',
-    description: 'Pressione Cmd+K para abrir a busca global e encontrar rapidamente qualquer agente em qualquer squad.',
+    description: 'Use a busca global para encontrar rapidamente qualquer agente, view ou comando.',
     icon: Search,
     position: 'center',
+    target: 'button[aria-label*="Buscar"]',
+    shortcut: '⌘K',
   },
   {
     id: 'shortcuts',
     title: 'Atalhos de Teclado',
-    description: 'Pressione Cmd+? para ver todos os atalhos disponíveis. Navegue mais rápido com o teclado.',
+    description: 'Navegue mais rápido usando atalhos. São mais de 20 atalhos para todas as funcionalidades.',
     icon: Keyboard,
     position: 'center',
+    shortcut: '⌘?',
   },
   {
     id: 'ready',
@@ -133,12 +141,28 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
   const { hasCompletedTour, setHasCompletedTour } = useOnboardingStore();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [showCinematicIntro, setShowCinematicIntro] = useState(false);
+  const [spotlightRect, setSpotlightRect] = useState<DOMRect | null>(null);
 
-  // Show tour if not completed
+  // Update spotlight position when step changes
+  useEffect(() => {
+    if (!isVisible) return;
+    const step = tourSteps[currentStep];
+    if (step?.target) {
+      const el = document.querySelector(step.target);
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        setSpotlightRect(rect);
+        return;
+      }
+    }
+    setSpotlightRect(null);
+  }, [currentStep, isVisible]);
+
+  // Show cinematic intro first if not completed, then tour
   useEffect(() => {
     if (!hasCompletedTour) {
-      // Small delay to let the app render first
-      const timer = setTimeout(() => setIsVisible(true), 500);
+      const timer = setTimeout(() => setShowCinematicIntro(true), 300);
       return () => clearTimeout(timer);
     }
   }, [hasCompletedTour]);
@@ -171,6 +195,22 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
   const isLastStep = currentStep === tourSteps.length - 1;
   const progress = ((currentStep + 1) / tourSteps.length) * 100;
 
+  if (!isVisible && !showCinematicIntro) return null;
+
+  // Show cinematic intro first
+  if (showCinematicIntro && !isVisible) {
+    return (
+      <AnimatePresence>
+        <CinematicIntro
+          onComplete={() => {
+            setShowCinematicIntro(false);
+            setIsVisible(true);
+          }}
+        />
+      </AnimatePresence>
+    );
+  }
+
   if (!isVisible) return null;
 
   return (
@@ -181,8 +221,45 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[200]"
       >
-        {/* Backdrop */}
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+        {/* Backdrop with spotlight cutout */}
+        {spotlightRect ? (
+          <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }}>
+            <defs>
+              <mask id="spotlight-mask">
+                <rect width="100%" height="100%" fill="white" />
+                <rect
+                  x={spotlightRect.x - 8}
+                  y={spotlightRect.y - 8}
+                  width={spotlightRect.width + 16}
+                  height={spotlightRect.height + 16}
+                  rx="12"
+                  fill="black"
+                />
+              </mask>
+            </defs>
+            <rect
+              width="100%"
+              height="100%"
+              fill="rgba(0,0,0,0.5)"
+              mask="url(#spotlight-mask)"
+            />
+            {/* Glowing border around spotlight */}
+            <rect
+              x={spotlightRect.x - 8}
+              y={spotlightRect.y - 8}
+              width={spotlightRect.width + 16}
+              height={spotlightRect.height + 16}
+              rx="12"
+              fill="none"
+              stroke="rgba(99,102,241,0.5)"
+              strokeWidth="2"
+            >
+              <animate attributeName="stroke-opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite" />
+            </rect>
+          </svg>
+        ) : (
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+        )}
 
         {/* Tour Card */}
         <motion.div
@@ -219,6 +296,16 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
               {/* Text */}
               <h2 className="text-xl font-bold text-primary mb-2">{step.title}</h2>
               <p className="text-secondary text-sm leading-relaxed">{step.description}</p>
+
+              {/* Shortcut hint */}
+              {step.shortcut && (
+                <div className="mt-3 flex items-center gap-2">
+                  <kbd className="px-2 py-1 rounded-lg bg-white/10 border border-white/10 text-xs font-mono text-primary">
+                    {step.shortcut}
+                  </kbd>
+                  <span className="text-[11px] text-tertiary">Atalho rápido</span>
+                </div>
+              )}
 
               {/* Step indicator */}
               <div className="flex items-center gap-1.5 mt-6 mb-4">

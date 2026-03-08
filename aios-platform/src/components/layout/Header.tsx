@@ -10,7 +10,11 @@ import {
   MessageSquare,
   LogOut,
 } from 'lucide-react';
-import { GlassButton, Avatar, ThemeToggle } from '../ui';
+import { GlassButton, Avatar, ThemeToggle, ShortcutHint } from '../ui';
+import { NotificationCenter } from '../ui/NotificationCenter';
+import { FocusToggle } from '../ui/FocusModeIndicator';
+import { PresenceAvatars } from '../ui/PresenceAvatars';
+import { LanguageToggle } from '../ui/LanguageToggle';
 import { MobileMenuButton } from './Sidebar';
 import { useGlobalSearch } from '../search';
 import { useUIStore } from '../../stores/uiStore';
@@ -70,52 +74,10 @@ const MasterIcon = () => (
   </svg>
 );
 
-// TODO: Replace with real notification system when available
-type Notification = {
-  id: string;
-  type: 'success' | 'info' | 'warning';
-  title: string;
-  message: string;
-  agentName: string;
-  squadType: string;
-  time: string;
-  read: boolean;
-};
 
 export function Header() {
   const { activityPanelOpen, toggleActivityPanel, workflowViewOpen, toggleWorkflowView, agentExplorerOpen, toggleAgentExplorer } = useUIStore();
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const globalSearch = useGlobalSearch();
-
-  const notificationRef = useRef<HTMLDivElement>(null);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
-        setShowNotifications(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-  };
-
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
-
-  const dismissNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
 
   return (
     <header aria-label="Cabecalho principal" className="h-16 px-4 md:px-6 flex items-center justify-between glass border-b border-glass-border gap-4 relative z-50">
@@ -139,159 +101,66 @@ export function Header() {
 
       {/* Right Actions */}
       <div className="flex items-center gap-2">
+        {/* Presence Avatars — team members online */}
+        <PresenceAvatars />
+
         {/* AIOS Master Button - Talk to orchestrator from anywhere */}
         <AIOSMasterButton />
 
-        {/* Notifications */}
-        <div className="relative" ref={notificationRef}>
+        {/* Notifications — powered by toast store */}
+        <NotificationCenter />
+
+        {/* Focus Mode Toggle */}
+        <ShortcutHint keys={['⌘', '⇧', 'F']}>
+          <FocusToggle />
+        </ShortcutHint>
+
+        {/* Agent Explorer Toggle */}
+        <ShortcutHint keys={['⌘', 'E']}>
           <GlassButton
             variant="ghost"
             size="icon"
-            className="relative"
-            aria-label="Notificações"
-            style={showNotifications ? {
-              backgroundColor: 'var(--sidebar-active-bg)',
-              color: 'var(--sidebar-active-text)',
-            } : undefined}
-            onClick={() => setShowNotifications(!showNotifications)}
+            onClick={toggleAgentExplorer}
+            className={cn('hidden sm:flex', agentExplorerOpen && 'bg-[#D1FF00]/10 text-[#D1FF00]')}
+            aria-label="Explorar Agents (⌘E)"
           >
-            <BellIcon />
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 h-4 w-4 bg-red-500 rounded-full text-[10px] text-white font-medium flex items-center justify-center">
-                {unreadCount}
-              </span>
-            )}
+            <CompassIcon />
           </GlassButton>
-
-          {/* Notifications Dropdown */}
-          <AnimatePresence>
-            {showNotifications && (
-              <motion.div
-                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-                className="absolute top-full right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-80 glass-lg rounded-xl overflow-hidden z-[999]"
-              >
-                {/* Header */}
-                <div className="px-4 py-3 border-b border-glass-border flex items-center justify-between">
-                  <h3 className="text-primary font-semibold">Notificações</h3>
-                  {unreadCount > 0 && (
-                    <button
-                      onClick={markAllAsRead}
-                      className="text-xs text-blue-500 hover:text-blue-400 transition-colors"
-                    >
-                      Marcar todas como lidas
-                    </button>
-                  )}
-                </div>
-
-                {/* Notifications List */}
-                <div className="max-h-80 overflow-y-auto glass-scrollbar" tabIndex={0} role="region" aria-label="Lista de notificacoes">
-                  {notifications.length > 0 ? (
-                    notifications.map((notification, index) => (
-                      <motion.div
-                        key={notification.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className={cn(
-                          'px-4 py-3 border-b border-glass-border last:border-0',
-                          'hover:bg-white/5 transition-colors',
-                          !notification.read && 'bg-blue-500/5'
-                        )}
-                        onClick={() => markAsRead(notification.id)}
-                      >
-                        <div className="flex items-start gap-3">
-                          <Avatar
-                            name={notification.agentName}
-                            size="sm"
-                            squadType={notification.squadType as SquadType}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className="text-primary text-sm font-medium">
-                                {notification.title}
-                              </p>
-                              {!notification.read && (
-                                <span className="h-2 w-2 rounded-full bg-blue-500" />
-                              )}
-                            </div>
-                            <p className="text-secondary text-xs mt-0.5">
-                              {notification.message}
-                            </p>
-                            <p className="text-tertiary text-[10px] mt-1">
-                              {formatRelativeTime(notification.time)}
-                            </p>
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              dismissNotification(notification.id);
-                            }}
-                            aria-label="Dispensar notificação"
-                            className="text-tertiary hover:text-primary transition-colors p-1"
-                          >
-                            <CloseIcon />
-                          </button>
-                        </div>
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="px-4 py-8 text-center">
-                      <p className="text-secondary text-sm">Nenhuma notificação</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Footer */}
-                {notifications.length > 0 && (
-                  <div className="px-4 py-2 border-t border-glass-border">
-                    <button className="w-full text-center text-xs text-blue-500 hover:text-blue-400 transition-colors py-1">
-                      Ver todas as notificações
-                    </button>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Agent Explorer Toggle */}
-        <GlassButton
-          variant="ghost"
-          size="icon"
-          onClick={toggleAgentExplorer}
-          className={cn('hidden sm:flex', agentExplorerOpen && 'bg-emerald-500/10 text-emerald-500')}
-          aria-label="Explorar Agents"
-        >
-          <CompassIcon />
-        </GlassButton>
+        </ShortcutHint>
 
         {/* Workflow View Toggle - Hidden on mobile */}
-        <GlassButton
-          variant="ghost"
-          size="icon"
-          onClick={toggleWorkflowView}
-          className={cn('hidden md:flex', workflowViewOpen && 'bg-purple-500/10 text-purple-500')}
-          aria-label="Visualizar Workflow"
-        >
-          <WorkflowIcon />
-        </GlassButton>
+        <ShortcutHint keys={['⌘', '⇧', 'W']}>
+          <GlassButton
+            variant="ghost"
+            size="icon"
+            onClick={toggleWorkflowView}
+            className={cn('hidden md:flex', workflowViewOpen && 'bg-[#0099FF]/10 text-[#0099FF]')}
+            aria-label="Visualizar Workflow (⌘⇧W)"
+          >
+            <WorkflowIcon />
+          </GlassButton>
+        </ShortcutHint>
 
         {/* Activity Panel Toggle - Hidden on mobile */}
-        <GlassButton
-          variant="ghost"
-          size="icon"
-          onClick={toggleActivityPanel}
-          aria-label="Painel de Atividade"
-          className={cn('hidden lg:flex', activityPanelOpen && 'bg-blue-500/10 text-blue-500')}
-        >
-          <ActivityIcon />
-        </GlassButton>
+        <ShortcutHint keys={['⌘', '\\']}>
+          <GlassButton
+            variant="ghost"
+            size="icon"
+            onClick={toggleActivityPanel}
+            aria-label="Painel de Atividade (⌘\\)"
+            className={cn('hidden lg:flex', activityPanelOpen && 'bg-[#0099FF]/10 text-[#0099FF]')}
+          >
+            <ActivityIcon />
+          </GlassButton>
+        </ShortcutHint>
 
         {/* Theme Toggle with Dropdown */}
-        <ThemeToggle showDropdown />
+        <ShortcutHint keys={['⌘', '.']}>
+          <ThemeToggle showDropdown />
+        </ShortcutHint>
+
+        {/* Language Toggle */}
+        <LanguageToggle />
 
         {/* User Avatar with Dropdown */}
         <UserMenu />
@@ -316,12 +185,12 @@ function AIOSMasterButton() {
       onClick={handleClick}
       className={cn(
         'flex items-center gap-2 px-3 py-2 rounded-xl',
-        'bg-gradient-to-r from-cyan-500/20 to-blue-500/20',
-        'border border-cyan-500/30',
-        'text-cyan-400 hover:text-cyan-300',
-        'hover:from-cyan-500/30 hover:to-blue-500/30',
+        'bg-gradient-to-r from-[#D1FF00]/20 to-[#a8cc00]/20',
+        'border border-[#D1FF00]/30',
+        'text-[#D1FF00] hover:text-[#e5ff4d]',
+        'hover:from-[#D1FF00]/30 hover:to-[#a8cc00]/30',
         'transition-all duration-200',
-        'shadow-lg shadow-cyan-500/10'
+        'shadow-lg shadow-[#D1FF00]/10'
       )}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
@@ -353,7 +222,7 @@ function UserMenu() {
       <button
         onClick={() => setShowMenu(!showMenu)}
         aria-label="Menu do usuário"
-        className="h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-medium hover:scale-105 transition-transform touch-manipulation"
+        className="h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-gradient-to-br from-[#D1FF00] to-[#a8cc00] flex items-center justify-center text-[#0a0a0a] text-sm font-medium hover:scale-105 transition-transform touch-manipulation"
       >
         RC
       </button>

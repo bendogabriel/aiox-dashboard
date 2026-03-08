@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import type { DomainId } from './world-layout';
-import { domains } from './world-layout';
+import { useDomains } from './DomainContext';
 
 interface EmbeddedScreenProps {
   domain: DomainId;
@@ -16,6 +16,7 @@ const SCREEN_SIZES = {
 };
 
 export function EmbeddedScreen({ domain, type, x, y, tileSize }: EmbeddedScreenProps) {
+  const domains = useDomains();
   const cfg = SCREEN_SIZES[type];
   const d = domains[domain];
 

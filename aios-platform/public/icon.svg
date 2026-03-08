@@ -1,21 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1e40af"/>
-      <stop offset="100%" style="stop-color:#7c3aed"/>
-    </linearGradient>
-  </defs>
-
-  <!-- Background -->
-  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-
-  <!-- Glass overlay -->
-  <rect x="24" y="24" width="464" height="464" rx="80" fill="white" fill-opacity="0.1"/>
-
-  <!-- Circle ring -->
-  <circle cx="256" cy="256" r="170" fill="none" stroke="white" stroke-width="18" opacity="0.95"/>
-
-  <!-- Geometric A mark with arrow chevron -->
-  <path fill="white" opacity="0.95"
-    d="M256 88 L296 168 L272 168 L384 408 L312 408 L272 232 L240 232 L200 408 L128 408 L240 168 L216 168 Z"/>
+  <!-- AIOX Dark Cockpit favicon — Official A mark on dark bg -->
+  <rect width="512" height="512" rx="96" fill="#0F0F11"/>
+  <rect x="16" y="16" width="480" height="480" rx="84" fill="white" fill-opacity="0.04"/>
+  <!-- A triangle mark (from brand.aioxsquad.ai, scaled to fit) -->
+  <g transform="translate(88, 68) scale(0.89)">
+    <path fill="#F4F4E8" d="M0 310.6H376.464L188.219 9.4L0 310.6ZM96.047 257.35L188.219 109.875L280.392 257.35H96.047Z"/>
+  </g>
 </svg>

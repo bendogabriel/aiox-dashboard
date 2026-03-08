@@ -595,7 +595,8 @@ export function CreateWorkflowModal({
                           <select
                             value={step.squadId}
                             onChange={(e) => updateStep(index, 'squadId', e.target.value)}
-                            className="w-full p-2.5 rounded-xl glass-subtle text-primary bg-transparent border border-white/10 text-sm"
+                            className="w-full p-2.5 rounded-xl text-sm border border-white/10 bg-[#1a1a1a] text-white appearance-none cursor-pointer"
+                            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23999\' stroke-width=\'2\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
                           >
                             <option value="">Selecione um squad</option>
                             {squads.map(squad => (
@@ -610,7 +611,8 @@ export function CreateWorkflowModal({
                           <select
                             value={step.agentId}
                             onChange={(e) => updateStep(index, 'agentId', e.target.value)}
-                            className="w-full p-2.5 rounded-xl glass-subtle text-primary bg-transparent border border-white/10 text-sm"
+                            className="w-full p-2.5 rounded-xl text-sm border border-white/10 bg-[#1a1a1a] text-white appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23999\' stroke-width=\'2\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
                             disabled={!step.squadId}
                           >
                             <option value="">Selecione um agent</option>

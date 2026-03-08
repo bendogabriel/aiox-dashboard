@@ -44,7 +44,7 @@ export function KanbanColumn({
     <div
       className={cn(
         'flex flex-col min-w-[300px] max-w-[300px] rounded-xl transition-colors duration-200',
-        isOver && 'ring-2 ring-blue-500/30 bg-blue-500/5'
+        isOver && 'ring-2 kanban-drop-highlight'
       )}
     >
       {/* Column header */}
@@ -103,8 +103,10 @@ export function KanbanColumn({
             <div
               ref={setNodeRef}
               className={cn(
-                'flex flex-col gap-2 px-1.5 pb-2 min-h-[80px] transition-colors rounded-lg',
-                isOver && 'bg-blue-500/5'
+                'flex flex-col gap-2 px-1.5 pb-2 min-h-[80px] rounded-lg transition-all duration-200',
+                isOver
+                  ? 'kanban-drop-zone bg-blue-500/5 ring-2 ring-blue-500/20 ring-inset scale-[1.01]'
+                  : ''
               )}
             >
               <SortableContext
@@ -112,17 +114,43 @@ export function KanbanColumn({
                 strategy={verticalListSortingStrategy}
               >
                 {stories.length > 0 ? (
-                  stories.map((story) => (
-                    <StoryCard
+                  stories.map((story, index) => (
+                    <motion.div
                       key={story.id}
-                      story={story}
-                      onClick={() => onStoryClick(story)}
-                    />
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.25,
+                        delay: index * 0.04,
+                        ease: [0, 0, 0.2, 1],
+                      }}
+                    >
+                      <StoryCard
+                        story={story}
+                        onClick={() => onStoryClick(story)}
+                      />
+                    </motion.div>
                   ))
                 ) : (
-                  <div className="flex items-center justify-center py-8 text-xs text-tertiary italic">
-                    No stories
-                  </div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2, duration: 0.3 }}
+                    className="flex flex-col items-center justify-center py-8 gap-2"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-tertiary/40">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <line x1="12" y1="8" x2="12" y2="16" />
+                      <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>
+                    <p className="text-[11px] text-tertiary/60">Sem stories</p>
+                    <button
+                      onClick={() => onAddStory(column.id)}
+                      className="text-[10px] text-blue-400/70 hover:text-blue-400 transition-colors"
+                    >
+                      + Adicionar
+                    </button>
+                  </motion.div>
                 )}
               </SortableContext>
             </div>

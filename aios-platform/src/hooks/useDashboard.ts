@@ -232,7 +232,10 @@ export function useMCPStats() {
   const allTools = connectedServers.flatMap(s =>
     s.tools.map(t => ({ ...t, server: s.name }))
   );
-  const totalToolCount = servers.reduce((sum, s) => sum + (s.toolCount || s.tools.length), 0);
+  const totalToolCount = servers.reduce((sum, s) => {
+    const count = typeof s.toolCount === 'number' ? s.toolCount : s.tools.length;
+    return sum + count;
+  }, 0);
   const totalCalls = allTools.reduce((sum, t) => sum + t.calls, 0);
 
   return {

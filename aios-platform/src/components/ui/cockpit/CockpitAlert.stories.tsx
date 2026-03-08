@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { AlertTriangle } from 'lucide-react';
 import { CockpitAlert } from './CockpitAlert';
 
 const meta: Meta<typeof CockpitAlert> = {
@@ -55,7 +56,7 @@ export const WithIcon: Story = {
   args: {
     variant: 'warning',
     title: 'Rate Limit',
-    icon: '\u26A0',
+    icon: <AlertTriangle size={14} />,
     children: 'API rate limit reached. Requests will be throttled for the next 60 seconds.',
   },
 };

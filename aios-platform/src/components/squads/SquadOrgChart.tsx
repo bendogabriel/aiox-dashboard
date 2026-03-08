@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { GlassCard, Badge } from '../ui';
 import { cn } from '../../lib/utils';
+import { getIconComponent } from '../../lib/icons';
 import type { AgentSummary, AgentTier } from '../../types';
 
 interface SquadOrgChartProps {
@@ -23,8 +24,8 @@ function AgentNode({ agent, index }: { agent: AgentSummary; index: number }) {
       transition={{ delay: index * 0.05, duration: 0.3 }}
     >
       <GlassCard padding="sm" className="w-36 text-center">
-        <div className={cn('w-8 h-8 rounded-lg mx-auto flex items-center justify-center text-sm', tier.bg)}>
-          {agent.icon || agent.name.charAt(0)}
+        <div className={cn('w-8 h-8 rounded-lg mx-auto flex items-center justify-center', tier.bg)}>
+          {(() => { const Icon = getIconComponent(agent.icon || agent.name.charAt(0)); return <Icon size={14} />; })()}
         </div>
         <p className="text-xs font-medium text-primary mt-1.5 truncate">{agent.name}</p>
         <Badge variant="default" size="sm" className={cn('mt-1', tier.bg)}>

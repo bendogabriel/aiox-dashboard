@@ -43,3 +43,7 @@ export { Dialog } from './Dialog';
 export { SectionLabel } from './SectionLabel';
 export { ContextMenu } from './ContextMenu';
 export { AioxLogo } from './AioxLogo';
+export { Celebration, useCelebration } from './Celebration';
+export { DiffViewer, FileTree } from './DiffViewer';
+export { ShortcutHint } from './ShortcutHint';
+export { FocusModeIndicator } from './FocusModeIndicator';
