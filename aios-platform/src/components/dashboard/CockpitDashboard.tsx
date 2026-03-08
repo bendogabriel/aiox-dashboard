@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
+import { AlertTriangle } from 'lucide-react'
 import {
   CockpitKpiCard,
   CockpitAlert,
@@ -15,7 +16,7 @@ import { useAgents } from '../../hooks/useAgents'
 import { useExecutionHistory, useTokenUsage, useLLMHealth } from '../../hooks/useExecute'
 import { useMCPStats, useSystemMetrics, useCostSummary } from '../../hooks/useDashboard'
 
-export default function CockpitDashboard() {
+export default function CockpitDashboard({ viewToggle }: { viewToggle?: React.ReactNode } = {}) {
   const { data: squads } = useSquads()
   const { data: agents } = useAgents()
   const { data: historyData } = useExecutionHistory(100)
@@ -29,7 +30,10 @@ export default function CockpitDashboard() {
   const completedCount = executions.filter(e => e.status === 'completed').length
   const successRate = executions.length > 0 ? Math.round((completedCount / executions.length) * 100) : 100
 
-  const isLoading = !squads && !agents
+  // Show spinner only during initial load — never block forever
+  const [initialLoad, setInitialLoad] = useState(true);
+  useEffect(() => { const t = setTimeout(() => setInitialLoad(false), 1500); return () => clearTimeout(t); }, []);
+  const isLoading = initialLoad && !squads && !agents
 
   if (isLoading) {
     return (
@@ -50,13 +54,16 @@ export default function CockpitDashboard() {
     <div style={{ height: '100%', overflow: 'auto', padding: '1.5rem' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-        <div>
-          <h1 style={{ fontFamily: 'var(--font-family-display)', fontSize: '1.75rem', fontWeight: 700, color: 'var(--aiox-cream)', lineHeight: 1, margin: 0 }}>
-            Cockpit
-          </h1>
-          <p style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.6rem', color: 'var(--aiox-gray-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '0.25rem' }}>
-            AIOS Core Platform — Real-time Overview
-          </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div>
+            <h1 style={{ fontFamily: 'var(--font-family-display)', fontSize: '1.75rem', fontWeight: 700, color: 'var(--aiox-cream)', lineHeight: 1, margin: 0 }}>
+              Dashboard
+            </h1>
+            <p style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.6rem', color: 'var(--aiox-gray-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '0.25rem' }}>
+              AIOS Core Platform — Real-time Overview
+            </p>
+          </div>
+          {viewToggle}
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <CockpitBadge variant={allHealthy ? 'lime' : 'error'}>
@@ -85,12 +92,12 @@ export default function CockpitDashboard() {
       {!allHealthy && (
         <div style={{ marginBottom: '1.5rem' }}>
           {!claudeOk && (
-            <CockpitAlert variant="error" title="Claude API" icon={'\u26A0'}>
+            <CockpitAlert variant="error" title="Claude API" icon={<AlertTriangle size={14} />}>
               Claude API is unavailable. Agent executions may fail.
             </CockpitAlert>
           )}
           {!openaiOk && (
-            <CockpitAlert variant="warning" title="OpenAI API" icon={'\u26A0'} style={{ marginTop: '0.5rem' }}>
+            <CockpitAlert variant="warning" title="OpenAI API" icon={<AlertTriangle size={14} />} style={{ marginTop: '0.5rem' }}>
               OpenAI API is unavailable. Fallback models may be affected.
             </CockpitAlert>
           )}

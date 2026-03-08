@@ -3,13 +3,18 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AppLayout } from './components/layout';
 import { ChatContainer } from './components/chat';
-import { PageLoader, ErrorBoundary } from './components/ui';
+import { PageLoader, ErrorBoundary, CompactErrorFallback, FocusModeIndicator } from './components/ui';
 import { useUIStore } from './stores/uiStore';
 import { useUrlSync } from './hooks/useUrlSync';
 
+// Register demo seed helpers on window for console access
+// Usage: __seedDemoChat() then reload page
+import './mocks/chat-demo-seed';
+
 // Lazy load heavy components
-const DashboardOverview = lazy(() =>
-  import('./components/dashboard').then((m) => ({ default: m.DashboardOverview }))
+// Dashboard workspace (unified default + cockpit)
+const DashboardWorkspace = lazy(() =>
+  import('./components/dashboard/DashboardWorkspace')
 );
 
 const SettingsPage = lazy(() =>
@@ -28,9 +33,9 @@ const GatherWorld = lazy(() =>
   import('./components/world').then((m) => ({ default: m.GatherWorld }))
 );
 
-// New views — lazy loaded
-const KanbanBoard = lazy(() =>
-  import('./components/kanban/KanbanBoard')
+// Stories workspace (unified kanban + list)
+const StoryWorkspace = lazy(() =>
+  import('./components/stories/StoryWorkspace')
 );
 
 const AgentsMonitor = lazy(() =>
@@ -45,13 +50,11 @@ const TerminalsView = lazy(() =>
   import('./components/terminals/TerminalsView')
 );
 
-const LiveMonitor = lazy(() =>
-  import('./components/monitor/LiveMonitor')
+const MonitorWorkspace = lazy(() =>
+  import('./components/monitor/MonitorWorkspace')
 );
 
-const InsightsView = lazy(() =>
-  import('./components/insights/InsightsView')
-);
+// InsightsView removed — consolidated into DashboardWorkspace
 
 const ContextView = lazy(() =>
   import('./components/context/ContextView')
@@ -73,27 +76,23 @@ const QAMetrics = lazy(() =>
   import('./components/qa/QAMetrics')
 );
 
-const StoriesView = lazy(() =>
-  import('./components/stories').then((m) => ({ default: m.StoryList }))
-);
+// StoriesView removed — consolidated into StoryWorkspace
 
 const KnowledgeView = lazy(() =>
   import('./components/knowledge/KnowledgeView')
 );
 
-const CockpitDashboard = lazy(() =>
-  import('./components/dashboard/CockpitDashboard')
-);
+// CockpitDashboard removed — consolidated into DashboardWorkspace
 
 // View map — maps ViewType to lazy component
 const viewMap: Record<string, ComponentType> = {
-  dashboard: DashboardOverview,
-  kanban: KanbanBoard,
+  dashboard: DashboardWorkspace,
+  kanban: StoryWorkspace, // backward compat — redirects to stories
   agents: AgentsMonitor,
   bob: BobOrchestration,
   terminals: TerminalsView,
-  monitor: LiveMonitor,
-  insights: InsightsView,
+  monitor: MonitorWorkspace,
+  insights: DashboardWorkspace, // backward compat — redirects to dashboard
   context: ContextView,
   roadmap: RoadmapView,
   squads: SquadsView,
@@ -102,9 +101,10 @@ const viewMap: Record<string, ComponentType> = {
   qa: QAMetrics,
   orchestrator: TaskOrchestrator,
   world: GatherWorld,
-  stories: StoriesView,
+  stories: StoryWorkspace,
   knowledge: KnowledgeView,
-  cockpit: CockpitDashboard,
+  cockpit: DashboardWorkspace, // backward compat — redirects to dashboard
+  timeline: MonitorWorkspace, // backward compat — redirects to monitor
 };
 
 // Loading messages per view
@@ -114,12 +114,12 @@ const viewLoaderMessages: Record<string, string> = {
   orchestrator: 'Carregando orquestrador...',
   workflow: 'Carregando workflow...',
   world: 'Carregando mundo...',
-  kanban: 'Carregando kanban...',
+  kanban: 'Carregando stories...', // backward compat
   agents: 'Carregando agents...',
   bob: 'Carregando Bob...',
   terminals: 'Carregando terminais...',
   monitor: 'Carregando monitor...',
-  insights: 'Carregando insights...',
+  insights: 'Carregando dashboard...', // backward compat
   context: 'Carregando contexto...',
   roadmap: 'Carregando roadmap...',
   squads: 'Carregando squads...',
@@ -127,7 +127,8 @@ const viewLoaderMessages: Record<string, string> = {
   qa: 'Carregando QA...',
   stories: 'Carregando stories...',
   knowledge: 'Carregando base de conhecimento...',
-  cockpit: 'Initializing cockpit...',
+  cockpit: 'Carregando dashboard...', // backward compat
+  timeline: 'Carregando monitor...', // backward compat
 };
 
 // Create a client
@@ -147,8 +148,20 @@ function ViewLoader({ view }: { view: string }) {
   return <PageLoader message={viewLoaderMessages[view] || 'Carregando...'} />;
 }
 
-// Wrapped view with motion animation + Suspense
-// Uses brandbook tokens: --bb-ease-decel for entry, --bb-ease-accel for exit
+// Per-view error fallback — isolates crashes so one broken view doesn't kill the app
+function ViewErrorFallback({ viewKey }: { viewKey: string }) {
+  const { setCurrentView } = useUIStore();
+  return (
+    <div className="h-full flex items-center justify-center p-8">
+      <CompactErrorFallback
+        message={`Erro ao carregar ${viewKey}`}
+        onRetry={() => setCurrentView('chat')}
+      />
+    </div>
+  );
+}
+
+// Wrapped view with motion animation + Suspense + ErrorBoundary
 function ViewWrapper({ viewKey, children }: { viewKey: string; children: React.ReactNode }) {
   return (
     <motion.div
@@ -158,13 +171,15 @@ function ViewWrapper({ viewKey, children }: { viewKey: string; children: React.R
       exit={{ opacity: 0, y: -8 }}
       transition={{
         duration: 0.2,
-        ease: [0, 0, 0.2, 1], // --bb-ease-decel
+        ease: [0, 0, 0.2, 1],
       }}
       className="h-full"
     >
-      <Suspense fallback={<ViewLoader view={viewKey} />}>
-        {children}
-      </Suspense>
+      <ErrorBoundary fallback={<ViewErrorFallback viewKey={viewKey} />}>
+        <Suspense fallback={<ViewLoader view={viewKey} />}>
+          {children}
+        </Suspense>
+      </ErrorBoundary>
     </motion.div>
   );
 }
@@ -211,6 +226,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
         <AppContent />
+        <FocusModeIndicator />
       </ErrorBoundary>
     </QueryClientProvider>
   );

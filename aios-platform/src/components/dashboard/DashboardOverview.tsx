@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   type LucideIcon,
@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { GlassCard, Badge, GlassButton } from '../ui';
 import { ICON_SIZES } from '../../lib/icons';
+import { LiveMetricCard } from './LiveMetricCard';
 import { useSquads } from '../../hooks/useSquads';
 import { useAgents } from '../../hooks/useAgents';
 import { useExecutionHistory, useTokenUsage, useLLMHealth } from '../../hooks/useExecute';
@@ -35,6 +36,7 @@ import {
 import { useUIStore } from '../../stores/uiStore';
 import { cn } from '../../lib/utils';
 import { LineChart, BarChart, DonutChart, ProgressRing } from './Charts';
+import { WidgetCustomizer } from './WidgetCustomizer';
 
 // Icons
 const RefreshIcon = () => (
@@ -67,7 +69,7 @@ const TerminalIcon = () => (
 
 type TabType = 'overview' | 'agents' | 'mcp' | 'costs' | 'system';
 
-export function DashboardOverview() {
+export function DashboardOverview({ viewToggle }: { viewToggle?: React.ReactNode } = {}) {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
 
   const tabs: { id: string; label: string; icon: LucideIcon }[] = [
@@ -82,15 +84,21 @@ export function DashboardOverview() {
     <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <div>
-          <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
-          <p className="text-secondary text-sm mt-0.5">
-            Analytics do AIOS Core Platform
-          </p>
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
+            <p className="text-secondary text-sm mt-0.5">
+              Analytics do AIOS Core Platform
+            </p>
+          </div>
+          {viewToggle}
         </div>
-        <GlassButton variant="ghost" size="sm" leftIcon={<RefreshIcon />}>
-          Atualizar
-        </GlassButton>
+        <div className="flex items-center gap-2">
+          <WidgetCustomizer />
+          <GlassButton variant="ghost" size="sm" leftIcon={<RefreshIcon />}>
+            Atualizar
+          </GlassButton>
+        </div>
       </div>
 
       {/* Tab Navigation */}
@@ -130,6 +138,66 @@ export function DashboardOverview() {
 }
 
 // Overview Tab
+// Skeleton for the overview tab
+function OverviewSkeleton() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="space-y-6 pb-6"
+    >
+      {/* Metric cards skeleton */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="p-4 rounded-xl bg-white/5 space-y-3 shimmer"
+            style={{ animationDelay: `${i * 100}ms` }}
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-lg bg-white/10" />
+              <div className="w-16 h-3 rounded bg-white/10" />
+            </div>
+            <div className="w-20 h-7 rounded bg-white/10" />
+            <div className="w-full h-6 rounded bg-white/5" />
+          </div>
+        ))}
+      </div>
+      {/* Charts skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 p-4 rounded-xl bg-white/5 shimmer" style={{ animationDelay: '400ms' }}>
+          <div className="w-40 h-5 rounded bg-white/10 mb-4" />
+          <div className="w-full h-48 rounded bg-white/5" />
+        </div>
+        <div className="p-4 rounded-xl bg-white/5 shimmer" style={{ animationDelay: '500ms' }}>
+          <div className="w-32 h-5 rounded bg-white/10 mb-4" />
+          <div className="w-full h-48 rounded bg-white/5 flex items-center justify-center">
+            <div className="w-32 h-32 rounded-full bg-white/5" />
+          </div>
+        </div>
+      </div>
+      {/* Bottom row skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div key={i} className="p-4 rounded-xl bg-white/5 shimmer" style={{ animationDelay: `${600 + i * 100}ms` }}>
+            <div className="w-36 h-5 rounded bg-white/10 mb-4" />
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, j) => (
+                <div key={j} className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/10" />
+                  <div className="flex-1 h-3 rounded bg-white/10" />
+                  <div className="w-12 h-3 rounded bg-white/10" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 function OverviewTab() {
   const { data: squads } = useSquads();
   const { data: agents } = useAgents();
@@ -137,6 +205,11 @@ function OverviewTab() {
   const { data: tokenUsage } = useTokenUsage();
   const { data: llmHealth } = useLLMHealth();
   const { data: mcpStats } = useMCPStats();
+
+  // Show skeleton only during initial load — never block forever
+  const [initialLoad, setInitialLoad] = useState(true);
+  useEffect(() => { const t = setTimeout(() => setInitialLoad(false), 1500); return () => clearTimeout(t); }, []);
+  const isLoading = initialLoad && !squads && !agents && !historyData;
 
   const executions = useMemo(() => historyData?.executions || [], [historyData?.executions]);
   const completedCount = executions.filter(e => e.status === 'completed').length;
@@ -157,6 +230,8 @@ function OverviewTab() {
     return { executionTrend: trend, trendLabels: days.map(d => d.label) };
   }, [executions]);
 
+  if (isLoading) return <OverviewSkeleton />;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -164,17 +239,56 @@ function OverviewTab() {
       exit={{ opacity: 0, y: -10 }}
       className="space-y-6 pb-6"
     >
-      {/* Quick Stats */}
+      {/* Live Metric Cards — stagger entrance */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <QuickStatCard label="Squads" value={squads?.length || 0} icon={Package} color="blue" />
-        <QuickStatCard label="Agents" value={agents?.length || 0} icon={Bot} color="green" />
-        <QuickStatCard label="Execuções" value={executions.length} icon={Zap} color="purple" />
-        <QuickStatCard
-          label="Sucesso"
-          value={`${successRate}%`}
-          icon={CheckCircle}
-          color={successRate >= 90 ? 'green' : successRate >= 70 ? 'yellow' : 'red'}
-        />
+        {[
+          <LiveMetricCard
+            key="squads"
+            label="Squads"
+            value={squads?.length || 0}
+            icon={<Package size={14} className="text-blue-400" />}
+            color="#3B82F6"
+            sparkline={executionTrend}
+          />,
+          <LiveMetricCard
+            key="agents"
+            label="Agents"
+            value={agents?.length || 0}
+            icon={<Bot size={14} className="text-emerald-400" />}
+            color="#10B981"
+            trend="up"
+            trendValue="Online"
+            isLive
+          />,
+          <LiveMetricCard
+            key="exec"
+            label="Execuções"
+            value={executions.length}
+            icon={<Zap size={14} className="text-purple-400" />}
+            color="#8B5CF6"
+            sparkline={executionTrend}
+            trend={executionTrend[6] > executionTrend[5] ? 'up' : executionTrend[6] < executionTrend[5] ? 'down' : 'flat'}
+            trendValue={executionTrend[6] > 0 ? `${executionTrend[6]} hoje` : undefined}
+          />,
+          <LiveMetricCard
+            key="success"
+            label="Sucesso"
+            value={successRate}
+            format="percent"
+            icon={<CheckCircle size={14} style={{ color: successRate >= 90 ? '#10B981' : successRate >= 70 ? '#F59E0B' : '#EF4444' }} />}
+            color={successRate >= 90 ? '#10B981' : successRate >= 70 ? '#F59E0B' : '#EF4444'}
+            trend={successRate >= 90 ? 'up' : successRate >= 70 ? 'flat' : 'down'}
+          />,
+        ].map((card, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 16, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.35, delay: i * 0.08, ease: [0, 0, 0.2, 1] }}
+          >
+            {card}
+          </motion.div>
+        ))}
       </div>
 
       {/* Charts Row */}
@@ -199,8 +313,8 @@ function OverviewTab() {
           <div className="flex justify-center py-2">
             <DonutChart
               data={[
-                { label: 'Sucesso', value: completedCount, color: '#22C55E' },
-                { label: 'Falha', value: executions.length - completedCount, color: '#EF4444' },
+                { label: 'Sucesso', value: completedCount },
+                { label: 'Falha', value: executions.length - completedCount },
               ]}
               size={120}
               thickness={16}
@@ -243,10 +357,29 @@ function OverviewTab() {
 }
 
 // Agents Tab
+// Demo fallback data for AgentsTab
+const DEMO_AGENT_ANALYTICS = [
+  { agentId: 'dev-agent', agentName: 'Dex (Dev)', squad: 'core-squad', totalExecutions: 24, successRate: 95, avgResponseTime: 1.2 },
+  { agentId: 'qa-agent', agentName: 'Quinn (QA)', squad: 'core-squad', totalExecutions: 18, successRate: 100, avgResponseTime: 0.8 },
+  { agentId: 'architect-agent', agentName: 'Aria (Architect)', squad: 'core-squad', totalExecutions: 12, successRate: 92, avgResponseTime: 2.1 },
+  { agentId: 'pm-agent', agentName: 'Morgan (PM)', squad: 'management-squad', totalExecutions: 9, successRate: 88, avgResponseTime: 1.5 },
+];
+
+const DEMO_COMMAND_ANALYTICS = [
+  { command: '*develop', totalCalls: 32, avgDuration: 4.2, successRate: 94 },
+  { command: '*qa-gate', totalCalls: 18, avgDuration: 2.1, successRate: 100 },
+  { command: '*create-story', totalCalls: 14, avgDuration: 1.8, successRate: 92 },
+  { command: '*validate', totalCalls: 11, avgDuration: 1.2, successRate: 96 },
+  { command: '*push', totalCalls: 8, avgDuration: 3.5, successRate: 87 },
+];
+
 function AgentsTab() {
-  const { data: agentAnalytics } = useAgentAnalytics();
-  const { data: commandAnalytics } = useCommandAnalytics();
+  const { data: rawAgentAnalytics } = useAgentAnalytics();
+  const { data: rawCommandAnalytics } = useCommandAnalytics();
   const { setCurrentView, setSelectedAgentId } = useUIStore();
+
+  const agentAnalytics = rawAgentAnalytics || DEMO_AGENT_ANALYTICS;
+  const commandAnalytics = rawCommandAnalytics || DEMO_COMMAND_ANALYTICS;
 
   const handleAgentClick = (agentId: string) => {
     setSelectedAgentId(agentId);
@@ -301,7 +434,7 @@ function AgentsTab() {
               </div>
             </motion.div>
           ))}
-          {(!agentAnalytics || agentAnalytics.length === 0) && (
+          {agentAnalytics.length === 0 && (
             <p className="text-center text-tertiary py-8">Nenhum dado de execução disponível</p>
           )}
         </div>
@@ -347,10 +480,34 @@ function AgentsTab() {
   );
 }
 
+// Demo fallback data for MCPTab
+const DEMO_MCP_SERVERS = [
+  { name: 'context7', status: 'connected' as const, toolCount: 2, tools: [{ name: 'resolve-library-id', calls: 12 }, { name: 'get-library-docs', calls: 8 }], resources: [], error: undefined },
+  { name: 'playwright', status: 'connected' as const, toolCount: 5, tools: [{ name: 'navigate', calls: 15 }, { name: 'screenshot', calls: 7 }, { name: 'click', calls: 4 }], resources: [], error: undefined },
+  { name: 'exa-search', status: 'disconnected' as const, toolCount: 1, tools: [{ name: 'web_search', calls: 0 }], resources: [], error: 'Connection timed out' },
+];
+
+const DEMO_MCP_STATS = {
+  totalServers: 3,
+  connectedServers: 2,
+  totalTools: 8,
+  totalToolCalls: 46,
+  topTools: [
+    { name: 'navigate', calls: 15 },
+    { name: 'resolve-library-id', calls: 12 },
+    { name: 'get-library-docs', calls: 8 },
+    { name: 'screenshot', calls: 7 },
+    { name: 'click', calls: 4 },
+  ],
+};
+
 // MCP Tab
 function MCPTab() {
-  const { data: mcpServers } = useMCPStatus();
-  const { data: mcpStats } = useMCPStats();
+  const { data: rawMcpServers } = useMCPStatus();
+  const { data: rawMcpStats } = useMCPStats();
+
+  const mcpServers = rawMcpServers || DEMO_MCP_SERVERS;
+  const mcpStats = rawMcpStats || DEMO_MCP_STATS;
 
   return (
     <motion.div
@@ -447,10 +604,29 @@ function MCPTab() {
   );
 }
 
+// Demo fallback data for CostsTab
+const DEMO_COST_SUMMARY = {
+  today: 1.24,
+  thisWeek: 8.75,
+  thisMonth: 32.40,
+  byProvider: { claude: 24.80, openai: 7.60 },
+  bySquad: { 'core-squad': 18.50, 'management-squad': 9.20, 'design-squad': 4.70 },
+  trend: [3.20, 4.10, 5.80, 4.50, 6.20, 5.40, 3.20],
+};
+
+const DEMO_TOKEN_USAGE = {
+  total: { input: 245000, output: 182000, requests: 156 },
+  claude: { input: 180000, output: 135000, requests: 98 },
+  openai: { input: 65000, output: 47000, requests: 58 },
+};
+
 // Costs Tab
 function CostsTab() {
-  const { data: costSummary } = useCostSummary();
-  const { data: tokenUsage } = useTokenUsage();
+  const { data: rawCostSummary } = useCostSummary();
+  const { data: rawTokenUsage } = useTokenUsage();
+
+  const costSummary = rawCostSummary || DEMO_COST_SUMMARY;
+  const tokenUsage = rawTokenUsage || DEMO_TOKEN_USAGE;
 
   return (
     <motion.div
@@ -508,8 +684,6 @@ function CostsTab() {
               data={costSummary.trend}
               labels={['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom']}
               height={140}
-              color="#22C55E"
-              fillColor="rgba(34, 197, 94, 0.1)"
               showLabels
             />
           )}
@@ -539,11 +713,35 @@ function CostsTab() {
   );
 }
 
+// Demo fallback data for SystemTab
+const DEMO_HEALTH = {
+  api: { healthy: true, latency: 45 },
+  database: { healthy: true, latency: 12 },
+};
+
+const DEMO_METRICS = {
+  uptime: 259200,
+  avgLatency: 85,
+  requestsPerMinute: 4.2,
+  errorRate: 0.8,
+  queueSize: 0,
+  activeConnections: 3,
+};
+
+const DEMO_LLM_HEALTH = {
+  claude: { available: true, error: undefined },
+  openai: { available: false, error: 'API key not configured' },
+};
+
 // System Tab
 function SystemTab() {
-  const { data: health } = useSystemHealth();
-  const { data: metrics } = useSystemMetrics();
-  const { data: llmHealth } = useLLMHealth();
+  const { data: rawHealth } = useSystemHealth();
+  const { data: rawMetrics } = useSystemMetrics();
+  const { data: rawLlmHealth } = useLLMHealth();
+
+  const health = rawHealth || DEMO_HEALTH;
+  const metrics = rawMetrics || DEMO_METRICS;
+  const llmHealth = rawLlmHealth || DEMO_LLM_HEALTH;
 
   const formatUptime = (seconds: number): string => {
     const days = Math.floor(seconds / 86400);
@@ -693,7 +891,7 @@ function HealthCard({ title, status, details }: {
                 {d.ok ? '\u2713' : '\u2717'}
               </span>
             ) : (
-              <span className="text-primary font-medium">{d.value}</span>
+              <span className="text-primary font-medium truncate max-w-[120px] text-right">{d.value}</span>
             )}
           </div>
         ))}

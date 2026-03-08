@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Activity,
   CheckCircle2,
@@ -8,7 +8,7 @@ import {
   Terminal,
 } from 'lucide-react';
 import { GlassCard, GlassButton } from '../ui';
-import { useMonitorStore } from '../../stores/monitorStore';
+import { useMonitorStore, type MonitorEvent } from '../../stores/monitorStore';
 import { cn } from '../../lib/utils';
 import MetricsPanel from './MetricsPanel';
 import EventList from './EventList';
@@ -85,14 +85,36 @@ function StatBlock({
   );
 }
 
-export default function LiveMonitor() {
+export default function LiveMonitor({ viewToggle }: { viewToggle?: React.ReactNode }) {
   const { currentTool, stats, clearEvents, connectToMonitor, disconnectFromMonitor, alerts } =
     useMonitorStore();
 
   // Connect to the Monitor Server on mount
   useEffect(() => {
     connectToMonitor();
-    return () => disconnectFromMonitor();
+
+    // Seed demo data if monitor server is unavailable
+    const timer = setTimeout(() => {
+      const state = useMonitorStore.getState();
+      if (state.events.length === 0 && !state.connected) {
+        const demoEvents: MonitorEvent[] = [
+          { id: 'demo-1', timestamp: new Date(Date.now() - 30000).toISOString(), type: 'tool_call', agent: '@dev', description: 'Read src/components/kanban/KanbanBoard.tsx', duration: 120, success: true },
+          { id: 'demo-2', timestamp: new Date(Date.now() - 60000).toISOString(), type: 'tool_call', agent: '@dev', description: 'Edit src/stores/storyStore.ts', duration: 85, success: true },
+          { id: 'demo-3', timestamp: new Date(Date.now() - 120000).toISOString(), type: 'message', agent: '@sm', description: 'Story 3.2 assigned to @dev', success: true },
+          { id: 'demo-4', timestamp: new Date(Date.now() - 180000).toISOString(), type: 'tool_call', agent: '@qa', description: 'Bash: npm run test', duration: 4500, success: true },
+          { id: 'demo-5', timestamp: new Date(Date.now() - 240000).toISOString(), type: 'error', agent: '@dev', description: 'TypeScript error in Charts.tsx', success: false },
+          { id: 'demo-6', timestamp: new Date(Date.now() - 300000).toISOString(), type: 'tool_call', agent: '@dev', description: 'Grep "useMonitorStore" in src/', duration: 45, success: true },
+          { id: 'demo-7', timestamp: new Date(Date.now() - 360000).toISOString(), type: 'system', agent: 'System', description: 'Agent @dev activated', success: true },
+          { id: 'demo-8', timestamp: new Date(Date.now() - 420000).toISOString(), type: 'tool_call', agent: '@dev', description: 'Write src/components/roadmap/RoadmapView.tsx', duration: 200, success: true },
+        ];
+        demoEvents.forEach(e => state.addEvent(e));
+      }
+    }, 2000);
+
+    return () => {
+      clearTimeout(timer);
+      disconnectFromMonitor();
+    };
   }, [connectToMonitor, disconnectFromMonitor]);
 
   const hasActiveAlerts = alerts.some((a) => !a.dismissed);
@@ -103,7 +125,8 @@ export default function LiveMonitor() {
       <div className="flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
           <Activity className="h-5 w-5 text-primary" />
-          <h1 className="text-lg font-bold text-primary">Live Monitor</h1>
+          <h1 className="text-lg font-bold text-primary">Monitor</h1>
+          {viewToggle}
           <ConnectionStatus />
         </div>
 

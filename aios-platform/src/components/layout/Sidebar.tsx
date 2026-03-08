@@ -4,12 +4,10 @@ import {
   MessageSquare,
   BarChart3,
   Globe,
-  LayoutDashboard,
   Bot,
   Cpu,
   Terminal,
   Activity,
-  TrendingUp,
   Brain,
   Map,
   Network,
@@ -20,7 +18,6 @@ import {
   X,
   BookOpen,
   Database,
-  Gauge,
 } from 'lucide-react';
 import { GlassCard, GlassButton, AioxLogo } from '../ui';
 import { useUIStore } from '../../stores/uiStore';
@@ -40,15 +37,12 @@ const navItems = [
   // Core views (pre-existing)
   { id: 'chat' as const, icon: MessageSquare, label: 'Chat', shortcut: 'H', separator: false },
   { id: 'dashboard' as const, icon: BarChart3, label: 'Dashboard', shortcut: 'D', separator: false },
-  { id: 'cockpit' as const, icon: Gauge, label: 'Cockpit', shortcut: 'P', separator: false },
   { id: 'world' as const, icon: Globe, label: 'World', shortcut: 'W', separator: true },
   // PRD views
-  { id: 'kanban' as const, icon: LayoutDashboard, label: 'Kanban', shortcut: 'K', separator: false },
   { id: 'agents' as const, icon: Bot, label: 'Agents', shortcut: 'A', separator: false },
   { id: 'bob' as const, icon: Cpu, label: 'Bob', shortcut: 'B', separator: false },
   { id: 'terminals' as const, icon: Terminal, label: 'Terminals', shortcut: 'T', separator: false },
   { id: 'monitor' as const, icon: Activity, label: 'Monitor', shortcut: 'M', separator: false },
-  { id: 'insights' as const, icon: TrendingUp, label: 'Insights', shortcut: 'I', separator: false },
   { id: 'context' as const, icon: Brain, label: 'Context', shortcut: 'C', separator: false },
   { id: 'knowledge' as const, icon: Database, label: 'Knowledge', shortcut: 'N', separator: false },
   { id: 'roadmap' as const, icon: Map, label: 'Roadmap', shortcut: 'R', separator: false },

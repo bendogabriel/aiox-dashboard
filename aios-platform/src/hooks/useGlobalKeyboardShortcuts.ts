@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useUIStore } from '../stores/uiStore';
 import { useChatStore } from '../stores/chatStore';
+import { useVoiceStore } from '../stores/voiceStore';
 import { useGlobalSearch } from '../components/search';
 
 interface KeyboardShortcutsOptions {
@@ -12,16 +13,20 @@ interface KeyboardShortcutsOptions {
 const viewShortcuts: Record<string, string> = {
   h: 'chat',
   d: 'dashboard',
+  p: 'dashboard', // consolidated: cockpit → dashboard
   w: 'world',
-  k: 'kanban',
+  k: 'stories', // consolidated: kanban → stories
   a: 'agents',
   b: 'bob',
   t: 'terminals',
+  l: 'monitor', // consolidated: timeline shortcut now goes to monitor
   m: 'monitor',
-  i: 'insights',
+  i: 'dashboard', // consolidated: insights → dashboard
   c: 'context',
+  n: 'knowledge',
   r: 'roadmap',
   q: 'squads',
+  y: 'stories',
   g: 'github',
   s: 'settings',
 };
@@ -36,6 +41,7 @@ export function useGlobalKeyboardShortcuts(options: KeyboardShortcutsOptions = {
     toggleAgentExplorer,
     toggleActivityPanel,
     toggleWorkflowView,
+    toggleFocusMode,
   } = useUIStore();
 
   const {
@@ -143,6 +149,25 @@ export function useGlobalKeyboardShortcuts(options: KeyboardShortcutsOptions = {
       return;
     }
 
+    // Cmd+Shift+F - Toggle Focus Mode
+    if (modifier && e.shiftKey && e.key === 'f') {
+      e.preventDefault();
+      toggleFocusMode();
+      return;
+    }
+
+    // Cmd+J - Toggle voice mode
+    if (modifier && e.key === 'j') {
+      e.preventDefault();
+      const voiceStore = useVoiceStore.getState();
+      if (voiceStore.isActive) {
+        voiceStore.deactivate();
+      } else {
+        voiceStore.activate();
+      }
+      return;
+    }
+
     // Cmd+? or Cmd+/ - Show shortcuts
     if (modifier && (e.key === '?' || e.key === '/')) {
       e.preventDefault();
@@ -184,6 +209,7 @@ export function useGlobalKeyboardShortcuts(options: KeyboardShortcutsOptions = {
     toggleAgentExplorer,
     toggleActivityPanel,
     toggleWorkflowView,
+    toggleFocusMode,
     globalSearch,
     setActiveSession,
     onShowShortcuts,
@@ -205,16 +231,20 @@ export const shortcutDefinitions = [
   // Navigation — Single Key
   { keys: ['H'], description: 'Chat', category: 'Views' },
   { keys: ['D'], description: 'Dashboard', category: 'Views' },
+  { keys: ['P'], description: 'Dashboard (Cockpit)', category: 'Views' },
   { keys: ['W'], description: 'World', category: 'Views' },
-  { keys: ['K'], description: 'Kanban Board', category: 'Views' },
+  { keys: ['K'], description: 'Stories (Board)', category: 'Views' },
   { keys: ['A'], description: 'Agent Monitor', category: 'Views' },
   { keys: ['B'], description: 'Bob Orchestration', category: 'Views' },
   { keys: ['T'], description: 'Terminals', category: 'Views' },
-  { keys: ['M'], description: 'Live Monitor', category: 'Views' },
-  { keys: ['I'], description: 'Insights', category: 'Views' },
+  { keys: ['M'], description: 'Monitor', category: 'Views' },
+  { keys: ['L'], description: 'Monitor (Histórico)', category: 'Views' },
+  { keys: ['I'], description: 'Dashboard (Insights)', category: 'Views' },
   { keys: ['C'], description: 'Context', category: 'Views' },
+  { keys: ['N'], description: 'Knowledge Base', category: 'Views' },
   { keys: ['R'], description: 'Roadmap', category: 'Views' },
   { keys: ['Q'], description: 'Squads', category: 'Views' },
+  { keys: ['Y'], description: 'Stories', category: 'Views' },
   { keys: ['G'], description: 'GitHub', category: 'Views' },
   { keys: ['S'], description: 'Settings', category: 'Views' },
   { keys: ['['], description: 'Toggle sidebar', category: 'Views' },
@@ -225,7 +255,9 @@ export const shortcutDefinitions = [
   { keys: ['\u2318', '.'], description: 'Toggle tema dark/light', category: 'Comandos' },
   { keys: ['\u2318', 'E'], description: 'Abrir Agent Explorer', category: 'Comandos' },
   { keys: ['\u2318', '\\'], description: 'Toggle painel de atividades', category: 'Comandos' },
+  { keys: ['\u2318', 'J'], description: 'Modo voz', category: 'Comandos' },
   { keys: ['\u2318', '/'], description: 'Mostrar atalhos', category: 'Comandos' },
+  { keys: ['\u2318', 'Shift', 'F'], description: 'Modo Foco', category: 'Comandos' },
   { keys: ['Esc'], description: 'Fechar modal/painel', category: 'Comandos' },
 
   // Chat

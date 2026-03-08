@@ -5,9 +5,23 @@ import { searchAgents } from '../../services/api/agents';
 import { useSquads } from '../../hooks/useSquads';
 import { useChat } from '../../hooks/useChat';
 import { useSearchStore } from '../../stores/searchStore';
+import { useUIStore } from '../../stores/uiStore';
 import { cn, getSquadTheme, getTierTheme } from '../../lib/utils';
+import { getIconComponent } from '../../lib/icons';
 import { getSquadType } from '../../types';
+import { playSound } from '../../hooks/useSound';
 import type { AgentSummary, SquadType } from '../../types';
+
+// Quick-access views and commands
+interface QuickAction {
+  id: string;
+  label: string;
+  description: string;
+  icon: string;
+  type: 'view' | 'command';
+  action: () => void;
+}
+
 
 // Icons
 const SearchIcon = () => (
@@ -20,13 +34,6 @@ const SearchIcon = () => (
 const CommandIcon = () => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z" />
-  </svg>
-);
-
-const UserIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
   </svg>
 );
 
@@ -56,6 +63,39 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
 
   const { selectAgent } = useChat();
   const { data: squads } = useSquads();
+  const setCurrentView = useUIStore((s) => s.setCurrentView);
+  const toggleAgentExplorer = useUIStore((s) => s.toggleAgentExplorer);
+  const toggleTheme = useUIStore((s) => s.toggleTheme);
+
+  // Build quick actions list
+  const quickActions: QuickAction[] = useMemo(() => {
+    const views: QuickAction[] = [
+      { id: 'v-chat', label: 'Chat', description: 'Conversar com agents', icon: 'MessageCircle', type: 'view', action: () => { setCurrentView('chat'); onClose(); } },
+      { id: 'v-dashboard', label: 'Dashboard', description: 'Analytics, métricas, cockpit AIOX e insights', icon: 'BarChart3', type: 'view', action: () => { setCurrentView('dashboard'); onClose(); } },
+      { id: 'v-stories', label: 'Stories', description: 'Board e lista de stories', icon: 'BookOpen', type: 'view', action: () => { setCurrentView('stories'); onClose(); } },
+      { id: 'v-world', label: 'World', description: 'Mapa de squads', icon: 'Globe', type: 'view', action: () => { setCurrentView('world'); onClose(); } },
+      { id: 'v-agents', label: 'Agents', description: 'Gerenciar agentes', icon: 'Bot', type: 'view', action: () => { setCurrentView('agents'); onClose(); } },
+      { id: 'v-monitor', label: 'Monitor', description: 'Monitoramento em tempo real', icon: 'Activity', type: 'view', action: () => { setCurrentView('monitor'); onClose(); } },
+      { id: 'v-knowledge', label: 'Knowledge', description: 'Base de conhecimento', icon: 'BookOpen', type: 'view', action: () => { setCurrentView('knowledge'); onClose(); } },
+      { id: 'v-settings', label: 'Settings', description: 'Configurações', icon: 'Settings', type: 'view', action: () => { setCurrentView('settings'); onClose(); } },
+      { id: 'v-terminals', label: 'Terminals', description: 'Terminais de execução', icon: 'Terminal', type: 'view', action: () => { setCurrentView('terminals'); onClose(); } },
+      { id: 'v-squads', label: 'Squads', description: 'Gerenciar squads', icon: 'Users', type: 'view', action: () => { setCurrentView('squads'); onClose(); } },
+    ];
+    const commands: QuickAction[] = [
+      { id: 'c-explorer', label: 'Agent Explorer', description: 'Abrir explorador de agents', icon: 'Compass', type: 'command', action: () => { toggleAgentExplorer(); onClose(); } },
+      { id: 'c-theme', label: 'Alternar Tema', description: 'Trocar tema do dashboard', icon: 'Sun', type: 'command', action: () => { toggleTheme(); onClose(); } },
+    ];
+    return [...views, ...commands];
+  }, [setCurrentView, toggleAgentExplorer, toggleTheme, onClose]);
+
+  // Filter quick actions by query
+  const filteredActions = useMemo(() => {
+    if (query.length < 1) return [];
+    const q = query.toLowerCase();
+    return quickActions.filter(
+      (a) => a.label.toLowerCase().includes(q) || a.description.toLowerCase().includes(q)
+    );
+  }, [query, quickActions]);
 
   // Search agents
   const { data: searchResults, isLoading } = useQuery({
@@ -89,7 +129,13 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
 
   const groupedList: GroupedSquad[] = Object.values(groupedResults);
 
-  // Flatten for keyboard navigation
+  // Flatten for keyboard navigation: actions first, then agents
+  type FlatItem = { kind: 'action'; data: QuickAction } | { kind: 'agent'; data: AgentSummary };
+  const flatItems: FlatItem[] = useMemo(() => [
+    ...filteredActions.map((a): FlatItem => ({ kind: 'action', data: a })),
+    ...results.map((a): FlatItem => ({ kind: 'agent', data: a })),
+  ], [filteredActions, results]);
+  // Keep old flatResults for agent-only backward compat
   const flatResults = results;
 
   // Focus input when opened
@@ -113,7 +159,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex(prev => Math.min(prev + 1, flatResults.length - 1));
+        setSelectedIndex(prev => Math.min(prev + 1, flatItems.length - 1));
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -121,8 +167,14 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
         break;
       case 'Enter':
         e.preventDefault();
-        if (flatResults[selectedIndex]) {
-          handleSelectAgent(flatResults[selectedIndex]);
+        if (flatItems[selectedIndex]) {
+          const item = flatItems[selectedIndex];
+          if (item.kind === 'action') {
+            playSound('navigate');
+            item.data.action();
+          } else {
+            handleSelectAgent(item.data);
+          }
         }
         break;
       case 'Escape':
@@ -205,32 +257,89 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                 role="region"
                 aria-label="Resultados da busca"
               >
-                {query.length < 2 ? (
-                  <div className="px-4 py-8 text-center text-sm text-tertiary">
-                    <p>Digite pelo menos 2 caracteres para buscar</p>
-                    <div className="mt-4 flex items-center justify-center gap-4 text-xs">
+                {query.length === 0 ? (
+                  <div className="px-4 py-6 text-center text-sm text-tertiary space-y-4">
+                    <p>Buscar agents, views ou comandos</p>
+                    <div className="flex flex-wrap justify-center gap-2 text-xs">
+                      {['Chat', 'Dashboard', 'Stories', 'Monitor'].map((hint) => (
+                        <button
+                          key={hint}
+                          onClick={() => setQuery(hint)}
+                          className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-secondary transition-colors"
+                        >
+                          {hint}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-center gap-4 text-[10px] text-tertiary/60">
                       <span className="flex items-center gap-1">
                         <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono">
                           <CommandIcon />
                         </kbd>
                         <span>+</span>
                         <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono">K</kbd>
-                        <span className="text-tertiary ml-1">Abrir busca</span>
                       </span>
                     </div>
                   </div>
-                ) : isLoading ? (
+                ) : query.length < 2 && filteredActions.length === 0 ? (
+                  <div className="px-4 py-8 text-center text-sm text-tertiary">
+                    <p>Continue digitando para buscar...</p>
+                  </div>
+                ) : (filteredActions.length === 0 && results.length === 0 && !isLoading && query.length >= 2) ? (
+                  <div className="px-4 py-8 text-center text-sm text-tertiary">
+                    <p>Nenhum resultado para "{query}"</p>
+                    <p className="text-xs mt-1">Tente outro termo</p>
+                  </div>
+                ) : isLoading && filteredActions.length === 0 ? (
                   <div className="px-4 py-8 text-center text-sm text-tertiary">
                     <div className="inline-block w-5 h-5 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
                     <p className="mt-2">Buscando...</p>
                   </div>
-                ) : results.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-sm text-tertiary">
-                    <p>Nenhum agent encontrado para "{query}"</p>
-                    <p className="text-xs mt-1">Tente outro termo de busca</p>
-                  </div>
                 ) : (
                   <div className="py-2">
+                    {/* Quick Actions (views + commands) */}
+                    {filteredActions.length > 0 && (
+                      <div className="mb-2">
+                        <div className="px-4 py-1.5 text-[10px] text-tertiary uppercase tracking-wider sticky top-0 bg-inherit backdrop-blur-sm">
+                          Ações rápidas
+                          <span className="ml-1 opacity-60">({filteredActions.length})</span>
+                        </div>
+                        <div className="px-2">
+                          {filteredActions.map((action) => {
+                            const globalIndex = flatItems.findIndex(i => i.kind === 'action' && i.data.id === action.id);
+                            const isSelected = globalIndex === selectedIndex;
+                            const ActionIcon = getIconComponent(action.icon);
+                            return (
+                              <motion.button
+                                key={action.id}
+                                data-index={globalIndex}
+                                onClick={() => { playSound('navigate'); action.action(); }}
+                                className={cn(
+                                  'w-full px-3 py-2 rounded-lg text-left transition-all duration-150',
+                                  'flex items-center gap-3 border-l-2',
+                                  action.type === 'command' ? 'border-l-amber-500/50' : 'border-l-blue-500/50',
+                                  isSelected ? 'bg-white/15' : 'hover:bg-white/5'
+                                )}
+                                whileTap={{ scale: 0.98 }}
+                              >
+                                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10">
+                                  <ActionIcon size={16} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <span className="text-sm font-medium text-primary">{action.label}</span>
+                                  <p className="text-xs text-tertiary truncate">{action.description}</p>
+                                </div>
+                                <span className="text-[9px] text-tertiary uppercase px-1.5 py-0.5 rounded bg-white/5">
+                                  {action.type === 'command' ? 'cmd' : 'view'}
+                                </span>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Agent Results */}
                     {groupedList.map((group) => (
                       <div key={group.squadId} className="mb-2">
                         {/* Squad header */}
@@ -242,7 +351,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                         {/* Agents */}
                         <div className="px-2">
                           {group.agents.map((agent) => {
-                            const globalIndex = flatResults.findIndex(a => a.id === agent.id);
+                            const globalIndex = flatItems.findIndex(i => i.kind === 'agent' && i.data.id === agent.id);
                             const isSelected = globalIndex === selectedIndex;
                             const squadType = getSquadType(agent.squad);
 
@@ -266,7 +375,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                                   'w-8 h-8 rounded-lg flex items-center justify-center text-sm',
                                   'bg-white/10'
                                 )}>
-                                  {agent.icon || <UserIcon />}
+                                  {(() => { const Icon = getIconComponent(agent.icon || 'User'); return <Icon size={16} />; })()}
                                 </div>
 
                                 {/* Info */}
@@ -303,14 +412,19 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
 
                     {/* Results count */}
                     <div className="px-4 py-2 text-[10px] text-tertiary border-t border-white/5 mt-2">
-                      {results.length} agent{results.length !== 1 ? 's' : ''} encontrado{results.length !== 1 ? 's' : ''}
+                      {flatItems.length} resultado{flatItems.length !== 1 ? 's' : ''}
+                      {filteredActions.length > 0 && results.length > 0 && (
+                        <span className="ml-1 opacity-60">
+                          ({filteredActions.length} ações, {results.length} agents)
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Footer with keyboard hints */}
-              {results.length > 0 && (
+              {flatItems.length > 0 && (
                 <div className="px-4 py-2 border-t border-white/10 flex items-center gap-4 text-[10px] text-tertiary">
                   <span className="flex items-center gap-1">
                     <kbd className="px-1 py-0.5 rounded bg-white/10 font-mono">↑</kbd>

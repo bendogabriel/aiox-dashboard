@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus } from 'lucide-react';
 import { GlassInput, GlassButton, SectionLabel } from '../ui';
@@ -33,7 +33,7 @@ const statusFilterColors: Record<string, string> = {
   error: 'bg-red-500/15 text-red-500',
 };
 
-export function StoryList() {
+export function StoryList({ viewToggle }: { viewToggle?: React.ReactNode } = {}) {
   const stories = useStoryStore((s: StoryStore) => s.stories);
   const statusFilter = useStoryStore((s: StoryStore) => s.statusFilter);
   const searchQuery = useStoryStore((s: StoryStore) => s.searchQuery);
@@ -55,7 +55,10 @@ export function StoryList() {
     <div className="flex flex-col gap-4 h-full">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <SectionLabel count={stories.length}>Stories</SectionLabel>
+        <div className="flex items-center gap-3">
+          <SectionLabel count={stories.length}>Stories</SectionLabel>
+          {viewToggle}
+        </div>
         <GlassButton
           variant="primary"
           size="sm"
