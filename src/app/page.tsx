@@ -5,6 +5,8 @@ import { useUIStore } from '@/stores/ui-store';
 import { KanbanBoard } from '@/components/kanban';
 import { StoryDetailModal } from '@/components/stories';
 import { FAB, HelpFAB } from '@/components/ui/fab';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { CompactErrorFallback } from '@/components/ui/ErrorBoundary';
 import { useStories } from '@/hooks/use-stories';
 import type { Story, SidebarView } from '@/types';
 
@@ -41,14 +43,16 @@ export default function Home() {
 
   return (
     <div className="h-full relative">
-      <Suspense fallback={<ViewLoading />}>
-        <ViewContent
-          view={activeView}
-          onStoryClick={handleStoryClick}
-          onRefresh={refresh}
-          isLoading={isLoading}
-        />
-      </Suspense>
+      <ErrorBoundary resetKeys={[activeView]} fallback={<CompactErrorFallback message="Erro ao carregar a view" />}>
+        <Suspense fallback={<ViewLoading />}>
+          <ViewContent
+            view={activeView}
+            onStoryClick={handleStoryClick}
+            onRefresh={refresh}
+            isLoading={isLoading}
+          />
+        </Suspense>
+      </ErrorBoundary>
 
       <StoryDetailModal
         story={selectedStory}
