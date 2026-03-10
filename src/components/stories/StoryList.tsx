@@ -1,20 +1,19 @@
-'use client';
-
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { useStoryStore } from '@/stores/story-store';
-import type { StoryStatus } from '@/types';
+import { GlassInput, GlassButton, SectionLabel } from '../ui';
+import { NoSearchResults } from '../ui';
+import { cn } from '../../lib/utils';
+import { useStoryStore } from '../../stores/storyStore';
+import type { Story, StoryStatus, StoryState, StoryActions } from '../../stores/storyStore';
 import { StoryCard } from './StoryCard';
 import { StoryDetailModal } from './StoryDetailModal';
 import { StoryCreateModal } from './StoryCreateModal';
 
-const statusFilters: { value: StoryStatus | 'all'; label: string }[] = [
-  { value: 'all', label: 'All' },
+type StoryStore = StoryState & StoryActions;
+
+const statusFilters: { value: StoryStatus | null; label: string }[] = [
+  { value: null, label: 'Todas' },
   { value: 'backlog', label: 'Backlog' },
   { value: 'in_progress', label: 'In Progress' },
   { value: 'ai_review', label: 'AI Review' },
@@ -34,39 +33,21 @@ const statusFilterColors: Record<string, string> = {
   error: 'bg-red-500/15 text-red-500',
 };
 
-export function StoryList() {
-  const stories = useStoryStore((s) => s.stories);
-  const [statusFilter, setStatusFilter] = useState<StoryStatus | 'all'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+export function StoryList({ viewToggle }: { viewToggle?: React.ReactNode } = {}) {
+  const stories = useStoryStore((s: StoryStore) => s.stories);
+  const statusFilter = useStoryStore((s: StoryStore) => s.statusFilter);
+  const searchQuery = useStoryStore((s: StoryStore) => s.searchQuery);
+  const setStatusFilter = useStoryStore((s: StoryStore) => s.setStatusFilter);
+  const setSearchQuery = useStoryStore((s: StoryStore) => s.setSearchQuery);
+  const getFilteredStories = useStoryStore((s: StoryStore) => s.getFilteredStories);
+
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  const allStories = useMemo(() => Object.values(stories), [stories]);
-
-  const filteredStories = useMemo(() => {
-    let result = allStories;
-
-    // Filter by status
-    if (statusFilter !== 'all') {
-      result = result.filter((s) => s.status === statusFilter);
-    }
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (s) =>
-          s.title.toLowerCase().includes(query) ||
-          s.description?.toLowerCase().includes(query) ||
-          s.id.toLowerCase().includes(query)
-      );
-    }
-
-    return result;
-  }, [allStories, statusFilter, searchQuery]);
+  const filteredStories = useMemo(() => getFilteredStories(), [getFilteredStories]);
 
   const selectedStory = useMemo(
-    () => (selectedStoryId ? stories[selectedStoryId] ?? null : null),
+    () => (selectedStoryId ? stories.find((s: Story) => s.id === selectedStoryId) ?? null : null),
     [selectedStoryId, stories]
   );
 
@@ -74,47 +55,45 @@ export function StoryList() {
     <div className="flex flex-col gap-4 h-full">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-medium text-muted-foreground">Stories</h3>
-          <Badge variant="outline">{allStories.length}</Badge>
+        <div className="flex items-center gap-3">
+          <SectionLabel count={stories.length}>Stories</SectionLabel>
+          {viewToggle}
         </div>
-        <Button
+        <GlassButton
+          variant="primary"
           size="sm"
+          leftIcon={<Plus size={14} />}
           onClick={() => setIsCreateOpen(true)}
         >
-          <Plus size={14} className="mr-1" />
-          Create Story
-        </Button>
+          Criar Story
+        </GlassButton>
       </div>
 
       {/* Search */}
-      <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search by title, description or ID..."
-          className="pl-9"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
+      <GlassInput
+        placeholder="Buscar por titulo, descricao ou ID..."
+        leftIcon={<Search size={16} />}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
       {/* Status Filters */}
       <div className="flex flex-wrap items-center gap-1.5">
         {statusFilters.map((filter) => {
           const isActive = statusFilter === filter.value;
-          const colorClass = filter.value !== 'all' ? statusFilterColors[filter.value] : '';
+          const colorClass = filter.value ? statusFilterColors[filter.value] : '';
 
           return (
             <button
-              key={filter.value}
+              key={filter.value ?? 'all'}
               onClick={() => setStatusFilter(filter.value)}
               className={cn(
                 'inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-lg transition-all duration-150',
                 isActive
-                  ? filter.value !== 'all'
+                  ? filter.value
                     ? cn(colorClass, 'ring-1 ring-current')
-                    : 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:opacity-80',
+                    : 'glass-button-primary text-[var(--button-primary-text)]'
+                  : 'glass-badge hover:opacity-80',
               )}
             >
               {filter.label}
@@ -125,7 +104,7 @@ export function StoryList() {
 
       {/* Story Grid */}
       {filteredStories.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 flex-1 overflow-y-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <AnimatePresence mode="popLayout">
             {filteredStories.map((story) => (
               <motion.div
@@ -146,24 +125,21 @@ export function StoryList() {
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center py-12">
-          <div className="text-center">
-            <Search className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">No results found</p>
-          </div>
+          <NoSearchResults query={searchQuery} onClear={() => setSearchQuery('')} />
         </div>
       )}
 
       {/* Detail Modal */}
       <StoryDetailModal
         story={selectedStory}
-        open={!!selectedStory}
-        onOpenChange={(open) => { if (!open) setSelectedStoryId(null); }}
+        isOpen={!!selectedStory}
+        onClose={() => setSelectedStoryId(null)}
       />
 
       {/* Create Modal */}
       <StoryCreateModal
-        open={isCreateOpen}
-        onOpenChange={setIsCreateOpen}
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
       />
     </div>
   );

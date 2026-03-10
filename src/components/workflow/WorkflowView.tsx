@@ -1,225 +1,25 @@
-'use client';
-
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { GlassAvatar } from '@/components/ui/GlassAvatar';
+import { GlassButton, Badge } from '../ui';
 import { WorkflowCanvas } from './WorkflowCanvas';
 import { WorkflowSidebar } from './WorkflowSidebar';
 import { WorkflowMissionDetail } from './WorkflowMissionDetail';
-import { cn, formatRelativeTime, getSquadTheme } from '@/lib/utils';
-import { useWorkflows, useCreateWorkflow, useExecuteWorkflow, useWorkflowExecutions, useExecuteWorkflowStream, useSmartOrchestration } from '@/hooks/use-workflows';
-import { workflowsApi } from '@/services/api';
-// TODO: Migrate CreateWorkflowModal from settings/WorkflowManager to dashboard
-// import { CreateWorkflowModal } from '@/components/settings/WorkflowManager';
+import { WorkflowListView } from './WorkflowListView';
+import { NodeDetailPanel } from './NodeDetailPanel';
+import { ExecuteWorkflowDialog, SmartOrchestrationDialog } from './WorkflowDialogs';
+import { PlayIcon, PauseIcon, RefreshIcon, GridIcon, ListIcon, ZoomInIcon, ZoomOutIcon, CloseIcon, ClockIcon, TokenIcon } from './WorkflowIcons';
+import { formatDuration, formatTokens } from './workflow-utils';
+import { createMockMission, createMockOperations } from './workflow-mock-data';
+import { cn, formatRelativeTime } from '../../lib/utils';
+import { useWorkflows, useCreateWorkflow, useExecuteWorkflow, useWorkflowExecutions, useExecuteWorkflowStream, useSmartOrchestration } from '../../hooks/useWorkflows';
+import { workflowsApi } from '../../services/api';
+import { CreateWorkflowModal } from '../settings/WorkflowManager';
 import { WorkflowExecutionLive } from './WorkflowExecutionLive';
-import type { WorkflowMission, WorkflowOperation, AgentTool, TokenUsage } from './types';
-import type { SquadType } from '@/types';
-
-// Icons
-const PlayIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <polygon points="5 3 19 12 5 21 5 3" />
-  </svg>
-);
-
-const PauseIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <rect x="6" y="4" width="4" height="16" />
-    <rect x="14" y="4" width="4" height="16" />
-  </svg>
-);
-
-const RefreshIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="23 4 23 10 17 10" />
-    <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
-  </svg>
-);
-
-const GridIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <rect x="3" y="3" width="7" height="7" />
-    <rect x="14" y="3" width="7" height="7" />
-    <rect x="14" y="14" width="7" height="7" />
-    <rect x="3" y="14" width="7" height="7" />
-  </svg>
-);
-
-const ListIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <line x1="8" y1="6" x2="21" y2="6" />
-    <line x1="8" y1="12" x2="21" y2="12" />
-    <line x1="8" y1="18" x2="21" y2="18" />
-    <line x1="3" y1="6" x2="3.01" y2="6" />
-    <line x1="3" y1="12" x2="3.01" y2="12" />
-    <line x1="3" y1="18" x2="3.01" y2="18" />
-  </svg>
-);
-
-const ZoomInIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    <line x1="11" y1="8" x2="11" y2="14" />
-    <line x1="8" y1="11" x2="14" y2="11" />
-  </svg>
-);
-
-const ZoomOutIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    <line x1="8" y1="11" x2="14" y2="11" />
-  </svg>
-);
-
-const CloseIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-
-const ClockIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="12 6 12 12 16 14" />
-  </svg>
-);
-
-const TokenIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="12" r="10" />
-    <path d="M12 6v12M9 9l3-3 3 3M9 15l3 3 3-3" />
-  </svg>
-);
-
-// Helper functions
-const formatDuration = (seconds: number): string => {
-  if (seconds < 60) return `${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  if (minutes < 60) {
-    return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
-  }
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-  return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
-};
-
-const formatTokens = (tokens: number): string => {
-  if (tokens < 1000) return tokens.toString();
-  if (tokens < 1000000) return `${(tokens / 1000).toFixed(1)}K`;
-  return `${(tokens / 1000000).toFixed(2)}M`;
-};
-
-// Tool definitions
-const AGENT_TOOLS: Record<string, AgentTool[]> = {
-  orchestrator: [
-    { id: 'api', name: 'API', description: 'Integracao com APIs externas', connected: true },
-    { id: 'slack', name: 'Slack', description: 'Comunicacao com equipe', connected: true },
-    { id: 'notion', name: 'Notion', description: 'Documentacao e wikis', connected: true },
-    { id: 'calendar', name: 'Calendar', description: 'Agendamento de tarefas', connected: true },
-    { id: 'analytics', name: 'Analytics', description: 'Metricas e dashboards', connected: true },
-  ],
-  copywriting: [
-    { id: 'web-search', name: 'Web Search', description: 'Pesquisa na internet', connected: true },
-    { id: 'web-scraper', name: 'Web Scraper', description: 'Extracao de conteudo', connected: true },
-    { id: 'docs', name: 'Google Docs', description: 'Edicao de documentos', connected: true },
-    { id: 'notion', name: 'Notion', description: 'Base de conhecimento', connected: true },
-    { id: 'analytics', name: 'Analytics', description: 'Dados de SEO', connected: false },
-  ],
-  design: [
-    { id: 'figma', name: 'Figma', description: 'Design de interfaces', connected: true },
-    { id: 'image-gen', name: 'Image Gen', description: 'Geracao de imagens AI', connected: true },
-    { id: 'web-scraper', name: 'Web Scraper', description: 'Referencias visuais', connected: true },
-    { id: 'file-system', name: 'File System', description: 'Gerenciamento de assets', connected: true },
-    { id: 'notion', name: 'Notion', description: 'Brand guidelines', connected: true },
-  ],
-  creator: [
-    { id: 'image-gen', name: 'Image Gen', description: 'Criacao de visuais', connected: true },
-    { id: 'web-search', name: 'Web Search', description: 'Pesquisa de trends', connected: true },
-    { id: 'analytics', name: 'Analytics', description: 'Metricas de conteudo', connected: true },
-    { id: 'calendar', name: 'Calendar', description: 'Calendario editorial', connected: true },
-    { id: 'slack', name: 'Slack', description: 'Comunicacao', connected: false },
-  ],
-};
-
-// Mock data for simple workflow
-const createSimpleMission = (): WorkflowMission => ({
-  id: 'mission-001',
-  name: 'Campanha de Lancamento Q1',
-  description: 'Criacao completa de campanha incluindo copy, design e conteudo para redes sociais',
-  status: 'in-progress',
-  startedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-  progress: 45,
-  currentNode: 'node-copy-1',
-  tokens: { input: 12450, output: 8320, total: 20770 },
-  estimatedTimeRemaining: 420,
-  nodes: [
-    { id: 'node-start', type: 'start', label: 'Inicio', status: 'completed', position: { x: 100, y: 300 } },
-    {
-      id: 'node-orchestrator', type: 'agent', label: 'Orquestracao', agentName: 'Orion', squadType: 'orchestrator',
-      status: 'completed', position: { x: 250, y: 300 }, progress: 100, currentAction: 'Tarefa concluida',
-      tools: AGENT_TOOLS.orchestrator, tokens: { input: 2150, output: 1820, total: 3970 },
-      startedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), completedAt: new Date(Date.now() - 4 * 60 * 1000).toISOString(),
-      output: 'Workflow configurado com sucesso. 5 agents alocados, 4 tarefas principais distribuidas.',
-    },
-    {
-      id: 'node-copy-1', type: 'agent', label: 'Headlines', agentName: 'Luna', squadType: 'copywriting',
-      status: 'active', position: { x: 420, y: 180 }, progress: 65, currentAction: 'Escrevendo variacao #3...',
-      tools: AGENT_TOOLS.copywriting, tokens: { input: 3200, output: 2150, total: 5350 },
-      startedAt: new Date(Date.now() - 4 * 60 * 1000).toISOString(),
-    },
-    {
-      id: 'node-copy-2', type: 'agent', label: 'Body Copy', agentName: 'Atlas', squadType: 'copywriting',
-      status: 'waiting', position: { x: 420, y: 420 }, progress: 0, currentAction: 'Aguardando headlines...',
-      tools: AGENT_TOOLS.copywriting, tokens: { input: 0, output: 0, total: 0 },
-    },
-    {
-      id: 'node-design', type: 'agent', label: 'Visual Design', agentName: 'Maya', squadType: 'design',
-      status: 'waiting', position: { x: 600, y: 300 }, progress: 0, currentAction: 'Aguardando copy...',
-      tools: AGENT_TOOLS.design, tokens: { input: 0, output: 0, total: 0 },
-    },
-    {
-      id: 'node-creator', type: 'agent', label: 'Conteudo Social', agentName: 'Phoenix', squadType: 'creator',
-      status: 'idle', position: { x: 780, y: 300 }, progress: 0,
-      tools: AGENT_TOOLS.creator, tokens: { input: 0, output: 0, total: 0 },
-    },
-    { id: 'node-review', type: 'checkpoint', label: 'Revisao Final', status: 'idle', position: { x: 920, y: 300 } },
-    { id: 'node-end', type: 'end', label: 'Concluido', status: 'idle', position: { x: 1050, y: 300 } },
-  ],
-  edges: [
-    { id: 'edge-1', source: 'node-start', target: 'node-orchestrator', status: 'completed' },
-    { id: 'edge-2', source: 'node-orchestrator', target: 'node-copy-1', status: 'active', animated: true },
-    { id: 'edge-3', source: 'node-orchestrator', target: 'node-copy-2', status: 'active', animated: true },
-    { id: 'edge-4', source: 'node-copy-1', target: 'node-design', status: 'idle' },
-    { id: 'edge-5', source: 'node-copy-2', target: 'node-design', status: 'idle' },
-    { id: 'edge-6', source: 'node-design', target: 'node-creator', status: 'idle' },
-    { id: 'edge-7', source: 'node-creator', target: 'node-review', status: 'idle' },
-    { id: 'edge-8', source: 'node-review', target: 'node-end', status: 'idle' },
-  ],
-  agents: [
-    { id: 'agent-1', name: 'Orion', squadType: 'orchestrator', role: 'Orchestrator Chief', status: 'completed', currentTask: 'Distribuicao concluida' },
-    { id: 'agent-2', name: 'Luna', squadType: 'copywriting', role: 'Creative Writer', status: 'working', currentTask: 'Criando headlines' },
-    { id: 'agent-3', name: 'Atlas', squadType: 'copywriting', role: 'Content Strategist', status: 'waiting', currentTask: 'Aguardando' },
-    { id: 'agent-4', name: 'Maya', squadType: 'design', role: 'Visual Designer', status: 'waiting', currentTask: 'Aguardando copy' },
-    { id: 'agent-5', name: 'Phoenix', squadType: 'creator', role: 'Content Creator', status: 'waiting', currentTask: 'Aguardando assets' },
-  ],
-});
-
-const createMockMission = (type: 'simple' | 'complex' = 'simple'): WorkflowMission => {
-  return createSimpleMission();
-};
-
-const createMockOperations = (): WorkflowOperation[] => [
-  { id: 'op-1', missionId: 'mission-001', agentName: 'Orion', squadType: 'orchestrator', action: 'Analisando briefing e distribuindo tarefas', status: 'completed', startedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), duration: 45 },
-  { id: 'op-2', missionId: 'mission-001', agentName: 'Luna', squadType: 'copywriting', action: 'Criando headlines para landing page', status: 'running', startedAt: new Date(Date.now() - 4 * 60 * 1000).toISOString() },
-  { id: 'op-3', missionId: 'mission-001', agentName: 'Atlas', squadType: 'copywriting', action: 'Aguardando headlines para iniciar body copy', status: 'pending', startedAt: new Date(Date.now() - 3 * 60 * 1000).toISOString() },
-  { id: 'op-4', missionId: 'mission-001', agentName: 'Maya', squadType: 'design', action: 'Preparando templates visuais', status: 'pending', startedAt: new Date(Date.now() - 2 * 60 * 1000).toISOString() },
-];
+import { useTaskLiveMission } from '../../hooks/useTaskLiveMission';
+import { useTaskHistory, useTaskDetail } from '../../hooks/useTaskHistory';
+import { useTaskReplay } from '../../hooks/useTaskReplay';
+import { exportTaskAsJSON, exportTaskAsMarkdown, copyTaskShareLink } from '../../lib/taskExport';
+import type { WorkflowMission, WorkflowOperation } from './types';
 
 interface WorkflowViewProps {
   onClose: () => void;
@@ -228,13 +28,22 @@ interface WorkflowViewProps {
 export function WorkflowView({ onClose }: WorkflowViewProps) {
   // Fetch real workflows from API
   const { data: realWorkflows, isLoading: isLoadingWorkflows, refetch: refetchWorkflows } = useWorkflows();
-  const { data: executions, isLoading: isLoadingExecutions } = useWorkflowExecutions({ limit: 10 });
+  const { data: _executions, isLoading: _isLoadingExecutions } = useWorkflowExecutions({ limit: 10 });
   const createWorkflowMutation = useCreateWorkflow();
   const executeWorkflowMutation = useExecuteWorkflow();
-  const { state: liveExecutionState, isExecuting: isLiveExecuting, execute: executeLive, reset: resetLiveExecution } = useExecuteWorkflowStream();
-  const { state: orchestrationState, isOrchestrating, orchestrate: startOrchestration, reset: resetOrchestration } = useSmartOrchestration();
+  const { state: liveExecutionState, execute: executeLive, reset: resetLiveExecution } = useExecuteWorkflowStream();
+  const { state: orchestrationState, orchestrate: _startOrchestration, reset: resetOrchestration } = useSmartOrchestration();
+  const taskLiveMission = useTaskLiveMission();
+  const { data: taskHistoryData, isLoading: isLoadingTaskHistory, refetch: refetchTaskHistory } = useTaskHistory({ limit: 30 });
+  const taskReplay = useTaskReplay();
+  const [replayTaskId, setReplayTaskId] = useState<string | null>(null);
+  const [replayTaskData, setReplayTaskData] = useState<import('../../services/api/tasks').Task | null>(null);
+  const { data: replayTaskDetail } = useTaskDetail(replayTaskId);
   const [showLiveExecution, setShowLiveExecution] = useState(false);
   const [showOrchestration, setShowOrchestration] = useState(false);
+  const [liveMissionActive, setLiveMissionActive] = useState(false);
+  const [replayActive, setReplayActive] = useState(false);
+  const [copiedShareId, setCopiedShareId] = useState<string | null>(null);
 
   // Execution dialog state
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -247,6 +56,9 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
   const [orchestrationDemand, setOrchestrationDemand] = useState('');
 
   const [activeTab, setActiveTab] = useState<'list' | 'executions' | 'demo'>('list');
+  // Execution history filters
+  const [historyStatusFilter, setHistoryStatusFilter] = useState<string>('all');
+  const [historySearchQuery, setHistorySearchQuery] = useState('');
   const [workflowType, setWorkflowType] = useState<'simple' | 'complex'>('simple');
   const [mission, setMission] = useState<WorkflowMission>(() => createMockMission('simple'));
   const [operations, setOperations] = useState<WorkflowOperation[]>(createMockOperations);
@@ -332,41 +144,237 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
     resetLiveExecution();
   };
 
-  // Start smart orchestration
+  // Start smart orchestration — uses live mission on canvas
   const handleStartOrchestration = async () => {
     if (!orchestrationDemand.trim()) return;
     setShowOrchestrationDialog(false);
-    setShowOrchestration(true);
-    startOrchestration(orchestrationDemand.trim());
+    setLiveMissionActive(true);
+    setActiveTab('demo');
+    setIsPlaying(false);
+    taskLiveMission.start(orchestrationDemand.trim());
   };
 
-  // Close orchestration modal
+  // Close orchestration / live mission
   const handleCloseOrchestration = () => {
     setShowOrchestration(false);
     resetOrchestration();
   };
 
-  // Simulate real-time updates
+  const handleCloseLiveMission = () => {
+    setLiveMissionActive(false);
+    taskLiveMission.reset();
+    setIsPlaying(true);
+    setMission(createMockMission(workflowType));
+    setOperations(createMockOperations());
+  };
+
+  // Export task results as Markdown
+  const handleExportTask = useCallback(async (task: { id: string; demand: string; status: string; squads: Array<{ squadId: string; agentCount: number }>; outputs: Array<{ stepId: string; stepName: string; output: Record<string, unknown> }>; createdAt?: string; completedAt?: string; totalTokens?: number; totalDuration?: number }) => {
+    let fullTask = task;
+    if (task.outputs.length === 0 && task.status === 'completed') {
+      try {
+        const { tasksApi } = await import('../../services/api/tasks');
+        fullTask = await tasksApi.getTask(task.id);
+      } catch { /* use what we have */ }
+    }
+
+    const lines: string[] = [];
+    lines.push(`# Orquestração: ${fullTask.demand}`);
+    lines.push('');
+    lines.push(`- **ID:** ${fullTask.id}`);
+    lines.push(`- **Status:** ${fullTask.status}`);
+    if (fullTask.createdAt) lines.push(`- **Criado:** ${new Date(fullTask.createdAt).toLocaleString('pt-BR')}`);
+    if (fullTask.completedAt) lines.push(`- **Concluído:** ${new Date(fullTask.completedAt).toLocaleString('pt-BR')}`);
+    if (fullTask.totalDuration) lines.push(`- **Duração:** ${formatDuration(Math.floor(fullTask.totalDuration / 1000))}`);
+    if (fullTask.totalTokens) lines.push(`- **Tokens:** ${formatTokens(fullTask.totalTokens)}`);
+    lines.push('');
+
+    if (fullTask.squads.length > 0) {
+      lines.push('## Squads');
+      fullTask.squads.forEach(sq => {
+        lines.push(`- **${sq.squadId}** (${sq.agentCount} agentes)`);
+      });
+      lines.push('');
+    }
+
+    if (fullTask.outputs.length > 0) {
+      lines.push('## Outputs');
+      lines.push('');
+      fullTask.outputs.forEach((o, i) => {
+        const response = (o.output.response as string) || (o.output.content as string) || '';
+        const agentName = (o.output.agent as Record<string, string>)?.name || 'Agent';
+        const squad = (o.output.agent as Record<string, string>)?.squad || '';
+        lines.push(`### ${i + 1}. ${o.stepName || `Step ${i + 1}`}`);
+        lines.push(`**Agent:** ${agentName}${squad ? ` (${squad})` : ''}`);
+        lines.push('');
+        if (response) {
+          lines.push(response);
+          lines.push('');
+        }
+        lines.push('---');
+        lines.push('');
+      });
+    }
+
+    const markdown = lines.join('\n');
+    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orchestration-${fullTask.id.slice(0, 8)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
+
+  // Start replay of a completed task
+  const handleStartReplay = (taskId: string) => {
+    setReplayTaskId(taskId);
+  };
+
+  // When task detail is loaded, start replay
+  const handleReplayLoaded = useCallback((task: typeof replayTaskDetail) => {
+    if (!task) return;
+    taskReplay.load(task);
+    setReplayTaskData(task);
+    setReplayActive(true);
+    setLiveMissionActive(false);
+    setIsPlaying(false);
+    setActiveTab('demo');
+    setReplayTaskId(null);
+    setTimeout(() => taskReplay.play(), 500);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (replayTaskDetail && replayTaskId) {
+      handleReplayLoaded(replayTaskDetail);
+    }
+  }, [replayTaskDetail, replayTaskId, handleReplayLoaded]);
+
+  const handleStopReplay = () => {
+    taskReplay.stop();
+    setReplayTaskData(null);
+    setReplayActive(false);
+    setIsPlaying(true);
+    setMission(createMockMission(workflowType));
+    setOperations(createMockOperations());
+  };
+
+  // Simulate real-time updates — advances through all nodes sequentially
   useEffect(() => {
     if (!isPlaying) return;
 
+    const nodeOrder = [
+      'node-copy-1',
+      'node-copy-2',
+      'node-design',
+      'node-creator',
+      'node-review',
+      'node-end',
+    ];
+
     const interval = setInterval(() => {
       setMission((prev) => {
-        const currentNode = prev.nodes.find((n) => n.id === 'node-copy-1');
-        if (currentNode && currentNode.progress !== undefined && currentNode.progress < 100) {
+        const activeNode = prev.nodes.find(
+          (n) => n.status === 'active' && n.progress !== undefined && n.progress < 100
+        );
+
+        if (activeNode) {
+          const newProgress = Math.min((activeNode.progress || 0) + 2, 100);
+          const isComplete = newProgress >= 100;
+          const activeIndex = nodeOrder.indexOf(activeNode.id);
+          const nextNodeId = activeIndex >= 0 && activeIndex < nodeOrder.length - 1
+            ? nodeOrder[activeIndex + 1]
+            : null;
+          const completedEdgeSource = activeNode.id;
+
           return {
             ...prev,
             progress: Math.min(prev.progress + 1, 100),
-            nodes: prev.nodes.map((n) =>
-              n.id === 'node-copy-1'
-                ? { ...n, progress: Math.min((n.progress || 0) + 2, 100) }
-                : n
-            ),
+            nodes: prev.nodes.map((n) => {
+              if (n.id === activeNode.id) {
+                return {
+                  ...n,
+                  progress: newProgress,
+                  status: isComplete ? 'completed' as const : n.status,
+                  currentAction: isComplete ? 'Tarefa concluída' : n.currentAction,
+                  completedAt: isComplete ? new Date().toISOString() : n.completedAt,
+                };
+              }
+              if (isComplete && nextNodeId && n.id === nextNodeId) {
+                if (n.type === 'checkpoint' || n.type === 'end') {
+                  return { ...n, status: 'completed' as const };
+                }
+                return {
+                  ...n,
+                  status: 'active' as const,
+                  progress: 0,
+                  currentAction: n.id === 'node-copy-2' ? 'Escrevendo body copy...'
+                    : n.id === 'node-design' ? 'Criando layout da landing page...'
+                    : n.id === 'node-creator' ? 'Produzindo conteúdo para redes sociais...'
+                    : n.currentAction,
+                  startedAt: new Date().toISOString(),
+                };
+              }
+              return n;
+            }),
+            edges: prev.edges.map((e) => {
+              if (isComplete && e.source === completedEdgeSource) {
+                return { ...e, status: 'completed' as const, animated: false };
+              }
+              if (isComplete && nextNodeId && e.source === nextNodeId && e.status === 'idle') {
+                return { ...e, status: 'active' as const, animated: true };
+              }
+              return e;
+            }),
+            agents: prev.agents.map((a) => {
+              const agentNode = prev.nodes.find((n) => n.agentName === a.name);
+              if (!agentNode) return a;
+              if (agentNode.id === activeNode.id && isComplete) {
+                return { ...a, status: 'completed' as const, currentTask: 'Concluído' };
+              }
+              if (isComplete && nextNodeId) {
+                const nextNode = prev.nodes.find((n) => n.id === nextNodeId);
+                if (nextNode && nextNode.agentName === a.name) {
+                  return { ...a, status: 'working' as const, currentTask: nextNode.currentAction || 'Trabalhando...' };
+                }
+              }
+              return a;
+            }),
           };
         }
+
+        const allDone = prev.nodes
+          .filter((n) => n.type === 'agent')
+          .every((n) => n.status === 'completed');
+
+        if (allDone && prev.status !== 'completed') {
+          return {
+            ...prev,
+            status: 'completed' as const,
+            progress: 100,
+            estimatedTimeRemaining: 0,
+            nodes: prev.nodes.map((n) =>
+              n.type === 'end' || n.type === 'checkpoint'
+                ? { ...n, status: 'completed' as const }
+                : n
+            ),
+            edges: prev.edges.map((e) => ({ ...e, status: 'completed' as const, animated: false })),
+          };
+        }
+
         return prev;
       });
-    }, 1000);
+
+      setOperations((prev) =>
+        prev.map((op) => {
+          if (op.status === 'running') {
+            return { ...op, duration: (op.duration || 0) + 1 };
+          }
+          return op;
+        })
+      );
+    }, 800);
 
     return () => clearInterval(interval);
   }, [isPlaying]);
@@ -377,11 +385,21 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
     setMission(createMockMission(workflowType));
     setOperations(createMockOperations());
     setSelectedNodeId(null);
+    setIsPlaying(true);
   };
 
-  const selectedNode = selectedNodeId
-    ? mission.nodes.find((n) => n.id === selectedNodeId)
-    : null;
+  const activeMissionData = useMemo(() =>
+    replayActive && taskReplay.state.mission ? taskReplay.state.mission :
+    liveMissionActive && taskLiveMission.state.mission ? taskLiveMission.state.mission :
+    mission,
+    [replayActive, taskReplay.state.mission, liveMissionActive, taskLiveMission.state.mission, mission]
+  );
+  const selectedNode = useMemo(() =>
+    selectedNodeId
+      ? activeMissionData.nodes.find((n) => n.id === selectedNodeId)
+      : null,
+    [selectedNodeId, activeMissionData.nodes]
+  );
 
   return (
     <motion.div
@@ -391,122 +409,172 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
       className="fixed inset-0 z-50 flex"
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-scrim-40 backdrop-blur-md" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-md"
+        onClick={onClose}
+      />
 
       {/* Main Content */}
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="relative z-10 m-4 flex-1 flex flex-col backdrop-blur-2xl border border-glass-20 rounded-3xl overflow-hidden shadow-2xl"
+        className="relative z-10 m-2 md:m-4 flex-1 flex flex-col backdrop-blur-2xl border border-white/20 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl"
         style={{
           background: `
-            radial-gradient(ellipse 60% 40% at 0% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-            radial-gradient(ellipse 50% 60% at 100% 0%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+            radial-gradient(ellipse 60% 40% at 0% 100%, rgba(209, 255, 0, 0.08) 0%, transparent 50%),
+            radial-gradient(ellipse 50% 60% at 100% 0%, rgba(0, 153, 255, 0.06) 0%, transparent 50%),
             radial-gradient(ellipse 80% 80% at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 70%),
-            rgba(30, 30, 40, 0.65)
+            rgba(20, 20, 25, 0.75)
           `,
           boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 25px 50px -12px rgba(0, 0, 0, 0.4)'
         }}
       >
         {/* Top Tab Bar */}
-        <div className="h-14 px-6 flex items-center justify-between border-b border-glass-15 bg-glass-5">
+        <div className="h-12 md:h-14 px-3 md:px-6 flex items-center justify-between border-b border-white/15 bg-white/5">
           <div className="flex items-center gap-6">
-            <h2 className="text-foreground-primary font-semibold">Workflows</h2>
+            <h2 className="text-white font-semibold">Workflows</h2>
 
             {/* Main Tabs */}
-            <div className="flex gap-1 p-1 bg-glass-8 rounded-lg border border-glass-10">
+            <div className="flex gap-1 p-1 bg-white/8 rounded-lg border border-white/10" role="tablist" aria-label="Abas do workflow">
               <button
+                role="tab"
+                aria-selected={activeTab === 'list'}
+                tabIndex={activeTab === 'list' ? 0 : -1}
                 onClick={() => setActiveTab('list')}
                 className={cn(
                   'px-3 py-1.5 rounded text-sm font-medium transition-all',
-                  activeTab === 'list' ? 'bg-glass-10 text-foreground-primary' : 'text-foreground-tertiary hover:text-foreground-secondary'
+                  activeTab === 'list'
+                    ? 'bg-white/10 text-white/90'
+                    : 'text-white/50 hover:text-white/70'
                 )}
               >
                 Workflows
               </button>
               <button
+                role="tab"
+                aria-selected={activeTab === 'executions'}
+                tabIndex={activeTab === 'executions' ? 0 : -1}
                 onClick={() => setActiveTab('executions')}
                 className={cn(
                   'px-3 py-1.5 rounded text-sm font-medium transition-all',
-                  activeTab === 'executions' ? 'bg-glass-10 text-foreground-primary' : 'text-foreground-tertiary hover:text-foreground-secondary'
+                  activeTab === 'executions'
+                    ? 'bg-white/10 text-white/90'
+                    : 'text-white/50 hover:text-white/70'
                 )}
               >
-                Execucoes
-                {executions && executions.length > 0 && (
-                  <span className="ml-1.5 px-1.5 py-0.5 text-xs bg-glass-10 rounded-full">
-                    {executions.length}
+                Execuções
+                {taskHistoryData && taskHistoryData.tasks.length > 0 && (
+                  <span className="ml-1.5 px-1.5 py-0.5 text-xs bg-white/10 rounded-full">
+                    {taskHistoryData.tasks.length}
                   </span>
                 )}
               </button>
               <button
+                role="tab"
+                aria-selected={activeTab === 'demo'}
+                tabIndex={activeTab === 'demo' ? 0 : -1}
                 onClick={() => setActiveTab('demo')}
                 className={cn(
                   'px-3 py-1.5 rounded text-sm font-medium transition-all',
-                  activeTab === 'demo' ? 'bg-glass-10 text-foreground-primary' : 'text-foreground-tertiary hover:text-foreground-secondary'
+                  activeTab === 'demo'
+                    ? 'bg-white/10 text-white/90'
+                    : 'text-white/50 hover:text-white/70'
                 )}
               >
-                Demo
+                {replayActive ? 'Replay' : liveMissionActive ? 'Live' : 'Demo'}
               </button>
             </div>
           </div>
 
-          <Button variant="glass-ghost" size="icon" className="h-8 w-8" onClick={onClose}>
-            <CloseIcon />
-          </Button>
+          <div className="flex items-center gap-2">
+            <GlassButton
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                setOrchestrationDemand('');
+                setShowOrchestrationDialog(true);
+              }}
+              className="bg-gradient-to-r from-[#D1FF00]/20 to-[#0099FF]/20 border-[#D1FF00]/30"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-1">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg>
+              Orquestrar
+            </GlassButton>
+            <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} aria-label="Fechar">
+              <CloseIcon />
+            </GlassButton>
+          </div>
         </div>
 
         {/* Content based on active tab */}
         {activeTab === 'list' ? (
+          /* Workflows List Tab */
           <div className="flex-1 overflow-auto p-6">
             {isLoadingWorkflows ? (
               <div className="flex items-center justify-center h-full">
-                <div className="animate-spin h-8 w-8 border-2 border-glass-20 border-t-glass-60 rounded-full" />
+                <div className="animate-spin h-8 w-8 border-2 border-white/20 border-t-white/60 rounded-full" />
               </div>
             ) : realWorkflows && realWorkflows.length > 0 ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-6">
-                  <p className="text-foreground-secondary">{realWorkflows.length} workflow(s) encontrado(s)</p>
+                  <p className="text-white/70">{realWorkflows.length} workflow(s) encontrado(s)</p>
                   <div className="flex gap-2">
-                    <Button
-                      variant="glass"
+                    <GlassButton
+                      variant="primary"
                       size="sm"
                       onClick={() => {
                         setOrchestrationDemand('');
                         setShowOrchestrationDialog(true);
                       }}
-                      className="bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-purple-500/30"
+                      className="bg-gradient-to-r from-[#D1FF00]/20 to-[#0099FF]/20 border-[#D1FF00]/30"
                     >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-1">
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+                        <path d="M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" />
+                      </svg>
                       Orquestrar
-                    </Button>
-                    <Button variant="glass-ghost" size="sm" onClick={() => setShowCreateModal(true)}>
+                    </GlassButton>
+                    <GlassButton variant="ghost" size="sm" onClick={() => setShowCreateModal(true)}>
                       + Criar Workflow
-                    </Button>
+                    </GlassButton>
                   </div>
                 </div>
                 <div className="grid gap-4">
                   {realWorkflows.map((workflow) => (
                     <div
                       key={workflow.id}
-                      className="p-4 rounded-xl border border-glass-15 bg-glass-8 hover:bg-glass-12 transition-all backdrop-blur-sm"
+                      className="p-4 rounded-xl border border-white/15 bg-white/8 hover:bg-white/12 transition-all backdrop-blur-sm"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h3 className="text-foreground-primary font-medium">{workflow.name}</h3>
-                          <p className="text-foreground-secondary text-sm mt-1">{workflow.description || 'Sem descricao'}</p>
+                          <h3 className="text-white font-medium">{workflow.name}</h3>
+                          <p className="text-white/60 text-sm mt-1">{workflow.description || 'Sem descrição'}</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-[10px]">
+                          <Badge
+                            variant="status"
+                            status={workflow.status === 'active' ? 'online' : workflow.status === 'paused' ? 'warning' : 'offline'}
+                            size="sm"
+                          >
                             {workflow.status}
                           </Badge>
                           {workflow.status === 'draft' && (
-                            <Button variant="glass-ghost" size="sm" onClick={() => handleActivateWorkflow(workflow.id)} className="ml-2">
+                            <GlassButton
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleActivateWorkflow(workflow.id)}
+                              className="ml-2"
+                            >
                               Ativar
-                            </Button>
+                            </GlassButton>
                           )}
                           {workflow.status === 'active' && (
-                            <Button
-                              variant="glass-primary"
+                            <GlassButton
+                              variant="primary"
                               size="sm"
                               onClick={() => handleOpenExecuteDialog(workflow.id)}
                               disabled={executeWorkflowMutation.isPending}
@@ -514,15 +582,15 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                             >
                               <PlayIcon />
                               <span className="ml-1">Executar</span>
-                            </Button>
+                            </GlassButton>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 mt-3 text-xs text-foreground-tertiary">
+                      <div className="flex items-center gap-4 mt-3 text-xs text-white/50">
                         <span>{workflow.stepCount} steps</span>
-                        <span>-</span>
+                        <span>•</span>
                         <span>Trigger: {workflow.trigger?.type || 'manual'}</span>
-                        <span>-</span>
+                        <span>•</span>
                         <span>Criado {formatRelativeTime(workflow.createdAt)}</span>
                       </div>
                     </div>
@@ -531,205 +599,674 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <div className="w-20 h-20 rounded-2xl bg-glass-10 border border-glass-10 flex items-center justify-center mb-6">
-                  <RefreshIcon />
+                <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center mb-6">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/60"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" /><path d="M16 16h5v5" /></svg>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground-primary mb-2">Nenhum workflow criado</h3>
-                <p className="text-foreground-secondary mb-6 max-w-md">
-                  Workflows permitem automatizar tarefas complexas coordenando multiplos agents.
-                  Crie seu primeiro workflow ou veja uma demonstracao.
+                <h3 className="text-xl font-semibold text-white mb-2">Nenhum workflow criado</h3>
+                <p className="text-white/60 mb-6 max-w-md">
+                  Workflows permitem automatizar tarefas complexas coordenando múltiplos agents.
+                  Crie seu primeiro workflow ou veja uma demonstração.
                 </p>
                 <div className="flex gap-3">
-                  <Button variant="glass-primary" onClick={() => setShowCreateModal(true)}>
+                  <GlassButton
+                    variant="primary"
+                    onClick={() => setShowCreateModal(true)}
+                  >
                     + Criar Workflow
-                  </Button>
-                  <Button variant="glass-ghost" onClick={() => setActiveTab('demo')}>
-                    Ver Demonstracao
-                  </Button>
+                  </GlassButton>
+                  <GlassButton variant="ghost" onClick={() => setActiveTab('demo')}>
+                    Ver Demonstração
+                  </GlassButton>
                 </div>
               </div>
             )}
           </div>
         ) : activeTab === 'executions' ? (
+          /* Executions Tab — Task Orchestration History */
           <div className="flex-1 overflow-auto p-6">
-            {isLoadingExecutions ? (
+            {isLoadingTaskHistory ? (
               <div className="flex items-center justify-center h-full">
-                <div className="animate-spin h-8 w-8 border-2 border-glass-20 border-t-glass-60 rounded-full" />
+                <div className="animate-spin h-8 w-8 border-2 border-white/20 border-t-white/60 rounded-full" />
               </div>
-            ) : executions && executions.length > 0 ? (
+            ) : taskHistoryData && taskHistoryData.tasks.length > 0 ? (
               <div className="space-y-4">
-                <div className="flex items-center justify-between mb-6">
-                  <p className="text-foreground-secondary">{executions.length} execucao(oes)</p>
-                  <Button variant="glass-ghost" size="sm" onClick={() => refetchWorkflows()}>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <p className="text-white/70">{taskHistoryData.tasks.length} orquestração(ões)</p>
+                    {taskHistoryData.dbPersistence && (
+                      <span className="px-2 py-0.5 text-[10px] bg-green-500/10 border border-green-500/20 rounded text-green-400">
+                        DB Persistido
+                      </span>
+                    )}
+                    {!taskHistoryData.dbPersistence && (
+                      <span className="px-2 py-0.5 text-[10px] bg-yellow-500/10 border border-yellow-500/20 rounded text-yellow-400">
+                        Cache (sessão)
+                      </span>
+                    )}
+                  </div>
+                  <GlassButton variant="ghost" size="sm" onClick={() => refetchTaskHistory()}>
                     <RefreshIcon />
                     <span className="ml-1">Atualizar</span>
-                  </Button>
+                  </GlassButton>
                 </div>
-                <div className="grid gap-3">
-                  {executions.map((execution) => (
-                    <div key={execution.id} className="p-4 rounded-xl border border-glass-10 bg-glass-5">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-foreground-primary font-medium">{execution.workflowName || 'Workflow'}</h3>
-                          <p className="text-foreground-tertiary text-xs mt-1 font-mono">{execution.id}</p>
-                        </div>
-                        <Badge variant="outline" className="text-[10px]">
-                          {execution.status}
-                        </Badge>
+
+                {/* Quick Metrics */}
+                {(() => {
+                  const tasks = taskHistoryData.tasks;
+                  const completed = tasks.filter(t => t.status === 'completed').length;
+                  const failed = tasks.filter(t => t.status === 'failed').length;
+                  const successRate = tasks.length > 0 ? Math.round((completed / tasks.length) * 100) : 0;
+                  const totalTokens = tasks.reduce((s, t) => s + (t.totalTokens || 0), 0);
+                  const avgDuration = completed > 0
+                    ? Math.round(tasks.filter(t => t.status === 'completed' && t.totalDuration).reduce((s, t) => s + (t.totalDuration || 0), 0) / completed / 1000)
+                    : 0;
+                  const estimatedCost = (totalTokens / 1000000) * 3;
+
+                  return (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
+                      <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                        <p className="text-[10px] uppercase text-white/40 mb-1">Total</p>
+                        <p className="text-lg font-semibold text-white">{tasks.length}</p>
                       </div>
-                      <div className="flex items-center gap-4 mt-3 text-xs text-foreground-tertiary">
-                        <span>Iniciado {formatRelativeTime(execution.startedAt)}</span>
-                        {execution.completedAt && (
-                          <>
-                            <span>-</span>
-                            <span>Concluido {formatRelativeTime(execution.completedAt)}</span>
-                          </>
+                      <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                        <p className="text-[10px] uppercase text-white/40 mb-1">Taxa Sucesso</p>
+                        <p className="text-lg font-semibold text-green-400">{successRate}%</p>
+                        <p className="text-[10px] text-white/30">{completed} ok / {failed} fail</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                        <p className="text-[10px] uppercase text-white/40 mb-1">Tempo Médio</p>
+                        <p className="text-lg font-semibold text-white">{avgDuration > 0 ? formatDuration(avgDuration) : '—'}</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                        <p className="text-[10px] uppercase text-white/40 mb-1">Tokens Total</p>
+                        <p className="text-lg font-semibold text-white">{formatTokens(totalTokens)}</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                        <p className="text-[10px] uppercase text-white/40 mb-1">Custo Est.</p>
+                        <p className="text-lg font-semibold text-yellow-400">${estimatedCost.toFixed(4)}</p>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Filters */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="relative flex-1 max-w-xs">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30">
+                      <circle cx="11" cy="11" r="8" />
+                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input
+                      type="text"
+                      value={historySearchQuery}
+                      onChange={(e) => setHistorySearchQuery(e.target.value)}
+                      placeholder="Buscar por demanda..."
+                      className="w-full pl-9 pr-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 transition-colors"
+                    />
+                  </div>
+                  <div className="flex gap-1 p-1 bg-white/5 rounded-lg border border-white/10">
+                    {[
+                      { value: 'all', label: 'Todos' },
+                      { value: 'completed', label: 'Concluído' },
+                      { value: 'executing', label: 'Executando' },
+                      { value: 'failed', label: 'Falhou' },
+                    ].map((f) => (
+                      <button
+                        key={f.value}
+                        onClick={() => setHistoryStatusFilter(f.value)}
+                        className={cn(
+                          'px-2.5 py-1 rounded text-xs font-medium transition-all',
+                          historyStatusFilter === f.value
+                            ? 'bg-white/10 text-white/90'
+                            : 'text-white/40 hover:text-white/60'
+                        )}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid gap-3">
+                  {taskHistoryData.tasks
+                    .filter(task => {
+                      if (historyStatusFilter !== 'all' && task.status !== historyStatusFilter) return false;
+                      if (historySearchQuery) {
+                        const q = historySearchQuery.toLowerCase();
+                        return task.demand.toLowerCase().includes(q) ||
+                          task.id.toLowerCase().includes(q) ||
+                          task.squads.some(s => s.squadId.toLowerCase().includes(q));
+                      }
+                      return true;
+                    })
+                    .map((task) => {
+                    const totalAgents = task.squads.reduce((sum, s) => sum + s.agentCount, 0);
+                    const squadNames = task.squads.map(s => s.squadId).join(', ');
+                    const hasOutputs = task.outputs.some(o => (o.output.response || o.output.content || '').length > 0);
+                    const durationMs = task.totalDuration || (
+                      task.startedAt && task.completedAt
+                        ? new Date(task.completedAt).getTime() - new Date(task.startedAt).getTime()
+                        : 0
+                    );
+
+                    return (
+                      <div
+                        key={task.id}
+                        className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/8 transition-all group"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0 mr-3">
+                            <h3 className="text-white font-medium truncate">{task.demand}</h3>
+                            <p className="text-white/40 text-xs mt-1 font-mono">{task.id.slice(0, 8)}...</p>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <Badge
+                              variant="status"
+                              status={
+                                task.status === 'completed' ? 'online' :
+                                task.status === 'executing' ? 'warning' :
+                                task.status === 'failed' ? 'error' : 'offline'
+                              }
+                              size="sm"
+                            >
+                              {task.status === 'completed' ? 'Concluído' :
+                               task.status === 'executing' ? 'Executando' :
+                               task.status === 'failed' ? 'Falhou' :
+                               task.status === 'analyzing' ? 'Analisando' :
+                               task.status === 'planning' ? 'Planejando' : 'Pendente'}
+                            </Badge>
+                            {(task.status === 'completed' || task.status === 'failed') && hasOutputs && (
+                              <>
+                                <GlassButton
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleStartReplay(task.id)}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                  title="Assistir replay desta orquestração"
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <polygon points="5 3 19 12 5 21 5 3" />
+                                  </svg>
+                                  <span className="ml-1">Replay</span>
+                                </GlassButton>
+                                <GlassButton
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleExportTask(task)}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                  title="Exportar resultados em Markdown"
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                    <polyline points="7 10 12 15 17 10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                  </svg>
+                                  <span className="ml-1">Export</span>
+                                </GlassButton>
+                                <GlassButton
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={async () => {
+                                    const ok = await copyTaskShareLink(task.id);
+                                    if (ok) {
+                                      setCopiedShareId(task.id);
+                                      setTimeout(() => setCopiedShareId(null), 2000);
+                                    }
+                                  }}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                  title="Copiar link compartilhável"
+                                >
+                                  {copiedShareId === task.id ? (
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" strokeWidth="2">
+                                      <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                  ) : (
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
+                                      <polyline points="16 6 12 2 8 6" />
+                                      <line x1="12" y1="2" x2="12" y2="15" />
+                                    </svg>
+                                  )}
+                                  <span className="ml-1">{copiedShareId === task.id ? 'Copied!' : 'Share'}</span>
+                                </GlassButton>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 mt-3 text-xs text-white/50 flex-wrap">
+                          {task.squads.length > 0 && (
+                            <span>{task.squads.length} squad(s) · {totalAgents} agent(s)</span>
+                          )}
+                          {squadNames && (
+                            <>
+                              <span>•</span>
+                              <span className="truncate max-w-[150px]">{squadNames}</span>
+                            </>
+                          )}
+                          {task.startedAt && (
+                            <>
+                              <span>•</span>
+                              <span>{formatRelativeTime(task.startedAt)}</span>
+                            </>
+                          )}
+                          {durationMs > 0 && (
+                            <>
+                              <span>•</span>
+                              <span>{formatDuration(Math.floor(durationMs / 1000))}</span>
+                            </>
+                          )}
+                          {task.totalTokens != null && task.totalTokens > 0 && (
+                            <>
+                              <span>•</span>
+                              <span>{formatTokens(task.totalTokens)} tokens</span>
+                            </>
+                          )}
+                          {task.completedSteps != null && task.stepCount != null && (
+                            <>
+                              <span>•</span>
+                              <span>{task.completedSteps}/{task.stepCount} steps</span>
+                            </>
+                          )}
+                        </div>
+
+                        {task.error && (
+                          <div className="mt-2 p-2 rounded bg-red-500/10 border border-red-500/20">
+                            <p className="text-red-400 text-xs truncate">{task.error}</p>
+                          </div>
                         )}
                       </div>
-                      {execution.error && (
-                        <div className="mt-2 p-2 rounded bg-red-500/10 border border-red-500/20">
-                          <p className="text-red-400 text-xs">{execution.error}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <h3 className="text-xl font-semibold text-foreground-primary mb-2">Nenhuma execucao</h3>
-                <p className="text-foreground-secondary mb-6 max-w-md">
-                  Execute um workflow para ver o historico de execucoes aqui.
+                <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center mb-6">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/60"><rect x="8" y="2" width="8" height="4" rx="1" ry="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><path d="M12 11h4" /><path d="M12 16h4" /><path d="M8 11h.01" /><path d="M8 16h.01" /></svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Nenhuma orquestração registrada</h3>
+                <p className="text-white/60 mb-6 max-w-md">
+                  Execute uma orquestração para ver o histórico aqui. Clique em "Orquestrar" para começar.
                 </p>
-                <Button variant="glass-ghost" onClick={() => setActiveTab('list')}>
-                  Ver Workflows
-                </Button>
+                <GlassButton
+                  variant="primary"
+                  onClick={() => {
+                    setOrchestrationDemand('');
+                    setShowOrchestrationDialog(true);
+                  }}
+                  className="bg-gradient-to-r from-[#D1FF00]/20 to-[#0099FF]/20 border-[#D1FF00]/30"
+                >
+                  Orquestrar
+                </GlassButton>
               </div>
             )}
           </div>
         ) : (
-          /* Demo Tab */
-          <div className="flex-1 flex overflow-hidden">
+          /* Demo / Live Tab - visualization */
+          <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+            {/* Left: Operations Sidebar (hidden on mobile, shown on md+) */}
             <WorkflowSidebar
-              mission={mission}
-              operations={operations}
+              mission={replayActive && taskReplay.state.mission ? taskReplay.state.mission : liveMissionActive && taskLiveMission.state.mission ? taskLiveMission.state.mission : mission}
+              operations={replayActive ? taskReplay.state.operations : liveMissionActive ? taskLiveMission.state.operations : operations}
               selectedNodeId={selectedNodeId}
               onSelectNode={setSelectedNodeId}
               onViewMission={() => setShowMissionDetail(true)}
             />
 
+            {/* Center: Canvas */}
             <div className="flex-1 flex flex-col">
-              <div className="h-12 px-4 flex items-center justify-between border-b border-glass-10">
+              {/* Header */}
+              <div className="h-auto md:h-12 px-3 md:px-4 py-2 md:py-0 flex flex-wrap items-center justify-between gap-2 border-b border-white/10">
                 <div className="flex items-center gap-4">
-                  <div className="flex gap-1 p-1 bg-glass-5 rounded-lg">
-                    <button
-                      onClick={() => handleWorkflowTypeChange('simple')}
-                      className={cn(
-                        'px-2 py-1 rounded text-xs font-medium transition-all',
-                        workflowType === 'simple' ? 'bg-glass-10 text-foreground-primary' : 'text-foreground-tertiary hover:text-foreground-secondary'
+                  {replayActive ? (
+                    /* Replay indicator + controls */
+                    <>
+                      <div className="flex items-center gap-2 px-2 py-1 bg-[#0099FF]/10 border border-[#0099FF]/30 rounded-lg">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0099FF" strokeWidth="2">
+                          <polygon points="5 3 19 12 5 21 5 3" />
+                        </svg>
+                        <span className="text-xs font-medium text-[#0099FF]">
+                          REPLAY {taskReplay.state.currentStep}/{taskReplay.state.totalSteps}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <GlassButton
+                          variant={taskReplay.state.isPlaying ? 'primary' : 'ghost'}
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() => taskReplay.state.isPlaying ? taskReplay.pause() : taskReplay.play()}
+                          aria-label={taskReplay.state.isPlaying ? 'Pausar' : 'Reproduzir'}
+                        >
+                          {taskReplay.state.isPlaying ? <PauseIcon /> : <PlayIcon />}
+                        </GlassButton>
+                        <div className="flex gap-0.5 p-0.5 bg-white/5 rounded">
+                          {[0.5, 1, 2, 4].map(s => (
+                            <button
+                              key={s}
+                              onClick={() => taskReplay.setSpeed(s)}
+                              className={cn(
+                                'px-1.5 py-0.5 rounded text-[10px] font-medium transition-all',
+                                taskReplay.state.speed === s ? 'bg-[#0099FF]/20 text-[#0099FF]' : 'text-white/40 hover:text-white/60'
+                              )}
+                            >
+                              {s}x
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="w-px h-5 bg-white/10" />
+                      {/* Export buttons */}
+                      {replayTaskData && (
+                        <div className="flex items-center gap-1">
+                          <GlassButton
+                            variant="ghost"
+                            size="sm"
+                            className="text-xs h-7"
+                            onClick={() => exportTaskAsJSON(replayTaskData)}
+                            aria-label="Exportar como JSON"
+                            title="Exportar JSON"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                              <polyline points="7 10 12 15 17 10" />
+                              <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            JSON
+                          </GlassButton>
+                          <GlassButton
+                            variant="ghost"
+                            size="sm"
+                            className="text-xs h-7"
+                            onClick={() => exportTaskAsMarkdown(replayTaskData)}
+                            aria-label="Exportar como Markdown"
+                            title="Exportar Markdown"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                              <polyline points="7 10 12 15 17 10" />
+                              <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            MD
+                          </GlassButton>
+                        </div>
                       )}
-                    >
-                      Simples
-                    </button>
-                    <button
-                      onClick={() => handleWorkflowTypeChange('complex')}
-                      className={cn(
-                        'px-2 py-1 rounded text-xs font-medium transition-all',
-                        workflowType === 'complex' ? 'bg-glass-10 text-foreground-primary' : 'text-foreground-tertiary hover:text-foreground-secondary'
-                      )}
-                    >
-                      Multi-Squad
-                    </button>
-                  </div>
+                      <GlassButton variant="ghost" size="sm" onClick={handleStopReplay} className="text-xs">
+                        Sair do Replay
+                      </GlassButton>
+                    </>
+                  ) : liveMissionActive ? (
+                    /* Live mission indicator */
+                    <>
+                      <div className="flex items-center gap-2 px-2 py-1 bg-[#D1FF00]/10 border border-[#D1FF00]/30 rounded-lg">
+                        <span className="relative flex h-2 w-2">
+                          {taskLiveMission.state.isRunning && (
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D1FF00] opacity-75" />
+                          )}
+                          <span className={cn('relative inline-flex rounded-full h-2 w-2', taskLiveMission.state.isRunning ? 'bg-[#D1FF00]' : 'bg-white/40')} />
+                        </span>
+                        <span className="text-xs font-medium text-[#D1FF00]">
+                          {taskLiveMission.state.isRunning ? 'LIVE' : 'Concluído'}
+                        </span>
+                      </div>
+                      <GlassButton variant="ghost" size="sm" onClick={handleCloseLiveMission} className="text-xs">
+                        Voltar ao Demo
+                      </GlassButton>
+                    </>
+                  ) : (
+                    /* Demo type selector */
+                    <>
+                      <div className="flex gap-1 p-1 bg-white/5 rounded-lg">
+                        <button
+                          onClick={() => handleWorkflowTypeChange('simple')}
+                          className={cn(
+                            'px-2 py-1 rounded text-xs font-medium transition-all',
+                            workflowType === 'simple'
+                              ? 'bg-white/10 text-white/90'
+                              : 'text-white/50 hover:text-white/70'
+                          )}
+                        >
+                          Simples
+                        </button>
+                        <button
+                          onClick={() => handleWorkflowTypeChange('complex')}
+                          className={cn(
+                            'px-2 py-1 rounded text-xs font-medium transition-all',
+                            workflowType === 'complex'
+                              ? 'bg-white/10 text-white/90'
+                              : 'text-white/50 hover:text-white/70'
+                          )}
+                        >
+                          Multi-Squad
+                        </button>
+                      </div>
+                    </>
+                  )}
 
-                  <Badge variant="outline" className={cn(
-                    'text-[10px]',
-                    mission.status === 'in-progress' ? 'text-orange-400 border-orange-500/30 bg-orange-500/20' : 'text-green-400 border-green-500/30 bg-green-500/20'
-                  )}>
-                    {mission.status === 'in-progress' ? 'Em execucao' : 'Concluido'}
+                  <Badge
+                    variant="status"
+                    status={activeMissionData.status === 'in-progress' ? 'warning' : activeMissionData.status === 'error' ? 'error' : activeMissionData.status === 'queued' ? 'offline' : 'success'}
+                  >
+                    {activeMissionData.status === 'in-progress' ? 'Em execução' : activeMissionData.status === 'error' ? 'Erro' : activeMissionData.status === 'queued' ? 'Aguardando' : 'Concluído'}
                   </Badge>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1 p-1 bg-glass-5 rounded-lg">
-                    <Button variant={viewMode === 'canvas' ? 'glass-primary' : 'glass-ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('canvas')}>
-                      <GridIcon />
-                    </Button>
-                    <Button variant={viewMode === 'list' ? 'glass-primary' : 'glass-ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}>
-                      <ListIcon />
-                    </Button>
+            <div className="flex items-center gap-2">
+              {/* View Mode Toggle */}
+              <div className="flex gap-1 p-1 bg-white/5 rounded-lg">
+                <GlassButton
+                  variant={viewMode === 'canvas' ? 'primary' : 'ghost'}
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => setViewMode('canvas')}
+                  aria-label="Visualizacao em canvas"
+                >
+                  <GridIcon />
+                </GlassButton>
+                <GlassButton
+                  variant={viewMode === 'list' ? 'primary' : 'ghost'}
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => setViewMode('list')}
+                  aria-label="Visualizacao em lista"
+                >
+                  <ListIcon />
+                </GlassButton>
+              </div>
+
+              <div className="w-px h-6 bg-white/10" />
+
+              {/* Zoom Controls */}
+              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomOut} aria-label="Diminuir zoom">
+                <ZoomOutIcon />
+              </GlassButton>
+              <span className="text-xs text-white/60 w-12 text-center">
+                {Math.round(zoom * 100)}%
+              </span>
+              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomIn} aria-label="Aumentar zoom">
+                <ZoomInIcon />
+              </GlassButton>
+
+              <div className="w-px h-6 bg-white/10" />
+
+              {/* Play/Pause */}
+              <GlassButton
+                variant={isPlaying ? 'primary' : 'ghost'}
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setIsPlaying(!isPlaying)}
+                aria-label={isPlaying ? 'Pausar' : 'Reproduzir'}
+              >
+                {isPlaying ? <PauseIcon /> : <PlayIcon />}
+              </GlassButton>
+
+              {/* Reset */}
+              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleReset} aria-label="Reiniciar">
+                <RefreshIcon />
+              </GlassButton>
+
+            </div>
+          </div>
+
+          {/* Replay Scrubber */}
+          {replayActive && taskReplay.state.totalSteps > 0 && (
+            <div className="px-4 py-2 border-b border-white/10 bg-white/[0.02]">
+              <div className="flex items-center gap-3">
+                {/* Step label */}
+                <span className="text-[10px] text-white/40 min-w-[28px] text-right tabular-nums">
+                  {taskReplay.state.currentStep}/{taskReplay.state.totalSteps}
+                </span>
+
+                {/* Scrubber slider */}
+                <div className="flex-1 relative group">
+                  <input
+                    type="range"
+                    min={0}
+                    max={taskReplay.state.totalSteps}
+                    value={taskReplay.state.currentStep}
+                    onChange={(e) => taskReplay.seekTo(Number(e.target.value))}
+                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-white/10
+                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5
+                      [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0099FF] [&::-webkit-slider-thumb]:shadow-[0_0_6px_rgba(0,153,255,0.5)]
+                      [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-125
+                      [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:rounded-full
+                      [&::-moz-range-thumb]:bg-[#0099FF] [&::-moz-range-thumb]:border-0"
+                    style={{
+                      background: `linear-gradient(to right, #0099FF ${(taskReplay.state.currentStep / taskReplay.state.totalSteps) * 100}%, rgba(255,255,255,0.1) ${(taskReplay.state.currentStep / taskReplay.state.totalSteps) * 100}%)`,
+                    }}
+                    aria-label="Scrubber de replay"
+                  />
+
+                  {/* Step markers */}
+                  <div className="absolute top-3 left-0 right-0 flex justify-between pointer-events-none">
+                    {taskReplay.state.stepLabels.map((sl) => {
+                      const pct = taskReplay.state.totalSteps > 0 ? (sl.index / taskReplay.state.totalSteps) * 100 : 0;
+                      const isPast = sl.index < taskReplay.state.currentStep;
+                      return (
+                        <div
+                          key={sl.index}
+                          className="absolute"
+                          style={{ left: `${pct}%`, transform: 'translateX(-50%)' }}
+                        >
+                          <div
+                            className={cn(
+                              'h-1 w-1 rounded-full',
+                              isPast ? 'bg-[#0099FF]' : 'bg-white/20'
+                            )}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
-
-                  <div className="w-px h-6 bg-glass-10" />
-
-                  <Button variant="glass-ghost" size="icon" className="h-8 w-8" onClick={handleZoomOut}>
-                    <ZoomOutIcon />
-                  </Button>
-                  <span className="text-xs text-foreground-secondary w-12 text-center">{Math.round(zoom * 100)}%</span>
-                  <Button variant="glass-ghost" size="icon" className="h-8 w-8" onClick={handleZoomIn}>
-                    <ZoomInIcon />
-                  </Button>
-
-                  <div className="w-px h-6 bg-glass-10" />
-
-                  <Button variant={isPlaying ? 'glass-primary' : 'glass-ghost'} size="icon" className="h-8 w-8" onClick={() => setIsPlaying(!isPlaying)}>
-                    {isPlaying ? <PauseIcon /> : <PlayIcon />}
-                  </Button>
-
-                  <Button variant="glass-ghost" size="icon" className="h-8 w-8" onClick={handleReset}>
-                    <RefreshIcon />
-                  </Button>
                 </div>
-              </div>
 
-              <div className="flex-1 relative overflow-hidden">
-                {viewMode === 'canvas' ? (
-                  <WorkflowCanvas
-                    nodes={mission.nodes}
-                    edges={mission.edges}
-                    zoom={zoom}
-                    onZoomChange={setZoom}
-                    selectedNodeId={selectedNodeId}
-                    onSelectNode={setSelectedNodeId}
-                  />
-                ) : (
-                  <WorkflowListView
-                    mission={mission}
-                    selectedNodeId={selectedNodeId}
-                    onSelectNode={setSelectedNodeId}
-                  />
-                )}
-              </div>
-
-              {/* Bottom Stats Bar */}
-              <div className="h-12 px-4 flex items-center justify-between border-t border-glass-15 bg-glass-5">
-                <div className="flex items-center gap-6">
-                  <Stat label="Progresso Total" value={`${mission.progress}%`} />
-                  <Stat label="Agents Ativos" value={mission.agents.filter((a) => a.status === 'working').length.toString()} />
-                  <Stat label="Tempo Decorrido" value={formatRelativeTime(mission.startedAt || '')} />
-                  {mission.estimatedTimeRemaining && (
-                    <Stat label="Tempo Restante" value={formatDuration(mission.estimatedTimeRemaining)} icon={<ClockIcon />} />
-                  )}
-                  {mission.tokens && (
-                    <Stat label="Tokens" value={formatTokens(mission.tokens.total)} icon={<TokenIcon />} />
-                  )}
-                </div>
+                {/* Current step label */}
+                <span className="text-[10px] text-white/50 min-w-[120px] truncate">
+                  {taskReplay.state.currentStep > 0 && taskReplay.state.currentStep <= taskReplay.state.stepLabels.length
+                    ? taskReplay.state.stepLabels[taskReplay.state.currentStep - 1].label
+                    : 'Início'}
+                </span>
               </div>
             </div>
+          )}
 
-            {/* Right: Node Detail */}
-            <AnimatePresence>
-              {selectedNode && (
-                <motion.div
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: 320, opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  className="border-l border-glass-15 overflow-hidden bg-glass-5 backdrop-blur-xl"
-                >
-                  <NodeDetailPanel node={selectedNode} onClose={() => setSelectedNodeId(null)} />
-                </motion.div>
+          {/* Canvas Area */}
+          <div className="flex-1 relative overflow-hidden">
+            {viewMode === 'canvas' ? (
+              <WorkflowCanvas
+                nodes={activeMissionData.nodes}
+                edges={activeMissionData.edges}
+                zoom={zoom}
+                onZoomChange={setZoom}
+                selectedNodeId={selectedNodeId}
+                onSelectNode={setSelectedNodeId}
+              />
+            ) : (
+              <WorkflowListView
+                mission={activeMissionData}
+                selectedNodeId={selectedNodeId}
+                onSelectNode={setSelectedNodeId}
+              />
+            )}
+          </div>
+
+          {/* Bottom Stats Bar */}
+          {(() => {
+            const m = activeMissionData;
+            return (
+          <div className="h-12 px-4 flex items-center justify-between border-t border-white/15 bg-white/5">
+            <div className="flex items-center gap-6">
+              <Stat label="Progresso Total" value={`${m.progress}%`} />
+              <Stat label="Agents Ativos" value={m.agents.filter((a) => a.status === 'working').length.toString()} />
+              <Stat label="Tempo Decorrido" value={formatRelativeTime(m.startedAt || '')} />
+              {m.estimatedTimeRemaining != null && m.estimatedTimeRemaining > 0 && (
+                <Stat
+                  label="Tempo Restante"
+                  value={formatDuration(m.estimatedTimeRemaining)}
+                  icon={<ClockIcon />}
+                />
               )}
-            </AnimatePresence>
+              {m.tokens && (
+                <Stat
+                  label="Tokens"
+                  value={formatTokens(m.tokens.total)}
+                  icon={<TokenIcon />}
+                  tooltip={`Input: ${formatTokens(m.tokens.input)} · Output: ${formatTokens(m.tokens.output)}`}
+                />
+              )}
+              {liveMissionActive && taskLiveMission.state.taskId && (
+                <Stat label="Task" value={taskLiveMission.state.taskId.slice(0, 8)} />
+              )}
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Squad indicators */}
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#999999]" />
+                <span className="text-[10px] text-white/50">
+                  {m.agents.filter(a => a.squadType === 'copywriting').length} Copy
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#D1FF00]" />
+                <span className="text-[10px] text-white/50">
+                  {m.agents.filter(a => a.squadType === 'design').length} Design
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#ED4609]" />
+                <span className="text-[10px] text-white/50">
+                  {m.agents.filter(a => a.squadType === 'creator').length} Creator
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#D1FF00]" />
+                <span className="text-[10px] text-white/50">
+                  {m.agents.filter(a => a.squadType === 'orchestrator').length} Orch
+                </span>
+              </div>
+            </div>
+          </div>
+            );
+          })()}
+        </div>
+
+        {/* Right: Node Detail */}
+        <AnimatePresence>
+          {selectedNode && (
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 320, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              className="border-l border-white/15 overflow-hidden bg-white/5 backdrop-blur-xl"
+            >
+              <NodeDetailPanel
+                node={selectedNode}
+                onClose={() => setSelectedNodeId(null)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
           </div>
         )}
       </motion.div>
@@ -737,104 +1274,40 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
       {/* Mission Detail Modal */}
       <AnimatePresence>
         {showMissionDetail && (
-          <WorkflowMissionDetail mission={mission} onClose={() => setShowMissionDetail(false)} />
+          <WorkflowMissionDetail
+            mission={mission}
+            onClose={() => setShowMissionDetail(false)}
+          />
         )}
       </AnimatePresence>
 
       {/* Execute Workflow Dialog */}
-      <AnimatePresence>
-        {showExecuteDialog && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-overlay"
-            onClick={() => setShowExecuteDialog(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg rounded-2xl p-6 border border-glass-10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
-              style={{
-                background: 'linear-gradient(135deg, rgba(30, 30, 35, 0.95) 0%, rgba(20, 20, 25, 0.98) 100%)',
-              }}
-            >
-              <h3 className="text-xl font-semibold text-foreground-primary mb-2">Executar Workflow</h3>
-              <p className="text-sm text-foreground-secondary mb-4">
-                Descreva o que voce deseja que o workflow produza. Seja especifico para melhores resultados.
-              </p>
-              <textarea
-                value={demandInput}
-                onChange={(e) => setDemandInput(e.target.value)}
-                placeholder="Ex: Crie uma campanha de marketing para lancamento de um novo produto..."
-                className="w-full h-32 px-4 py-3 rounded-xl text-foreground-primary placeholder-foreground-tertiary resize-none bg-glass-5 border border-glass-10"
-                autoFocus
-              />
-              <div className="flex justify-end gap-3 mt-4">
-                <Button variant="glass-ghost" onClick={() => setShowExecuteDialog(false)}>Cancelar</Button>
-                <Button variant="glass-primary" onClick={handleExecuteWorkflow} disabled={!demandInput.trim()}>
-                  <PlayIcon />
-                  <span className="ml-2">Iniciar Execucao</span>
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ExecuteWorkflowDialog
+        isOpen={showExecuteDialog}
+        demandInput={demandInput}
+        onDemandChange={setDemandInput}
+        onExecute={handleExecuteWorkflow}
+        onClose={() => setShowExecuteDialog(false)}
+      />
 
       {/* Live Execution Modal */}
       <AnimatePresence>
         {showLiveExecution && liveExecutionState && (
-          <WorkflowExecutionLive state={liveExecutionState} onClose={handleCloseLiveExecution} />
+          <WorkflowExecutionLive
+            state={liveExecutionState}
+            onClose={handleCloseLiveExecution}
+          />
         )}
       </AnimatePresence>
 
       {/* Smart Orchestration Dialog */}
-      <AnimatePresence>
-        {showOrchestrationDialog && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-overlay"
-            onClick={() => setShowOrchestrationDialog(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg rounded-2xl p-6 border border-[rgba(139,92,246,0.3)] shadow-[0_25px_50px_-12px_rgba(139,92,246,0.2)]"
-              style={{
-                background: 'linear-gradient(135deg, rgba(30, 30, 35, 0.95) 0%, rgba(20, 20, 25, 0.98) 100%)',
-              }}
-            >
-              <h3 className="text-xl font-semibold text-foreground-primary mb-1">Orquestracao Inteligente</h3>
-              <p className="text-sm text-foreground-secondary mb-4">O orquestrador vai analisar e criar o workflow automaticamente</p>
-              <textarea
-                value={orchestrationDemand}
-                onChange={(e) => setOrchestrationDemand(e.target.value)}
-                placeholder="Descreva o que voce precisa..."
-                className="w-full h-40 px-4 py-3 rounded-xl text-foreground-primary placeholder-foreground-tertiary resize-none bg-glass-5 border border-[rgba(139,92,246,0.2)]"
-                autoFocus
-              />
-              <div className="flex justify-end gap-3 mt-4">
-                <Button variant="glass-ghost" onClick={() => setShowOrchestrationDialog(false)}>Cancelar</Button>
-                <Button
-                  variant="glass-primary"
-                  onClick={handleStartOrchestration}
-                  disabled={!orchestrationDemand.trim() || orchestrationDemand.trim().length < 10}
-                  className="bg-gradient-to-r from-purple-500 to-cyan-500"
-                >
-                  Iniciar Orquestracao
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <SmartOrchestrationDialog
+        isOpen={showOrchestrationDialog}
+        demand={orchestrationDemand}
+        onDemandChange={setOrchestrationDemand}
+        onStart={handleStartOrchestration}
+        onClose={() => setShowOrchestrationDialog(false)}
+      />
 
       {/* Smart Orchestration Live View */}
       <AnimatePresence>
@@ -859,8 +1332,8 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
         )}
       </AnimatePresence>
 
-      {/* TODO: Create Workflow Modal - uncomment when CreateWorkflowModal is migrated */}
-      {/* <AnimatePresence>
+      {/* Create Workflow Modal */}
+      <AnimatePresence>
         {showCreateModal && (
           <CreateWorkflowModal
             onClose={() => setShowCreateModal(false)}
@@ -868,243 +1341,17 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
             isLoading={createWorkflowMutation.isPending}
           />
         )}
-      </AnimatePresence> */}
+      </AnimatePresence>
     </motion.div>
   );
 }
 
-// Helper Components
 function Stat({ label, value, icon, tooltip }: { label: string; value: string; icon?: React.ReactNode; tooltip?: string }) {
   return (
     <div className="flex items-center gap-2 group relative" title={tooltip}>
-      {icon && <span className="text-foreground-tertiary">{icon}</span>}
-      <span className="text-xs text-foreground-tertiary">{label}:</span>
-      <span className="text-sm text-foreground-primary font-medium">{value}</span>
-    </div>
-  );
-}
-
-// Icons for NodeDetailPanel
-const CheckIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-
-const SpinnerIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-spin">
-    <path d="M21 12a9 9 0 11-6.219-8.56" />
-  </svg>
-);
-
-function NodeDetailPanel({ node, onClose }: { node: WorkflowMission['nodes'][0]; onClose: () => void }) {
-  const getNodeGradient = (squadType: string | undefined): string => {
-    if (!squadType) return 'from-blue-500 to-cyan-500';
-    const theme = getSquadTheme(squadType as SquadType);
-    return theme.gradient;
-  };
-
-  const completedTodos = node.todos?.filter((t) => t.status === 'completed').length || 0;
-  const totalTodos = node.todos?.length || 0;
-
-  return (
-    <div className="h-full flex flex-col w-80 backdrop-blur-xl" style={{
-      background: `
-        radial-gradient(ellipse 80% 50% at 100% 100%, rgba(140, 60, 180, 0.12) 0%, transparent 50%),
-        radial-gradient(ellipse 60% 80% at 0% 0%, rgba(60, 180, 200, 0.10) 0%, transparent 50%),
-        rgba(15, 15, 20, 0.65)
-      `
-    }}>
-      <div className="p-4 border-b border-glass-10 flex items-center justify-between">
-        <h3 className="text-xs font-semibold text-foreground-secondary uppercase tracking-wider">Detalhes do No</h3>
-        <Button variant="glass-ghost" size="icon" className="h-7 w-7" onClick={onClose}>
-          <CloseIcon />
-        </Button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto glass-scrollbar p-4 space-y-4">
-        {/* Node Header */}
-        <div className="flex items-center gap-3">
-          {node.agentName ? (
-            <GlassAvatar
-              name={node.agentName}
-              size="lg"
-              squadType={node.squadType as 'copywriting' | 'design' | 'creator' | 'orchestrator' | 'default'}
-              status={node.status === 'active' ? 'online' : node.status === 'waiting' ? 'busy' : 'offline'}
-            />
-          ) : (
-            <div className={cn(
-              'h-12 w-12 rounded-xl flex items-center justify-center',
-              node.type === 'start' && 'bg-green-500/20 text-green-500',
-              node.type === 'end' && 'bg-blue-500/20 text-blue-500',
-              node.type === 'checkpoint' && 'bg-yellow-500/20 text-yellow-500'
-            )}>
-              {node.type === 'start' && <PlayIcon />}
-              {node.type === 'end' && <CheckIcon />}
-              {node.type === 'checkpoint' && <ClockIcon />}
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <h4 className="text-foreground-primary font-semibold">{node.label}</h4>
-            {node.agentName && <p className="text-foreground-secondary text-sm">{node.agentName}</p>}
-          </div>
-        </div>
-
-        {/* Progress */}
-        {node.progress !== undefined && (
-          <div className="rounded-xl p-3 space-y-2 border border-[rgba(59,130,246,0.2)]" style={{
-            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%)',
-          }}>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-foreground-tertiary">Progresso Total</span>
-              <span className="text-foreground-primary font-semibold">{node.progress}%</span>
-            </div>
-            <div className="h-2 rounded-full bg-scrim-30 overflow-hidden">
-              <motion.div
-                className={cn('h-full rounded-full bg-gradient-to-r', getNodeGradient(node.squadType))}
-                initial={{ width: 0 }}
-                animate={{ width: `${node.progress}%` }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Request */}
-        {node.request && (
-          <div className="rounded-xl p-3 border border-glass-5" style={{
-            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, transparent 100%)',
-          }}>
-            <span className="text-xs font-semibold text-foreground-secondary uppercase tracking-wider">Solicitacao</span>
-            <p className="text-sm text-foreground-primary leading-relaxed mt-2">{node.request}</p>
-          </div>
-        )}
-
-        {/* Current Action */}
-        {node.currentAction && node.status === 'active' && (
-          <div className="rounded-xl p-3 border border-[rgba(249,115,22,0.2)] border-l-2 border-l-orange-500" style={{
-            background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, transparent 100%)',
-          }}>
-            <div className="flex items-center gap-2 mb-1">
-              <SpinnerIcon />
-              <span className="text-xs font-semibold text-orange-400">Acao Atual</span>
-            </div>
-            <p className="text-sm text-foreground-primary">{node.currentAction}</p>
-          </div>
-        )}
-
-        {/* Todo List */}
-        {node.todos && node.todos.length > 0 && (
-          <div className="rounded-xl p-3 border border-glass-5" style={{
-            background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, transparent 100%)',
-          }}>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-foreground-secondary uppercase tracking-wider">Todo List</span>
-              <Badge variant="outline" className="text-[10px]">{completedTodos}/{totalTodos}</Badge>
-            </div>
-            <div className="space-y-2">
-              {node.todos.map((todo) => (
-                <div key={todo.id} className="flex items-start gap-2">
-                  <div className={cn(
-                    'h-4 w-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5',
-                    todo.status === 'completed' && 'bg-green-500/20 text-green-400',
-                    todo.status === 'in-progress' && 'bg-orange-500/20 text-orange-400',
-                    todo.status === 'pending' && 'bg-gray-500/20 text-gray-400'
-                  )}>
-                    {todo.status === 'completed' && <CheckIcon />}
-                    {todo.status === 'in-progress' && <SpinnerIcon />}
-                  </div>
-                  <span className={cn(
-                    'text-xs leading-relaxed',
-                    todo.status === 'completed' ? 'text-foreground-tertiary line-through' : 'text-foreground-primary'
-                  )}>
-                    {todo.text}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Output/Result */}
-        {node.output && (
-          <div className="rounded-xl p-3 border border-[rgba(34,197,94,0.2)] border-l-2 border-l-green-500" style={{
-            background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, transparent 100%)',
-          }}>
-            <span className="text-xs font-semibold text-green-400">Resultado</span>
-            <p className="text-sm text-foreground-primary mt-1">{node.output}</p>
-          </div>
-        )}
-
-        {/* Token Usage */}
-        {node.tokens && node.tokens.total > 0 && (
-          <div className="pt-3 mt-3 border-t border-glass-10">
-            <span className="text-[10px] font-medium text-foreground-tertiary uppercase tracking-wider">Uso de Tokens</span>
-            <div className="rounded-lg p-2 space-y-1.5 mt-2 border border-glass-5" style={{
-              background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, transparent 100%)',
-            }}>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-foreground-tertiary">Input</span>
-                <span className="text-xs text-foreground-secondary font-medium">{formatTokens(node.tokens.input)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-foreground-tertiary">Output</span>
-                <span className="text-xs text-foreground-secondary font-medium">{formatTokens(node.tokens.output)}</span>
-              </div>
-              <div className="flex items-center justify-between pt-1.5 border-t border-glass-10">
-                <span className="text-[10px] text-foreground-tertiary font-medium">Total</span>
-                <span className="text-xs text-amber-400 font-semibold">{formatTokens(node.tokens.total)}</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function WorkflowListView({ mission, selectedNodeId, onSelectNode }: {
-  mission: WorkflowMission;
-  selectedNodeId: string | null;
-  onSelectNode: (id: string | null) => void;
-}) {
-  return (
-    <div className="p-6 space-y-4 overflow-y-auto h-full">
-      {mission.nodes.map((node, index) => (
-        <motion.div
-          key={node.id}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.05 }}
-          onClick={() => onSelectNode(node.id)}
-          className={cn(
-            'glass-subtle rounded-xl p-4 cursor-pointer transition-all hover:bg-glass-10',
-            selectedNodeId === node.id && 'ring-2 ring-blue-500'
-          )}
-        >
-          <div className="flex items-center gap-4">
-            <div className={cn(
-              'h-10 w-10 rounded-xl flex items-center justify-center text-sm font-bold',
-              node.status === 'completed' && 'bg-green-500/20 text-green-500',
-              node.status === 'active' && 'bg-orange-500/20 text-orange-500',
-              node.status === 'waiting' && 'bg-yellow-500/20 text-yellow-500',
-              node.status === 'idle' && 'bg-gray-500/20 text-gray-500'
-            )}>
-              {index + 1}
-            </div>
-            <div className="flex-1">
-              <p className="text-primary font-medium">{node.label}</p>
-              {node.agentName && <p className="text-secondary text-sm">{node.agentName}</p>}
-            </div>
-            {node.progress !== undefined && (
-              <div className="text-right">
-                <p className="text-primary text-sm font-medium">{node.progress}%</p>
-                <p className="text-tertiary text-xs">{node.status}</p>
-              </div>
-            )}
-          </div>
-        </motion.div>
-      ))}
+      {icon && <span className="text-white/40">{icon}</span>}
+      <span className="text-xs text-white/50">{label}:</span>
+      <span className="text-sm text-white/90 font-medium">{value}</span>
     </div>
   );
 }

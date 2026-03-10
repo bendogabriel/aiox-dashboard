@@ -1,13 +1,10 @@
-'use client';
-
 import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useChatStore } from '@/stores/chatStore';
-import { useUIStore } from '@/stores/uiStore';
-import { cn } from '@/lib/utils';
-import { getSquadType } from '@/types';
-import type { ChatSession } from '@/types';
-import { getSquadTheme } from '@/lib/theme';
+import { useChatStore } from '../../stores/chatStore';
+import { useUIStore } from '../../stores/uiStore';
+import { cn, getSquadTheme } from '../../lib/utils';
+import { getSquadType } from '../../types';
+import type { ChatSession } from '../../types';
 
 // Icons
 const MessageIcon = () => (
@@ -78,7 +75,6 @@ const ConversationItem = memo(function ConversationItem({ session, isActive, onS
   const lastMessage = session.messages[session.messages.length - 1];
   const preview = lastMessage?.content?.slice(0, 50) || 'Nova conversa';
   const timeAgo = formatTimeAgo(session.updatedAt);
-  const squadType = session.squadType || getSquadType(session.squadId);
   const messageCount = session.messages.length;
 
   return (
@@ -87,8 +83,8 @@ const ConversationItem = memo(function ConversationItem({ session, isActive, onS
         'group relative px-3 py-2 rounded-lg cursor-pointer transition-all duration-200',
         'flex items-start gap-2',
         isActive
-          ? 'bg-glass-15 shadow-sm'
-          : 'hover:bg-glass-5'
+          ? 'bg-white/15 shadow-sm'
+          : 'hover:bg-white/5'
       )}
       onClick={onSelect}
       onMouseEnter={() => setShowDelete(true)}
@@ -129,7 +125,7 @@ const ConversationItem = memo(function ConversationItem({ session, isActive, onS
       {messageCount > 0 && (
         <span className={cn(
           'text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0',
-          isActive ? 'bg-glass-20 text-primary' : 'bg-glass-5 text-tertiary'
+          isActive ? 'bg-white/20 text-primary' : 'bg-white/5 text-tertiary'
         )}>
           {messageCount}
         </span>
@@ -248,8 +244,8 @@ export function ConversationHistory() {
               className={cn(
                 "p-1.5 rounded-md transition-colors",
                 showSearch
-                  ? "text-blue-400 bg-blue-500/10"
-                  : "text-secondary hover:text-primary hover:bg-glass-5"
+                  ? "text-[#0099FF] bg-[#0099FF]/10"
+                  : "text-secondary hover:text-primary hover:bg-white/5"
               )}
               title="Buscar conversas"
               whileHover={{ scale: 1.05 }}
@@ -261,7 +257,7 @@ export function ConversationHistory() {
 
           <motion.button
             onClick={handleNewConversation}
-            className="p-1.5 rounded-md text-secondary hover:text-primary hover:bg-glass-5 transition-colors"
+            className="p-1.5 rounded-md text-secondary hover:text-primary hover:bg-white/5 transition-colors"
             title="Nova conversa"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -286,8 +282,9 @@ export function ConversationHistory() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar em conversas..."
-                className="w-full px-3 py-1.5 text-xs bg-glass-5 border border-glass-10 rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus:border-blue-500/50"
+                className="w-full px-3 py-1.5 text-xs bg-white/5 border border-white/10 rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus:border-[#0099FF]/50"
                 autoFocus
+                aria-label="Buscar em conversas"
               />
               {searchQuery && (
                 <button
@@ -300,7 +297,7 @@ export function ConversationHistory() {
             </div>
             {searchQuery && (
               <p className="text-[10px] text-tertiary mt-1 px-1">
-                {filteredSessions.length} resultado(s) para &quot;{searchQuery}&quot;
+                {filteredSessions.length} resultado(s) para "{searchQuery}"
               </p>
             )}
           </motion.div>
@@ -387,7 +384,7 @@ export function ConversationHistory() {
 
                 {/* Clear all button */}
                 {sessions.length > 3 && (
-                  <div className="pt-2 border-t border-glass-5">
+                  <div className="pt-2 border-t border-white/5">
                     <button
                       onClick={handleClearAll}
                       className="w-full px-3 py-1.5 text-[10px] text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-md transition-colors"

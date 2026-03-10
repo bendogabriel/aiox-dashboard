@@ -1,7 +1,5 @@
-'use client';
-
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import { TILE_WIDTH, TILE_HEIGHT } from './world-layout';
 
 interface IsometricTileProps {
@@ -69,7 +67,8 @@ export function IsometricTile({
       {/* Diamond shape via SVG */}
       <svg
         viewBox={`0 0 ${TILE_WIDTH} ${TILE_HEIGHT}`}
-        className="absolute inset-0 w-full h-full [image-rendering:pixelated]"
+        className="absolute inset-0 w-full h-full"
+        style={{ imageRendering: 'pixelated' }}
       >
         <polygon
           points={`${TILE_WIDTH / 2},0 ${TILE_WIDTH},${TILE_HEIGHT / 2} ${TILE_WIDTH / 2},${TILE_HEIGHT} 0,${TILE_HEIGHT / 2}`}

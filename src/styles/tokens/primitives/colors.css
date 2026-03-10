@@ -72,18 +72,4 @@
 
   /* Slate */
   --palette-slate-500: #64748b;
-
-  /* AIOX Dark Cockpit */
-  --palette-aiox-lime: #D1FF00;
-  --palette-aiox-dark-base: #050505;
-  --palette-aiox-void: #000000;
-  --palette-aiox-surface: #0F0F11;
-  --palette-aiox-surface-alt: #1C1E19;
-  --palette-aiox-cream: #F4F4E8;
-  --palette-aiox-blue: #0099FF;
-  --palette-aiox-flare: #ED4609;
-  --palette-aiox-charcoal: #3D3D3D;
-  --palette-aiox-dim: #696969;
-  --palette-aiox-muted: #999999;
-  --palette-aiox-silver: #BDBDBD;
 }

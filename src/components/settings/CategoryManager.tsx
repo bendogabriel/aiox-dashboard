@@ -1,16 +1,12 @@
-'use client';
-
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useCategoryStore, type CategoryConfig } from '@/stores/categoryStore';
-import { useSquads } from '@/hooks/use-squads';
-import { useToast } from '@/components/ui/Toast';
-import { cn, getSquadTheme } from '@/lib/utils';
-import { getIconComponent, ICON_SIZES } from '@/lib/icons';
-import type { SquadType } from '@/types';
+import { GlassCard, GlassButton, GlassInput } from '../ui';
+import { useCategoryStore, type CategoryConfig } from '../../stores/categoryStore';
+import { useSquads } from '../../hooks/useSquads';
+import { useToast } from '../ui/Toast';
+import { cn, getSquadTheme } from '../../lib/utils';
+import { getIconComponent, ICON_SIZES } from '../../lib/icons';
+import type { Squad, SquadType } from '../../types';
 
 // Icons
 const GripIcon = () => (
@@ -104,8 +100,7 @@ export function CategoryManager() {
     resetToDefaults,
   } = useCategoryStore();
 
-  const { squads: rawSquads = [] } = useSquads();
-  const squads = rawSquads as unknown as Array<{ id: string; name: string; icon?: string; agentCount?: number }>;
+  const { data: squads = [] } = useSquads();
   const { success, error } = useToast();
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
@@ -146,7 +141,7 @@ export function CategoryManager() {
       squadType: newCategory.squadType,
     });
 
-    setNewCategory({ name: '', icon: '\u{1F4C2}', squadType: 'orchestrator' });
+    setNewCategory({ name: '', icon: 'FolderOpen', squadType: 'orchestrator' });
     setShowNewCategory(false);
     success('Categoria criada', `Categoria "${newCategory.name}" foi criada`);
   };
@@ -173,7 +168,7 @@ export function CategoryManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card>
+      <GlassCard>
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-lg font-semibold text-primary">Organização de Categorias</h2>
@@ -182,7 +177,7 @@ export function CategoryManager() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button
+            <GlassButton
               variant="ghost"
               size="sm"
               onClick={() => {
@@ -191,15 +186,15 @@ export function CategoryManager() {
               }}
             >
               Resetar
-            </Button>
-            <Button
-              variant="default"
+            </GlassButton>
+            <GlassButton
+              variant="primary"
               size="sm"
               onClick={() => setShowNewCategory(true)}
             >
               <PlusIcon />
               <span className="ml-1">Nova Categoria</span>
-            </Button>
+            </GlassButton>
           </div>
         </div>
 
@@ -217,7 +212,7 @@ export function CategoryManager() {
                 <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="block text-xs text-tertiary mb-1">Icon</label>
-                    <Input
+                    <GlassInput
                       value={newCategory.icon}
                       onChange={(e) => setNewCategory({ ...newCategory, icon: e.target.value })}
                       placeholder="icon"
@@ -226,7 +221,7 @@ export function CategoryManager() {
                   </div>
                   <div>
                     <label className="block text-xs text-tertiary mb-1">Nome</label>
-                    <Input
+                    <GlassInput
                       value={newCategory.name}
                       onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
                       placeholder="Nome da categoria"
@@ -237,7 +232,7 @@ export function CategoryManager() {
                     <select
                       value={newCategory.squadType}
                       onChange={(e) => setNewCategory({ ...newCategory, squadType: e.target.value as SquadType })}
-                      className="w-full p-2 rounded-lg glass-subtle text-primary bg-transparent border border-glass-10 text-sm"
+                      className="w-full p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm"
                     >
                       {squadTypeOptions.map((opt) => (
                         <option key={opt.value} value={opt.value}>
@@ -248,14 +243,14 @@ export function CategoryManager() {
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 mt-3">
-                  <Button variant="ghost" size="sm" onClick={() => setShowNewCategory(false)}>
+                  <GlassButton variant="ghost" size="sm" onClick={() => setShowNewCategory(false)}>
                     <XIcon />
                     <span className="ml-1">Cancelar</span>
-                  </Button>
-                  <Button variant="default" size="sm" onClick={handleCreateCategory}>
+                  </GlassButton>
+                  <GlassButton variant="primary" size="sm" onClick={handleCreateCategory}>
                     <CheckIcon />
                     <span className="ml-1">Criar</span>
-                  </Button>
+                  </GlassButton>
                 </div>
               </div>
             </motion.div>
@@ -290,11 +285,11 @@ export function CategoryManager() {
             />
           ))}
         </Reorder.Group>
-      </Card>
+      </GlassCard>
 
       {/* Uncategorized Squads */}
       {uncategorizedSquads.length > 0 && (
-        <Card>
+        <GlassCard>
           <h3 className="text-sm font-medium text-primary mb-3">
             Squads sem Categoria ({uncategorizedSquads.length})
           </h3>
@@ -306,16 +301,16 @@ export function CategoryManager() {
               <motion.div
                 key={squad.id}
                 draggable
-                onDragStart={(e: any) => {
+                onDragStart={((e: React.DragEvent<HTMLDivElement>) => {
                   e.dataTransfer.setData('squadId', squad.id);
-                }}
-                className="px-3 py-1.5 rounded-lg border border-glass-20 bg-glass-5 text-sm text-primary cursor-grab hover:border-glass-40 transition-colors"
+                }) as unknown as (event: MouseEvent | TouchEvent | PointerEvent) => void}
+                className="px-3 py-1.5 rounded-lg border border-white/20 bg-white/5 text-sm text-primary cursor-grab hover:border-white/40 transition-colors"
               >
-                {squad.icon} {squad.name}
+                {(() => { const Icon = getIconComponent(squad.icon || 'Package'); return <Icon size={14} className="inline-block mr-1" />; })()} {squad.name}
               </motion.div>
             ))}
           </div>
-        </Card>
+        </GlassCard>
       )}
     </div>
   );
@@ -324,7 +319,7 @@ export function CategoryManager() {
 // Category Item Component
 interface CategoryItemProps {
   category: CategoryConfig;
-  squads: any[];
+  squads: Squad[];
   isExpanded: boolean;
   isEditing: boolean;
   onToggle: () => void;
@@ -357,10 +352,9 @@ function CategoryItem({
 
   const [isDragOver, setIsDragOver] = useState(false);
 
-  const categorySquads = squads.filter((s) => category.squads.includes(s.id));
   const sortedSquads = category.squads
     .map((id) => squads.find((s) => s.id === id))
-    .filter(Boolean);
+    .filter((s): s is Squad => Boolean(s));
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -394,19 +388,19 @@ function CategoryItem({
     >
       {/* Header */}
       <div className="flex items-center gap-3 p-3">
-        <div className="cursor-grab text-glass-30 hover:text-foreground-tertiary">
+        <div className="cursor-grab text-white/30 hover:text-white/50">
           <GripIcon />
         </div>
 
         {isEditing ? (
           // Edit Mode
           <div className="flex-1 flex items-center gap-2">
-            <Input
+            <GlassInput
               value={editForm.icon}
               onChange={(e) => setEditForm({ ...editForm, icon: e.target.value })}
               className="w-12 text-center"
             />
-            <Input
+            <GlassInput
               value={editForm.name}
               onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
               className="flex-1"
@@ -414,7 +408,7 @@ function CategoryItem({
             <select
               value={editForm.squadType}
               onChange={(e) => setEditForm({ ...editForm, squadType: e.target.value as SquadType })}
-              className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-glass-10 text-sm"
+              className="p-2 rounded-lg glass-subtle text-primary bg-transparent border border-white/10 text-sm"
             >
               {squadTypeOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -422,12 +416,12 @@ function CategoryItem({
                 </option>
               ))}
             </select>
-            <Button variant="ghost" size="icon" onClick={onCancelEdit}>
+            <GlassButton variant="ghost" size="icon" onClick={onCancelEdit} aria-label="Cancelar">
               <XIcon />
-            </Button>
-            <Button variant="default" size="icon" onClick={() => onSave(editForm)}>
+            </GlassButton>
+            <GlassButton variant="primary" size="icon" onClick={() => onSave(editForm)} aria-label="Salvar">
               <CheckIcon />
-            </Button>
+            </GlassButton>
           </div>
         ) : (
           // View Mode
@@ -443,18 +437,19 @@ function CategoryItem({
             </button>
 
             <div className="flex items-center gap-1">
-              <Button variant="ghost" size="icon" onClick={onEdit}>
+              <GlassButton variant="ghost" size="icon" onClick={onEdit} aria-label="Editar">
                 <EditIcon />
-              </Button>
-              <Button
+              </GlassButton>
+              <GlassButton
                 variant="ghost"
                 size="icon"
                 onClick={onDelete}
                 className="text-red-400 hover:bg-red-500/10"
                 disabled={category.squads.length > 0}
+                aria-label="Excluir"
               >
                 <TrashIcon />
-              </Button>
+              </GlassButton>
             </div>
           </>
         )}
@@ -477,16 +472,16 @@ function CategoryItem({
                   onReorder={onReorderSquads}
                   className="space-y-1"
                 >
-                  {sortedSquads.map((squad: any) => (
+                  {sortedSquads.map((squad) => (
                     <Reorder.Item
                       key={squad.id}
                       value={squad.id}
-                      className="flex items-center gap-2 p-2 rounded-lg bg-glass-5 hover:bg-glass-10 transition-colors cursor-grab"
+                      className="flex items-center gap-2 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-grab"
                     >
-                      <div className="text-glass-30">
+                      <div className="text-white/30">
                         <GripIcon />
                       </div>
-                      <span className="text-base">{squad.icon}</span>
+                      <span className="text-base">{(() => { const Icon = getIconComponent(squad.icon || 'Package'); return <Icon size={16} />; })()}</span>
                       <span className="text-sm text-primary flex-1">{squad.name}</span>
                       <span className="text-xs text-tertiary">{squad.agentCount} agents</span>
                     </Reorder.Item>

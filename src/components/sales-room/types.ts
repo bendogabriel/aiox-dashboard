@@ -1,17 +1,18 @@
-import type { LucideIcon } from 'lucide-react';
-
-// ─── Domain Types ─────────────────────────────────────
+// ─── Sales Room Domain Types ───────────────────────────
 
 export type AgentStatus = 'atendendo' | 'ocioso' | 'recuperando-carrinho' | 'follow-up' | 'pausado';
 export type LeadTemperature = 'hot' | 'warm' | 'cold';
 export type MessageDirection = 'agent' | 'lead';
+export type MessageSource = 'whatsapp' | 'instagram' | 'site' | 'mock';
 export type ActivityType = 'message-sent' | 'message-received' | 'cart-recovered' | 'lead-qualified' | 'sale-closed' | 'follow-up-scheduled' | 'lead-lost';
+export type Sentiment = 'positive' | 'neutral' | 'resistant';
 
 export interface Message {
   id: string;
   direction: MessageDirection;
   text: string;
   timestamp: Date;
+  source?: MessageSource;
 }
 
 export interface Lead {
@@ -34,7 +35,7 @@ export interface SalesAgent {
   activeConversations: number;
   resolvedToday: number;
   conversionRate: number;
-  avgResponseTime: number; // seconds
+  avgResponseTime: number;
 }
 
 export interface ActivityEvent {
@@ -58,24 +59,24 @@ export interface SalesMetrics {
   totalRevenue: number;
 }
 
-// ─── Config Types ─────────────────────────────────────
+// ─── Intelligence Types ────────────────────────────────
 
-export interface StatusConfig {
-  label: string;
-  color: string;
-  bgColor: string;
-  borderColor: string;
-  pulse?: boolean;
+export interface ConversationInsight {
+  closeProbability: number;       // 0-100
+  sentiment: Sentiment;
+  suggestedResponse: string | null;
+  staleMinutes: number;
+  isStale: boolean;               // > 5 min since last msg
 }
 
-export interface TempConfig {
-  label: string;
-  color: string;
-  icon: LucideIcon;
+// ─── WhatsApp Types ────────────────────────────────────
+
+export interface WhatsAppIncoming {
+  from: string;       // phone number
+  name: string;
+  text: string;
+  timestamp: number;
+  messageId: string;
 }
 
-export interface ActivityConfig {
-  icon: LucideIcon;
-  color: string;
-  bgColor: string;
-}
+export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';

@@ -1,8 +1,6 @@
-'use client';
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { EMOTE_LIST, type EmoteKey, type LucideIcon } from '@/lib/icons';
+import { EMOTE_LIST, type EmoteKey } from '../../lib/icons';
 
 interface AgentEmotesProps {
   /** Position (center of the emote ring) */
@@ -37,7 +35,7 @@ export function AgentEmotes({ x, y, onEmote, onClose }: AgentEmotesProps) {
         exit={{ opacity: 0, scale: 0.5 }}
         transition={{ type: 'spring', damping: 15, stiffness: 300 }}
       >
-        {EMOTE_LIST.map((emote: { key: EmoteKey; label: string; Icon: LucideIcon }, i: number) => {
+        {EMOTE_LIST.map((emote, i) => {
           const angle = (i / EMOTE_LIST.length) * Math.PI * 2 - Math.PI / 2;
           const ex = Math.cos(angle) * RING_RADIUS;
           const ey = Math.sin(angle) * RING_RADIUS;
@@ -45,12 +43,15 @@ export function AgentEmotes({ x, y, onEmote, onClose }: AgentEmotesProps) {
           return (
             <motion.button
               key={emote.key}
-              className="absolute pointer-events-auto flex items-center justify-center rounded-full size-7"
+              className="absolute pointer-events-auto flex items-center justify-center rounded-full"
               style={{
+                width: 28,
+                height: 28,
                 left: ex - 14,
                 top: ey - 14,
                 background: 'rgba(0,0,0,0.7)',
                 border: '1px solid rgba(255,255,255,0.15)',
+                cursor: 'pointer',
                 color: 'rgba(255,255,255,0.8)',
               }}
               initial={{ opacity: 0, scale: 0 }}
@@ -73,12 +74,12 @@ export function AgentEmotes({ x, y, onEmote, onClose }: AgentEmotesProps) {
       {/* Floating emote animation */}
       <AnimatePresence>
         {selectedEmote && (() => {
-          const selected = EMOTE_LIST.find((e: { key: EmoteKey; label: string; Icon: LucideIcon }) => e.key === selectedEmote);
+          const selected = EMOTE_LIST.find(e => e.key === selectedEmote);
           if (!selected) return null;
           return (
             <motion.div
-              className="absolute z-50 pointer-events-none text-foreground-primary"
-              style={{ left: x - 12, top: y - 30 }}
+              className="absolute z-50 pointer-events-none"
+              style={{ left: x - 12, top: y - 30, color: 'rgba(255,255,255,0.9)' }}
               initial={{ opacity: 1, y: 0, scale: 1 }}
               animate={{ opacity: 0, y: -40, scale: 1.5 }}
               exit={{ opacity: 0 }}
@@ -95,12 +96,12 @@ export function AgentEmotes({ x, y, onEmote, onClose }: AgentEmotesProps) {
 
 /** Small floating emote that rises and fades — used after selection */
 export function FloatingEmote({ emoteKey, x, y }: { emoteKey: string; x: number; y: number }) {
-  const emote = EMOTE_LIST.find((e: { key: EmoteKey; label: string; Icon: LucideIcon }) => e.key === emoteKey);
+  const emote = EMOTE_LIST.find(e => e.key === emoteKey);
   if (!emote) return null;
   return (
     <motion.div
-      className="absolute pointer-events-none z-[45] text-foreground-primary"
-      style={{ left: x - 10, top: y - 30 }}
+      className="absolute pointer-events-none"
+      style={{ left: x - 10, top: y - 30, zIndex: 45, color: 'rgba(255,255,255,0.9)' }}
       initial={{ opacity: 1, y: 0, scale: 0.8 }}
       animate={{ opacity: 0, y: -50, scale: 1.4 }}
       transition={{ duration: 1.2, ease: 'easeOut' }}

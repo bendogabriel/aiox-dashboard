@@ -1,5 +1,3 @@
-'use client';
-
 import { motion } from 'framer-motion';
 import {
   Bot,
@@ -12,15 +10,14 @@ import {
   Mic,
   Ban,
 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { StatusDot } from '@/components/ui/status-dot';
-import { SectionLabel } from '@/components/ui/section-label';
-import { cn, formatRelativeTime } from '@/lib/utils';
-import type { PlatformAgent, AgentTier } from '@/types';
+import { GlassCard, Badge, StatusDot, SectionLabel, Avatar } from '../ui';
+import { cn, formatRelativeTime } from '../../lib/utils';
+import { hasAgentAvatar } from '../../lib/agent-avatars';
+import { getSquadType } from '../../types';
+import type { Agent, AgentTier } from '../../types';
 
 interface AgentDetailPanelProps {
-  agent: PlatformAgent;
+  agent: Agent;
 }
 
 const tierConfig: Record<AgentTier, { label: string; color: string; bg: string }> = {
@@ -43,34 +40,43 @@ function Section({ children, delay = 0 }: { children: React.ReactNode; delay?: n
 
 export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
   const tier = tierConfig[agent.tier as AgentTier] || tierConfig[2];
-  const statusMap: Record<string, 'success' | 'waiting' | 'idle'> = {
+  const statusMap: Record<string, 'success' | 'waiting' | 'offline'> = {
     online: 'success',
     busy: 'waiting',
-    offline: 'idle',
+    offline: 'offline',
   };
 
   return (
     <div className="space-y-4">
       {/* Profile */}
       <Section delay={0}>
-        <Card className="p-6">
+        <GlassCard padding="lg">
           <div className="flex items-center gap-4">
-            <div className={cn('w-14 h-14 rounded-xl flex items-center justify-center', tier.bg)}>
-              <Bot size={28} className={tier.color} />
-            </div>
+            {hasAgentAvatar(agent.name) || hasAgentAvatar(agent.id) ? (
+              <Avatar
+                name={agent.name}
+                agentId={agent.id}
+                size="2xl"
+                squadType={getSquadType(agent.squad)}
+              />
+            ) : (
+              <div className={cn('w-14 h-14 rounded-xl flex items-center justify-center', tier.bg)}>
+                <Bot size={28} className={tier.color} />
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <h2 className="text-lg font-semibold text-primary">{agent.name}</h2>
               <p className="text-sm text-secondary">{agent.title || 'Agent'}</p>
               <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                <Badge variant="default" className={cn('text-xs', tier.bg)}>
+                <Badge variant="default" size="sm" className={tier.bg}>
                   <span className={tier.color}>{tier.label}</span>
                 </Badge>
-                {agent.model && <Badge variant="default" className="text-xs">{agent.model}</Badge>}
+                {agent.model && <Badge variant="default" size="sm">{agent.model}</Badge>}
                 <StatusDot
-                  status={statusMap[agent.status || 'offline'] || 'idle'}
+                  status={statusMap[agent.status || 'offline'] || 'offline'}
                   size="sm"
+                  label={agent.status || 'offline'}
                 />
-                <span className="text-xs text-tertiary">{agent.status || 'offline'}</span>
               </div>
             </div>
           </div>
@@ -85,13 +91,13 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
               <span>{agent.executionCount} execucoes</span>
             )}
           </div>
-        </Card>
+        </GlassCard>
       </Section>
 
       {/* Persona */}
       {agent.persona && (
         <Section delay={0.05}>
-          <Card className="p-4">
+          <GlassCard padding="md">
             <SectionLabel>
               <span className="flex items-center gap-1.5">
                 <MessageSquare size={12} />
@@ -118,15 +124,15 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                 </div>
               )}
             </div>
-          </Card>
+          </GlassCard>
         </Section>
       )}
 
       {/* Core Principles */}
       {agent.corePrinciples && agent.corePrinciples.length > 0 && (
         <Section delay={0.1}>
-          <Card className="p-4">
-            <SectionLabel>
+          <GlassCard padding="md">
+            <SectionLabel count={agent.corePrinciples.length}>
               <span className="flex items-center gap-1.5">
                 <Shield size={12} />
                 Core Principles
@@ -140,15 +146,15 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                 </li>
               ))}
             </ul>
-          </Card>
+          </GlassCard>
         </Section>
       )}
 
       {/* Commands */}
       {agent.commands && agent.commands.length > 0 && (
         <Section delay={0.15}>
-          <Card className="p-4">
-            <SectionLabel>
+          <GlassCard padding="md">
+            <SectionLabel count={agent.commands.length}>
               <span className="flex items-center gap-1.5">
                 <Terminal size={12} />
                 Commands
@@ -169,14 +175,14 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                 </div>
               ))}
             </div>
-          </Card>
+          </GlassCard>
         </Section>
       )}
 
       {/* Voice DNA */}
       {agent.voiceDna && (
         <Section delay={0.2}>
-          <Card className="p-4">
+          <GlassCard padding="md">
             <SectionLabel>
               <span className="flex items-center gap-1.5">
                 <Mic size={12} />
@@ -189,7 +195,7 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                   <p className="text-[10px] uppercase tracking-wider text-tertiary mb-1.5">Sentence Starters</p>
                   <div className="flex flex-wrap gap-1.5">
                     {agent.voiceDna.sentenceStarters.map((s, i) => (
-                      <span key={i} className="text-xs text-primary bg-glass-5 rounded-md px-2 py-1">
+                      <span key={i} className="text-xs text-primary bg-white/5 rounded-md px-2 py-1">
                         {s}
                       </span>
                     ))}
@@ -221,15 +227,15 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                 </div>
               )}
             </div>
-          </Card>
+          </GlassCard>
         </Section>
       )}
 
       {/* Anti-Patterns */}
       {agent.antiPatterns?.neverDo && agent.antiPatterns.neverDo.length > 0 && (
         <Section delay={0.25}>
-          <Card className="p-4">
-            <SectionLabel>
+          <GlassCard padding="md">
+            <SectionLabel count={agent.antiPatterns.neverDo.length}>
               <span className="flex items-center gap-1.5">
                 <Ban size={12} />
                 Anti-Patterns
@@ -243,14 +249,14 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                 </li>
               ))}
             </ul>
-          </Card>
+          </GlassCard>
         </Section>
       )}
 
       {/* Integration */}
       {agent.integration && (
         <Section delay={0.3}>
-          <Card className="p-4">
+          <GlassCard padding="md">
             <SectionLabel>
               <span className="flex items-center gap-1.5">
                 <ArrowRightLeft size={12} />
@@ -263,7 +269,7 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                   <p className="text-[10px] uppercase tracking-wider text-tertiary mb-1.5">Receives From</p>
                   <div className="flex flex-wrap gap-1.5">
                     {agent.integration.receivesFrom.map((a) => (
-                      <Badge key={a} variant="default" className="bg-blue-500/10 text-xs">
+                      <Badge key={a} variant="default" size="sm" className="bg-blue-500/10">
                         <span className="text-blue-400">{a}</span>
                       </Badge>
                     ))}
@@ -275,7 +281,7 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                   <p className="text-[10px] uppercase tracking-wider text-tertiary mb-1.5">Handoff To</p>
                   <div className="flex flex-wrap gap-1.5">
                     {agent.integration.handoffTo.map((a) => (
-                      <Badge key={a} variant="default" className="bg-orange-500/10 text-xs">
+                      <Badge key={a} variant="default" size="sm" className="bg-orange-500/10">
                         <span className="text-orange-400">{a}</span>
                       </Badge>
                     ))}
@@ -283,21 +289,21 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                 </div>
               )}
             </div>
-          </Card>
+          </GlassCard>
         </Section>
       )}
 
       {/* Quality */}
       {agent.quality && (
         <Section delay={0.35}>
-          <Card className="p-4">
+          <GlassCard padding="md">
             <SectionLabel>Quality Indicators</SectionLabel>
             <div className="flex items-center gap-4">
               <QualityItem label="Voice DNA" active={agent.quality.hasVoiceDna} />
               <QualityItem label="Anti-Patterns" active={agent.quality.hasAntiPatterns} />
               <QualityItem label="Integration" active={agent.quality.hasIntegration} />
             </div>
-          </Card>
+          </GlassCard>
         </Section>
       )}
     </div>

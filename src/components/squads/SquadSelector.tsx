@@ -1,12 +1,10 @@
-'use client';
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { useSquads } from '@/hooks/use-squads';
-import { useUIStore } from '@/stores/uiStore';
-import { cn, getSquadTheme } from '@/lib/utils';
-import type { PlatformSquad, SquadType } from '@/types';
+import { Badge } from '../ui';
+import { useSquads } from '../../hooks/useSquads';
+import { useUIStore } from '../../stores/uiStore';
+import { cn, getSquadTheme } from '../../lib/utils';
+import type { Squad, SquadType } from '../../types';
 
 // Use centralized theme system - just create simple accessor
 const getSquadColors = (squadType: SquadType) => {
@@ -25,14 +23,14 @@ interface SquadCategory {
   name: string;
   icon: React.ReactNode;
   squadType: SquadType;
-  matcher: (squad: PlatformSquad) => boolean;
+  matcher: (squad: Squad) => boolean;
 }
 
 // Categories updated 2026-02-06
 const categories: SquadCategory[] = [
   {
     id: 'natalia-tanaka',
-    name: 'Natalia Tanaka',
+    name: 'Natália Tanaka',
     icon: (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -44,7 +42,7 @@ const categories: SquadCategory[] = [
   },
   {
     id: 'content',
-    name: 'Conteudo & YouTube',
+    name: 'Conteúdo & YouTube',
     icon: (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
@@ -70,7 +68,7 @@ const categories: SquadCategory[] = [
   },
   {
     id: 'creative',
-    name: 'Criacao & Design',
+    name: 'Criação & Design',
     icon: (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
@@ -110,7 +108,7 @@ const categories: SquadCategory[] = [
   },
   {
     id: 'strategy',
-    name: 'Estrategia & Conselho',
+    name: 'Estratégia & Conselho',
     icon: (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
@@ -122,7 +120,7 @@ const categories: SquadCategory[] = [
   },
   {
     id: 'system',
-    name: 'Sistema & Orquestracao',
+    name: 'Sistema & Orquestração',
     icon: (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="12" r="3" />
@@ -151,7 +149,7 @@ const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
 );
 
 export function SquadSelector() {
-  const { squads, isLoading } = useSquads();
+  const { data: squads, isLoading } = useSquads();
   const { selectedSquadId, setSelectedSquadId } = useUIStore();
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
@@ -168,17 +166,16 @@ export function SquadSelector() {
   };
 
   // Group squads by category and sort alphabetically
-  const platformSquads = (squads ?? []) as unknown as PlatformSquad[];
   const groupedSquads = categories.map((category) => ({
     ...category,
-    squads: platformSquads.filter(category.matcher).sort((a: PlatformSquad, b: PlatformSquad) =>
+    squads: (squads?.filter(category.matcher) || []).sort((a, b) =>
       a.name.localeCompare(b.name, 'pt-BR')
     ),
   }));
 
   // Find uncategorized squads
-  const categorizedIds = new Set(groupedSquads.flatMap((g) => g.squads.map((s: PlatformSquad) => s.id)));
-  const uncategorized = platformSquads.filter((s: PlatformSquad) => !categorizedIds.has(s.id));
+  const categorizedIds = new Set(groupedSquads.flatMap((g) => g.squads.map((s) => s.id)));
+  const uncategorized = squads?.filter((s) => !categorizedIds.has(s.id)) || [];
 
   if (isLoading) {
     return <SquadSelectorSkeleton />;
@@ -190,7 +187,7 @@ export function SquadSelector() {
         <h3 className="text-xs font-semibold text-secondary uppercase tracking-wider">
           Squads
         </h3>
-        <Badge variant="outline">{squads?.length || 0}</Badge>
+        <Badge variant="count">{squads?.length || 0}</Badge>
       </div>
 
       {/* All Squads button */}
@@ -200,8 +197,8 @@ export function SquadSelector() {
           'w-full px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
           'flex items-center gap-2',
           selectedSquadId === null
-            ? 'glass-card-active text-foreground-primary'
-            : 'hover:bg-glass-5 text-secondary hover:text-primary'
+            ? 'glass-card-active text-white'
+            : 'hover:bg-white/5 text-secondary hover:text-primary'
         )}
         whileTap={{ scale: 0.98 }}
       >
@@ -221,7 +218,7 @@ export function SquadSelector() {
           if (group.squads.length === 0) return null;
 
           const isExpanded = expandedCategories.has(group.id);
-          const hasSelectedSquad = group.squads.some((s: PlatformSquad) => s.id === selectedSquadId);
+          const hasSelectedSquad = group.squads.some((s) => s.id === selectedSquadId);
 
           return (
             <div key={group.id} className="rounded-lg overflow-hidden">
@@ -232,8 +229,8 @@ export function SquadSelector() {
                   'w-full px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                   'flex items-center gap-2',
                   hasSelectedSquad
-                    ? 'bg-glass-10 text-primary'
-                    : 'hover:bg-glass-5 text-secondary hover:text-primary'
+                    ? 'bg-white/10 text-primary'
+                    : 'hover:bg-white/5 text-secondary hover:text-primary'
                 )}
                 whileTap={{ scale: 0.98 }}
               >
@@ -254,7 +251,7 @@ export function SquadSelector() {
                     className="overflow-hidden"
                   >
                     <div className="pl-4 pr-1 py-1 space-y-0.5">
-                      {group.squads.map((squad: PlatformSquad, index: number) => (
+                      {group.squads.map((squad, index) => (
                         <motion.button
                           key={squad.id}
                           onClick={() => setSelectedSquadId(squad.id)}
@@ -262,8 +259,8 @@ export function SquadSelector() {
                             'w-full px-3 py-1.5 rounded-md text-xs transition-all duration-200',
                             'flex items-center gap-2',
                             selectedSquadId === squad.id
-                              ? cn(getSquadColors(group.squadType).bg, 'text-foreground-primary shadow-sm')
-                              : 'hover:bg-glass-5 text-secondary hover:text-primary'
+                              ? cn(getSquadColors(group.squadType).bg, 'text-white shadow-sm')
+                              : 'hover:bg-white/5 text-secondary hover:text-primary'
                           )}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -281,7 +278,7 @@ export function SquadSelector() {
                           </span>
                           <span className={cn(
                             'text-[10px]',
-                            selectedSquadId === squad.id ? 'text-foreground-secondary' : 'opacity-50'
+                            selectedSquadId === squad.id ? 'text-white/70' : 'opacity-50'
                           )}>
                             {squad.agentCount}
                           </span>
@@ -297,7 +294,7 @@ export function SquadSelector() {
 
         {/* Uncategorized squads (sorted alphabetically) */}
         {uncategorized.length > 0 && (
-          <div className="pt-2 border-t border-glass-5">
+          <div className="pt-2 border-t border-white/5">
             <div className="text-[10px] text-secondary uppercase tracking-wider px-3 py-1 mb-1">
               Outros
             </div>
@@ -309,8 +306,8 @@ export function SquadSelector() {
                   'w-full px-3 py-1.5 rounded-md text-xs transition-all duration-200',
                   'flex items-center gap-2',
                   selectedSquadId === squad.id
-                    ? 'bg-gray-500 text-foreground-primary shadow-sm'
-                    : 'hover:bg-glass-5 text-secondary hover:text-primary'
+                    ? 'bg-gray-500 text-white shadow-sm'
+                    : 'hover:bg-white/5 text-secondary hover:text-primary'
                 )}
                 whileTap={{ scale: 0.98 }}
               >
@@ -336,7 +333,7 @@ function formatSquadName(name: string, categoryName: string): string {
   // Remove category name prefix for cleaner display
   const cleanName = name
     .replace(new RegExp(`^${categoryName}\\s*[-:]?\\s*`, 'i'), '')
-    .replace(/Natalia Tanaka$/i, '')
+    .replace(/Natália Tanaka$/i, '')
     .trim();
 
   // If the name became empty or too short, return original

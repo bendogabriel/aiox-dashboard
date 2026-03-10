@@ -1,163 +1,155 @@
-'use client';
+import { useState } from 'react';
+import { Minimize2, Maximize2, FolderOpen } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { GlassCard, Badge, StatusDot } from '../ui';
+import type { StatusType } from '../ui/StatusDot';
+import { cn } from '../../lib/utils';
 
-import { memo } from 'react';
-import { cn } from '@/lib/utils';
-import { iconMap } from '@/lib/icons';
-import { useBobStore } from '@/stores/bob-store';
-import { AGENT_CONFIG, type TerminalSession } from '@/types';
-
-interface TerminalCardProps {
-  terminal: TerminalSession;
-  className?: string;
+export interface TerminalSession {
+  id: string;
+  agent: string;
+  status: 'working' | 'idle' | 'error';
+  dir: string;
+  story: string;
+  output: string[];
 }
 
-// Status styles using CSS variables
-const STATUS_STYLES: Record<string, { bg: string; color: string; glow?: string }> = {
-  idle: { bg: 'var(--status-idle)', color: 'var(--status-idle)', glow: undefined },
-  running: { bg: 'var(--status-success)', color: 'var(--status-success)', glow: 'var(--status-success-glow)' },
-  error: { bg: 'var(--status-error)', color: 'var(--status-error)', glow: 'var(--status-error-glow)' },
-};
+function mapStatus(status: TerminalSession['status']): StatusType {
+  return status;
+}
 
-export const TerminalCard = memo(function TerminalCard({
-  terminal,
-  className,
-}: TerminalCardProps) {
-  const agentConfig = AGENT_CONFIG[terminal.agentId];
-  const bobTerminals = useBobStore((s) => s.terminals);
-  const bobActive = useBobStore((s) => s.active);
-  const isBobSpawned = bobActive && bobTerminals.some((bt) => bt.agent === terminal.agentId);
-  const XIcon = iconMap['close'];
-  const SettingsIcon = iconMap['settings'];
-  const statusStyle = STATUS_STYLES[terminal.status] || STATUS_STYLES.idle;
+interface TerminalCardProps {
+  session: TerminalSession;
+  listMode?: boolean;
+}
+
+export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
+  const [minimized, setMinimized] = useState(false);
+  const isActive = session.status === 'working';
+  const statusType = mapStatus(session.status);
+
+  // Show last 8 lines of output
+  const visibleLines = session.output.slice(-8);
 
   return (
-    <div
+    <GlassCard
+      padding="none"
       className={cn(
-        'border border-l-2 overflow-hidden flex flex-col font-mono text-xs h-full bg-[var(--bg-elevated)] border-[var(--border-subtle)]',
-        'transition-luxury hover:border-[rgba(255,255,255,0.08)]',
-        className
+        'overflow-hidden flex flex-col',
+        !listMode && 'h-[280px]',
+        listMode && 'h-auto',
+        isActive && 'ring-1 terminal-ring-active',
       )}
-      style={{
-        borderLeftColor: agentConfig?.color || 'var(--border-subtle)',
-      }}
+      aria-label={`Terminal ${session.agent} - ${session.status}`}
     >
-      {/* Terminal Header */}
-      <div
-        className="flex items-center justify-between px-3 py-2 border-b bg-[var(--bg-surface)] border-[var(--border-subtle)]"
-      >
-        <div className="flex items-center gap-2">
-          <span
-            className="h-1.5 w-1.5 rounded-full"
-            style={{
-              backgroundColor: statusStyle.bg,
-              boxShadow: statusStyle.glow ? `0 0 8px ${statusStyle.glow}` : undefined,
-            }}
+      {/* Header bar */}
+      <div className="flex items-center justify-between px-3 py-2 border-b border-white/5">
+        <div className="flex items-center gap-2 min-w-0">
+          <StatusDot
+            status={statusType}
+            size="sm"
+            glow={isActive}
+            pulse={isActive}
           />
-          <span className="font-normal text-label text-text-secondary">{terminal.name}</span>
-          <span
-            className="px-1.5 py-0.5 text-caption uppercase tracking-wider border"
-            style={{
-              color: agentConfig?.color,
-              borderColor: agentConfig?.border,
-              backgroundColor: agentConfig?.bg,
-            }}
-          >
-            {terminal.agentId}
+          <span className="text-sm font-semibold text-primary truncate">
+            {session.agent}
           </span>
-          {isBobSpawned && (
-            <span
-              className="px-1.5 py-0.5 text-caption tracking-wider border"
-              style={{
-                color: 'var(--agent-pm)',
-                borderColor: 'var(--agent-pm-border)',
-                backgroundColor: 'var(--agent-pm-bg)',
-              }}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1 text-[10px] text-tertiary">
+            <FolderOpen className="h-3 w-3" />
+            <span className="max-w-[100px] truncate">{session.dir}</span>
+          </span>
+          <button
+            onClick={() => setMinimized(!minimized)}
+            className="p-1 rounded hover:bg-white/5 text-tertiary hover:text-secondary transition-colors"
+            aria-label={minimized ? 'Maximize terminal' : 'Minimize terminal'}
+          >
+            {minimized ? (
+              <Maximize2 className="h-3.5 w-3.5" />
+            ) : (
+              <Minimize2 className="h-3.5 w-3.5" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Terminal output area */}
+      <AnimatePresence initial={false}>
+        {!minimized && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="flex-1 overflow-hidden"
+          >
+            <div
+              className={cn(
+                'bg-black/80 p-3 font-mono text-xs leading-relaxed overflow-y-auto',
+                !listMode && 'h-[200px]',
+                listMode && 'max-h-[160px]',
+              )}
+              tabIndex={0}
+              role="region"
+              aria-label={`Terminal ${session.agent}`}
             >
-              Bob
+              {visibleLines.map((line, i) => (
+                <div key={i} className="whitespace-pre-wrap">
+                  {line.startsWith('$') ? (
+                    <span className="terminal-prompt">{line}</span>
+                  ) : line.startsWith('PASS') || line.includes('passed') || line.startsWith('\u2713') ? (
+                    <span className="terminal-success">{line}</span>
+                  ) : line.startsWith('FAIL') || line.includes('error') || line.includes('Error') ? (
+                    <span className="terminal-error">{line}</span>
+                  ) : (
+                    <span className="terminal-text">{line}</span>
+                  )}
+                </div>
+              ))}
+              {isActive && (
+                <span className="terminal-cursor animate-pulse">_</span>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Last output preview (when minimized) */}
+      {minimized && session.output.length > 0 && (
+        <div className="px-3 py-1.5 border-t border-white/5 bg-black/40">
+          <p className="font-mono text-[10px] text-tertiary truncate">
+            {session.output[session.output.length - 1]}
+          </p>
+        </div>
+      )}
+
+      {/* Footer: Story badge + activity indicator */}
+      <div className="flex items-center justify-between px-3 py-1.5 border-t border-white/5">
+        {session.story ? (
+          <Badge variant="default" size="sm">
+            {session.story}
+          </Badge>
+        ) : (
+          <span className="text-[10px] text-tertiary">No active story</span>
+        )}
+        <div className="flex items-center gap-1.5">
+          {isActive && (
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full terminal-activity-dot opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 terminal-activity-dot-bg" />
             </span>
           )}
-        </div>
-        <div className="flex gap-2 text-text-muted">
-          <button className="transition-colors p-1 hover:opacity-80">
-            <SettingsIcon className="h-3 w-3" />
-          </button>
-          <button className="transition-colors p-1 hover:opacity-80">
-            <XIcon className="h-3 w-3" />
-          </button>
-        </div>
-      </div>
-
-      {/* Terminal Body */}
-      <div className="p-3 space-y-1 flex-1 text-text-tertiary bg-[var(--bg-base)]">
-        {/* Claude Info Header */}
-        <div className="space-y-0.5 pb-2 border-b mb-2 border-[var(--border-subtle)]">
-          <div className="flex gap-2 text-detail">
-            <span className="text-border">*</span>
-            <span className="text-border">*</span>
-            <span className="text-border">*</span>
-            <span className="font-normal text-text-primary">Claude Code</span>
-            <span className="text-gold">v2.0</span>
-          </div>
-          <div className="flex gap-2 text-detail">
-            <span className="text-border">*</span>
-            <span className="text-border">*</span>
-            <span className="text-border">*</span>
-            <span className="text-text-muted">{terminal.model} • {terminal.apiType}</span>
-          </div>
-          <div className="flex gap-2 text-detail">
-            <span className="text-border">*</span>
-            <span className="text-border">*</span>
-            <span className="text-border">*</span>
-            <span className="text-text-muted">{terminal.workingDirectory}</span>
-          </div>
-        </div>
-
-        {/* Current Command / Prompt */}
-        {terminal.currentCommand ? (
-          <div className="text-label text-status-success">
-            <span className="mr-2 text-text-muted">{'>'}</span>
-            {terminal.currentCommand}
-          </div>
-        ) : (
-          <div className="italic text-detail text-border">Awaiting input...</div>
-        )}
-
-        {/* Story Info */}
-        {terminal.storyId && (
-          <div className="text-detail mt-3 pt-2 border-t border-[var(--border-subtle)]">
-            <span className="uppercase tracking-wider text-text-muted">Story:</span>
-            <span className="ml-2 text-text-secondary">{terminal.storyId}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Terminal Footer - Status */}
-      <div
-        className="px-3 py-2 border-t flex items-center justify-between bg-[var(--bg-elevated)] border-[var(--border-subtle)]"
-      >
-        <div className="flex items-center gap-2">
           <span
-            className="h-1 w-1 rounded-full"
-            style={{
-              backgroundColor: statusStyle.bg,
-              boxShadow: statusStyle.glow ? `0 0 8px ${statusStyle.glow}` : undefined,
-            }}
-          />
-          <span className="text-detail uppercase tracking-wider" style={{ color: statusStyle.color }}>
-            {terminal.status}
+            className={cn(
+              'text-[10px] font-medium capitalize',
+              isActive ? 'terminal-status-active' : 'text-tertiary',
+            )}
+          >
+            {session.status}
           </span>
         </div>
-        <div
-          className="h-5 w-5 flex items-center justify-center text-micro font-medium border"
-          style={{
-            backgroundColor: agentConfig?.bg,
-            borderColor: agentConfig?.border,
-            color: agentConfig?.color,
-          }}
-        >
-          {terminal.agentId.slice(0, 2).toUpperCase()}
-        </div>
       </div>
-    </div>
+    </GlassCard>
   );
-});
+}

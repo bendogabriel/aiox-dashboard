@@ -1,8 +1,5 @@
-'use client';
-
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
 
 interface RippleProps {
   color?: string;
@@ -64,13 +61,15 @@ export function useRipple(options: RippleProps = {}) {
           animate={{ scale: 1, opacity: 0 }}
           exit={{ opacity: 0 }}
           transition={{ duration: duration / 1000, ease: 'easeOut' }}
-          className="absolute rounded-full pointer-events-none"
           style={{
+            position: 'absolute',
             left: ripple.x - ripple.size / 2,
             top: ripple.y - ripple.size / 2,
             width: ripple.size,
             height: ripple.size,
+            borderRadius: '50%',
             backgroundColor: color,
+            pointerEvents: 'none',
           }}
         />
       ))}
@@ -96,9 +95,10 @@ export function RippleWrapper({ children, className, ...rippleProps }: RippleWra
 
   return (
     <div
-      className={cn(className, 'relative overflow-hidden')}
+      className={className}
       onMouseDown={createRipple}
       onTouchStart={createRipple}
+      style={{ position: 'relative', overflow: 'hidden' }}
     >
       {children}
       <RippleContainer />

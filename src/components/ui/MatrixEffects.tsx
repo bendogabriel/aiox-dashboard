@@ -1,9 +1,7 @@
-'use client';
-
 import { useEffect, useRef, useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// -- Matrix Digital Rain (Canvas) --
+// ── Matrix Digital Rain (Canvas) ──
 
 const CHARS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF<>/{}[];:=+*&^%$#@!';
 const FONT_SIZE = 14;
@@ -97,18 +95,19 @@ const MatrixRainCanvas = memo(function MatrixRainCanvas() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0 opacity-[0.18]"
+      className="fixed inset-0 pointer-events-none"
+      style={{ zIndex: 0, opacity: 0.18 }}
       aria-hidden="true"
     />
   );
 });
 
-// -- Boot Sequence Overlay --
+// ── Boot Sequence Overlay ──
 
 const BOOT_LINES = [
   { text: '> AIOS MATRIX MODE v4.4.6', delay: 0 },
   { text: '> Initializing neural interface...', delay: 300 },
-  { text: '> Loading agent network [\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588] 100%', delay: 700 },
+  { text: '> Loading agent network [████████████] 100%', delay: 700 },
   { text: '> Establishing encrypted channels...', delay: 1100 },
   { text: '> System ready. Welcome back, operator.', delay: 1500 },
 ];
@@ -135,7 +134,8 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#010401]"
+      className="fixed inset-0 z-[10000] flex items-center justify-center"
+      style={{ background: '#010401' }}
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
@@ -172,17 +172,20 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-// -- Main Export --
+// ── Main Export ──
 
 export function MatrixEffects() {
   const [booted, setBooted] = useState(() => {
     // Only show boot once per session
-    if (typeof sessionStorage === 'undefined') return true;
-    return sessionStorage.getItem('matrix-booted') === 'true';
+    try {
+      return sessionStorage.getItem('matrix-booted') === 'true';
+    } catch {
+      return false;
+    }
   });
 
   const handleBootComplete = () => {
-    sessionStorage.setItem('matrix-booted', 'true');
+    try { sessionStorage.setItem('matrix-booted', 'true'); } catch { /* storage unavailable */ }
     setBooted(true);
   };
 

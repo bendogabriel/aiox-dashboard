@@ -1,17 +1,13 @@
-'use client';
-
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { GlassAvatar } from '@/components/ui/GlassAvatar';
-import { AgentExplorerCard } from './PlatformAgentCard';
-import { usePlatformAgents, useAgentById, useAgentCommands } from '@/hooks/use-agents';
-import { useSquads } from '@/hooks/use-squads';
-import { useChat } from '@/hooks/use-chat';
-import { cn, getTierTheme } from '@/lib/utils';
-import type { AgentSummary, AgentTier, Squad } from '@/types';
-import { getSquadType } from '@/types';
+import { GlassButton, Badge, Avatar } from '../ui';
+import { AgentExplorerCard } from './AgentCard';
+import { useAgents, useSquads, useAgent, useAgentCommands } from '../../hooks';
+import { useChat } from '../../hooks/useChat';
+import { cn, getTierTheme } from '../../lib/utils';
+import type { AgentSummary, AgentTier } from '../../types';
+import { getSquadType } from '../../types';
+import { useUIStore } from '../../stores/uiStore';
 
 // Icons
 const SearchIcon = () => (
@@ -25,12 +21,6 @@ const CloseIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <line x1="18" y1="6" x2="6" y2="18" />
     <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-
-const FilterIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
   </svg>
 );
 
@@ -67,9 +57,10 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [selectedAgentSquadId, setSelectedAgentSquadId] = useState<string | null>(null);
 
-  const { data: allAgents, isLoading: loadingAgents } = usePlatformAgents();
-  const { squads, isLoading: loadingSquads } = useSquads();
+  const { data: allAgents, isLoading: loadingAgents } = useAgents();
+  const { data: squads } = useSquads();
   const { selectAgent: startChat } = useChat();
+  const isAiox = useUIStore((s) => s.theme) === 'aiox';
 
   // Filter agents
   const filteredAgents = useMemo(() => {
@@ -138,7 +129,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-scrim-60 backdrop-blur-sm"
+          className={cn('absolute inset-0', isAiox ? 'bg-black' : 'bg-black/60 backdrop-blur-sm')}
           onClick={onClose}
         />
 
@@ -151,7 +142,9 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
           className="relative w-full h-full flex overflow-hidden"
           onClick={(e) => e.stopPropagation()}
           style={{
-            background: `
+            background: isAiox
+              ? '#050505'
+              : `
               radial-gradient(ellipse 80% 60% at 20% 100%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
               radial-gradient(ellipse 60% 80% at 80% 0%, rgba(147, 51, 234, 0.15) 0%, transparent 50%),
               rgba(10, 10, 15, 0.98)
@@ -159,12 +152,12 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
           }}
         >
           {/* Left Panel - Agent List */}
-          <div className="flex-1 flex flex-col border-r border-glass-10">
+          <div className="flex-1 flex flex-col border-r border-white/10">
             {/* Header */}
-            <div className="p-4 border-b border-glass-10">
+            <div className="p-4 border-b border-white/10">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                  <div className={cn('h-10 w-10 rounded-xl flex items-center justify-center', isAiox ? 'bg-[#D1FF00]/20 text-[#D1FF00]' : 'bg-gradient-to-br from-blue-500 to-purple-500')}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                       <circle cx="9" cy="7" r="4" />
@@ -173,42 +166,48 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                     </svg>
                   </div>
                   <div>
-                    <h1 className="text-foreground-primary font-bold text-lg">Agent Explorer</h1>
-                    <p className="text-foreground-tertiary text-sm">
+                    <h1 className="text-white font-bold text-lg">Agent Explorer</h1>
+                    <p className="text-white/50 text-sm">
                       {filteredAgents.length} agents encontrados
                     </p>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={onClose}>
+                <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
                   <CloseIcon />
-                </Button>
+                </GlassButton>
               </div>
 
               {/* Search */}
               <div className="relative mb-4">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-tertiary">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40">
                   <SearchIcon />
                 </div>
                 <input
                   type="text"
-                  placeholder="Buscar agents por nome, funcao ou squad..."
+                  placeholder="Buscar agents por nome, função ou squad..."
+                  aria-label="Buscar agents por nome, função ou squad"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-glass-5 border border-glass-10 text-foreground-primary placeholder-glass-30 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50"
+                  className={cn(
+                    'w-full pl-10 pr-4 py-2.5 text-white placeholder-white/30 text-sm focus:outline-none',
+                    isAiox
+                      ? 'bg-[#111] border border-[rgba(156,156,156,0.15)] focus:border-[#D1FF00] focus:ring-1 focus:ring-[#D1FF00]'
+                      : 'rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50'
+                  )}
                 />
               </div>
 
               {/* Filters */}
               <div className="flex flex-wrap gap-2">
                 {/* Tier Filter */}
-                <div className="flex items-center gap-1 p-1 rounded-lg bg-glass-5">
+                <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5">
                   <button
                     onClick={() => setSelectedTier('all')}
                     className={cn(
                       'px-2.5 py-1 rounded-md text-xs font-medium transition-all',
                       selectedTier === 'all'
-                        ? 'bg-glass-10 text-foreground-primary'
-                        : 'text-foreground-tertiary hover:text-foreground-secondary'
+                        ? 'bg-white/10 text-white'
+                        : 'text-white/50 hover:text-white/70'
                     )}
                   >
                     Todos
@@ -221,7 +220,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                         'px-2.5 py-1 rounded-md text-xs font-medium transition-all',
                         selectedTier === tier
                           ? `${getTierTheme(tier).bg} ${getTierTheme(tier).text}`
-                          : 'text-foreground-tertiary hover:text-foreground-secondary'
+                          : 'text-white/50 hover:text-white/70'
                       )}
                     >
                       {getTierTheme(tier).label}
@@ -233,12 +232,18 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                 <select
                   value={selectedSquadId}
                   onChange={(e) => setSelectedSquadId(e.target.value)}
-                  className="px-3 py-1.5 rounded-lg bg-glass-5 border border-glass-10 text-foreground-primary text-xs focus:outline-none focus:border-blue-500/50"
+                  className={cn(
+                    'px-3 py-1.5 text-white text-xs focus:outline-none',
+                    isAiox
+                      ? 'bg-[#111] border border-[rgba(156,156,156,0.15)] focus:border-[#D1FF00]'
+                      : 'rounded-lg bg-white/5 border border-white/10 focus:border-blue-500/50'
+                  )}
+                  aria-label="Filtrar por squad"
                 >
                   <option value="all">Todos os Squads</option>
-                  {squads?.map((squad: Squad) => (
-                    <option key={squad.name} value={squad.name}>
-                      {squad.displayName || squad.name} ({squad.agentCount})
+                  {squads?.map((squad) => (
+                    <option key={squad.id} value={squad.id}>
+                      {squad.name} ({squad.agentCount})
                     </option>
                   ))}
                 </select>
@@ -253,11 +258,11 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                 </div>
               ) : filteredAgents.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-40 text-center">
-                  <div className="h-12 w-12 rounded-full bg-glass-5 flex items-center justify-center mb-3 text-glass-30">
+                  <div className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center mb-3 text-white/30">
                     <SearchIcon />
                   </div>
-                  <p className="text-foreground-tertiary text-sm">Nenhum agent encontrado</p>
-                  <p className="text-glass-30 text-xs mt-1">Tente ajustar os filtros</p>
+                  <p className="text-white/50 text-sm">Nenhum agent encontrado</p>
+                  <p className="text-white/30 text-xs mt-1">Tente ajustar os filtros</p>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -302,6 +307,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                 key={selectedAgentId}
                 squadId={selectedAgentSquadId}
                 agentId={selectedAgentId}
+                isAiox={isAiox}
                 onClose={() => {
                   setSelectedAgentId(null);
                   setSelectedAgentSquadId(null);
@@ -315,14 +321,14 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                 exit={{ opacity: 0 }}
                 className="w-96 flex flex-col items-center justify-center p-8 text-center"
               >
-                <div className="h-16 w-16 rounded-2xl bg-glass-5 flex items-center justify-center mb-4 text-glass-20">
+                <div className={cn('h-16 w-16 flex items-center justify-center mb-4 text-white/20', isAiox ? 'bg-[#111] border border-[rgba(156,156,156,0.15)]' : 'rounded-2xl bg-white/5')}>
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <circle cx="12" cy="12" r="10" />
                     <path d="M12 16v-4M12 8h.01" />
                   </svg>
                 </div>
-                <p className="text-foreground-tertiary text-sm">Selecione um agent</p>
-                <p className="text-glass-30 text-xs mt-1">
+                <p className="text-white/50 text-sm">Selecione um agent</p>
+                <p className="text-white/30 text-xs mt-1">
                   Clique em um agent para ver detalhes
                 </p>
               </motion.div>
@@ -353,16 +359,16 @@ function AgentSection({ tier, agents, selectedId, onSelect }: AgentSectionProps)
         )}>
           {tier}
         </div>
-        <h3 className={cn('text-sm font-semibold', getTierTheme(tier).text)}>
+        <h2 className={cn('text-sm font-semibold', getTierTheme(tier).text)}>
           {getTierTheme(tier).label}s
-        </h3>
-        <Badge variant="secondary">{agents.length}</Badge>
+        </h2>
+        <Badge variant="count" size="sm">{agents.length}</Badge>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         {agents.map((agent, index) => (
           <motion.div
-            key={agent.id}
+            key={`${agent.squad}-${agent.id}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.03 }}
@@ -383,12 +389,13 @@ function AgentSection({ tier, agents, selectedId, onSelect }: AgentSectionProps)
 interface AgentDetailPanelProps {
   squadId: string;
   agentId: string;
+  isAiox: boolean;
   onClose: () => void;
   onStartChat: (agent: AgentSummary) => void;
 }
 
-function AgentDetailPanel({ squadId, agentId, onClose, onStartChat }: AgentDetailPanelProps) {
-  const { data: agent, isLoading } = useAgentById(agentId, squadId);
+function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: AgentDetailPanelProps) {
+  const { data: agent, isLoading } = useAgent(squadId, agentId);
   const { data: commands, isLoading: loadingCommands } = useAgentCommands(squadId, agentId);
 
   if (isLoading) {
@@ -397,7 +404,7 @@ function AgentDetailPanel({ squadId, agentId, onClose, onStartChat }: AgentDetai
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 20 }}
-        className="w-96 border-l border-glass-10 flex items-center justify-center"
+        className="w-96 border-l border-white/10 flex items-center justify-center"
       >
         <SpinnerIcon />
       </motion.div>
@@ -420,26 +427,19 @@ function AgentDetailPanel({ squadId, agentId, onClose, onStartChat }: AgentDetai
       exit={{ opacity: 0, x: 20 }}
       className="w-96 flex flex-col overflow-hidden"
       style={{
-        background: `linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%)`,
+        background: isAiox
+          ? '#0a0a0a'
+          : `linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%)`,
       }}
     >
       {/* Header */}
-      <div className="p-4 border-b border-glass-10">
+      <div className="p-4 border-b border-white/10">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            {agent.icon ? (
-              <div className={cn(
-                'h-14 w-14 rounded-xl flex items-center justify-center text-2xl',
-                `bg-gradient-to-br ${normalizedTier === 0 ? 'from-cyan-500 to-blue-500' : normalizedTier === 1 ? 'from-purple-500 to-pink-500' : 'from-orange-500 to-amber-500'}`
-              )}>
-                {agent.icon}
-              </div>
-            ) : (
-              <GlassAvatar name={agent.name} size="xl" squadType={squadType} />
-            )}
+            <Avatar name={agent.name} agentId={agent.id} size="xl" squadType={squadType} />
             <div>
-              <h2 className="text-foreground-primary font-bold text-lg">{agent.name}</h2>
-              <p className="text-foreground-tertiary text-sm">{agent.title}</p>
+              <h2 className="text-white font-bold text-lg">{agent.name}</h2>
+              <p className="text-white/50 text-sm">{agent.title}</p>
               <div className="flex items-center gap-2 mt-1">
                 <span className={cn(
                   'text-[10px] px-2 py-0.5 rounded-full border font-medium',
@@ -447,13 +447,13 @@ function AgentDetailPanel({ squadId, agentId, onClose, onStartChat }: AgentDetai
                 )}>
                   {getTierTheme(normalizedTier).label}
                 </span>
-                <span className="text-[10px] text-glass-30">{agent.squad}</span>
+                <span className="text-[10px] text-white/30">{agent.squad}</span>
               </div>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
             <CloseIcon />
-          </Button>
+          </GlassButton>
         </div>
       </div>
 
@@ -462,53 +462,53 @@ function AgentDetailPanel({ squadId, agentId, onClose, onStartChat }: AgentDetai
         {/* Description */}
         {agent.description && (
           <div>
-            <h3 className="text-xs font-semibold text-foreground-tertiary uppercase tracking-wider mb-2">
-              Descricao
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+              Descrição
             </h3>
-            <p className="text-foreground-primary text-sm leading-relaxed">{agent.description}</p>
+            <p className="text-white/80 text-sm leading-relaxed">{agent.description}</p>
           </div>
         )}
 
         {/* When to Use */}
         {agent.whenToUse && (
           <div
-            className="rounded-xl p-3"
-            style={{
+            className={isAiox ? 'p-3 border border-[rgba(156,156,156,0.15)]' : 'rounded-xl p-3'}
+            style={isAiox ? {} : {
               background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%)',
               border: '1px solid rgba(59, 130, 246, 0.2)',
             }}
           >
-            <h3 className="text-xs font-semibold text-blue-400 mb-1.5 flex items-center gap-1.5">
+            <h3 className={cn('text-xs font-semibold mb-1.5 flex items-center gap-1.5', isAiox ? 'text-[#D1FF00]' : 'text-blue-400')}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /><path d="M9 18h6" /><path d="M10 22h4" /></svg>
               Quando Usar
             </h3>
-            <p className="text-foreground-secondary text-sm">{agent.whenToUse}</p>
+            <p className="text-white/70 text-sm">{agent.whenToUse}</p>
           </div>
         )}
 
         {/* Persona */}
         {agent.persona && (
           <div>
-            <h3 className="text-xs font-semibold text-foreground-tertiary uppercase tracking-wider mb-2">
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
               Persona
             </h3>
             <div className="space-y-2">
               {agent.persona.role && (
                 <div className="flex items-start gap-2">
-                  <span className="text-[10px] text-glass-30 w-16 flex-shrink-0">Role</span>
-                  <span className="text-foreground-secondary text-xs">{agent.persona.role}</span>
+                  <span className="text-[10px] text-white/30 w-16 flex-shrink-0">Role</span>
+                  <span className="text-white/70 text-xs">{agent.persona.role}</span>
                 </div>
               )}
               {agent.persona.style && (
                 <div className="flex items-start gap-2">
-                  <span className="text-[10px] text-glass-30 w-16 flex-shrink-0">Estilo</span>
-                  <span className="text-foreground-secondary text-xs">{agent.persona.style}</span>
+                  <span className="text-[10px] text-white/30 w-16 flex-shrink-0">Estilo</span>
+                  <span className="text-white/70 text-xs">{agent.persona.style}</span>
                 </div>
               )}
               {agent.persona.focus && (
                 <div className="flex items-start gap-2">
-                  <span className="text-[10px] text-glass-30 w-16 flex-shrink-0">Foco</span>
-                  <span className="text-foreground-secondary text-xs">{agent.persona.focus}</span>
+                  <span className="text-[10px] text-white/30 w-16 flex-shrink-0">Foco</span>
+                  <span className="text-white/70 text-xs">{agent.persona.focus}</span>
                 </div>
               )}
             </div>
@@ -518,16 +518,16 @@ function AgentDetailPanel({ squadId, agentId, onClose, onStartChat }: AgentDetai
         {/* Core Principles */}
         {agent.corePrinciples && agent.corePrinciples.length > 0 && (
           <div>
-            <h3 className="text-xs font-semibold text-foreground-tertiary uppercase tracking-wider mb-2">
-              Principios
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+              Princípios
             </h3>
             <div className="space-y-1.5">
-              {agent.corePrinciples.slice(0, 5).map((principle: string, index: number) => (
+              {agent.corePrinciples.slice(0, 5).map((principle, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-2 text-xs text-foreground-secondary"
+                  className="flex items-start gap-2 text-xs text-white/60"
                 >
-                  <span className="text-green-400 mt-0.5">&#8226;</span>
+                  <span className="text-green-400 mt-0.5">•</span>
                   <span>{principle}</span>
                 </div>
               ))}
@@ -537,10 +537,10 @@ function AgentDetailPanel({ squadId, agentId, onClose, onStartChat }: AgentDetai
 
         {/* Commands */}
         <div>
-          <h3 className="text-xs font-semibold text-foreground-tertiary uppercase tracking-wider mb-2 flex items-center gap-2">
+          <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2 flex items-center gap-2">
             <CommandIcon />
             Comandos
-            {commands && <Badge variant="secondary">{commands.length}</Badge>}
+            {commands && <Badge variant="count" size="sm">{commands.length}</Badge>}
           </h3>
           {loadingCommands ? (
             <div className="flex items-center justify-center py-4">
@@ -548,49 +548,54 @@ function AgentDetailPanel({ squadId, agentId, onClose, onStartChat }: AgentDetai
             </div>
           ) : commands && commands.length > 0 ? (
             <div className="space-y-2">
-              {commands.map((cmd: { command: string; action: string; description?: string }, index: number) => (
+              {commands.map((cmd, index) => (
                 <motion.div
                   key={cmd.command}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="rounded-lg p-2.5 bg-glass-5 border border-glass-5 hover:border-glass-10 transition-colors"
+                  className={cn(
+                    'p-2.5 border transition-colors',
+                    isAiox
+                      ? 'bg-[#111] border-[rgba(156,156,156,0.15)] hover:border-[#D1FF00]/30'
+                      : 'rounded-lg bg-white/5 border-white/5 hover:border-white/10'
+                  )}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <code className="text-xs font-mono text-purple-400">/{cmd.command}</code>
-                    <span className="text-[10px] text-glass-30">{cmd.action}</span>
+                    <span className="text-[10px] text-white/30">{cmd.action}</span>
                   </div>
                   {cmd.description && (
-                    <p className="text-[11px] text-foreground-tertiary">{cmd.description}</p>
+                    <p className="text-[11px] text-white/50">{cmd.description}</p>
                   )}
                 </motion.div>
               ))}
             </div>
           ) : (
-            <p className="text-glass-30 text-xs">Nenhum comando especifico</p>
+            <p className="text-white/30 text-xs">Nenhum comando específico</p>
           )}
         </div>
 
         {/* Mind Source */}
         {agent.mindSource && (
           <div>
-            <h3 className="text-xs font-semibold text-foreground-tertiary uppercase tracking-wider mb-2">
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
               Fonte de Conhecimento
             </h3>
             <div
-              className="rounded-xl p-3"
-              style={{
+              className={isAiox ? 'p-3 border border-[rgba(156,156,156,0.15)]' : 'rounded-xl p-3'}
+              style={isAiox ? {} : {
                 background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, transparent 100%)',
                 border: '1px solid rgba(147, 51, 234, 0.2)',
               }}
             >
-              <p className="text-purple-300 text-sm font-medium">{agent.mindSource.name}</p>
+              <p className={cn('text-sm font-medium', isAiox ? 'text-[#D1FF00]' : 'text-purple-300')}>{agent.mindSource.name}</p>
               {agent.mindSource.frameworks && agent.mindSource.frameworks.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
-                  {agent.mindSource.frameworks.map((fw: string) => (
+                  {agent.mindSource.frameworks.map((fw) => (
                     <span
                       key={fw}
-                      className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300"
+                      className={cn('text-[10px] px-1.5 py-0.5', isAiox ? 'bg-[#D1FF00]/10 text-[#D1FF00]' : 'rounded bg-purple-500/20 text-purple-300')}
                     >
                       {fw}
                     </span>
@@ -603,15 +608,15 @@ function AgentDetailPanel({ squadId, agentId, onClose, onStartChat }: AgentDetai
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-glass-10">
-        <Button
-          variant="default"
+      <div className="p-4 border-t border-white/10">
+        <GlassButton
+          variant="primary"
           className="w-full"
           onClick={() => onStartChat(agent)}
+          leftIcon={<ChatIcon />}
         >
-          <ChatIcon />
           Iniciar Conversa
-        </Button>
+        </GlassButton>
       </div>
     </motion.div>
   );

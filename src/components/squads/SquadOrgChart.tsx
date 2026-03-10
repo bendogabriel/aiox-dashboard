@@ -1,10 +1,9 @@
-'use client';
-
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import type { AgentSummary, AgentTier } from '@/types';
+import { GlassCard, Badge } from '../ui';
+import { cn } from '../../lib/utils';
+import { getIconComponent } from '../../lib/icons';
+import type { AgentSummary, AgentTier } from '../../types';
 
 interface SquadOrgChartProps {
   agents: AgentSummary[];
@@ -18,6 +17,12 @@ const tierConfig: Record<AgentTier, { label: string; color: string; bg: string; 
 
 function AgentNode({ agent, index }: { agent: AgentSummary; index: number }) {
   const tier = tierConfig[agent.tier];
+  /* eslint-disable react-hooks/static-components -- Lucide icons are stateless; dynamic lookup is safe */
+  const iconElement = useMemo(() => {
+    const IconComp = getIconComponent(agent.icon || agent.name.charAt(0));
+    return <IconComp size={14} />;
+  }, [agent.icon, agent.name]);
+  /* eslint-enable react-hooks/static-components */
 
   return (
     <motion.div
@@ -25,15 +30,15 @@ function AgentNode({ agent, index }: { agent: AgentSummary; index: number }) {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.05, duration: 0.3 }}
     >
-      <Card className="w-36 text-center p-2">
-        <div className={cn('w-8 h-8 rounded-lg mx-auto flex items-center justify-center text-sm', tier.bg)}>
-          {agent.icon || agent.name.charAt(0)}
+      <GlassCard padding="sm" className="w-36 text-center">
+        <div className={cn('w-8 h-8 rounded-lg mx-auto flex items-center justify-center', tier.bg)}>
+          {iconElement}
         </div>
         <p className="text-xs font-medium text-primary mt-1.5 truncate">{agent.name}</p>
-        <Badge variant="default" className={cn('mt-1 text-xs', tier.bg)}>
+        <Badge variant="default" size="sm" className={cn('mt-1', tier.bg)}>
           <span className={tier.color}>{tier.label}</span>
         </Badge>
-      </Card>
+      </GlassCard>
     </motion.div>
   );
 }
@@ -76,7 +81,7 @@ export function SquadOrgChart({ agents }: SquadOrgChartProps) {
           {/* Connecting line to next tier */}
           {gi < grouped.length - 1 && (
             <div className="flex justify-center my-4">
-              <div className="w-px h-8 bg-glass-10" />
+              <div className="w-px h-8 bg-white/10" />
             </div>
           )}
         </div>

@@ -1,5 +1,4 @@
-export * from './StoryCard';
-export * from './StoryDetailModal';
-export * from './StoryCreateModal';
-export * from './StoryEditModal';
-export * from './StoryList';
+export { StoryList } from './StoryList';
+export { StoryCard } from './StoryCard';
+export { StoryDetailModal } from './StoryDetailModal';
+export { StoryCreateModal } from './StoryCreateModal';

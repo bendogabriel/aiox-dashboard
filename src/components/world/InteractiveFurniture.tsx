@@ -1,9 +1,7 @@
-'use client';
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { FurnitureItem, DomainId } from './world-layout';
-import { domains } from './world-layout';
+import { useDomains } from './DomainContext';
 
 interface InteractiveFurnitureProps {
   item: FurnitureItem;
@@ -54,8 +52,9 @@ const FURNITURE_SIZES: Record<FurnitureItem['type'], { w: number; h: number }> =
   projectorScreen: { w: 60, h: 44 },
 };
 
-export function InteractiveFurniture({ item, domain, tileSize, index }: InteractiveFurnitureProps) {
+export function InteractiveFurniture({ item, domain, tileSize }: InteractiveFurnitureProps) {
   const [hovered, setHovered] = useState(false);
+  const domains = useDomains();
   const info = FURNITURE_INFO[item.type];
   const size = FURNITURE_SIZES[item.type];
   const d = domains[domain];
@@ -96,11 +95,12 @@ export function InteractiveFurniture({ item, domain, tileSize, index }: Interact
 
             {/* Tooltip */}
             <motion.div
-              className="absolute pointer-events-none z-[45]"
+              className="absolute pointer-events-none"
               style={{
                 bottom: size.h + 6,
                 left: '50%',
                 transform: 'translateX(-50%)',
+                zIndex: 45,
               }}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
@@ -114,10 +114,10 @@ export function InteractiveFurniture({ item, domain, tileSize, index }: Interact
                   border: '1px solid rgba(255,255,255,0.1)',
                 }}
               >
-                <div className="text-[8px] font-semibold text-foreground-primary font-mono">
+                <div className="text-[8px] font-semibold text-white" style={{ fontFamily: 'monospace' }}>
                   {info.label}
                 </div>
-                <div className="text-[7px] text-foreground-tertiary font-mono">
+                <div className="text-[7px] text-white/50" style={{ fontFamily: 'monospace' }}>
                   {info.description}
                 </div>
               </div>

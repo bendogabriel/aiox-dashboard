@@ -1,5 +1,3 @@
-export * from './SettingsPanel';
+export { SettingsPage } from './SettingsPage';
 export { CategoryManager } from './CategoryManager';
 export { MemoryManager } from './MemoryManager';
-export { SettingsPage } from './SettingsPage';
-export { WorkflowManager } from './WorkflowManager';

@@ -1,11 +1,6 @@
-'use client';
-
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { GlassAvatar } from '@/components/ui/GlassAvatar';
-import { Card } from '@/components/ui/card';
-import { cn, formatRelativeTime } from '@/lib/utils';
+import { GlassButton, Badge, Avatar, GlassCard } from '../ui';
+import { cn, formatRelativeTime } from '../../lib/utils';
 import type { WorkflowMission } from './types';
 
 // Icons
@@ -64,7 +59,7 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
       className="fixed inset-0 z-[60] flex items-center justify-center p-4"
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-scrim-40" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
       {/* Modal */}
       <motion.div
@@ -77,18 +72,18 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
         <div className="px-6 py-4 border-b border-glass-border flex items-center justify-between">
           <div>
             <h2 className="text-primary text-lg font-semibold">{mission.name}</h2>
-            <p className="text-tertiary text-sm">Missao #{mission.id}</p>
+            <p className="text-tertiary text-sm">Missão #{mission.id}</p>
           </div>
-          <Button variant="glass-ghost" size="icon" onClick={onClose}>
+          <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
             <CloseIcon />
-          </Button>
+          </GlassButton>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto glass-scrollbar">
+        <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto glass-scrollbar" tabIndex={0} role="region" aria-label="Detalhes da missao">
           {/* Description */}
           <div>
-            <h3 className="text-sm font-semibold text-secondary mb-2">Descricao</h3>
+            <h3 className="text-sm font-semibold text-secondary mb-2">Descrição</h3>
             <p className="text-primary text-sm">{mission.description}</p>
           </div>
 
@@ -102,7 +97,7 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
             />
             <StatCard
               icon={<CheckCircleIcon />}
-              label="Concluidas"
+              label="Concluídas"
               value={`${completedNodes}/${totalNodes}`}
               color="text-green-500"
             />
@@ -123,10 +118,10 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
           {/* Progress Bar */}
           <div>
             <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-secondary">Progresso da Missao</span>
+              <span className="text-secondary">Progresso da Missão</span>
               <span className="text-primary font-medium">{mission.progress}%</span>
             </div>
-            <div className="h-3 rounded-full bg-glass-10 overflow-hidden">
+            <div className="h-3 rounded-full bg-white/10 overflow-hidden">
               <motion.div
                 className="h-full rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
                 initial={{ width: 0 }}
@@ -141,15 +136,16 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
             <h3 className="text-sm font-semibold text-secondary mb-3">Agents Envolvidos</h3>
             <div className="grid grid-cols-2 gap-3">
               {mission.agents.map((agent) => (
-                <Card
+                <GlassCard
                   key={agent.id}
-                  variant="glass"
-                  className="flex items-center gap-3 p-3 py-3"
+                  variant="subtle"
+                  padding="sm"
+                  className="flex items-center gap-3"
                 >
-                  <GlassAvatar
+                  <Avatar
                     name={agent.name}
                     size="md"
-                    squadType={agent.squadType as 'copywriting' | 'design' | 'creator' | 'orchestrator' | 'default'}
+                    squadType={agent.squadType}
                     status={
                       agent.status === 'working'
                         ? 'online'
@@ -163,19 +159,21 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
                     <p className="text-tertiary text-xs truncate">{agent.role}</p>
                   </div>
                   <Badge
-                    variant="outline"
-                    className={cn(
-                      'text-[10px]',
-                      agent.status === 'working' && 'text-orange-400 border-orange-500/30 bg-orange-500/20',
-                      agent.status === 'completed' && 'text-green-400 border-green-500/30 bg-green-500/20',
-                      agent.status === 'waiting' && 'text-gray-400 border-gray-500/30 bg-gray-500/20'
-                    )}
+                    variant="status"
+                    status={
+                      agent.status === 'working'
+                        ? 'warning'
+                        : agent.status === 'completed'
+                        ? 'success'
+                        : 'offline'
+                    }
+                    size="sm"
                   >
                     {agent.status === 'working' && 'Trabalhando'}
                     {agent.status === 'waiting' && 'Aguardando'}
-                    {agent.status === 'completed' && 'Concluido'}
+                    {agent.status === 'completed' && 'Concluído'}
                   </Badge>
-                </Card>
+                </GlassCard>
               ))}
             </div>
           </div>
@@ -227,8 +225,8 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
                           node.status === 'idle' && 'text-gray-500'
                         )}
                       >
-                        {node.status === 'completed' && 'Concluido'}
-                        {node.status === 'active' && 'Em execucao'}
+                        {node.status === 'completed' && 'Concluído'}
+                        {node.status === 'active' && 'Em execução'}
                         {node.status === 'waiting' && 'Aguardando'}
                         {node.status === 'idle' && 'Pendente'}
                       </p>
@@ -244,9 +242,9 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
           <p className="text-tertiary text-xs">
             Iniciado {formatRelativeTime(mission.startedAt || '')}
           </p>
-          <Button variant="glass-primary" onClick={onClose}>
+          <GlassButton variant="primary" onClick={onClose}>
             Fechar
-          </Button>
+          </GlassButton>
         </div>
       </motion.div>
     </motion.div>
@@ -265,10 +263,10 @@ function StatCard({
   color: string;
 }) {
   return (
-    <Card variant="glass" className="text-center p-3 py-3">
+    <GlassCard variant="subtle" padding="sm" className="text-center">
       <div className={cn('flex items-center justify-center mb-1', color)}>{icon}</div>
       <p className="text-primary text-lg font-bold">{value}</p>
       <p className="text-tertiary text-[10px]">{label}</p>
-    </Card>
+    </GlassCard>
   );
 }

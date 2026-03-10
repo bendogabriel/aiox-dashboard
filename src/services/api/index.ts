@@ -5,6 +5,18 @@ export { executeApi, buildExecuteRequest } from './execute';
 export { workflowsApi } from './workflows';
 export { analyticsApi } from './analytics';
 export { tasksApi } from './tasks';
+export { engineApi } from './engine';
+export type {
+  EngineHealth,
+  PoolStatus,
+  PoolSlot,
+  EngineJob,
+  CronJobDef,
+  WorkflowDef,
+  WorkflowState,
+  AuthorityCheckResult,
+  BundleInfo,
+} from './engine';
 export type { Task, TaskAgent, TaskSquadSelection, TaskWorkflow, CreateTaskResponse } from './tasks';
 export type {
   TimePeriod,

@@ -1,54 +1,62 @@
-'use client';
-
-import { useState } from 'react';
-import { Terminal as TerminalIcon, LayoutGrid, List, Plus } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from 'react';
+import { Terminal, LayoutGrid, List, Plus, ArrowLeft } from 'lucide-react';
+import { GlassCard, GlassButton, Badge, ProgressBar, SectionLabel } from '../ui';
 import { TerminalCard } from './TerminalCard';
 import { TerminalTabs } from './TerminalTabs';
 import { TerminalOutput } from './TerminalOutput';
-import { useTerminalStore, type Terminal } from '@/stores/terminal-store';
-import { AGENT_CONFIG } from '@/types';
-import { cn } from '@/lib/utils';
+import { useTerminalStore } from '../../stores/terminalStore';
+import { mockTerminalSessions } from '../../mocks/terminals';
+import { cn } from '../../lib/utils';
 
-const MAX_TERMINALS = 12;
+const agentNames = ['Dex', 'Aria', 'Pax', 'River', 'Morgan', 'Gage', 'Orion', 'Nova'];
+const directories = ['~/projects/api', '~/projects/ui', '~/projects/core', '~/projects/docs'];
 
-export function TerminalsView() {
+const MAX_SESSIONS = 12;
+
+export default function TerminalsView() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const terminals = useTerminalStore((s) => s.terminals);
-  const activeTerminalId = useTerminalStore((s) => s.activeTerminalId);
-  const setActiveTerminal = useTerminalStore((s) => s.setActiveTerminal);
-  const removeTerminal = useTerminalStore((s) => s.removeTerminal);
-  const createTerminal = useTerminalStore((s) => s.createTerminal);
+  const {
+    sessions,
+    activeSessionId,
+    setSessions,
+    setActiveSession,
+    addSession,
+    removeSession,
+  } = useTerminalStore();
 
-  const terminalList = Object.values(terminals);
-  const terminalCount = terminalList.length;
-  const capacityPercent = Math.round((terminalCount / MAX_TERMINALS) * 100);
-  const activeTerminal = activeTerminalId ? terminals[activeTerminalId] ?? null : null;
+  // Load mock sessions on mount if store is empty
+  useEffect(() => {
+    if (sessions.length === 0) {
+      setSessions(mockTerminalSessions);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const sessionCount = sessions.length;
+  const capacityPercent = Math.round((sessionCount / MAX_SESSIONS) * 100);
+  const activeSession = sessions.find((s) => s.id === activeSessionId) ?? null;
 
   return (
     <div className="h-full flex flex-col gap-4 p-4 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
-          <TerminalIcon className="h-5 w-5 text-foreground" />
-          <h1 className="text-lg font-bold text-foreground">Terminals</h1>
-          <Badge variant="outline">
-            {terminalCount} sessions
+          <Terminal className="h-5 w-5 text-primary" />
+          <h1 className="text-lg font-bold text-primary">Terminals</h1>
+          <Badge variant="default" size="sm">
+            {sessionCount} sessions
           </Badge>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Grid/List toggle */}
-          <div className="flex items-center border border-border rounded-xl overflow-hidden">
+          <div className="flex items-center glass rounded-xl overflow-hidden">
             <button
               onClick={() => setViewMode('grid')}
               className={cn(
                 'p-2 transition-colors',
                 viewMode === 'grid'
-                  ? 'bg-accent text-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? 'bg-white/10 text-primary'
+                  : 'text-tertiary hover:text-secondary',
               )}
               aria-label="Grid view"
               aria-pressed={viewMode === 'grid'}
@@ -60,8 +68,8 @@ export function TerminalsView() {
               className={cn(
                 'p-2 transition-colors',
                 viewMode === 'list'
-                  ? 'bg-accent text-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? 'bg-white/10 text-primary'
+                  : 'text-tertiary hover:text-secondary',
               )}
               aria-label="List view"
               aria-pressed={viewMode === 'list'}
@@ -70,53 +78,77 @@ export function TerminalsView() {
             </button>
           </div>
 
-          <Button
+          <GlassButton
             size="sm"
-            onClick={() => createTerminal('main')}
-            disabled={terminalCount >= MAX_TERMINALS}
+            variant="primary"
+            leftIcon={<Plus className="h-4 w-4" />}
+            disabled={sessionCount >= MAX_SESSIONS}
+            onClick={() => {
+              const usedNames = new Set(sessions.map((s) => s.agent));
+              const name = agentNames.find((n) => !usedNames.has(n)) ?? `Terminal ${sessionCount + 1}`;
+              const newSession = {
+                id: crypto.randomUUID(),
+                agent: name,
+                status: 'idle' as const,
+                dir: directories[sessionCount % directories.length],
+                story: '',
+                output: [`$ # New terminal session — ${name}`, '$ '],
+              };
+              addSession(newSession);
+              setActiveSession(newSession.id);
+            }}
           >
-            <Plus className="h-4 w-4 mr-1" />
             New Terminal
-          </Button>
+          </GlassButton>
         </div>
       </div>
 
       {/* Terminal Tabs */}
       <TerminalTabs
-        terminals={terminalList}
-        activeId={activeTerminalId}
+        sessions={sessions}
+        activeId={activeSessionId}
         onSelect={(id) =>
-          setActiveTerminal(id === activeTerminalId ? null : id)
+          setActiveSession(id === activeSessionId ? null : id)
         }
-        onClose={(id) => removeTerminal(id)}
+        onClose={(id) => removeSession(id)}
       />
 
       {/* Main area */}
       <div className="flex-1 flex flex-col gap-4 min-h-0 overflow-hidden">
-        {activeTerminal ? (
-          /* Expanded terminal output for selected terminal */
-          <Card className="flex-1 flex flex-col overflow-hidden p-0">
-            <div className="flex items-center justify-between px-3 py-2 border-b border-border flex-shrink-0">
-              <span className="text-sm font-semibold text-foreground">
-                {(AGENT_CONFIG as Record<string, { name: string }>)[activeTerminal.agentId]?.name || activeTerminal.agentId}
-              </span>
+        {activeSession ? (
+          /* Expanded terminal output for selected session */
+          <GlassCard padding="none" className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-3 py-2 border-b border-white/5 flex-shrink-0">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs capitalize">
-                  {activeTerminal.status}
-                </Badge>
+                <button
+                  onClick={() => setActiveSession(null)}
+                  className="p-1 rounded hover:bg-white/10 text-tertiary hover:text-primary transition-colors"
+                  aria-label="Back to all terminals"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                <span className="text-sm font-semibold text-primary">
+                  {activeSession.agent}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                {activeSession.story && (
+                  <Badge variant="default" size="sm">{activeSession.story}</Badge>
+                )}
+                <span className="text-[10px] text-tertiary">{activeSession.dir}</span>
               </div>
             </div>
-            <TerminalOutput />
-          </Card>
+            <TerminalOutput
+              lines={activeSession.output}
+              isActive={activeSession.status === 'working'}
+            />
+          </GlassCard>
         ) : (
-          /* Terminal cards grid/list */
-          <div className="flex-1 overflow-y-auto">
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">
-              Active Terminals
-              <Badge variant="outline" className="ml-2">{terminalCount}</Badge>
-            </h3>
+          /* Session cards grid/list */
+          <div className="flex-1 overflow-y-auto" tabIndex={0} role="region" aria-label="Sessoes de terminal ativas">
+            <SectionLabel count={sessionCount}>Active Sessions</SectionLabel>
 
-            {terminalList.length > 0 ? (
+            {sessions.length > 0 ? (
               <div
                 className={cn(
                   'mt-3',
@@ -125,25 +157,28 @@ export function TerminalsView() {
                     : 'flex flex-col gap-3',
                 )}
               >
-                {terminalList.map((terminal) => (
+                {sessions.map((session) => (
                   <div
-                    key={terminal.id}
+                    key={session.id}
                     className="cursor-pointer"
-                    onClick={() => setActiveTerminal(terminal.id)}
+                    onClick={() => setActiveSession(session.id)}
                   >
-                    <TerminalCard terminal={terminal as any} />
+                    <TerminalCard
+                      session={session}
+                      listMode={viewMode === 'list'}
+                    />
                   </div>
                 ))}
               </div>
             ) : (
               <div className="flex-1 flex items-center justify-center mt-12">
-                <Card className="text-center max-w-sm p-6">
-                  <TerminalIcon className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                  <h2 className="text-sm font-semibold text-foreground mb-1">No active terminals</h2>
-                  <p className="text-xs text-muted-foreground">
+                <GlassCard padding="lg" className="text-center max-w-sm">
+                  <Terminal className="h-10 w-10 text-tertiary mx-auto mb-3" />
+                  <h2 className="text-sm font-semibold text-primary mb-1">No active terminals</h2>
+                  <p className="text-xs text-secondary">
                     Terminal sessions will appear here when agents start executing tasks.
                   </p>
-                </Card>
+                </GlassCard>
               </div>
             )}
           </div>
@@ -151,27 +186,24 @@ export function TerminalsView() {
       </div>
 
       {/* Footer */}
-      <Card className="flex-shrink-0 p-2">
+      <GlassCard padding="sm" variant="subtle" className="flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Capacity</span>
+            <span className="text-xs text-tertiary">Capacity</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">
-              {terminalCount}/{MAX_TERMINALS} terminals
+            <span className="text-xs text-tertiary">
+              {sessionCount}/{MAX_SESSIONS} sessions
             </span>
-            <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
-              <div
-                className={cn(
-                  'h-full rounded-full transition-all',
-                  capacityPercent > 80 ? 'bg-yellow-500' : 'bg-primary'
-                )}
-                style={{ width: `${capacityPercent}%` }}
-              />
-            </div>
+            <ProgressBar
+              value={capacityPercent}
+              size="sm"
+              variant={capacityPercent > 80 ? 'warning' : 'default'}
+              className="w-24"
+            />
           </div>
         </div>
-      </Card>
+      </GlassCard>
     </div>
   );
 }

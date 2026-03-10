@@ -1,440 +1,231 @@
-'use client';
-
 import { useState, useCallback } from 'react';
-import { Loader2 } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import {
-  AGENT_CONFIG,
-  type AgentId,
-  type StoryStatus,
-  type StoryPriority,
-  type StoryComplexity,
-  type StoryCategory,
-  type Story,
-} from '@/types';
+import { Dialog, GlassButton, GlassInput, GlassTextarea } from '../ui';
+import { generateId } from '../../lib/utils';
+import { useStoryStore } from '../../stores/storyStore';
+import type { StoryStatus, Story, StoryState, StoryActions } from '../../stores/storyStore';
+
+type StoryStore = StoryState & StoryActions;
 
 interface StoryCreateModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onCreated?: (story: Story) => void;
+  isOpen: boolean;
+  onClose: () => void;
   defaultStatus?: StoryStatus;
 }
 
-interface FormData {
-  title: string;
-  description: string;
-  status: StoryStatus;
-  priority: StoryPriority | '';
-  complexity: StoryComplexity | '';
-  category: StoryCategory | '';
-  agent: AgentId | '';
-  epicId: string;
-  acceptanceCriteria: string;
-  technicalNotes: string;
-}
+const selectClasses =
+  'glass-input w-full h-11 px-4 rounded-xl appearance-none bg-transparent text-sm text-primary cursor-pointer';
 
-const INITIAL_FORM_DATA: FormData = {
-  title: '',
-  description: '',
-  status: 'backlog',
-  priority: '',
-  complexity: '',
-  category: '',
-  agent: '',
-  epicId: '',
-  acceptanceCriteria: '',
-  technicalNotes: '',
-};
+export function StoryCreateModal({ isOpen, onClose, defaultStatus = 'backlog' }: StoryCreateModalProps) {
+  const addStory = useStoryStore((s: StoryStore) => s.addStory);
 
-const STATUS_OPTIONS: { value: StoryStatus; label: string }[] = [
-  { value: 'backlog', label: 'Backlog' },
-  { value: 'in_progress', label: 'In Progress' },
-  { value: 'ai_review', label: 'AI Review' },
-  { value: 'human_review', label: 'Human Review' },
-  { value: 'pr_created', label: 'PR Created' },
-  { value: 'done', label: 'Done' },
-];
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [status, setStatus] = useState<StoryStatus>(defaultStatus);
+  const [priority, setPriority] = useState<Story['priority']>('medium');
+  const [complexity, setComplexity] = useState<Story['complexity']>('standard');
+  const [category, setCategory] = useState<Story['category']>('feature');
+  const [epicId, setEpicId] = useState('');
+  const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
+  const [technicalNotes, setTechnicalNotes] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [titleError, setTitleError] = useState('');
 
-const PRIORITY_OPTIONS: { value: StoryPriority; label: string }[] = [
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
-  { value: 'critical', label: 'Critical' },
-];
+  const resetForm = useCallback(() => {
+    setTitle('');
+    setDescription('');
+    setStatus(defaultStatus);
+    setPriority('medium');
+    setComplexity('standard');
+    setCategory('feature');
+    setEpicId('');
+    setAcceptanceCriteria('');
+    setTechnicalNotes('');
+    setTitleError('');
+    setLoading(false);
+  }, [defaultStatus]);
 
-const COMPLEXITY_OPTIONS: { value: StoryComplexity; label: string }[] = [
-  { value: 'simple', label: 'Simple' },
-  { value: 'standard', label: 'Standard' },
-  { value: 'complex', label: 'Complex' },
-];
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
-const CATEGORY_OPTIONS: { value: StoryCategory; label: string }[] = [
-  { value: 'feature', label: 'Feature' },
-  { value: 'fix', label: 'Fix' },
-  { value: 'refactor', label: 'Refactor' },
-  { value: 'docs', label: 'Docs' },
-];
-
-export function StoryCreateModal({
-  open,
-  onOpenChange,
-  onCreated,
-  defaultStatus = 'backlog',
-}: StoryCreateModalProps) {
-  const [formData, setFormData] = useState<FormData>({
-    ...INITIAL_FORM_DATA,
-    status: defaultStatus,
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleChange = useCallback((
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setError(null);
-  }, []);
-
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
-    if (!formData.title.trim()) {
-      setError('Title is required');
+    if (!title.trim()) {
+      setTitleError('Titulo e obrigatorio');
       return;
     }
 
-    setIsSubmitting(true);
+    setLoading(true);
 
-    try {
-      const response = await fetch('/api/stories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: formData.title.trim(),
-          description: formData.description.trim() || undefined,
-          status: formData.status,
-          priority: formData.priority || undefined,
-          complexity: formData.complexity || undefined,
-          category: formData.category || undefined,
-          agent: formData.agent || undefined,
-          epicId: formData.epicId.trim() || undefined,
-          acceptanceCriteria: formData.acceptanceCriteria
-            ? formData.acceptanceCriteria.split('\n').filter(Boolean).map((s) => s.trim())
-            : undefined,
-          technicalNotes: formData.technicalNotes.trim() || undefined,
-        }),
-      });
+    const now = new Date().toISOString();
+    const criteria = acceptanceCriteria
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to create story');
-      }
+    const story: Story = {
+      id: generateId(),
+      title: title.trim(),
+      description: description.trim() || undefined,
+      status,
+      priority,
+      complexity,
+      category,
+      epicId: epicId.trim() || undefined,
+      acceptanceCriteria: criteria.length > 0 ? criteria : undefined,
+      technicalNotes: technicalNotes.trim() || undefined,
+      progress: 0,
+      createdAt: now,
+      updatedAt: now,
+    };
 
-      const data = await response.json();
+    // Simulate a small delay for UX feedback
+    await new Promise((r) => setTimeout(r, 300));
 
-      // Reset form
-      setFormData({ ...INITIAL_FORM_DATA, status: defaultStatus });
-
-      // Notify parent
-      onCreated?.(data.story);
-      onOpenChange(false);
-
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create story');
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [formData, defaultStatus, onCreated, onOpenChange]);
-
-  const handleClose = useCallback(() => {
-    if (!isSubmitting) {
-      setFormData({ ...INITIAL_FORM_DATA, status: defaultStatus });
-      setError(null);
-      onOpenChange(false);
-    }
-  }, [isSubmitting, defaultStatus, onOpenChange]);
+    addStory(story);
+    setLoading(false);
+    handleClose();
+  };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Create New Story</DialogTitle>
-          <DialogDescription>
-            Add a new story to the backlog. Required fields are marked with *.
-          </DialogDescription>
-        </DialogHeader>
+    <Dialog
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Criar Story"
+      size="lg"
+      footer={
+        <>
+          <GlassButton variant="ghost" onClick={handleClose} disabled={loading}>
+            Cancelar
+          </GlassButton>
+          <GlassButton
+            variant="primary"
+            onClick={handleSubmit}
+            loading={loading}
+          >
+            Criar
+          </GlassButton>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Title */}
+        <GlassInput
+          label="Titulo"
+          required
+          placeholder="Titulo da story"
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            if (titleError) setTitleError('');
+          }}
+          error={titleError}
+        />
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Title */}
-          <div className="space-y-1.5">
-            <label htmlFor="title" className="text-sm font-medium">
-              Title *
-            </label>
-            <input
-              id="title"
-              name="title"
-              type="text"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Enter story title"
-              className={cn(
-                'w-full px-3 py-2 rounded-md border bg-background',
-                'focus:outline-none focus:ring-2 focus:ring-ring'
-              )}
-              disabled={isSubmitting}
-              autoFocus
-            />
-          </div>
+        {/* Description */}
+        <GlassTextarea
+          label="Descricao"
+          placeholder="Descreva a story..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
-          {/* Description */}
-          <div className="space-y-1.5">
-            <label htmlFor="description" className="text-sm font-medium">
-              Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Brief description of the story"
-              rows={3}
-              className={cn(
-                'w-full px-3 py-2 rounded-md border bg-background resize-none',
-                'focus:outline-none focus:ring-2 focus:ring-ring'
-              )}
-              disabled={isSubmitting}
-            />
-          </div>
-
-          {/* Row: Status, Priority, Complexity */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1.5">
-              <label htmlFor="status" className="text-sm font-medium">
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                className={cn(
-                  'w-full px-3 py-2 rounded-md border bg-background',
-                  'focus:outline-none focus:ring-2 focus:ring-ring'
-                )}
-                disabled={isSubmitting}
-              >
-                {STATUS_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label htmlFor="priority" className="text-sm font-medium">
-                Priority
-              </label>
-              <select
-                id="priority"
-                name="priority"
-                value={formData.priority}
-                onChange={handleChange}
-                className={cn(
-                  'w-full px-3 py-2 rounded-md border bg-background',
-                  'focus:outline-none focus:ring-2 focus:ring-ring'
-                )}
-                disabled={isSubmitting}
-              >
-                <option value="">Select...</option>
-                {PRIORITY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label htmlFor="complexity" className="text-sm font-medium">
-                Complexity
-              </label>
-              <select
-                id="complexity"
-                name="complexity"
-                value={formData.complexity}
-                onChange={handleChange}
-                className={cn(
-                  'w-full px-3 py-2 rounded-md border bg-background',
-                  'focus:outline-none focus:ring-2 focus:ring-ring'
-                )}
-                disabled={isSubmitting}
-              >
-                <option value="">Select...</option>
-                {COMPLEXITY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Row: Category, Agent */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <label htmlFor="category" className="text-sm font-medium">
-                Category
-              </label>
-              <select
-                id="category"
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className={cn(
-                  'w-full px-3 py-2 rounded-md border bg-background',
-                  'focus:outline-none focus:ring-2 focus:ring-ring'
-                )}
-                disabled={isSubmitting}
-              >
-                <option value="">Select...</option>
-                {CATEGORY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label htmlFor="agent" className="text-sm font-medium">
-                Assign Agent
-              </label>
-              <select
-                id="agent"
-                name="agent"
-                value={formData.agent}
-                onChange={handleChange}
-                className={cn(
-                  'w-full px-3 py-2 rounded-md border bg-background',
-                  'focus:outline-none focus:ring-2 focus:ring-ring'
-                )}
-                disabled={isSubmitting}
-              >
-                <option value="">Select...</option>
-                {Object.entries(AGENT_CONFIG).map(([id, config]) => (
-                  <option key={id} value={id}>
-                    {config.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Epic ID */}
-          <div className="space-y-1.5">
-            <label htmlFor="epicId" className="text-sm font-medium">
-              Epic ID
-            </label>
-            <input
-              id="epicId"
-              name="epicId"
-              type="text"
-              value={formData.epicId}
-              onChange={handleChange}
-              placeholder="e.g., EPIC-123"
-              className={cn(
-                'w-full px-3 py-2 rounded-md border bg-background',
-                'focus:outline-none focus:ring-2 focus:ring-ring'
-              )}
-              disabled={isSubmitting}
-            />
-          </div>
-
-          {/* Acceptance Criteria */}
-          <div className="space-y-1.5">
-            <label htmlFor="acceptanceCriteria" className="text-sm font-medium">
-              Acceptance Criteria
-            </label>
-            <textarea
-              id="acceptanceCriteria"
-              name="acceptanceCriteria"
-              value={formData.acceptanceCriteria}
-              onChange={handleChange}
-              placeholder="One criterion per line"
-              rows={4}
-              className={cn(
-                'w-full px-3 py-2 rounded-md border bg-background resize-none font-mono text-sm',
-                'focus:outline-none focus:ring-2 focus:ring-ring'
-              )}
-              disabled={isSubmitting}
-            />
-            <p className="text-xs text-muted-foreground">
-              Enter each acceptance criterion on a new line
-            </p>
-          </div>
-
-          {/* Technical Notes */}
-          <div className="space-y-1.5">
-            <label htmlFor="technicalNotes" className="text-sm font-medium">
-              Technical Notes
-            </label>
-            <textarea
-              id="technicalNotes"
-              name="technicalNotes"
-              value={formData.technicalNotes}
-              onChange={handleChange}
-              placeholder="Implementation details, considerations, etc."
-              rows={3}
-              className={cn(
-                'w-full px-3 py-2 rounded-md border bg-background resize-none',
-                'focus:outline-none focus:ring-2 focus:ring-ring'
-              )}
-              disabled={isSubmitting}
-            />
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="p-3 rounded-md bg-red-500/10 text-red-500 text-sm">
-              {error}
-            </div>
-          )}
-
-          {/* Footer */}
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isSubmitting}
+        {/* Selects row */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Status */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-secondary">Status</label>
+            <select
+              className={selectClasses}
+              value={status}
+              onChange={(e) => setStatus(e.target.value as StoryStatus)}
+              aria-label="Selecionar status"
             >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Creating...
-                </>
-              ) : (
-                'Create Story'
-              )}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
+              <option value="backlog">Backlog</option>
+              <option value="in_progress">In Progress</option>
+              <option value="ai_review">AI Review</option>
+              <option value="human_review">Human Review</option>
+              <option value="pr_created">PR Created</option>
+              <option value="done">Done</option>
+              <option value="error">Error</option>
+            </select>
+          </div>
+
+          {/* Priority */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-secondary">Prioridade</label>
+            <select
+              className={selectClasses}
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as Story['priority'])}
+              aria-label="Selecionar prioridade"
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+
+          {/* Complexity */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-secondary">Complexidade</label>
+            <select
+              className={selectClasses}
+              value={complexity}
+              onChange={(e) => setComplexity(e.target.value as Story['complexity'])}
+              aria-label="Selecionar complexidade"
+            >
+              <option value="simple">Simple</option>
+              <option value="standard">Standard</option>
+              <option value="complex">Complex</option>
+            </select>
+          </div>
+
+          {/* Category */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-secondary">Categoria</label>
+            <select
+              className={selectClasses}
+              value={category}
+              onChange={(e) => setCategory(e.target.value as Story['category'])}
+              aria-label="Selecionar categoria"
+            >
+              <option value="feature">Feature</option>
+              <option value="fix">Fix</option>
+              <option value="refactor">Refactor</option>
+              <option value="docs">Docs</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Epic ID */}
+        <GlassInput
+          label="Epic ID"
+          placeholder="Ex: EPIC-2"
+          value={epicId}
+          onChange={(e) => setEpicId(e.target.value)}
+        />
+
+        {/* Acceptance Criteria */}
+        <GlassTextarea
+          label="Criterios de Aceitacao"
+          placeholder="Um criterio por linha..."
+          hint="Insira cada criterio em uma nova linha"
+          value={acceptanceCriteria}
+          onChange={(e) => setAcceptanceCriteria(e.target.value)}
+        />
+
+        {/* Technical Notes */}
+        <GlassTextarea
+          label="Notas Tecnicas"
+          placeholder="Notas tecnicas opcionais..."
+          value={technicalNotes}
+          onChange={(e) => setTechnicalNotes(e.target.value)}
+        />
+      </form>
     </Dialog>
   );
 }

@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import type { AgentSummary } from '@/types';
+import type { AgentSummary } from '../../types';
+import type { AgentLiveActivity } from '../../stores/agentActivityStore';
 import type { DomainId, FurnitureItem } from './world-layout';
 import { furnitureTemplates, ROOM_COLS, ROOM_ROWS } from './world-layout';
 
 // ── Types ──
 
-export type AgentActivity = 'idle' | 'walking' | 'at-furniture' | 'chatting';
+export type AgentActivity = 'idle' | 'walking' | 'at-furniture' | 'chatting' | 'live-working';
 export type FacingDirection = 'left' | 'right';
 export type BubbleContent = 'thinking' | 'eureka' | 'code' | 'money' | 'chart' | 'chat';
 
@@ -156,7 +157,7 @@ function findDetour(
 function computeHomePositions(
   agents: AgentSummary[],
   roomCols: number,
-  roomRows: number,
+  _roomRows: number,
 ): Map<string, { x: number; y: number }> {
   const sorted = [...agents].sort((a, b) => a.tier - b.tier);
   const map = new Map<string, { x: number; y: number }>();
@@ -209,6 +210,7 @@ function furnitureWaypoints(domain: DomainId): Array<{ x: number; y: number; lab
 export function useAgentMovement(
   agents: AgentSummary[] | undefined,
   domain: DomainId,
+  liveActivities?: Map<string, AgentLiveActivity>,
 ): Map<string, AgentMovementState> {
   const [movementMap, setMovementMap] = useState<Map<string, AgentMovementState>>(new Map());
   const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
@@ -434,12 +436,15 @@ export function useAgentMovement(
       // Fallback: stay put
       setMovementMap(new Map(stateRef.current));
     },
-    [agents, homePositions, waypoints, bubbleOptions],
+    [agents, homePositions, waypoints, bubbleOptions, obstacleGrid],
   );
 
   // ── Initialize + run movement cycles — slow and organic ──
   useEffect(() => {
     if (!agents || agents.length === 0) return;
+
+    // Capture ref value for cleanup
+    const timers = timersRef.current;
 
     // Initialize all agents at home
     const initialMap = new Map<string, AgentMovementState>();
@@ -453,7 +458,7 @@ export function useAgentMovement(
       }
     });
     stateRef.current = initialMap;
-    setMovementMap(new Map(initialMap));
+    queueMicrotask(() => setMovementMap(new Map(initialMap)));
 
     // Staggered movement cycles — MUCH slower for natural feel
     agents.forEach((agent) => {
@@ -472,19 +477,57 @@ export function useAgentMovement(
           // Each tick has a different interval for organic rhythm
           const nextInterval = baseInterval + (hashStr(agent.id + Date.now()) % varianceRange);
           const nextTimer = setTimeout(tick, nextInterval);
-          timersRef.current.set(`${agent.id}-cycle`, nextTimer);
+          timers.set(`${agent.id}-cycle`, nextTimer);
         };
         tick();
       }, initialDelay);
 
-      timersRef.current.set(`${agent.id}-start`, startTimer);
+      timers.set(`${agent.id}-start`, startTimer);
     });
 
     return () => {
-      timersRef.current.forEach((timer) => clearTimeout(timer));
-      timersRef.current.clear();
+      timers.forEach((timer) => clearTimeout(timer));
+      timers.clear();
     };
   }, [agents, homePositions, pickNextAction]);
 
-  return movementMap;
+  // Merge live activity data: override activityLabel for agents with real-time data
+  const mergedMap = useMemo(() => {
+    if (!liveActivities || liveActivities.size === 0) return movementMap;
+
+    const merged = new Map(movementMap);
+    merged.forEach((state, agentId) => {
+      // Try to find a matching live activity by agent name
+      const agent = agents?.find((a) => a.id === agentId);
+      if (!agent) return;
+
+      // Search by normalized name
+      const nameLower = agent.name.toLowerCase();
+      for (const [, liveActivity] of liveActivities) {
+        const liveNameLower = liveActivity.agentName.toLowerCase();
+        if (
+          liveNameLower.includes(nameLower) ||
+          nameLower.includes(liveNameLower) ||
+          liveActivity.agentName.toLowerCase() === nameLower
+        ) {
+          if (liveActivity.isActive) {
+            // Override with live activity — keep position, change behavior
+            merged.set(agentId, {
+              ...state,
+              activity: 'live-working',
+              activityLabel: liveActivity.action,
+              bubble: liveActivity.type === 'tool_call' ? 'code'
+                : liveActivity.type === 'error' ? 'eureka'
+                : 'thinking',
+            });
+          }
+          break;
+        }
+      }
+    });
+
+    return merged;
+  }, [movementMap, liveActivities, agents]);
+
+  return mergedMap;
 }

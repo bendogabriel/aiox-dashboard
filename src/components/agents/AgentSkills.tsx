@@ -1,5 +1,3 @@
-'use client';
-
 import { motion } from 'framer-motion';
 import {
   type LucideIcon,
@@ -26,24 +24,30 @@ import {
   Ruler,
   Landmark,
 } from 'lucide-react';
-import type { PlatformAgent, SquadType } from '@/types';
+import type { Agent, AgentCommand, SquadType } from '../../types';
+import { ICON_SIZES } from '../../lib/icons';
 
-// Icon sizes (inline since ICON_SIZES is not available in dashboard)
-const ICON_SIZES = { sm: 12, md: 16, lg: 20 };
+// Extended agent type that includes UI-enriched fields from useAgentById
+interface AgentWithExtras extends Omit<Agent, 'capabilities'> {
+  commands?: AgentCommand[];
+  frameworks?: string[];
+  capabilities?: Array<{ type: string; text: string }> | string[];
+  commandCount?: number;
+}
 
 interface AgentSkillsProps {
-  agent: PlatformAgent;
+  agent: Agent;
   compact?: boolean;
 }
 
 // Skill definitions per squad type
 const skillDefinitions: Record<SquadType, { name: string; icon: LucideIcon; color: string }[]> = {
   copywriting: [
-    { name: 'Persuasao', icon: Sparkles, color: 'orange' },
+    { name: 'Persuasão', icon: Sparkles, color: 'orange' },
     { name: 'SEO', icon: Target, color: 'green' },
     { name: 'Storytelling', icon: BookOpen, color: 'purple' },
     { name: 'Criatividade', icon: Lightbulb, color: 'pink' },
-    { name: 'Adaptacao', icon: RefreshCw, color: 'blue' },
+    { name: 'Adaptação', icon: RefreshCw, color: 'blue' },
   ],
   design: [
     { name: 'UI Design', icon: Palette, color: 'purple' },
@@ -55,53 +59,63 @@ const skillDefinitions: Record<SquadType, { name: string; icon: LucideIcon; colo
   creator: [
     { name: 'Roteiro', icon: Clapperboard, color: 'orange' },
     { name: 'Engajamento', icon: TrendingUp, color: 'green' },
-    { name: 'Edicao', icon: Scissors, color: 'purple' },
-    { name: 'Tendencias', icon: Flame, color: 'pink' },
-    { name: 'Automacao', icon: Settings, color: 'cyan' },
+    { name: 'Edição', icon: Scissors, color: 'purple' },
+    { name: 'Tendências', icon: Flame, color: 'pink' },
+    { name: 'Automação', icon: Settings, color: 'cyan' },
   ],
   orchestrator: [
-    { name: 'Coordenacao', icon: Target, color: 'blue' },
-    { name: 'Estrategia', icon: Swords, color: 'purple' },
-    { name: 'Integracao', icon: Link, color: 'cyan' },
-    { name: 'Otimizacao', icon: BarChart3, color: 'green' },
-    { name: 'Priorizacao', icon: Star, color: 'orange' },
+    { name: 'Coordenação', icon: Target, color: 'blue' },
+    { name: 'Estratégia', icon: Swords, color: 'purple' },
+    { name: 'Integração', icon: Link, color: 'cyan' },
+    { name: 'Otimização', icon: BarChart3, color: 'green' },
+    { name: 'Priorização', icon: Star, color: 'orange' },
   ],
   content: [
     { name: 'Roteiro', icon: Clapperboard, color: 'orange' },
     { name: 'Engajamento', icon: TrendingUp, color: 'green' },
-    { name: 'Edicao', icon: Scissors, color: 'purple' },
-    { name: 'Tendencias', icon: Flame, color: 'pink' },
-    { name: 'Automacao', icon: Settings, color: 'cyan' },
+    { name: 'Storytelling', icon: BookOpen, color: 'purple' },
+    { name: 'Edição', icon: Scissors, color: 'pink' },
+    { name: 'Tendências', icon: Flame, color: 'cyan' },
   ],
   development: [
-    { name: 'Analise', icon: Search, color: 'blue' },
-    { name: 'Execucao', icon: Zap, color: 'orange' },
-    { name: 'Comunicacao', icon: MessageSquare, color: 'green' },
+    { name: 'Arquitetura', icon: Puzzle, color: 'blue' },
+    { name: 'Código', icon: Zap, color: 'orange' },
+    { name: 'Integração', icon: Link, color: 'cyan' },
+    { name: 'Testes', icon: Target, color: 'green' },
+    { name: 'Deploy', icon: Settings, color: 'purple' },
   ],
   engineering: [
-    { name: 'Analise', icon: Search, color: 'blue' },
-    { name: 'Execucao', icon: Zap, color: 'orange' },
-    { name: 'Comunicacao', icon: MessageSquare, color: 'green' },
+    { name: 'Arquitetura', icon: Puzzle, color: 'blue' },
+    { name: 'Código', icon: Zap, color: 'orange' },
+    { name: 'Performance', icon: TrendingUp, color: 'green' },
+    { name: 'Infraestrutura', icon: Settings, color: 'cyan' },
+    { name: 'Qualidade', icon: Target, color: 'purple' },
   ],
   analytics: [
-    { name: 'Analise', icon: Search, color: 'blue' },
-    { name: 'Execucao', icon: Zap, color: 'orange' },
-    { name: 'Comunicacao', icon: MessageSquare, color: 'green' },
+    { name: 'Análise', icon: Search, color: 'blue' },
+    { name: 'Métricas', icon: BarChart3, color: 'green' },
+    { name: 'Insights', icon: Lightbulb, color: 'orange' },
+    { name: 'Modelagem', icon: Puzzle, color: 'purple' },
+    { name: 'Visualização', icon: TrendingUp, color: 'cyan' },
   ],
   marketing: [
-    { name: 'Analise', icon: Search, color: 'blue' },
-    { name: 'Execucao', icon: Zap, color: 'orange' },
-    { name: 'Comunicacao', icon: MessageSquare, color: 'green' },
+    { name: 'Campanhas', icon: Target, color: 'pink' },
+    { name: 'Automação', icon: Settings, color: 'blue' },
+    { name: 'Outreach', icon: MessageSquare, color: 'green' },
+    { name: 'Análise', icon: BarChart3, color: 'orange' },
+    { name: 'Tendências', icon: TrendingUp, color: 'purple' },
   ],
   advisory: [
-    { name: 'Analise', icon: Search, color: 'blue' },
-    { name: 'Execucao', icon: Zap, color: 'orange' },
-    { name: 'Comunicacao', icon: MessageSquare, color: 'green' },
+    { name: 'Estratégia', icon: Swords, color: 'purple' },
+    { name: 'Consultoria', icon: Lightbulb, color: 'yellow' },
+    { name: 'Planejamento', icon: Target, color: 'blue' },
+    { name: 'Análise', icon: BarChart3, color: 'green' },
+    { name: 'Mentoria', icon: Star, color: 'orange' },
   ],
   default: [
-    { name: 'Analise', icon: Search, color: 'blue' },
-    { name: 'Execucao', icon: Zap, color: 'orange' },
-    { name: 'Comunicacao', icon: MessageSquare, color: 'green' },
+    { name: 'Análise', icon: Search, color: 'blue' },
+    { name: 'Execução', icon: Zap, color: 'orange' },
+    { name: 'Comunicação', icon: MessageSquare, color: 'green' },
   ],
 };
 
@@ -117,10 +131,13 @@ const capabilityIcons: Record<string, LucideIcon> = {
 };
 
 // Generate skill levels based on agent capabilities
-function generateSkillLevels(agent: PlatformAgent): { name: string; icon: LucideIcon; color: string; level: number }[] {
+function generateSkillLevels(agent: Agent): { name: string; icon: LucideIcon; color: string; level: number }[] {
+  const extAgent = agent as AgentWithExtras;
+
   // Priority 1: Use dynamic frameworks from agent markdown
-  if ((agent as any).frameworks && (agent as any).frameworks.length > 0) {
-    return (agent as any).frameworks.slice(0, 5).map((framework: string, index: number) => {
+  const frameworks = extAgent.frameworks;
+  if (frameworks && frameworks.length > 0) {
+    return frameworks.slice(0, 5).map((framework: string, index: number) => {
       const seed = framework.charCodeAt(0) + index * 13;
       const level = 75 + (seed % 20); // 75-95 range for frameworks
       return {
@@ -133,8 +150,9 @@ function generateSkillLevels(agent: PlatformAgent): { name: string; icon: Lucide
   }
 
   // Priority 2: Use dynamic capabilities from agent config
-  if ((agent as any).capabilities && (agent as any).capabilities.length > 0) {
-    return (agent as any).capabilities.slice(0, 5).map((cap: { type: string; text: string }, index: number) => {
+  const capabilities = extAgent.capabilities;
+  if (capabilities && capabilities.length > 0) {
+    return (capabilities as Array<{ type: string; text: string }>).slice(0, 5).map((cap: { type: string; text: string }, index: number) => {
       const text = cap.text.length > 25 ? cap.text.slice(0, 23) + '...' : cap.text;
       const seed = cap.text.charCodeAt(0) + index * 11;
       const level = 70 + (seed % 25);
@@ -151,7 +169,7 @@ function generateSkillLevels(agent: PlatformAgent): { name: string; icon: Lucide
   const skills = skillDefinitions[agent.squadType || 'default'] || skillDefinitions.default;
 
   return skills.map((skill: { name: string; icon: LucideIcon; color: string }, index: number) => {
-    // Generate pseudo-random but consistent levels based on agent name
+    // Generate pseudo-random but consistent levels based on agent name and skill
     const seed = agent.name.charCodeAt(0) + index * 17;
     const baseLevel = 60 + (seed % 35); // 60-95 range
     const variance = ((agent.executionCount || 100) / 100) % 10;
@@ -165,6 +183,7 @@ function generateSkillLevels(agent: PlatformAgent): { name: string; icon: Lucide
 }
 
 export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
+  const extAgent = agent as AgentWithExtras;
   const skills = generateSkillLevels(agent);
 
   if (compact) {
@@ -232,25 +251,25 @@ export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-glass-border-subtle">
         <div className="flex gap-3">
           {/* Commands count - dynamic from agent */}
-          {((agent as any).commands?.length > 0 || (agent as any).commandCount > 0) && (
+          {(extAgent.commands?.length ?? 0) > 0 || (extAgent.commandCount ?? 0) > 0 ? (
             <div className="stat-badge">
               <Zap size={ICON_SIZES.sm} />
               <span className="stat-badge-value">
-                {(agent as any).commands?.length || (agent as any).commandCount}
+                {extAgent.commands?.length || extAgent.commandCount}
               </span>
               <span className="stat-badge-label">comandos</span>
             </div>
-          )}
+          ) : null}
           {/* Frameworks count */}
-          {(agent as any).frameworks?.length > 0 && (
+          {(extAgent.frameworks?.length ?? 0) > 0 && (
             <div className="stat-badge">
               <Landmark size={ICON_SIZES.sm} />
-              <span className="stat-badge-value">{(agent as any).frameworks.length}</span>
+              <span className="stat-badge-value">{extAgent.frameworks?.length}</span>
               <span className="stat-badge-label">frameworks</span>
             </div>
           )}
           {/* Fallback stats */}
-          {!((agent as any).commands?.length > 0) && !((agent as any).frameworks?.length > 0) && (
+          {!((extAgent.commands?.length ?? 0) > 0) && !((extAgent.frameworks?.length ?? 0) > 0) && (
             <>
               <div className="stat-badge">
                 <Star size={ICON_SIZES.sm} />

@@ -1,13 +1,12 @@
-'use client';
-
 import { useState, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { ICON_SIZES } from '@/lib/icons';
-import { useSquads } from '@/hooks/use-squads';
+import { cn } from '../../lib/utils';
+import { ICON_SIZES } from '../../lib/icons';
+import { useSquads } from '../../hooks/useSquads';
 import { IsometricTile } from './IsometricTile';
-import { rooms, domains, TILE_WIDTH, TILE_HEIGHT } from './world-layout';
-import type { DomainId } from './world-layout';
+import { rooms, TILE_WIDTH, TILE_HEIGHT } from './world-layout';
+import type { DomainId, DomainConfig } from './world-layout';
+import { useThemedDomains } from './useThemedDomains';
 
 interface WorldMapProps {
   onRoomClick: (roomId: string) => void;
@@ -59,7 +58,8 @@ const workflowLinks: WorkflowLink[] = [
 ];
 
 export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [] }: WorldMapProps) {
-  const { squads } = useSquads();
+  const themedDomains = useThemedDomains();
+  const { data: squads } = useSquads();
   const [hoveredRoom, setHoveredRoom] = useState<string | null>(null);
   const [filterDomain, setFilterDomain] = useState<DomainId | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -72,8 +72,8 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
   // Build squad lookup for agent counts
   const squadMap = useMemo(() => {
     const map = new Map<string, { agentCount: number; status?: string }>();
-    squads?.forEach((s: { name: string; agentCount: number; status?: string }) => {
-      map.set(s.name, { agentCount: s.agentCount, status: s.status });
+    squads?.forEach((s) => {
+      map.set(s.id, { agentCount: s.agentCount, status: s.status });
     });
     return map;
   }, [squads]);
@@ -181,7 +181,7 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
             <h2 className="text-sm font-semibold text-primary">AIOS World</h2>
             <div className="flex items-center gap-2 text-[10px] text-tertiary">
               <span className="flex items-center gap-1">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400" />
+                <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--color-accent, #4ade80)' }} />
                 {totalAgents} agents
               </span>
               <span>|</span>
@@ -200,12 +200,12 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
               'px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap',
               !filterDomain
                 ? 'glass text-primary shadow-sm'
-                : 'text-secondary hover:text-primary hover:bg-glass-5'
+                : 'text-secondary hover:text-primary hover:bg-white/5'
             )}
           >
             Todos
           </button>
-          {Object.values(domains).map((d) => {
+          {Object.values(themedDomains).map((d) => {
             // Count agents in this domain
             const domainRooms = rooms.filter((r) => r.domain === d.id);
             const domainAgents = domainRooms.reduce((sum, r) => sum + (squadMap.get(r.squadId)?.agentCount || 0), 0);
@@ -217,7 +217,7 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                   'px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap flex items-center gap-1.5',
                   filterDomain === d.id
                     ? 'shadow-sm'
-                    : 'text-secondary hover:text-primary hover:bg-glass-5'
+                    : 'text-secondary hover:text-primary hover:bg-white/5'
                 )}
                 style={filterDomain === d.id ? { background: `${d.tileColor}22`, color: d.tileColor } : undefined}
               >
@@ -261,7 +261,7 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
           >
             {/* Domain zone backgrounds */}
             {!filterDomain && domainZones.map((zone) => {
-              const d = domains[zone.domain];
+              const d = themedDomains[zone.domain];
               return (
                 <motion.div
                   key={zone.domain}
@@ -283,7 +283,7 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
 
             {/* Domain group labels */}
             {!filterDomain && (
-              <DomainLabels offsetX={bounds.offsetX} offsetY={bounds.offsetY} />
+              <DomainLabels offsetX={bounds.offsetX} offsetY={bounds.offsetY} domains={themedDomains} />
             )}
 
             {/* Workflow connection lines */}
@@ -293,7 +293,7 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
 
             {/* Room tiles */}
             {filteredRooms.map((room) => {
-              const domainCfg = domains[room.domain];
+              const domainCfg = themedDomains[room.domain];
               const squadInfo = squadMap.get(room.squadId);
               const agentCount = squadInfo?.agentCount || 0;
               const isActive = agentCount > 0;
@@ -355,10 +355,10 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                   >
                     <span
                       className={cn(
-                        'text-[7px] font-medium leading-tight block',
+                        'text-[10px] font-medium leading-tight block',
                         isHovered ? 'text-primary' : 'text-secondary',
                       )}
-                      style={{ fontFamily: '"Press Start 2P", monospace, system-ui' }}
+                      style={{ fontFamily: '"Press Start 2P", monospace, system-ui', fontSize: '7px' }}
                     >
                       {room.label}
                     </span>
@@ -400,7 +400,7 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                         >
                           <div className="flex items-center justify-center gap-1.5 mb-1">
                             <room.icon size={ICON_SIZES.xs} />
-                            <span className="text-[10px] font-semibold text-foreground-primary">
+                            <span className="text-[10px] font-semibold text-white">
                               {room.label}
                             </span>
                           </div>
@@ -410,10 +410,10 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                           >
                             {domainCfg.label}
                           </div>
-                          <div className="text-[8px] text-foreground-tertiary mt-0.5">
+                          <div className="text-[8px] text-white/50 mt-0.5">
                             {agentCount > 0 ? `${agentCount} agents active` : 'No agents'}
                           </div>
-                          <div className="text-[7px] text-glass-30 mt-0.5">
+                          <div className="text-[7px] text-white/30 mt-0.5">
                             Click to enter
                           </div>
                         </div>
@@ -431,7 +431,7 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
 }
 
 /** Renders domain cluster labels floating on the world map */
-function DomainLabels({ offsetX, offsetY }: { offsetX: number; offsetY: number }) {
+function DomainLabels({ offsetX, offsetY, domains: domainsCfg }: { offsetX: number; offsetY: number; domains: Record<DomainId, DomainConfig> }) {
   const labels: Array<{ domain: DomainId; x: number; y: number }> = [
     { domain: 'content', x: -50, y: -10 },
     { domain: 'sales', x: 230, y: 100 },
@@ -443,7 +443,7 @@ function DomainLabels({ offsetX, offsetY }: { offsetX: number; offsetY: number }
   return (
     <>
       {labels.map(({ domain, x, y }) => {
-        const d = domains[domain];
+        const d = domainsCfg[domain];
         return (
           <div
             key={domain}
@@ -474,7 +474,7 @@ function WorkflowLines({
   hoveredRoom: string | null;
 }) {
   return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+    <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
       {links.map((link) => {
         const from = getRoomPos(link.from);
         const to = getRoomPos(link.to);

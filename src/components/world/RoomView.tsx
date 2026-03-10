@@ -1,16 +1,15 @@
-'use client';
-
 import { useMemo, useRef, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { ICON_SIZES } from '@/lib/icons';
-import { useAgents } from '@/hooks/use-agents';
-import { useUIStore } from '@/stores/uiStore';
+import { ICON_SIZES } from '../../lib/icons';
+import { useAgents } from '../../hooks/useAgents';
+import { useUIStore } from '../../stores/uiStore';
+import { useAgentActivityStore } from '../../stores/agentActivityStore';
 import { AgentSprite } from './AgentSprite';
 import { RoomFurniture } from './RoomFurniture';
 import { RoomEnvironment } from './RoomEnvironment';
 import { EmbeddedScreen } from './EmbeddedScreen';
 import { SpeechBubble } from './SpeechBubble';
+import { LiveSpeechBubble } from './LiveSpeechBubble';
 import { InteractionLine } from './InteractionLine';
 import { AgentEmotes, FloatingEmote } from './AgentEmotes';
 import { InteractiveFurniture } from './InteractiveFurniture';
@@ -18,9 +17,10 @@ import { AmbientParticles } from './AmbientParticles';
 import { useAgentMovement } from './useAgentMovement';
 import { useKeyboardNav } from './useKeyboardNav';
 import { useDayNightCycle } from './useDayNightCycle';
-import { rooms, domains, furnitureTemplates, ROOM_COLS, ROOM_ROWS } from './world-layout';
+import { rooms, furnitureTemplates, ROOM_COLS, ROOM_ROWS } from './world-layout';
 import type { DomainId } from './world-layout';
-import type { AgentTier, AgentSummary } from '@/types';
+import { useDomains } from './DomainContext';
+import type { AgentTier } from '../../types';
 
 interface RoomViewProps {
   roomId: string;
@@ -36,7 +36,7 @@ const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 2.5;
 
 export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) {
-  const { agents, isLoading } = useAgents();
+  const { data: agents, isLoading } = useAgents(roomId);
   const { selectedAgentId, setSelectedAgentId } = useUIStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +49,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
   const [emoteAgent, setEmoteAgent] = useState<{ id: string; x: number; y: number } | null>(null);
   const [floatingEmotes, setFloatingEmotes] = useState<Array<{ id: string; emoteKey: string; x: number; y: number }>>([]);
 
+  const domains = useDomains();
   const roomConfig = rooms.find((r) => r.squadId === roomId);
   const domain: DomainId = roomConfig?.domain || 'dev';
   const domainCfg = domains[domain];
@@ -98,13 +99,16 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
     setIsDragging(false);
   }, []);
 
-  // Movement hook replaces static positioning
-  const movementMap = useAgentMovement(agents as unknown as AgentSummary[], domain);
+  // Live activity from real-time monitor events
+  const liveActivities = useAgentActivityStore((s) => s.activities);
+
+  // Movement hook with live activity integration
+  const movementMap = useAgentMovement(agents, domain, liveActivities);
 
   // Build sorted agent list for rendering
   const sortedAgents = useMemo(() => {
     if (!agents) return [];
-    return [...(agents as unknown as AgentSummary[])].sort((a, b) => a.tier - b.tier);
+    return [...agents].sort((a, b) => a.tier - b.tier);
   }, [agents]);
 
   // Collect interaction lines between chatting agents
@@ -163,11 +167,12 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
       <div className="flex-shrink-0 px-4 py-3 border-b border-glass-border flex items-center gap-3">
         <motion.button
           onClick={onBack}
-          className="h-8 w-8 flex items-center justify-center rounded-lg glass-subtle hover:bg-glass-10 transition-colors"
+          className="h-8 w-8 flex items-center justify-center rounded-lg glass-subtle hover:bg-white/10 transition-colors"
           whileHover={{ x: -2 }}
           whileTap={{ scale: 0.9 }}
+          aria-label="Voltar"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </motion.button>
@@ -214,7 +219,8 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
           >
             {/* Floor grid */}
             <svg
-              className="absolute inset-0 w-full h-full opacity-10 [image-rendering:pixelated]"
+              className="absolute inset-0 w-full h-full opacity-10"
+              style={{ imageRendering: 'pixelated' }}
             >
               {Array.from({ length: ROOM_COLS + 1 }).map((_, i) => (
                 <line
@@ -299,14 +305,18 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
             <motion.div
               className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer pb-1"
               onClick={onBack}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onBack?.(); } }}
               whileHover={{ y: 2 }}
+              role="button"
+              tabIndex={0}
+              aria-label="Sair da sala"
             >
-              <svg width="24" height="20" viewBox="0 0 24 20" className="[image-rendering:pixelated]">
+              <svg width="24" height="20" viewBox="0 0 24 20" style={{ imageRendering: 'pixelated' }}>
                 <rect x="4" y="0" width="16" height="18" fill={domainCfg.tileBorder} rx="2" />
                 <rect x="6" y="2" width="12" height="14" fill={domainCfg.floorColor} />
                 <circle cx="15" cy="10" r="1.5" fill={domainCfg.tileBorder} />
               </svg>
-              <span className="text-[7px] mt-0.5 font-mono text-foreground-tertiary">
+              <span className="text-[7px] mt-0.5" style={{ fontFamily: 'monospace', color: 'var(--color-text-tertiary)' }}>
                 EXIT
               </span>
             </motion.div>
@@ -334,11 +344,12 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
               />
             ))}
 
-            {/* Agent sprites with movement */}
+            {/* Agent sprites with movement + live activity */}
             {sortedAgents.map((agent) => {
               const moveState = movementMap.get(agent.id);
               const ax = moveState?.x ?? 0;
               const ay = moveState?.y ?? 0;
+              const isLiveWorking = moveState?.activity === 'live-working';
 
               return (
                 <AgentSprite
@@ -346,7 +357,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
                   name={agent.name}
                   domain={domain}
                   tier={agent.tier as AgentTier}
-                  status="online"
+                  status={isLiveWorking ? 'busy' : 'online'}
                   x={ax}
                   y={ay}
                   selected={selectedAgentId === agent.id}
@@ -356,15 +367,32 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
                   facing={moveState?.facing}
                   activity={moveState?.activity}
                   activityLabel={moveState?.activityLabel}
+                  liveActive={isLiveWorking}
                 />
               );
             })}
 
-            {/* Speech bubbles for agents with active bubbles */}
+            {/* Speech bubbles — live activity takes priority over random bubbles */}
             {sortedAgents.map((agent) => {
               const moveState = movementMap.get(agent.id);
-              if (!moveState?.bubble) return null;
+              if (!moveState) return null;
 
+              // Live activity bubble: show real-time action
+              const agentActivity = useAgentActivityStore.getState().getActivity(agent.name);
+              if (agentActivity?.isActive) {
+                return (
+                  <LiveSpeechBubble
+                    key={`live-bubble-${agent.id}`}
+                    activity={agentActivity}
+                    x={moveState.x}
+                    y={moveState.y}
+                    color={domainCfg.tileColor}
+                  />
+                );
+              }
+
+              // Fallback: random speech bubble from movement
+              if (!moveState.bubble) return null;
               return (
                 <SpeechBubble
                   key={`bubble-${agent.id}`}
@@ -402,10 +430,13 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
 
             {/* Day/night ambient overlay */}
             <div
-              className="absolute inset-0 pointer-events-none rounded-2xl z-[48] mix-blend-multiply transition-[opacity,background] duration-[60s] ease-in-out"
+              className="absolute inset-0 pointer-events-none rounded-2xl"
               style={{
                 background: dayNight.overlayColor,
                 opacity: dayNight.overlayOpacity,
+                mixBlendMode: 'multiply',
+                transition: 'opacity 60s ease, background 60s ease',
+                zIndex: 48,
               }}
             />
           </motion.div>
@@ -414,14 +445,16 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
 
       {/* Keyboard hints */}
       <div
-        className="absolute bottom-3 right-3 flex items-center gap-2 opacity-40 hover:opacity-80 transition-opacity pointer-events-none z-10"
+        className="absolute bottom-3 right-3 flex items-center gap-2 opacity-40 hover:opacity-80 transition-opacity pointer-events-none"
+        style={{ zIndex: 10 }}
       >
         <div className="flex gap-0.5">
           {['W', 'A', 'S', 'D'].map((k) => (
             <span
               key={k}
-              className="inline-flex items-center justify-center rounded text-[8px] font-mono font-bold size-4"
+              className="inline-flex items-center justify-center rounded text-[8px] font-mono font-bold"
               style={{
+                width: 16, height: 16,
                 background: 'rgba(255,255,255,0.1)',
                 border: '1px solid rgba(255,255,255,0.2)',
                 color: 'rgba(255,255,255,0.6)',
@@ -431,18 +464,21 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
             </span>
           ))}
         </div>
-        <span className="text-[8px] font-mono text-foreground-tertiary">
+        <span className="text-[8px] font-mono" style={{ color: 'var(--color-text-tertiary)' }}>
           move
         </span>
         <span
-          className="inline-flex items-center justify-center rounded text-[7px] font-mono font-bold px-1 bg-[var(--glass-border-color)] border border-[var(--color-border-strong)] text-foreground-secondary"
+          className="inline-flex items-center justify-center rounded text-[7px] font-mono font-bold px-1"
           style={{
             height: 16,
+            background: 'var(--glass-border-color)',
+            border: '1px solid var(--color-border-strong)',
+            color: 'var(--color-text-secondary)',
           }}
         >
           ESC
         </span>
-        <span className="text-[8px] font-mono text-foreground-tertiary">
+        <span className="text-[8px] font-mono" style={{ color: 'var(--color-text-tertiary)' }}>
           back
         </span>
       </div>

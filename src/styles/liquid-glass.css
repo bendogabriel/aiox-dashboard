@@ -2,7 +2,21 @@
    Liquid Glass Design System - iOS/macOS inspired
    ============================================ */
 
-/* Design System Tokens are imported in globals.css before this file */
+/* Design System Tokens (3-tier: primitives > semantic > component) */
+@import './tokens/index.css';
+
+/* ============================================
+   THEME TRANSITIONS - Smooth color morphing
+   ============================================ */
+
+/* All color properties transition smoothly on theme change */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 0.4s ease, color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.4s ease, fill 0.3s ease, stroke 0.3s ease !important;
+}
 
 /* ============================================
    BASE LAYER - CSS Variable Aliases
@@ -22,6 +36,54 @@
   --transition-slow: var(--duration-slow) var(--easing-default);
   --transition-spring: var(--duration-slower) var(--easing-spring);
 }
+
+/* Kanban drop-zone defaults (overridden per theme) */
+.kanban-drop-highlight {
+  --tw-ring-color: rgba(59, 130, 246, 0.30);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+.kanban-drop-zone {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Kanban story card badge defaults (overridden per theme) */
+.kanban-badge {
+  background-color: var(--kanban-badge-bg, rgba(59, 130, 246, 0.15));
+  color: var(--kanban-badge-text, #60a5fa);
+}
+.kanban-badge-feature { --kanban-badge-bg: rgba(59, 130, 246, 0.15); --kanban-badge-text: #60a5fa; }
+.kanban-badge-fix { --kanban-badge-bg: rgba(239, 68, 68, 0.15); --kanban-badge-text: #f87171; }
+.kanban-badge-refactor { --kanban-badge-bg: rgba(245, 158, 11, 0.15); --kanban-badge-text: #fbbf24; }
+.kanban-badge-docs { --kanban-badge-bg: rgba(34, 197, 94, 0.15); --kanban-badge-text: #4ade80; }
+.kanban-badge-simple { --kanban-badge-bg: rgba(34, 197, 94, 0.15); --kanban-badge-text: #4ade80; }
+.kanban-badge-standard { --kanban-badge-bg: rgba(234, 179, 8, 0.15); --kanban-badge-text: #facc15; }
+.kanban-badge-complex { --kanban-badge-bg: rgba(239, 68, 68, 0.15); --kanban-badge-text: #f87171; }
+.kanban-badge-bob { --kanban-badge-bg: rgba(168, 85, 247, 0.15); --kanban-badge-text: #a78bfa; }
+
+/* Kanban priority dot defaults */
+.kanban-priority-dot {
+  background-color: var(--kanban-priority-bg, #9ca3af);
+}
+.kanban-priority-low { --kanban-priority-bg: #9ca3af; }
+.kanban-priority-medium { --kanban-priority-bg: #60a5fa; }
+.kanban-priority-high { --kanban-priority-bg: #fb923c; }
+.kanban-priority-critical { --kanban-priority-bg: #ef4444; }
+
+/* Terminal color defaults (overridden per theme) */
+.terminal-prompt { color: var(--terminal-prompt, #4ade80); }
+.terminal-success { color: var(--terminal-success, #86efac); }
+.terminal-error { color: var(--terminal-error, #f87171); }
+.terminal-text { color: var(--terminal-text, #d1d5db); }
+.terminal-cursor { color: var(--terminal-cursor, #4ade80); }
+.terminal-ring-active { --tw-ring-color: var(--terminal-active-ring, rgba(34, 197, 94, 0.20)); }
+.terminal-status-active { color: var(--terminal-status-active, #4ade80); }
+.terminal-activity-dot { background-color: var(--terminal-activity-dot, #4ade80); }
+.terminal-activity-dot-bg { background-color: var(--terminal-activity-bg, #22c55e); }
+.terminal-ansi-yellow { color: var(--terminal-ansi-yellow, #facc15); }
+.terminal-ansi-blue { color: var(--terminal-ansi-blue, #3b82f6); }
+.terminal-ansi-purple { color: var(--terminal-ansi-purple, #a855f7); }
+.terminal-ansi-cyan { color: var(--terminal-ansi-cyan, #06b6d4); }
+.terminal-ansi-dim { color: var(--terminal-ansi-dim, #6b7280); }
 
 /* ============================================
    GLASS COMPONENT CLASSES
@@ -387,13 +449,13 @@
    BASE BODY STYLES
    ============================================ */
 
-/* Body styles are managed by globals.css @layer base.
-   Liquid Glass body styles applied via .liquid-glass-body class if needed. */
-.liquid-glass-body {
+body {
   background: var(--color-background-base);
   color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
 /* ============================================
@@ -943,7 +1005,47 @@
    ACCESSIBILITY UTILITIES
    ============================================ */
 
-/* sr-only and focus-visible styles are in globals.css — not duplicated here */
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only.focus\:not-sr-only:focus {
+  position: fixed;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Focus visible outline */
+.focus-visible:focus-visible,
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.focus-visible:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
 
 /* High contrast mode support */
 @media (prefers-contrast: more) {
@@ -968,8 +1070,17 @@
   }
 }
 
-/* Reduced motion handled in globals.css — Liquid Glass specific additions */
+/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
   .shimmer {
     animation: none;
   }

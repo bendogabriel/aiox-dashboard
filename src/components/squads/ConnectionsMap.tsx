@@ -1,8 +1,6 @@
-'use client';
-
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import type { AgentSummary, AgentTier } from '@/types';
+import type { AgentSummary, AgentTier } from '../../types';
 
 interface Connection {
   from: string;
@@ -81,7 +79,8 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
     >
       <svg
         viewBox="0 0 600 400"
-        className="w-full max-w-[600px] mx-auto h-auto min-h-[300px]"
+        className="w-full max-w-[600px] mx-auto h-auto"
+        style={{ minHeight: 300 }}
       >
         <defs>
           <marker
@@ -199,11 +198,11 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
       {/* Legend */}
       <div className="flex items-center justify-center gap-6 mt-4 text-xs text-tertiary">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-0.5 bg-glass-20" />
+          <div className="w-6 h-0.5 bg-white/20" />
           <span>Handoff</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-0.5 border-t border-dashed border-glass-15" />
+          <div className="w-6 h-0.5 border-t border-dashed border-white/15" />
           <span>Receives</span>
         </div>
         <div className="flex items-center gap-2">

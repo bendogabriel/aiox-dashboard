@@ -1,9 +1,7 @@
-'use client';
-
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { GlassButton } from './GlassButton';
+import { cn } from '../../lib/utils';
 
 // Icons for common empty states
 const InboxIcon = () => (
@@ -97,7 +95,7 @@ interface EmptyStateProps {
   action?: {
     label: string;
     onClick: () => void;
-    variant?: 'default' | 'ghost';
+    variant?: 'primary' | 'ghost';
   };
   secondaryAction?: {
     label: string;
@@ -136,7 +134,7 @@ export function EmptyState({
         transition={{ delay: 0.1 }}
         className={cn(
           'rounded-full flex items-center justify-center mb-4',
-          'bg-glass-10 text-muted-foreground',
+          'bg-white/10 text-tertiary',
           compact ? 'w-14 h-14' : 'w-20 h-20'
         )}
       >
@@ -149,7 +147,7 @@ export function EmptyState({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
         className={cn(
-          'font-semibold text-foreground',
+          'font-semibold text-primary',
           compact ? 'text-sm' : 'text-lg'
         )}
       >
@@ -163,7 +161,7 @@ export function EmptyState({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className={cn(
-            'text-muted-foreground mt-2 max-w-sm',
+            'text-secondary mt-2 max-w-sm',
             compact ? 'text-xs' : 'text-sm'
           )}
         >
@@ -183,22 +181,22 @@ export function EmptyState({
           )}
         >
           {action && (
-            <Button
-              variant={action.variant || 'default'}
-              size={compact ? 'sm' : 'default'}
+            <GlassButton
+              variant={action.variant || 'primary'}
+              size={compact ? 'sm' : 'md'}
               onClick={action.onClick}
             >
               {action.label}
-            </Button>
+            </GlassButton>
           )}
           {secondaryAction && (
-            <Button
+            <GlassButton
               variant="ghost"
-              size={compact ? 'sm' : 'default'}
+              size={compact ? 'sm' : 'md'}
               onClick={secondaryAction.onClick}
             >
               {secondaryAction.label}
-            </Button>
+            </GlassButton>
           )}
         </motion.div>
       )}

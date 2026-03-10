@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { ChatSession, Message, SquadType } from '@/types';
-import { generateId } from '@/lib/utils';
+import { safePersistStorage } from '../lib/safeStorage';
+import type { ChatSession, Message, SquadType } from '../types';
+import { generateId } from '../lib/utils';
 
 interface ChatState {
   sessions: ChatSession[];
@@ -148,6 +149,7 @@ export const useChatStore = create<ChatState & ChatActions>()(
     }),
     {
       name: 'aios-chat-store',
+      storage: safePersistStorage,
       partialize: (state) => ({
         // Keep last 50 sessions, but strip large attachment data to avoid localStorage limits
         sessions: state.sessions.slice(0, 50).map(session => ({

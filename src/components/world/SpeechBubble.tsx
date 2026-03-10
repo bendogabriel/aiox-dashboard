@@ -1,5 +1,3 @@
-'use client';
-
 import { motion, AnimatePresence } from 'framer-motion';
 import type { BubbleContent } from './useAgentMovement';
 
@@ -25,17 +23,18 @@ export function SpeechBubble({ content, x, y, color = '#fff' }: SpeechBubbleProp
   return (
     <AnimatePresence>
       <motion.div
-        className="absolute pointer-events-none z-30"
+        className="absolute pointer-events-none"
         style={{
           left: x + 12,
           top: y - 22,
+          zIndex: 30,
         }}
         initial={{ opacity: 0, scale: 0.5, y: 4 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.5, y: -4 }}
         transition={{ duration: 0.25, ease: 'easeOut' }}
       >
-        <svg width="28" height="22" viewBox="0 0 28 22" className="[image-rendering:pixelated]">
+        <svg width="28" height="22" viewBox="0 0 28 22" style={{ imageRendering: 'pixelated' }}>
           {/* Bubble body */}
           <rect x="2" y="0" width="24" height="16" rx="4" fill="rgba(0,0,0,0.75)" />
           {/* Pointer */}

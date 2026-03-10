@@ -1,1 +1,0 @@
-export { GatherWorld } from './GatherWorld';

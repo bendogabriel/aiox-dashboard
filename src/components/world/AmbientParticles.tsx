@@ -1,9 +1,7 @@
-'use client';
-
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { DomainId } from './world-layout';
-import { domains } from './world-layout';
+import { useDomains } from './DomainContext';
 
 interface AmbientParticlesProps {
   domain: DomainId;
@@ -26,12 +24,12 @@ interface Particle {
 
 // Domain-specific particle characters
 const DOMAIN_CHARS: Record<DomainId, string[]> = {
-  content: ['✦', '♦', '◇'],
+  content: ['\u2726', '\u2666', '\u25C7'],
   sales:   ['$', '◆', '▲'],
   dev:     ['<', '/', '>'],
-  design:  ['●', '◐', '★'],
-  data:    ['0', '1', '⬡'],
-  ops:     ['⚙', '◎', '⬢'],
+  design:  ['\u25CF', '\u25D0', '\u2605'],
+  data:    ['0', '1', '\u2B21'],
+  ops:     ['\u2699', '\u25CE', '\u2B22'],
 };
 
 const PARTICLE_COUNT = 12;
@@ -44,6 +42,7 @@ function hashNum(seed: number): number {
 }
 
 export function AmbientParticles({ domain, roomWidth, roomHeight }: AmbientParticlesProps) {
+  const domains = useDomains();
   const d = domains[domain];
   const chars = DOMAIN_CHARS[domain];
 
@@ -66,16 +65,17 @@ export function AmbientParticles({ domain, roomWidth, roomHeight }: AmbientParti
   }, [domain, roomWidth, roomHeight, chars]);
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1]">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
       {particles.map((p) => (
         <motion.div
           key={p.id}
-          className="absolute select-none font-mono"
+          className="absolute select-none"
           style={{
             left: p.x,
             top: p.y,
             fontSize: p.size,
             color: d.tileColor,
+            fontFamily: 'monospace',
           }}
           animate={{
             x: [0, p.driftX, 0],

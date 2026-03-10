@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 
 interface AioxLogoProps {
   variant?: 'full' | 'icon';
@@ -7,66 +7,56 @@ interface AioxLogoProps {
 }
 
 /**
- * AIOX brand mark and logotype.
- * Uses `currentColor` — set the desired color via parent text class (e.g. `text-foreground`).
+ * Official AIOX brand mark and logotype.
+ * Source: https://brand.aioxsquad.ai/brandbook/logo
  *
- * - `variant="icon"` — Circle + geometric A mark (for collapsed sidebar, favicon)
- * - `variant="full"` — Icon + "AIOX" logotype (for expanded sidebar, splash)
+ * Uses `currentColor` — set the desired color via parent text class (e.g. `text-primary`).
+ *
+ * - `variant="icon"` — Geometric A triangle mark (collapsed sidebar, favicon)
+ * - `variant="full"` — Full AIOX wordmark (expanded sidebar, splash)
  */
-export function AioxLogo({ variant = 'icon', size = 32, className }: AioxLogoProps) {
-  // The geometric A mark path — an upward arrow/chevron at the apex with triangular counter
-  const markPath =
-    'M32 11 L37 21 L33.5 21 L48 51 L39 51 L33.5 29 L30.5 29 L25 51 L16 51 L30.5 21 L27 21 Z';
 
+// Official brandbook SVG paths (from brand.aioxsquad.ai)
+const A_PATH =
+  'M0 310.6H376.464L188.219 9.4L0 310.6ZM96.047 257.35L188.219 109.875L280.392 257.35H96.047Z';
+const I_PATH = 'M448.537 9.4H395.288V310.575H448.537V9.4Z';
+const O_PATH =
+  'M627.332 0C538.959 0 467.336 71.625 467.336 160C467.336 248.375 538.959 320 627.332 320C715.704 320 787.327 248.375 787.327 160C787.327 71.625 715.704 0 627.332 0ZM627.332 266.75C568.458 266.75 520.585 218.85 520.585 160C520.585 101.15 568.483 53.25 627.332 53.25C686.18 53.25 734.078 101.15 734.078 160C734.078 218.85 686.18 266.75 627.332 266.75Z';
+const X_PATH =
+  'M1088.49 9.4H1050.87L937.922 122.35L824.976 9.4H787.327V47.05L900.273 160L787.327 272.95V310.6H824.976L937.922 197.65L1050.87 310.6H1088.49V272.95L975.571 160L1088.49 47.05V9.4Z';
+
+export function AioxLogo({ variant = 'icon', size = 32, className }: AioxLogoProps) {
   if (variant === 'icon') {
+    // A symbol mark — triangle with counter cutout
     return (
       <svg
-        viewBox="0 0 64 64"
-        width={size}
+        viewBox="0 0 377 320"
+        width={size * (377 / 320)}
         height={size}
         fill="none"
-        className={cn('shrink-0', className)}
+        className={cn('shrink-0 aiox-logo-hover', className)}
         role="img"
         aria-label="AIOX"
       >
-        <circle cx="32" cy="32" r="26" stroke="currentColor" strokeWidth="2.5" />
-        <path fill="currentColor" d={markPath} />
+        <path d={A_PATH} fill="currentColor" className="aiox-letter" />
       </svg>
     );
   }
 
-  // Full logotype: icon + "AIOX" text
-  // viewBox 210x64 — icon (0-64) | gap (14) | A I O X text
+  // Full AIOX wordmark
   return (
     <svg
-      viewBox="0 0 210 64"
+      viewBox="0 0 1100 320"
       height={size}
       fill="none"
-      className={cn('shrink-0', className)}
+      className={cn('shrink-0 aiox-logo-hover', className)}
       role="img"
       aria-label="AIOX"
     >
-      {/* Icon mark */}
-      <circle cx="32" cy="32" r="26" stroke="currentColor" strokeWidth="2.5" />
-      <path fill="currentColor" d={markPath} />
-
-      {/* A — geometric triangle with arrow chevron and counter */}
-      <path
-        fill="currentColor"
-        d="M95 11 L100.5 21 L97.5 21 L112 51 L103.5 51 L97.5 29 L92.5 29 L86.5 51 L78 51 L92.5 21 L89.5 21 Z"
-      />
-
-      {/* I — simple rectangle */}
-      <rect x="119" y="13" width="6.5" height="38" rx="0.5" fill="currentColor" />
-
-      {/* O — circle ring */}
-      <circle cx="150" cy="32" r="16" stroke="currentColor" strokeWidth="5" />
-
-      {/* X — crossed diagonals */}
-      <path
-        fill="currentColor"
-        d="M174 13 L181 13 L189.5 27.5 L198 13 L205 13 L193.5 32 L205 51 L198 51 L189.5 36.5 L181 51 L174 51 L185.5 32 Z"
-      />
+      <path d={A_PATH} fill="currentColor" className="aiox-letter" />
+      <path d={I_PATH} fill="currentColor" className="aiox-letter" />
+      <path d={O_PATH} fill="currentColor" className="aiox-letter" />
+      <path d={X_PATH} fill="currentColor" className="aiox-letter-x" />
     </svg>
   );
 }

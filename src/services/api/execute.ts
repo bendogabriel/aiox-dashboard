@@ -10,7 +10,7 @@ import type {
   LLMUsage,
   LLMHealth,
   LLMModels,
-} from '@/types';
+} from '../../types';
 
 export const executeApi = {
   // Execute agent (sync)

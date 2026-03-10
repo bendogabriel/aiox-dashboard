@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useRef } from 'react';
 import {
   Terminal,
@@ -11,18 +9,13 @@ import {
   Activity,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { SectionLabel } from '@/components/ui/section-label';
-import { useMonitorStore, selectFilteredEvents } from '@/stores/monitor-store';
-import type { MonitorEvent } from '@/stores/monitor-store';
-import { cn } from '@/lib/utils';
-
-// Map platform event types for display
-type DisplayEventType = 'tool_call' | 'message' | 'error' | 'system';
+import { GlassCard, GlassButton, SectionLabel } from '../ui';
+import { useMonitorStore } from '../../stores/monitorStore';
+import type { MonitorEvent } from '../../stores/monitorStore';
+import { cn } from '../../lib/utils';
 
 const eventTypeConfig: Record<
-  DisplayEventType,
+  MonitorEvent['type'],
   { icon: typeof Activity; label: string; badgeClass: string }
 > = {
   tool_call: {
@@ -47,19 +40,10 @@ const eventTypeConfig: Record<
   },
 };
 
-const filterTypes: DisplayEventType[] = ['tool_call', 'message', 'error', 'system'];
+const filterTypes: MonitorEvent['type'][] = ['tool_call', 'message', 'error', 'system'];
 
-/** Map store EventType to display EventType */
-function toDisplayType(event: MonitorEvent): DisplayEventType {
-  if (event.is_error) return 'error';
-  if (event.type === 'PreToolUse' || event.type === 'PostToolUse') return 'tool_call';
-  if (event.type === 'UserPromptSubmit') return 'message';
-  if (event.type === 'Notification') return 'message';
-  return 'system';
-}
-
-function formatTime(timestamp: number): string {
-  const d = new Date(timestamp);
+function formatTime(isoString: string): string {
+  const d = new Date(isoString);
   return d.toLocaleTimeString('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
@@ -74,13 +58,8 @@ function formatDuration(ms: number): string {
 }
 
 function EventRow({ event }: { event: MonitorEvent }) {
-  const displayType = toDisplayType(event);
-  const config = eventTypeConfig[displayType];
+  const config = eventTypeConfig[event.type];
   const Icon = config.icon;
-
-  const description = event.tool_name
-    ? `${event.tool_name}${event.tool_result ? ` → ${event.tool_result.slice(0, 60)}` : ''}`
-    : event.type;
 
   return (
     <motion.div
@@ -89,8 +68,8 @@ function EventRow({ event }: { event: MonitorEvent }) {
       exit={{ opacity: 0, x: 10 }}
       transition={{ duration: 0.15 }}
       className={cn(
-        'flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-glass-5 transition-colors',
-        event.is_error && 'bg-red-500/5',
+        'flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors',
+        event.type === 'error' && 'bg-red-500/5',
       )}
     >
       <span className="text-[10px] text-tertiary font-mono whitespace-nowrap pt-0.5">
@@ -106,21 +85,21 @@ function EventRow({ event }: { event: MonitorEvent }) {
         {config.label}
       </span>
       <span className="text-xs font-medium text-secondary whitespace-nowrap">
-        {event.aios_agent || event.agent || '-'}
+        {event.agent}
       </span>
       <span className="text-xs text-tertiary flex-1 min-w-0 truncate">
-        {description}
+        {event.description}
       </span>
-      {event.duration_ms !== undefined && (
+      {event.duration !== undefined && (
         <span className="text-[10px] text-tertiary font-mono whitespace-nowrap">
-          {formatDuration(event.duration_ms)}
+          {formatDuration(event.duration)}
         </span>
       )}
-      {event.is_error !== undefined &&
-        (event.is_error ? (
-          <AlertCircle className="h-3.5 w-3.5 text-red-400 flex-shrink-0" />
-        ) : (
+      {event.success !== undefined &&
+        (event.success ? (
           <CheckCircle2 className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
+        ) : (
+          <AlertCircle className="h-3.5 w-3.5 text-red-400 flex-shrink-0" />
         ))}
     </motion.div>
   );
@@ -128,11 +107,13 @@ function EventRow({ event }: { event: MonitorEvent }) {
 
 export default function EventList() {
   const events = useMonitorStore((s) => s.events);
-  const filteredEvents = useMonitorStore(selectFilteredEvents);
-  const eventTypeFilter = useMonitorStore((s) => s.eventTypeFilter);
-  const setEventTypeFilter = useMonitorStore((s) => s.setEventTypeFilter);
+  const eventFilters = useMonitorStore((s) => s.eventFilters);
+  const getFilteredEvents = useMonitorStore((s) => s.getFilteredEvents);
+  const toggleEventFilter = useMonitorStore((s) => s.toggleEventFilter);
 
   const feedRef = useRef<HTMLDivElement>(null);
+  const filteredEvents = getFilteredEvents();
+  const reversedEvents = [...filteredEvents].reverse();
 
   useEffect(() => {
     if (feedRef.current) {
@@ -142,23 +123,19 @@ export default function EventList() {
 
   return (
     <>
-      <div className="flex items-center gap-2 mb-1">
-        <SectionLabel variant="gold">
-          Activity Feed
-        </SectionLabel>
-        <span className="text-xs text-tertiary">({filteredEvents.length})</span>
-      </div>
+      <SectionLabel count={filteredEvents.length}>
+        Activity Feed
+      </SectionLabel>
 
       {/* Filter buttons */}
       <div className="flex items-center gap-2 mb-3 flex-shrink-0">
         {filterTypes.map((type) => {
           const config = eventTypeConfig[type];
           const Icon = config.icon;
-          // No direct filter by display type in store, but we can use eventTypeFilter
-          const isActive = !eventTypeFilter;
+          const isActive = eventFilters.size === 0 || eventFilters.has(type);
 
           return (
-            <Button
+            <GlassButton
               key={type}
               size="sm"
               variant="ghost"
@@ -166,22 +143,25 @@ export default function EventList() {
                 'text-xs',
                 !isActive && 'opacity-40',
               )}
-              onClick={() => setEventTypeFilter(null)}
+              leftIcon={<Icon className="h-3 w-3" />}
+              onClick={() => toggleEventFilter(type)}
             >
-              <Icon className="h-3 w-3 mr-1" />
               {config.label}
-            </Button>
+            </GlassButton>
           );
         })}
       </div>
 
-      <Card className="flex-1 overflow-hidden flex flex-col p-0">
+      <GlassCard padding="none" className="flex-1 overflow-hidden flex flex-col">
         <div
           ref={feedRef}
-          className="flex-1 overflow-y-auto divide-y divide-glass-5"
+          className="flex-1 overflow-y-auto divide-y divide-white/5"
+          tabIndex={0}
+          role="region"
+          aria-label="Feed de eventos"
         >
           <AnimatePresence initial={false}>
-            {filteredEvents.map((event) => (
+            {reversedEvents.map((event) => (
               <EventRow key={event.id} event={event} />
             ))}
           </AnimatePresence>
@@ -194,7 +174,7 @@ export default function EventList() {
             </div>
           )}
         </div>
-      </Card>
+      </GlassCard>
     </>
   );
 }

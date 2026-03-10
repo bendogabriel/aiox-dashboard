@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Execution Log Panel
  *
@@ -21,10 +19,9 @@ import {
   Wrench,
   Bot,
 } from 'lucide-react';
-import { useExecutionLogStore, LogLevel } from '@/stores/executionLogStore';
-import { cn } from '@/lib/utils';
-
-const ICON_SIZE_SM = 14;
+import { useExecutionLogStore, LogLevel } from '../../stores/executionLogStore';
+import { cn } from '../../lib/utils';
+import { ICON_SIZES } from '../../lib/icons';
 
 // Icons
 const ChevronIcon = ({ expanded }: { expanded: boolean }) => (
@@ -80,7 +77,7 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
   // Auto-expand when execution starts
   useEffect(() => {
     if (isExecuting && logs.length > 0) {
-      setExpanded(true);
+      queueMicrotask(() => setExpanded(true));
     }
   }, [isExecuting, logs.length]);
 
@@ -101,14 +98,14 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
   }
 
   return (
-    <div className={cn('rounded-xl border border-glass-10 overflow-hidden', className)}>
+    <div className={cn('rounded-xl border border-white/10 overflow-hidden', className)}>
       {/* Header - Always visible */}
       <button
         onClick={() => setExpanded(!expanded)}
         className={cn(
           'w-full flex items-center justify-between px-3 py-2 transition-colors',
-          'hover:bg-glass-5',
-          isExecuting ? 'bg-orange-500/10' : 'bg-glass-5'
+          'hover:bg-white/5',
+          isExecuting ? 'bg-orange-500/10' : 'bg-white/5'
         )}
       >
         <div className="flex items-center gap-2">
@@ -133,7 +130,7 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
 
         <div className="flex items-center gap-2">
           {hasLogs && (
-            <span className="text-[10px] text-tertiary px-1.5 py-0.5 rounded-full bg-glass-5">
+            <span className="text-[10px] text-tertiary px-1.5 py-0.5 rounded-full bg-white/5">
               {logs.length}
             </span>
           )}
@@ -143,7 +140,7 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
 
       {/* Progress bar when executing */}
       {isExecuting && currentExecution.totalSteps > 1 && (
-        <div className="h-0.5 bg-scrim-20">
+        <div className="h-0.5 bg-black/20">
           <motion.div
             className="h-full bg-gradient-to-r from-orange-500 to-yellow-500"
             initial={{ width: 0 }}
@@ -163,10 +160,10 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="max-h-[300px] overflow-y-auto glass-scrollbar">
+            <div className="max-h-[300px] overflow-y-auto glass-scrollbar" tabIndex={0} role="region" aria-label="Painel de log de execucao">
               {/* Clear button */}
               {hasLogs && !isExecuting && (
-                <div className="flex justify-end px-3 py-1 border-b border-glass-5">
+                <div className="flex justify-end px-3 py-1 border-b border-white/5">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -193,7 +190,7 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
                       levelColors[log.level]
                     )}
                   >
-                    {(() => { const Icon = levelIcons[log.level]; return <Icon size={ICON_SIZE_SM} className="flex-shrink-0" />; })()}
+                    {(() => { const Icon = levelIcons[log.level]; return <Icon size={ICON_SIZES.sm} className="flex-shrink-0" />; })()}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-primary font-medium truncate">
@@ -220,7 +217,7 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
                           <summary className="text-[10px] text-tertiary cursor-pointer hover:text-secondary">
                             Detalhes
                           </summary>
-                          <pre className="text-[9px] text-tertiary mt-1 p-1 bg-scrim-20 rounded overflow-x-auto">
+                          <pre className="text-[9px] text-tertiary mt-1 p-1 bg-black/20 rounded overflow-x-auto">
                             {JSON.stringify(log.details, null, 2)}
                           </pre>
                         </details>

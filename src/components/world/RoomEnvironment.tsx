@@ -1,9 +1,5 @@
-'use client';
-
-import { motion } from 'framer-motion';
 import type { DomainId } from './world-layout';
-import { domains, ROOM_COLS } from './world-layout';
-import { ICON_SIZES } from '@/lib/icons';
+import { useDomains } from './DomainContext';
 
 interface RoomEnvironmentProps {
   domain: DomainId;
@@ -17,7 +13,8 @@ const WINDOW_W = 72;
 const WINDOW_H = 48;
 const WINDOW_GAP = 160;
 
-export function RoomEnvironment({ domain, tileSize, roomWidth }: RoomEnvironmentProps) {
+export function RoomEnvironment({ domain, roomWidth }: RoomEnvironmentProps) {
+  const domains = useDomains();
   const d = domains[domain];
 
   // Darken the domain color for wall
@@ -34,9 +31,9 @@ export function RoomEnvironment({ domain, tileSize, roomWidth }: RoomEnvironment
   }));
 
   return (
-    <div className="absolute inset-x-0 top-0 pointer-events-none z-[1]">
+    <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ zIndex: 1 }}>
       {/* Main wall */}
-      <svg width={roomWidth} height={WALL_HEIGHT + 20} className="[image-rendering:pixelated]">
+      <svg width={roomWidth} height={WALL_HEIGHT + 20} style={{ imageRendering: 'pixelated' }}>
         {/* Wall base */}
         <rect x="0" y="0" width={roomWidth} height={WALL_HEIGHT} fill={wallColor} />
 
@@ -166,16 +163,20 @@ export function RoomEnvironment({ domain, tileSize, roomWidth }: RoomEnvironment
 
       {/* Side wall accents (left) */}
       <div
-        className="absolute left-0 top-0 w-3 pointer-events-none h-full z-0"
+        className="absolute left-0 top-0 w-3 pointer-events-none"
         style={{
+          height: '100%',
           background: `linear-gradient(to right, ${wallDark}44, transparent)`,
+          zIndex: 0,
         }}
       />
       {/* Side wall accents (right) */}
       <div
-        className="absolute right-0 top-0 w-3 pointer-events-none h-full z-0"
+        className="absolute right-0 top-0 w-3 pointer-events-none"
         style={{
+          height: '100%',
           background: `linear-gradient(to left, ${wallDark}44, transparent)`,
+          zIndex: 0,
         }}
       />
     </div>
@@ -192,7 +193,7 @@ function WallClock({ color }: { color: string }) {
   const minuteAngle = minutes * 6 - 90;
 
   return (
-    <svg width="28" height="28" viewBox="0 0 28 28" className="[image-rendering:pixelated]">
+    <svg width="28" height="28" viewBox="0 0 28 28" style={{ imageRendering: 'pixelated' }}>
       {/* Clock body */}
       <circle cx="14" cy="14" r="13" fill="#2C2C2C" stroke="#444" strokeWidth="1.5" />
       <circle cx="14" cy="14" r="11" fill="#1a1a1a" />
@@ -234,6 +235,7 @@ function WallClock({ color }: { color: string }) {
 
 /** Domain name plaque on wall */
 function DomainPlaque({ domain }: { domain: DomainId }) {
+  const domains = useDomains();
   const d = domains[domain];
   return (
     <div
@@ -245,8 +247,8 @@ function DomainPlaque({ domain }: { domain: DomainId }) {
     >
       <d.icon size={10} />
       <span
-        className="text-[8px] font-bold uppercase tracking-wider font-mono"
-        style={{ color: d.tileColor }}
+        className="text-[8px] font-bold uppercase tracking-wider"
+        style={{ color: d.tileColor, fontFamily: 'monospace' }}
       >
         {d.label}
       </span>

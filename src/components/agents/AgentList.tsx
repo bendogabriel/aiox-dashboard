@@ -1,13 +1,11 @@
-'use client';
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PlatformAgentCard } from './PlatformAgentCard';
-import { Skeleton } from '@/components/ui/skeleton';
-import { usePlatformAgents } from '@/hooks/use-agents';
-import { useChat } from '@/hooks/use-chat';
-import { useUIStore } from '@/stores/uiStore';
-import { cn } from '@/lib/utils';
+import { AgentCard } from './AgentCard';
+import { SkeletonAgentList } from '../ui';
+import { useAgents } from '../../hooks/useAgents';
+import { useChat } from '../../hooks/useChat';
+import { useUIStore } from '../../stores/uiStore';
+import type { AgentSummary } from '../../types';
 
 interface AgentListProps {
   onAgentSelect?: () => void;
@@ -15,10 +13,10 @@ interface AgentListProps {
 
 export function AgentList({ onAgentSelect }: AgentListProps) {
   const { selectedSquadId, selectedAgentId } = useUIStore();
-  const { data: agents, isLoading } = usePlatformAgents(selectedSquadId);
+  const { data: agents, isLoading } = useAgents(selectedSquadId);
   const { selectAgent } = useChat();
 
-  const handleSelectAgent = (agent: any) => {
+  const handleSelectAgent = (agent: AgentSummary) => {
     selectAgent(agent);
     onAgentSelect?.();
   };
@@ -52,7 +50,7 @@ export function AgentList({ onAgentSelect }: AgentListProps) {
               exit={{ opacity: 0, y: -10 }}
               transition={{ delay: index * 0.03 }}
             >
-              <PlatformAgentCard
+              <AgentCard
                 agent={agent}
                 selected={selectedAgentId === agent.id}
                 compact
@@ -110,17 +108,18 @@ export function AgentList({ onAgentSelect }: AgentListProps) {
 interface AgentGroupProps {
   title: string;
   count: number;
-  agents: any[];
+  agents: AgentSummary[];
   selectedId: string | null;
-  onSelect: (agent: any) => void;
+  onSelect: (agent: AgentSummary) => void;
   defaultExpanded?: boolean;
 }
 
 // Check if agent is a chief/leader
-function isChiefAgent(agent: any): boolean {
+function isChiefAgent(agent: AgentSummary): boolean {
   const id = agent.id?.toLowerCase() || '';
   const name = agent.name?.toLowerCase() || '';
   return id.includes('chief') || name.includes('chief') ||
+         id.includes('líder') || name.includes('líder') ||
          id.includes('lider') || name.includes('lider');
 }
 
@@ -177,7 +176,7 @@ function AgentGroup({ title, count, agents, selectedId, onSelect, defaultExpande
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ delay: index * 0.03 }}
                 >
-                  <PlatformAgentCard
+                  <AgentCard
                     agent={agent}
                     selected={selectedId === agent.id}
                     compact
@@ -195,21 +194,7 @@ function AgentGroup({ title, count, agents, selectedId, onSelect, defaultExpande
 }
 
 function AgentListSkeleton() {
-  return (
-    <div className="space-y-3">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="p-3 rounded-xl">
-          <div className="flex items-center gap-3">
-            <Skeleton className="h-10 w-10 rounded-xl" />
-            <div className="flex-1 space-y-2">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-3 w-40" />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+  return <SkeletonAgentList count={4} />;
 }
 
 function EmptyAgentList() {

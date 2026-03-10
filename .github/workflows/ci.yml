@@ -10,122 +10,93 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  # ─── Next.js Dashboard ──────────────────────────────────
-  nextjs-typecheck:
-    name: 'Next.js: TypeCheck'
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npx tsc --noEmit
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  nextjs-build:
-    name: 'Next.js: Build'
-    runs-on: ubuntu-latest
-    needs: [nextjs-typecheck]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm ci
-      - run: npm run build
 
-  # ─── Vite SPA (aios-platform) ──────────────────────────
-  spa-lint:
-    name: 'SPA: Lint'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: aios-platform
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: aios-platform/package-lock.json
-      - run: npm ci
-      - run: npm run lint
+      - name: Install dependencies
+        run: npm ci
 
-  spa-typecheck:
-    name: 'SPA: TypeCheck'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: aios-platform
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: aios-platform/package-lock.json
-      - run: npm ci
-      - run: npx tsc --noEmit
+      - name: Run ESLint
+        run: npm run lint
 
-  spa-test:
-    name: 'SPA: Test (2453 tests)'
+  typecheck:
+    name: Type Check
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: aios-platform
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: aios-platform/package-lock.json
-      - run: npm ci
-      - run: npx vitest run --project unit --reporter=verbose
-      - name: Upload coverage
-        if: always()
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript
+        run: npx tsc --noEmit
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests with coverage
+        run: npx vitest run --project unit --coverage
+
+      - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
-          name: spa-coverage
-          path: aios-platform/coverage/
+          name: coverage-report
+          path: coverage/
           retention-days: 7
 
-  spa-build:
-    name: 'SPA: Build'
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    needs: [spa-lint, spa-typecheck, spa-test]
-    defaults:
-      run:
-        working-directory: aios-platform
+    needs: [lint, typecheck, test]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: aios-platform/package-lock.json
-      - run: npm ci
-      - run: npm run build
-      - name: Build size report
-        run: |
-          echo "### Build Size" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          du -sh dist/ >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
 
-  # ─── Engine (Bun/Hono) ─────────────────────────────────
-  engine-test:
-    name: 'Engine: Test (98 tests)'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: aios-platform/engine
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
         with:
-          bun-version: latest
-      - run: bun install
-      - run: bun test tests/unit/
+          name: build
+          path: dist/
+          retention-days: 7

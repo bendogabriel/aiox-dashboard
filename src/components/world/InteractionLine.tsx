@@ -1,5 +1,3 @@
-'use client';
-
 import { motion } from 'framer-motion';
 
 interface InteractionLineProps {
@@ -25,8 +23,8 @@ export function InteractionLine({ x1, y1, x2, y2, color }: InteractionLineProps)
 
   return (
     <motion.svg
-      className="absolute pointer-events-none z-5"
-      style={{ left: minX, top: minY }}
+      className="absolute pointer-events-none"
+      style={{ left: minX, top: minY, zIndex: 5 }}
       width={width}
       height={height}
       initial={{ opacity: 0 }}

@@ -1,78 +1,94 @@
-// Taxonomia fixa de dominios — source of truth para o AIOS Dashboard
-// NUNCA adicionar domains ad-hoc; novos squads devem caber nas 6 categorias.
+import type { SquadType } from '../types';
 
-export const DOMAIN_TAXONOMY = {
-  strategy:   { label: 'Strategy',            color: 'var(--agent-pm)',        bg: 'var(--agent-pm-bg)',        border: 'var(--agent-pm-border)' },
-  marketing:  { label: 'Marketing & Content', color: 'var(--agent-po)',        bg: 'var(--agent-po-bg)',        border: 'var(--agent-po-border)' },
-  technical:  { label: 'Technical',           color: 'var(--agent-dev)',       bg: 'var(--agent-dev-bg)',       border: 'var(--agent-dev-border)' },
-  operations: { label: 'Operations',          color: 'var(--agent-analyst)',   bg: 'var(--agent-analyst-bg)',   border: 'var(--agent-analyst-border)' },
-  brand:      { label: 'Brand & Design',      color: 'var(--agent-devops)',    bg: 'var(--agent-devops-bg)',    border: 'var(--agent-devops-border)' },
-  meta:       { label: 'Meta & Frameworks',   color: 'var(--agent-architect)', bg: 'var(--agent-architect-bg)', border: 'var(--agent-architect-border)' },
-} as const;
+export interface DomainInfo {
+  label: string;
+  icon: string;
+  color: string;
+  bgColor: string;
+  description: string;
+}
 
-export type DomainKey = keyof typeof DOMAIN_TAXONOMY;
-
-export const DOMAIN_ORDER: DomainKey[] = [
-  'strategy',
-  'marketing',
-  'technical',
-  'operations',
-  'brand',
-  'meta',
-];
-
-// Maps legacy/ad-hoc domain names to canonical domain keys
-const LEGACY_DOMAIN_MAP: Record<string, DomainKey> = {
-  business_strategy: 'strategy',
-  business_ops: 'operations',
-  content_marketing: 'marketing',
-  technical: 'technical',
-  meta_frameworks: 'meta',
-  brand: 'brand',
-  franchise: 'operations',
-  movimento: 'marketing',
-  'marketing-ideologico': 'marketing',
-  'design-system': 'brand',
+export const domainTaxonomy: Record<SquadType, DomainInfo> = {
+  copywriting: {
+    label: 'Copywriting',
+    icon: 'PenTool',
+    color: 'text-orange-500',
+    bgColor: 'bg-orange-500/15',
+    description: 'Redação publicitária e persuasiva',
+  },
+  design: {
+    label: 'Design',
+    icon: 'Palette',
+    color: 'text-purple-500',
+    bgColor: 'bg-purple-500/15',
+    description: 'Design visual, UI/UX e assets criativos',
+  },
+  creator: {
+    label: 'Creator',
+    icon: 'Clapperboard',
+    color: 'text-green-500',
+    bgColor: 'bg-green-500/15',
+    description: 'Criação de conteúdo e vendas',
+  },
+  orchestrator: {
+    label: 'Orchestrator',
+    icon: 'RefreshCw',
+    color: 'text-cyan-500',
+    bgColor: 'bg-cyan-500/15',
+    description: 'Orquestração e gerenciamento de sistema',
+  },
+  content: {
+    label: 'Content',
+    icon: 'Tv',
+    color: 'text-red-500',
+    bgColor: 'bg-red-500/15',
+    description: 'Conteúdo e ecossistema de mídia',
+  },
+  development: {
+    label: 'Development',
+    icon: 'Wrench',
+    color: 'text-blue-500',
+    bgColor: 'bg-blue-500/15',
+    description: 'Desenvolvimento de software e ferramentas',
+  },
+  engineering: {
+    label: 'Engineering',
+    icon: 'Cog',
+    color: 'text-indigo-500',
+    bgColor: 'bg-indigo-500/15',
+    description: 'Engenharia de software e infraestrutura',
+  },
+  analytics: {
+    label: 'Analytics',
+    icon: 'BarChart3',
+    color: 'text-teal-500',
+    bgColor: 'bg-teal-500/15',
+    description: 'Dados, análise e pesquisa',
+  },
+  marketing: {
+    label: 'Marketing',
+    icon: 'Megaphone',
+    color: 'text-pink-500',
+    bgColor: 'bg-pink-500/15',
+    description: 'Marketing, scraping e outreach',
+  },
+  advisory: {
+    label: 'Advisory',
+    icon: 'BookOpen',
+    color: 'text-yellow-500',
+    bgColor: 'bg-yellow-500/15',
+    description: 'Consultoria e estratégia',
+  },
+  default: {
+    label: 'Default',
+    icon: 'Package',
+    color: 'text-gray-500',
+    bgColor: 'bg-gray-500/15',
+    description: 'Squad padrão',
+  },
 };
 
-// Per-squad overrides when default domain mapping doesn't apply
-const SQUAD_DOMAIN_OVERRIDES: Record<string, DomainKey> = {
-  'c-level': 'strategy',
-  'data': 'technical',
-  'spy': 'marketing',
-  'design': 'brand',
-  'deep-research': 'technical',
-};
-
-export function resolveSquadDomain(squadName: string, rawDomain: string): DomainKey {
-  if (squadName in SQUAD_DOMAIN_OVERRIDES) {
-    return SQUAD_DOMAIN_OVERRIDES[squadName];
-  }
-  if (rawDomain in LEGACY_DOMAIN_MAP) {
-    return LEGACY_DOMAIN_MAP[rawDomain];
-  }
-  if (rawDomain in DOMAIN_TAXONOMY) {
-    return rawDomain as DomainKey;
-  }
-  return 'meta';
+export function getDomainInfo(squadType: SquadType): DomainInfo {
+  return domainTaxonomy[squadType] || domainTaxonomy.default;
 }
 
-export function getDomainColor(domain: string): string {
-  const entry = DOMAIN_TAXONOMY[domain as DomainKey];
-  return entry ? entry.color : 'var(--text-muted)';
-}
-
-export function getDomainBg(domain: string): string {
-  const entry = DOMAIN_TAXONOMY[domain as DomainKey];
-  return entry ? entry.bg : 'transparent';
-}
-
-export function getDomainBorder(domain: string): string {
-  const entry = DOMAIN_TAXONOMY[domain as DomainKey];
-  return entry ? entry.border : 'var(--border)';
-}
-
-export function getDomainLabel(domain: string): string {
-  const entry = DOMAIN_TAXONOMY[domain as DomainKey];
-  return entry ? entry.label : domain.replace(/[-_]/g, ' ');
-}

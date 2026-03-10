@@ -1,8 +1,6 @@
-'use client';
-
 import { Component, ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { GlassButton } from './GlassButton';
 
 // Icons
 const AlertIcon = () => (
@@ -67,7 +65,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     this.props.onError?.(error, errorInfo);
 
     // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.error('ErrorBoundary caught an error:', error);
       console.error('Component stack:', errorInfo.componentStack);
     }
@@ -124,7 +122,7 @@ interface ErrorFallbackProps {
 }
 
 function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps) {
-  const isDev = process.env.NODE_ENV === 'development';
+  const isDev = import.meta.env.DEV;
 
   const handleReload = () => {
     window.location.reload();
@@ -164,7 +162,7 @@ function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps) {
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-xl font-semibold text-foreground mb-2"
+          className="text-xl font-semibold text-primary mb-2"
         >
           Algo deu errado
         </motion.h2>
@@ -174,7 +172,7 @@ function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps) {
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-sm text-muted-foreground mb-6"
+          className="text-sm text-secondary mb-6"
         >
           Ocorreu um erro inesperado. Tente recarregar a página ou voltar ao início.
         </motion.p>
@@ -189,7 +187,7 @@ function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps) {
           >
             <p className="text-xs font-mono text-red-400 mb-2">{error.message}</p>
             {error.stack && (
-              <pre className="text-[10px] font-mono text-muted-foreground whitespace-pre-wrap">
+              <pre className="text-[10px] font-mono text-tertiary whitespace-pre-wrap">
                 {error.stack.split('\n').slice(1, 6).join('\n')}
               </pre>
             )}
@@ -203,30 +201,30 @@ function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps) {
           transition={{ delay: 0.5 }}
           className="flex items-center justify-center gap-3 flex-wrap"
         >
-          <Button
-            variant="default"
+          <GlassButton
+            variant="primary"
             size="sm"
             onClick={onReset}
+            leftIcon={<RefreshIcon />}
           >
-            <RefreshIcon />
             Tentar novamente
-          </Button>
-          <Button
+          </GlassButton>
+          <GlassButton
             variant="ghost"
             size="sm"
             onClick={handleReload}
+            leftIcon={<RefreshIcon />}
           >
-            <RefreshIcon />
             Recarregar página
-          </Button>
-          <Button
+          </GlassButton>
+          <GlassButton
             variant="ghost"
             size="sm"
             onClick={handleGoHome}
+            leftIcon={<HomeIcon />}
           >
-            <HomeIcon />
             Ir ao início
-          </Button>
+          </GlassButton>
         </motion.div>
 
         {/* Report bug link */}
@@ -235,7 +233,7 @@ function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
           onClick={handleReport}
-          className="mt-4 text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 mx-auto"
+          className="mt-4 text-xs text-tertiary hover:text-primary transition-colors flex items-center gap-1.5 mx-auto"
         >
           <BugIcon />
           <span>Reportar problema</span>
@@ -261,11 +259,11 @@ export function CompactErrorFallback({ message = 'Erro ao carregar', onRetry }: 
           <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
       </div>
-      <p className="text-sm text-muted-foreground mb-3">{message}</p>
+      <p className="text-sm text-secondary mb-3">{message}</p>
       {onRetry && (
-        <Button variant="ghost" size="sm" onClick={onRetry}>
+        <GlassButton variant="ghost" size="sm" onClick={onRetry}>
           Tentar novamente
-        </Button>
+        </GlassButton>
       )}
     </div>
   );

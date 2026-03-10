@@ -23,21 +23,58 @@ export interface TaskWorkflow {
   stepCount: number;
 }
 
+export interface TaskOutput {
+  stepId: string;
+  stepName: string;
+  output: {
+    content?: string;
+    response?: string;
+    agent?: {
+      id: string;
+      name: string;
+      squad: string;
+    };
+    role?: string;
+    processingTimeMs?: number;
+    llmMetadata?: {
+      provider: string;
+      model: string;
+      inputTokens?: number;
+      outputTokens?: number;
+    };
+  };
+}
+
 export interface Task {
   id: string;
   demand: string;
   status: 'pending' | 'analyzing' | 'planning' | 'executing' | 'completed' | 'failed';
   squads: TaskSquadSelection[];
   workflow: TaskWorkflow | null;
-  outputs: unknown[];
+  outputs: TaskOutput[];
   createdAt: string;
+  startedAt?: string;
+  completedAt?: string;
+  totalTokens?: number;
+  totalDuration?: number;
+  stepCount?: number;
+  completedSteps?: number;
   error?: string;
+}
+
+export interface TaskListResponse {
+  tasks: Task[];
+  total: number;
+  limit: number;
+  offset: number;
+  dbPersistence: boolean;
 }
 
 export interface CreateTaskResponse {
   taskId: string;
   status: string;
   message: string;
+  dbPersistence: boolean;
 }
 
 export const tasksApi = {
@@ -57,6 +94,23 @@ export const tasksApi = {
    */
   getTask: async (taskId: string): Promise<Task> => {
     const response = await apiClient.get<Task>(`/tasks/${taskId}`);
+    return response;
+  },
+
+  /**
+   * List tasks with optional filters
+   */
+  listTasks: async (params?: {
+    status?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<TaskListResponse> => {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.set('status', params.status);
+    if (params?.limit) searchParams.set('limit', String(params.limit));
+    if (params?.offset) searchParams.set('offset', String(params.offset));
+    const qs = searchParams.toString();
+    const response = await apiClient.get<TaskListResponse>(`/tasks${qs ? `?${qs}` : ''}`);
     return response;
   },
 

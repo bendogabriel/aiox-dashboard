@@ -1,10 +1,10 @@
-'use client';
+'use no memo';
 
 import { useRef, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { AnimatePresence } from 'framer-motion';
 import { MessageBubble } from './MessageBubble';
-import type { Message } from '@/types';
+import type { Message } from '../../types';
 
 interface VirtualizedMessageListProps {
   messages: Message[];
@@ -15,6 +15,7 @@ export function VirtualizedMessageList({ messages, className }: VirtualizedMessa
   const parentRef = useRef<HTMLDivElement>(null);
   const scrollingRef = useRef(false);
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Virtual is safe to use; skipping compiler memoization
   const virtualizer = useVirtualizer({
     count: messages.length,
     getScrollElement: () => parentRef.current,
@@ -58,17 +59,22 @@ export function VirtualizedMessageList({ messages, className }: VirtualizedMessa
   return (
     <div
       ref={parentRef}
-      className={`overflow-y-auto glass-scrollbar [contain:strict] ${className || ''}`}
+      className={`overflow-y-auto glass-scrollbar ${className || ''}`}
+      style={{ contain: 'strict' }}
     >
       <div
-        className="w-full relative"
         style={{
           height: virtualizer.getTotalSize(),
+          width: '100%',
+          position: 'relative',
         }}
       >
         <div
-          className="absolute top-0 left-0 w-full"
           style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
             transform: `translateY(${items[0]?.start ?? 0}px)`,
           }}
         >

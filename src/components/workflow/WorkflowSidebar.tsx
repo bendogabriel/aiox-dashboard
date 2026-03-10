@@ -1,10 +1,6 @@
-'use client';
-
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { GlassAvatar } from '@/components/ui/GlassAvatar';
-import { cn, formatRelativeTime } from '@/lib/utils';
+import { Badge, Avatar } from '../ui';
+import { cn, formatRelativeTime } from '../../lib/utils';
 import type { WorkflowMission, WorkflowOperation } from './types';
 
 // Icons
@@ -74,57 +70,62 @@ export function WorkflowSidebar({
 }: WorkflowSidebarProps) {
   return (
     <div
-      className="w-80 border-r border-glass-10 flex flex-col relative overflow-hidden backdrop-blur-xl"
+      className="w-80 border-r border-white/10 flex flex-col relative overflow-hidden backdrop-blur-xl"
       style={{
         background: `
-          radial-gradient(ellipse 80% 50% at 0% 100%, rgba(255, 90, 60, 0.12) 0%, transparent 50%),
-          radial-gradient(ellipse 60% 80% at 100% 0%, rgba(140, 60, 180, 0.10) 0%, transparent 50%),
-          rgba(15, 15, 20, 0.65)
+          radial-gradient(ellipse 80% 50% at 0% 100%, color-mix(in srgb, var(--color-accent, #D1FF00) 6%, transparent) 0%, transparent 50%),
+          radial-gradient(ellipse 60% 80% at 100% 0%, rgba(156, 156, 156, 0.04) 0%, transparent 50%),
+          var(--glass-background-panel, rgba(15, 15, 20, 0.65))
         `
       }}
     >
       {/* Mission Header */}
-      <div className="p-4 border-b border-glass-10">
+      <div className="p-4 border-b border-white/10">
         <div className="flex items-center gap-2 mb-3">
-          <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+          <div className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))' }}>
             <RocketIcon />
           </div>
-          <h3 className="text-xs font-semibold text-foreground-secondary uppercase tracking-wider">
-            Missao Ativa
-          </h3>
-          <Badge variant="outline" className="ml-auto text-[10px]">
+          <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+            Missão Ativa
+          </h2>
+          <Badge variant="count" size="sm" className="ml-auto">
             #{mission.id.split('-')[1]}
           </Badge>
         </div>
 
         <div
-          className="relative rounded-xl p-3 cursor-pointer transition-all hover:scale-[1.02] group border border-[rgba(59,130,246,0.2)]"
+          className="relative rounded-xl p-3 cursor-pointer transition-all hover:scale-[1.02] group"
           onClick={onViewMission}
           style={{
-            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%)',
+            background: `linear-gradient(135deg, color-mix(in srgb, var(--color-accent, #D1FF00) 10%, transparent) 0%, color-mix(in srgb, var(--color-accent, #D1FF00) 5%, transparent) 100%)`,
+            border: `1px solid color-mix(in srgb, var(--color-accent, #D1FF00) 20%, transparent)`
           }}
         >
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(to right, color-mix(in srgb, var(--color-accent, #D1FF00) 10%, transparent), color-mix(in srgb, var(--color-accent, #D1FF00) 5%, transparent))` }} />
 
           <div className="relative">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-foreground-primary font-medium text-sm">{mission.name}</h4>
+              <h3 className="text-white font-medium text-sm">{mission.name}</h3>
               <ChevronRightIcon />
             </div>
-            <p className="text-foreground-tertiary text-xs mb-3 line-clamp-2">{mission.description}</p>
+            <p className="text-white/50 text-xs mb-3 line-clamp-2">{mission.description}</p>
 
             {/* Progress */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-foreground-secondary">Progresso geral</span>
-                <span className="text-foreground-primary font-semibold">{mission.progress}%</span>
+                <span className="text-white/60">Progresso geral</span>
+                <span className="text-white font-semibold">{mission.progress}%</span>
               </div>
-              <div className="h-2 rounded-full bg-scrim-30 overflow-hidden">
+              <div className="h-2 rounded-full bg-black/30 overflow-hidden">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                  className="h-full rounded-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${mission.progress}%` }}
                   transition={{ duration: 0.5 }}
+                  style={{
+                    background: `linear-gradient(to right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent))`,
+                    boxShadow: `0 0 10px color-mix(in srgb, var(--color-accent, #D1FF00) 50%, transparent)`
+                  }}
                 />
               </div>
             </div>
@@ -133,15 +134,15 @@ export function WorkflowSidebar({
       </div>
 
       {/* Active Agents */}
-      <div className="p-4 border-b border-glass-10">
+      <div className="p-4 border-b border-white/10">
         <div className="flex items-center gap-2 mb-3">
-          <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+          <div className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-accent, #D1FF00) 80%, #000), color-mix(in srgb, var(--color-accent, #D1FF00) 50%, #000))' }}>
             <UsersIcon />
           </div>
-          <h3 className="text-xs font-semibold text-foreground-secondary uppercase tracking-wider">
-            Agents na Missao
-          </h3>
-          <Badge variant="outline" className="ml-auto text-[10px]">
+          <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+            Agents na Missão
+          </h2>
+          <Badge variant="count" size="sm" className="ml-auto">
             {mission.agents.length}
           </Badge>
         </div>
@@ -152,10 +153,10 @@ export function WorkflowSidebar({
             const isSelected = node && selectedNodeId === node.id;
 
             const squadGradients: Record<string, string> = {
-              copywriting: 'from-orange-500/20 to-amber-500/20',
-              design: 'from-purple-500/20 to-pink-500/20',
-              creator: 'from-green-500/20 to-emerald-500/20',
-              orchestrator: 'from-cyan-500/20 to-blue-500/20',
+              copywriting: 'from-[rgba(209,255,0,0.12)] to-[rgba(209,255,0,0.06)]',
+              design: 'from-[rgba(209,255,0,0.10)] to-[rgba(209,255,0,0.04)]',
+              creator: 'from-[rgba(209,255,0,0.12)] to-[rgba(209,255,0,0.06)]',
+              orchestrator: 'from-[rgba(209,255,0,0.14)] to-[rgba(209,255,0,0.08)]',
             };
 
             return (
@@ -167,34 +168,35 @@ export function WorkflowSidebar({
                 className={cn(
                   'flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all',
                   `bg-gradient-to-r ${squadGradients[agent.squadType] || 'from-gray-500/20 to-gray-400/20'}`,
-                  'border border-transparent hover:border-glass-10',
-                  isSelected && 'ring-1 ring-white/30 border-glass-20'
+                  'border border-transparent hover:border-white/10',
+                  isSelected && 'ring-1 ring-white/30 border-white/20'
                 )}
                 onClick={() => node && onSelectNode(node.id)}
               >
-                <GlassAvatar
+                <Avatar
                   name={agent.name}
+                  agentId={agent.id}
                   size="sm"
-                  squadType={agent.squadType as 'copywriting' | 'design' | 'creator' | 'orchestrator' | 'default'}
+                  squadType={agent.squadType}
                   status={agent.status === 'working' ? 'online' : agent.status === 'waiting' ? 'busy' : 'offline'}
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-foreground-primary text-sm font-medium">{agent.name}</p>
-                  <p className="text-foreground-tertiary text-xs truncate">{agent.currentTask}</p>
+                  <p className="text-white text-sm font-medium">{agent.name}</p>
+                  <p className="text-white/50 text-xs truncate">{agent.currentTask}</p>
                 </div>
                 <div className="flex-shrink-0">
                   {agent.status === 'working' && (
-                    <span className="flex items-center gap-1 text-[10px] text-orange-400">
+                    <span className="flex items-center gap-1 text-[10px]" style={{ color: 'var(--color-accent, #D1FF00)' }}>
                       <SpinnerIcon />
                     </span>
                   )}
                   {agent.status === 'completed' && (
-                    <span className="flex items-center gap-1 text-[10px] text-green-400">
+                    <span className="flex items-center gap-1 text-[10px]" style={{ color: 'var(--color-accent, #D1FF00)', opacity: 0.7 }}>
                       <CheckIcon />
                     </span>
                   )}
                   {agent.status === 'waiting' && (
-                    <span className="flex items-center gap-1 text-[10px] text-yellow-400">
+                    <span className="flex items-center gap-1 text-[10px]" style={{ color: 'var(--color-text-secondary, #858585)' }}>
                       <ClockIcon />
                     </span>
                   )}
@@ -208,18 +210,18 @@ export function WorkflowSidebar({
       {/* Operations Log */}
       <div className="flex-1 overflow-hidden flex flex-col">
         <div className="px-4 pt-4 pb-2 flex items-center gap-2">
-          <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+          <div className="h-6 w-6 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-accent, #D1FF00) 60%, #000), color-mix(in srgb, var(--color-accent, #D1FF00) 35%, #000))' }}>
             <ActivityIcon />
           </div>
-          <h3 className="text-xs font-semibold text-foreground-secondary uppercase tracking-wider">
-            Log de Operacoes
-          </h3>
-          <Badge variant="outline" className="ml-auto text-[10px]">
+          <h2 className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+            Log de Operações
+          </h2>
+          <Badge variant="count" size="sm" className="ml-auto">
             {operations.length}
           </Badge>
         </div>
 
-        <div className="flex-1 overflow-y-auto glass-scrollbar px-4 pb-4">
+        <div className="flex-1 overflow-y-auto glass-scrollbar px-4 pb-4" tabIndex={0} role="region" aria-label="Log de operacoes do workflow">
           <div className="space-y-2">
             {operations.map((op, index) => (
               <OperationItem key={op.id} operation={op} index={index} />
@@ -229,15 +231,15 @@ export function WorkflowSidebar({
       </div>
 
       {/* Footer Stats */}
-      <div className="p-4 border-t border-glass-10">
+      <div className="p-4 border-t border-white/10">
         <div className="grid grid-cols-3 gap-2 text-center">
           <StatBox
-            label="Concluidas"
+            label="Concluídas"
             value={operations.filter((o) => o.status === 'completed').length}
             color="green"
           />
           <StatBox
-            label="Em execucao"
+            label="Em execução"
             value={operations.filter((o) => o.status === 'running').length}
             color="orange"
           />
@@ -254,10 +256,10 @@ export function WorkflowSidebar({
 
 function OperationItem({ operation, index }: { operation: WorkflowOperation; index: number }) {
   const squadStyles: Record<string, { border: string; bg: string }> = {
-    copywriting: { border: 'border-l-orange-500', bg: 'from-orange-500/10' },
-    design: { border: 'border-l-purple-500', bg: 'from-purple-500/10' },
-    creator: { border: 'border-l-green-500', bg: 'from-green-500/10' },
-    orchestrator: { border: 'border-l-cyan-500', bg: 'from-cyan-500/10' },
+    copywriting: { border: 'border-l-[var(--color-accent,#D1FF00)]', bg: 'from-[rgba(209,255,0,0.08)]' },
+    design: { border: 'border-l-[var(--color-accent,#D1FF00)]', bg: 'from-[rgba(209,255,0,0.06)]' },
+    creator: { border: 'border-l-[var(--color-accent,#D1FF00)]', bg: 'from-[rgba(209,255,0,0.08)]' },
+    orchestrator: { border: 'border-l-[var(--color-accent,#D1FF00)]', bg: 'from-[rgba(209,255,0,0.10)]' },
   };
 
   const style = squadStyles[operation.squadType] || { border: 'border-l-gray-500', bg: 'from-gray-500/10' };
@@ -268,26 +270,27 @@ function OperationItem({ operation, index }: { operation: WorkflowOperation; ind
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
       className={cn(
-        'rounded-lg p-3 border border-[var(--glass-border-color-subtle)] border-l-2 transition-all hover:translate-x-1',
+        'rounded-lg p-3 border-l-2 transition-all hover:translate-x-1',
         style.border,
         `bg-gradient-to-r ${style.bg} to-transparent`
       )}
+      style={{ border: '1px solid var(--glass-border-color-subtle)', borderLeftWidth: '2px' }}
     >
       <div className="flex items-start justify-between gap-2 mb-1">
         <div className="flex items-center gap-2">
-          <GlassAvatar
+          <Avatar
             name={operation.agentName}
             size="sm"
-            squadType={operation.squadType as 'copywriting' | 'design' | 'creator' | 'orchestrator' | 'default'}
+            squadType={operation.squadType}
           />
-          <span className="text-foreground-primary text-xs font-medium">{operation.agentName}</span>
+          <span className="text-white text-xs font-medium">{operation.agentName}</span>
         </div>
         <StatusBadge status={operation.status} />
       </div>
 
-      <p className="text-foreground-secondary text-xs mb-1.5 line-clamp-2">{operation.action}</p>
+      <p className="text-white/60 text-xs mb-1.5 line-clamp-2">{operation.action}</p>
 
-      <div className="flex items-center justify-between text-[10px] text-foreground-tertiary">
+      <div className="flex items-center justify-between text-[10px] text-white/40">
         <span>{formatRelativeTime(operation.startedAt)}</span>
         {operation.duration && <span>{operation.duration}s</span>}
       </div>
@@ -297,9 +300,9 @@ function OperationItem({ operation, index }: { operation: WorkflowOperation; ind
 
 function StatusBadge({ status }: { status: WorkflowOperation['status'] }) {
   const styles: Record<string, string> = {
-    running: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-    completed: 'bg-green-500/20 text-green-400 border-green-500/30',
-    pending: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+    running: 'bg-[rgba(209,255,0,0.15)] text-[var(--color-accent,#D1FF00)] border-[rgba(209,255,0,0.25)]',
+    completed: 'bg-[rgba(209,255,0,0.10)] text-[color-mix(in_srgb,var(--color-accent,#D1FF00)_70%,#858585)] border-[rgba(209,255,0,0.15)]',
+    pending: 'bg-[rgba(156,156,156,0.12)] text-[var(--color-text-tertiary,#858585)] border-[rgba(156,156,156,0.15)]',
   };
 
   return (
@@ -313,7 +316,7 @@ function StatusBadge({ status }: { status: WorkflowOperation['status'] }) {
       {status === 'completed' && <CheckIcon />}
       {status === 'pending' && <ClockIcon />}
       <span>
-        {status === 'running' ? 'Executando' : status === 'completed' ? 'Concluido' : 'Pendente'}
+        {status === 'running' ? 'Executando' : status === 'completed' ? 'Concluído' : 'Pendente'}
       </span>
     </span>
   );
@@ -321,22 +324,23 @@ function StatusBadge({ status }: { status: WorkflowOperation['status'] }) {
 
 function StatBox({ label, value, color }: { label: string; value: number; color: 'green' | 'orange' | 'gray' }) {
   const colors = {
-    green: { text: 'text-green-400', bg: 'from-green-500/20', glow: 'rgba(34, 197, 94, 0.3)' },
-    orange: { text: 'text-orange-400', bg: 'from-orange-500/20', glow: 'rgba(249, 115, 22, 0.3)' },
-    gray: { text: 'text-gray-400', bg: 'from-gray-500/20', glow: 'rgba(156, 163, 175, 0.2)' },
+    green: { text: 'text-[var(--color-accent,#D1FF00)]', bg: 'from-[rgba(209,255,0,0.15)]', glow: 'rgba(209, 255, 0, 0.25)' },
+    orange: { text: 'text-[var(--color-accent,#D1FF00)]', bg: 'from-[rgba(209,255,0,0.12)]', glow: 'rgba(209, 255, 0, 0.2)' },
+    gray: { text: 'text-[var(--color-text-tertiary,#858585)]', bg: 'from-[rgba(156,156,156,0.12)]', glow: 'rgba(156, 156, 156, 0.15)' },
   };
 
   const style = colors[color];
 
   return (
     <div
-      className={cn('rounded-xl p-2.5 bg-gradient-to-b to-transparent border border-glass-5', style.bg)}
+      className={cn('rounded-xl p-2.5 bg-gradient-to-b to-transparent', style.bg)}
       style={{
+        border: '1px solid rgba(255,255,255,0.05)',
         boxShadow: value > 0 ? `0 0 15px ${style.glow}` : 'none'
       }}
     >
       <p className={cn('text-xl font-bold', style.text)}>{value}</p>
-      <p className="text-[10px] text-foreground-tertiary">{label}</p>
+      <p className="text-[10px] text-white/40">{label}</p>
     </div>
   );
 }

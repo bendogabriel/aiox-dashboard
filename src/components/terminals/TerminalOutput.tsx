@@ -1,212 +1,167 @@
-'use client';
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowDown } from 'lucide-react';
 
-import { useState } from 'react';
-import { Plus, Files, X, ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useSettingsStore } from '@/stores/settings-store';
-import { MOCK_AGENT_TERMINALS, type MockAgentTerminal } from '@/lib/mock-data';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { AGENT_CONFIG } from '@/types';
-
-const CLAUDE_ASCII = `   ████████   ████████
- ██        ██        ██
-██  ████  ██  ████  ██
-██  ████  ██  ████  ██
- ██        ██        ██
-   ████████   ████████`;
-
-interface TerminalCardProps {
-  terminal: MockAgentTerminal;
-  onClose: () => void;
+interface TerminalOutputProps {
+  lines: string[];
+  isActive: boolean;
 }
 
-function TerminalCard({ terminal, onClose }: TerminalCardProps) {
-  const agentConfig = AGENT_CONFIG[terminal.agentId];
-  const agentName = agentConfig?.name || terminal.agentId;
-
-  return (
-    <div className="flex flex-col h-full border border-border rounded-lg overflow-hidden bg-[#0d1117]">
-      {/* Terminal Header */}
-      <div className="flex items-center justify-between px-3 py-2 bg-[#161b22] border-b border-border">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-green-500" />
-            <Badge variant="outline" className="text-xs bg-[#238636]/20 text-[#3fb950] border-[#238636]">
-              Claude (MU)
-            </Badge>
-          </div>
-          <Badge className="text-xs bg-[#f78166]/20 text-[#f78166] border-0">
-            Claude
-          </Badge>
-          <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-            <Files className="h-3 w-3" />
-            Select task...
-            <ChevronDown className="h-3 w-3" />
-          </button>
-        </div>
-        <button
-          onClick={onClose}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-
-      {/* Terminal Content */}
-      <div className="flex-1 p-4 font-mono text-xs overflow-auto">
-        {/* Claude ASCII Art */}
-        <div className="flex items-start gap-4 mb-4">
-          <pre className="text-[#58a6ff] text-detail leading-tight">{CLAUDE_ASCII}</pre>
-          <div className="text-[#8b949e]">
-            <div>
-              <span className="text-[#f0883e]">Claude Code</span>
-              <span className="text-[#8b949e]"> v2.0.69</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-yellow-500">★</span>
-              <span>{terminal.model}</span>
-              <span className="text-muted-foreground">·</span>
-              <span>{terminal.apiType}</span>
-            </div>
-            <div className="text-muted-foreground">
-              {terminal.workingDirectory}
-            </div>
-          </div>
-        </div>
-
-        {/* Separator */}
-        <div className="border-t border-dashed border-[#30363d] my-3" />
-
-        {/* Current Prompt */}
-        {terminal.lastPrompt && (
-          <div className="text-[#7ee787]">
-            {terminal.lastPrompt}
-          </div>
-        )}
-
-        {/* Help hint */}
-        <div className="text-[#8b949e] mt-2">
-          ? for shortcuts
-        </div>
-      </div>
-
-      {/* Terminal Footer - Agent indicator */}
-      <div className="px-3 py-1.5 bg-[#161b22] border-t border-border">
-        <div className="flex items-center gap-2">
-          <span
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: agentConfig?.color || '#888' }}
-          />
-          <span className="text-xs text-muted-foreground">
-            @{agentName}
-          </span>
-          {terminal.storyId && (
-            <>
-              <span className="text-muted-foreground">→</span>
-              <span className="text-xs text-muted-foreground">
-                {terminal.storyId}
-              </span>
-            </>
-          )}
-          <span className={cn(
-            'ml-auto text-xs',
-            terminal.status === 'working' && 'text-green-500',
-            terminal.status === 'waiting' && 'text-yellow-500',
-            terminal.status === 'idle' && 'text-muted-foreground',
-          )}>
-            {terminal.status}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
+interface StyledSegment {
+  text: string;
+  classes: string;
 }
 
-export function TerminalOutput() {
-  const { settings } = useSettingsStore();
-  const [terminals, setTerminals] = useState<MockAgentTerminal[]>(
-    settings.useMockData ? MOCK_AGENT_TERMINALS : []
-  );
+const ANSI_COLOR_MAP: Record<number, string> = {
+  30: 'text-black',
+  31: 'terminal-error',
+  32: 'terminal-prompt',
+  33: 'terminal-ansi-yellow',
+  34: 'terminal-ansi-blue',
+  35: 'terminal-ansi-purple',
+  36: 'terminal-ansi-cyan',
+  37: 'text-white',
+  90: 'terminal-ansi-dim',
+  91: 'terminal-error',
+  92: 'terminal-prompt',
+  93: 'terminal-ansi-yellow',
+  94: 'terminal-ansi-blue',
+};
 
-  const activeTerminals = terminals.filter(t => t.status !== 'idle');
-  const totalTerminals = 12; // Max terminals capacity
+function parseAnsiLine(line: string): StyledSegment[] {
+  const segments: StyledSegment[] = [];
+  // eslint-disable-next-line no-control-regex
+  const ansiRegex = /\x1b\[(\d+(?:;\d+)*)m/g;
+  let lastIndex = 0;
+  let currentClasses = 'terminal-text';
+  let match: RegExpExecArray | null;
 
-  const handleCloseTerminal = (id: string) => {
-    setTerminals(prev => prev.filter(t => t.id !== id));
-  };
+  while ((match = ansiRegex.exec(line)) !== null) {
+    // Push text before this escape code
+    if (match.index > lastIndex) {
+      segments.push({ text: line.slice(lastIndex, match.index), classes: currentClasses });
+    }
 
-  const handleNewTerminal = () => {
-    const newTerminal: MockAgentTerminal = {
-      id: `term-${Date.now()}`,
-      agentId: 'dev',
-      model: 'Sonnet 4.5',
-      apiType: 'Claude API',
-      workingDirectory: '~/Code/aios-core',
-      status: 'idle',
-      lastPrompt: '> Ready for input...',
-    };
-    setTerminals(prev => [...prev, newTerminal]);
-  };
+    const codes = match[1].split(';').map(Number);
+    for (const code of codes) {
+      if (code === 0) {
+        currentClasses = 'text-gray-300';
+      } else if (code === 1) {
+        currentClasses = currentClasses.includes('font-bold')
+          ? currentClasses
+          : `${currentClasses} font-bold`;
+      } else if (ANSI_COLOR_MAP[code]) {
+        // Replace existing text color
+        currentClasses = currentClasses
+          .replace(/(?:text-\S+|terminal-\S+)/, ANSI_COLOR_MAP[code]);
+      }
+    }
 
-  if (!settings.useMockData && terminals.length === 0) {
+    lastIndex = ansiRegex.lastIndex;
+  }
+
+  // Remaining text
+  if (lastIndex < line.length) {
+    segments.push({ text: line.slice(lastIndex), classes: currentClasses });
+  }
+
+  return segments;
+}
+
+function hasAnsiCodes(line: string): boolean {
+  // eslint-disable-next-line no-control-regex
+  return /\x1b\[/.test(line);
+}
+
+function getHeuristicClass(line: string): string {
+  if (line.startsWith('$')) return 'terminal-prompt';
+  if (/^PASS|passed|✓/.test(line)) return 'terminal-success';
+  if (/FAIL|error|Error/.test(line)) return 'terminal-error';
+  return 'terminal-text';
+}
+
+function TerminalLine({ line }: { line: string }) {
+  if (hasAnsiCodes(line)) {
+    const segments = parseAnsiLine(line);
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg font-medium text-foreground">No Active Terminals</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Enable Demo Mode in Settings to see sample terminals
-          </p>
-        </div>
+      <div className="whitespace-pre-wrap">
+        {segments.map((seg, i) => (
+          <span key={i} className={seg.classes}>{seg.text}</span>
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <div className="flex items-center gap-4">
-          <h2 className="text-lg font-semibold">Agent Terminals</h2>
-          <span className="text-sm text-muted-foreground">
-            {activeTerminals.length} / {totalTerminals} terminals
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleNewTerminal}>
-            <Plus className="h-4 w-4 mr-1.5" />
-            New Terminal
-          </Button>
-          <Button variant="outline" size="sm">
-            <Files className="h-4 w-4 mr-1.5" />
-            Files
-          </Button>
-        </div>
+    <div className="whitespace-pre-wrap">
+      <span className={getHeuristicClass(line)}>{line}</span>
+    </div>
+  );
+}
+
+export function TerminalOutput({ lines, isActive }: TerminalOutputProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+
+  const scrollToBottom = useCallback(() => {
+    const el = containerRef.current;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+      setIsAtBottom(true);
+    }
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const threshold = 40;
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+    setIsAtBottom(atBottom);
+  }, []);
+
+  // Auto-scroll when new lines arrive and user is at bottom
+  useEffect(() => {
+    if (isAtBottom) {
+      const el = containerRef.current;
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+      }
+    }
+  }, [lines.length, isAtBottom]);
+
+  return (
+    <div className="relative flex-1 overflow-hidden">
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="h-full bg-black/80 p-3 font-mono text-xs leading-relaxed overflow-y-auto"
+        tabIndex={0}
+        role="region"
+        aria-label="Saida do terminal"
+      >
+        {lines.map((line, i) => (
+          <TerminalLine key={i} line={line} />
+        ))}
+        {isActive && (
+          <span className="terminal-cursor animate-pulse">_</span>
+        )}
       </div>
 
-      {/* Terminal Grid */}
-      <div className="flex-1 overflow-auto p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 auto-rows-fr min-h-[400px]">
-          {terminals.map(terminal => (
-            <div key={terminal.id} className="min-h-[250px]">
-              <TerminalCard
-                terminal={terminal}
-                onClose={() => handleCloseTerminal(terminal.id)}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-muted/30">
-        <span className="text-xs text-muted-foreground">
-          {settings.useMockData ? 'Showing mock terminals' : 'Connected to AIOS'}
-        </span>
-        <span className="text-xs text-muted-foreground">
-          Press <kbd className="px-1.5 py-0.5 bg-muted rounded text-detail">?</kbd> for shortcuts
-        </span>
-      </div>
+      <AnimatePresence>
+        {!isAtBottom && (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            onClick={scrollToBottom}
+            className="absolute bottom-3 right-3 p-1.5 rounded-lg glass text-xs text-secondary hover:text-primary flex items-center gap-1 transition-colors"
+            aria-label="Scroll to bottom"
+          >
+            <ArrowDown className="h-3 w-3" />
+            <span>Bottom</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -1,152 +1,106 @@
-'use client';
-
-import { memo } from 'react';
-import { cn } from '@/lib/utils';
-import { iconMap } from '@/lib/icons';
-import { ProgressBar } from '@/components/ui/progress-bar';
-import { useBobStore } from '@/stores/bob-store';
-import { AGENT_CONFIG, type Story, type StoryComplexity, type AgentId } from '@/types';
 import { Bot } from 'lucide-react';
-
-// ============ Props ============
+import { GlassCard, Badge, ProgressBar } from '../ui';
+import { cn } from '../../lib/utils';
+import type { Story } from '../../stores/storyStore';
 
 interface StoryCardProps {
   story: Story;
-  isRunning?: boolean;
-  isStuck?: boolean;
   onClick?: () => void;
-  className?: string;
 }
 
-// ============ Component ============
+const categoryColors: Record<Story['category'], string> = {
+  feature: 'bg-blue-500/15 text-blue-500',
+  fix: 'bg-red-500/15 text-red-500',
+  refactor: 'bg-yellow-500/15 text-yellow-600 dark:text-yellow-400',
+  docs: 'bg-green-500/15 text-green-500',
+};
 
-export const StoryCard = memo(function StoryCard({
-  story,
-  isRunning = false,
-  isStuck = false,
-  onClick,
-  className,
-}: StoryCardProps) {
-  const { title, description, category, complexity, agentId, progress } = story;
-  const bobActive = useBobStore((s) => s.active);
-  const bobPipeline = useBobStore((s) => s.pipeline);
-  const isBobOrchestrated = bobActive && bobPipeline?.story_progress && story.id;
+const categoryLabels: Record<Story['category'], string> = {
+  feature: 'Feature',
+  fix: 'Fix',
+  refactor: 'Refactor',
+  docs: 'Docs',
+};
 
+const complexityColors: Record<Story['complexity'], string> = {
+  simple: 'bg-green-500/15 text-green-500',
+  standard: 'bg-blue-500/15 text-blue-500',
+  complex: 'bg-purple-500/15 text-purple-500',
+};
+
+const priorityColors: Record<Story['priority'], string> = {
+  low: 'bg-gray-500/15 text-gray-500',
+  medium: 'bg-blue-500/15 text-blue-500',
+  high: 'bg-orange-500/15 text-orange-500',
+  critical: 'bg-red-500/15 text-red-500',
+};
+
+const statusRing: Record<Story['status'], string> = {
+  backlog: '',
+  in_progress: 'ring-1 ring-blue-500/30',
+  ai_review: 'ring-1 ring-purple-500/30',
+  human_review: 'ring-1 ring-orange-500/30',
+  pr_created: 'ring-1 ring-cyan-500/30',
+  done: 'bg-green-500/5',
+  error: 'bg-red-500/5 ring-1 ring-red-500/30',
+};
+
+export function StoryCard({ story, onClick }: StoryCardProps) {
   return (
-    <div
-      onClick={onClick}
+    <GlassCard
+      interactive
+      padding="sm"
+      radius="lg"
       className={cn(
-        'group relative border p-3',
-        'bg-card border-border',
-        'cursor-pointer transition-luxury hover-lift',
-        'hover:bg-card-hover hover:border-border-medium',
-        isRunning && 'border-status-success-border bg-status-success-bg',
-        isStuck && 'border-status-warning-border bg-status-warning-bg',
-        className
+        'cursor-pointer select-none',
+        statusRing[story.status],
       )}
+      onClick={onClick}
     >
-      {/* Header: Category & Complexity badges */}
-      <div className="flex items-center justify-between gap-2 mb-2.5">
-        {category && (
-          <span
-            className="inline-flex items-center px-2 py-0.5 text-detail font-medium uppercase tracking-wide"
-            style={{
-              backgroundColor: `var(--category-${category}-bg, var(--border))`,
-              color: `var(--category-${category}, var(--text-tertiary))`,
-            }}
-          >
-            {category}
-          </span>
-        )}
-
-        {complexity && (
-          <span
-            className="inline-flex items-center border px-2 py-0.5 text-detail font-medium"
-            style={{
-              backgroundColor: `var(--complexity-${complexity}-bg)`,
-              color: `var(--complexity-${complexity})`,
-              borderColor: `var(--complexity-${complexity}-border)`,
-            }}
-          >
-            {complexity}
+      {/* Header: category + complexity */}
+      <div className="flex items-center gap-1.5 mb-2">
+        <span className={cn('inline-flex items-center px-2 py-0.5 text-[10px] font-medium rounded-md', categoryColors[story.category])}>
+          {categoryLabels[story.category]}
+        </span>
+        <span className={cn('inline-flex items-center px-2 py-0.5 text-[10px] font-medium rounded-md', complexityColors[story.complexity])}>
+          {story.complexity}
+        </span>
+        {story.bobOrchestrated && (
+          <span className="ml-auto inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-cyan-500/15 text-cyan-500" title="Bob Orchestrated">
+            <Bot size={10} className="mr-0.5" />
+            BOB
           </span>
         )}
       </div>
 
       {/* Title */}
-      <h3 className="text-sm font-normal text-text-primary line-clamp-2 mb-1 leading-snug group-hover:text-foreground-primary transition-colors">
-        {title}
+      <h3 className="text-sm font-medium text-primary line-clamp-2 mb-1">
+        {story.title}
       </h3>
 
       {/* Description */}
-      {description && (
-        <p className="text-label text-text-tertiary line-clamp-2 mb-2 leading-relaxed">
-          {description}
+      {story.description && (
+        <p className="text-xs text-secondary line-clamp-2 mb-2">
+          {story.description}
         </p>
       )}
 
-      {/* Bob badge */}
-      {isBobOrchestrated && (
-        <div
-          className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-detail font-medium mt-1 w-fit bg-[var(--agent-pm-bg)] text-[var(--agent-pm)]"
-        >
-          <Bot className="h-2.5 w-2.5" />
-          Bot Bob
-        </div>
-      )}
-
-      {/* Footer: Agent & Progress */}
-      <div className="flex items-center justify-between gap-2 mt-2">
-        {agentId && <AgentBadge agentId={agentId} isActive={isRunning} />}
-
-        {typeof progress === 'number' && progress > 0 && (
-          <div className="flex-1 max-w-[100px]">
-            <ProgressBar progress={progress} showLabel size="sm" />
+      {/* Footer */}
+      <div className="flex items-center gap-1.5 mt-auto pt-2 border-t border-glass-border">
+        <span className={cn('inline-flex items-center px-2 py-0.5 text-[10px] font-medium rounded-md', priorityColors[story.priority])}>
+          {story.priority}
+        </span>
+        {story.assignedAgent && (
+          <Badge size="sm" variant="default">
+            {story.assignedAgent}
+          </Badge>
+        )}
+        {story.progress > 0 && (
+          <div className="flex-1 ml-1">
+            <ProgressBar value={story.progress} size="sm" variant="info" />
           </div>
         )}
       </div>
-    </div>
-  );
-});
-
-// ============ Sub-components ============
-
-interface AgentBadgeProps {
-  agentId: AgentId;
-  isActive?: boolean;
-}
-
-function AgentBadge({ agentId, isActive = false }: AgentBadgeProps) {
-  const config = AGENT_CONFIG[agentId];
-  if (!config) return null;
-
-  const IconComponent = iconMap[config.icon];
-
-  return (
-    <div
-      className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs"
-      style={{ backgroundColor: config.bg }}
-    >
-      {IconComponent && (
-        <IconComponent
-          className="h-3 w-3"
-          style={{ color: config.color }}
-        />
-      )}
-      <span style={{ color: config.color }}>@{agentId}</span>
-
-      {/* Activity indicator - animated dots when active */}
-      {isActive && (
-        <span className="flex gap-0.5 ml-1">
-          {[0, 150, 300].map((delay) => (
-            <span
-              key={delay}
-              className="h-1 w-1 rounded-full bg-status-success animate-bounce"
-              style={{ animationDelay: `${delay}ms` }}
-            />
-          ))}
-        </span>
-      )}
-    </div>
+    </GlassCard>
   );
 }

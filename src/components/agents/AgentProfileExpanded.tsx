@@ -1,16 +1,13 @@
-'use client';
-
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card } from '@/components/ui/card';
-import { GlassAvatar } from '@/components/ui/GlassAvatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { useFavoritesStore } from '@/hooks/use-favorites';
-import { useToast } from '@/stores/toastStore';
-import { cn, getTierTheme } from '@/lib/utils';
-import type { PlatformAgent, AgentCommand, SquadType } from '@/types';
-import { getSquadType } from '@/types';
+import { Avatar, Badge, GlassButton, useToast } from '../ui';
+import { useFavoritesStore } from '../../hooks/useFavorites';
+import { cn, getTierTheme } from '../../lib/utils';
+import { getIconComponent } from '../../lib/icons';
+import type { Agent, AgentCommand } from '../../types';
+import { getSquadType } from '../../types';
+import { getAgentAvatarUrl } from '../../lib/agent-avatars';
 
 // Icons
 const CloseIcon = () => (
@@ -55,7 +52,7 @@ const CheckIcon = () => (
 // Tier theme colors are now accessed via getTierTheme() from centralized theme
 
 interface AgentProfileExpandedProps {
-  agent: PlatformAgent;
+  agent: Agent;
   isOpen: boolean;
   onClose: () => void;
   onStartChat?: () => void;
@@ -88,89 +85,99 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
     });
   };
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Full-screen centering wrapper */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-scrim-60 backdrop-blur-sm z-50"
             onClick={onClose}
-          />
-
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
           {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-4 md:inset-auto md:top-[10%] md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-2xl md:max-h-[80vh] z-50 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+            className="w-full md:max-w-2xl max-h-[85vh] flex flex-col"
           >
             <div className="glass-card rounded-2xl overflow-hidden flex flex-col h-full">
-              {/* Header */}
-              <div className="p-6 border-b border-glass-10">
-                <div className="flex items-start gap-4">
-                  {/* Avatar with tier indicator */}
-                  <div className="relative">
-                    {agent.icon ? (
-                      <div className={cn(
-                        'h-16 w-16 rounded-2xl flex items-center justify-center text-2xl',
-                        `bg-gradient-to-br ${getTierTheme(normalizedTier).gradient}`
-                      )}>
-                        {agent.icon}
-                      </div>
-                    ) : (
-                      <GlassAvatar name={agent.name} size="xl" squadType={squadType} />
-                    )}
+              {/* Actions — floating over hero */}
+              <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+                <GlassButton
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleFavoriteToggle}
+                  className={cn('backdrop-blur-sm', favorited && 'text-yellow-500')}
+                  aria-label={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                >
+                  <StarIcon filled={favorited} />
+                </GlassButton>
+                <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar" className="backdrop-blur-sm">
+                  <CloseIcon />
+                </GlassButton>
+              </div>
+
+              {/* Hero Avatar Section */}
+              <div className="relative flex flex-col items-center pt-8 pb-6 border-b border-white/10">
+                {/* Background gradient */}
+                <div
+                  className={cn('absolute inset-0 opacity-20 bg-gradient-to-b', getTierTheme(normalizedTier).gradient)}
+                  style={{ maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)' }}
+                />
+
+                {/* Avatar — large hero */}
+                <div className="relative">
+                  {getAgentAvatarUrl(agent.id) ? (
+                    <img
+                      src={getAgentAvatarUrl(agent.id)}
+                      alt={agent.name}
+                      className="h-36 w-36 rounded-2xl object-cover ring-2 ring-white/20 shadow-2xl"
+                      style={{ boxShadow: '0 0 40px rgba(209, 255, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4)' }}
+                    />
+                  ) : agent.icon ? (
                     <div className={cn(
-                      'absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold text-foreground-primary',
-                      `bg-gradient-to-r ${getTierTheme(normalizedTier).gradient}`
+                      'h-36 w-36 rounded-2xl flex items-center justify-center',
+                      `bg-gradient-to-br ${getTierTheme(normalizedTier).gradient}`
                     )}>
-                      T{normalizedTier}
+                      {(() => { const Icon = getIconComponent(agent.icon); return <Icon size={56} />; })()}
                     </div>
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="text-xl font-bold text-primary">{agent.name}</h2>
-                      <Badge variant="default">
-                        {getTierTheme(normalizedTier).label}
-                      </Badge>
+                  ) : (
+                    <div className="h-36 w-36">
+                      <Avatar name={agent.name} size="xl" squadType={squadType} className="!h-36 !w-36 !text-4xl !rounded-2xl" />
                     </div>
-                    <p className="text-secondary text-sm mt-0.5">{agent.title}</p>
-                    <p className="text-tertiary text-xs mt-1">{agent.squad}</p>
+                  )}
+                  {/* Tier badge */}
+                  <div className={cn(
+                    'absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold text-white whitespace-nowrap',
+                    `bg-gradient-to-r ${getTierTheme(normalizedTier).gradient}`
+                  )}>
+                    {getTierTheme(normalizedTier).label}
                   </div>
+                </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleFavoriteToggle}
-                      className={cn(favorited && 'text-yellow-500')}
-                    >
-                      <StarIcon filled={favorited} />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={onClose}>
-                      <CloseIcon />
-                    </Button>
-                  </div>
+                {/* Name & title */}
+                <div className="text-center mt-5 px-6 relative">
+                  <h2 className="text-2xl font-bold text-primary">{agent.name}</h2>
+                  <p className="text-secondary text-sm mt-1">{agent.title}</p>
+                  <p className="text-tertiary text-xs mt-1">{agent.squad}</p>
                 </div>
 
                 {/* Description */}
                 {agent.description && (
-                  <p className="text-secondary text-sm mt-4 leading-relaxed">
+                  <p className="text-secondary text-sm mt-4 px-6 text-center leading-relaxed relative">
                     {agent.description}
                   </p>
                 )}
 
                 {/* When to use */}
                 {agent.whenToUse && (
-                  <div className="mt-3 p-3 glass-subtle rounded-xl">
+                  <div className="mt-4 mx-6 p-3 glass-subtle rounded-xl relative">
                     <p className="text-xs text-tertiary">
                       <span className="text-primary font-medium">Quando usar:</span> {agent.whenToUse}
                     </p>
@@ -179,15 +186,18 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
               </div>
 
               {/* Tabs */}
-              <div className="px-6 py-3 border-b border-glass-10">
-                <div className="flex gap-1 p-1 glass-subtle rounded-xl">
+              <div className="px-6 py-3 border-b border-white/10">
+                <div className="flex gap-1 p-1 glass-subtle rounded-xl" role="tablist" aria-label="Informacoes do agente">
                   {[
-                    { id: 'overview', label: 'Visao Geral' },
+                    { id: 'overview', label: 'Visão Geral' },
                     { id: 'commands', label: `Comandos ${agent.commands?.length ? `(${agent.commands.length})` : ''}` },
                     { id: 'persona', label: 'Persona' },
                   ].map((tab) => (
                     <button
                       key={tab.id}
+                      role="tab"
+                      aria-selected={activeTab === tab.id}
+                      tabIndex={activeTab === tab.id ? 0 : -1}
                       onClick={() => setActiveTab(tab.id as typeof activeTab)}
                       className={cn(
                         'flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all',
@@ -203,7 +213,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
               </div>
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto p-6 glass-scrollbar">
+              <div className="flex-1 overflow-y-auto p-6 glass-scrollbar" tabIndex={0} role="region" aria-label="Conteudo do perfil do agente">
                 <AnimatePresence mode="wait">
                   {activeTab === 'overview' && (
                     <motion.div
@@ -216,11 +226,11 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                       {/* Core Principles */}
                       {agent.corePrinciples && agent.corePrinciples.length > 0 && (
                         <div>
-                          <h3 className="text-sm font-semibold text-primary mb-3">Principios Fundamentais</h3>
+                          <h3 className="text-sm font-semibold text-primary mb-3">Princípios Fundamentais</h3>
                           <ul className="space-y-2">
                             {agent.corePrinciples.map((principle, i) => (
                               <li key={i} className="flex items-start gap-2 text-sm text-secondary">
-                                <span className="text-primary mt-0.5">&#8226;</span>
+                                <span className="text-primary mt-0.5">•</span>
                                 {principle}
                               </li>
                             ))}
@@ -239,7 +249,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                             {agent.mindSource.credentials && agent.mindSource.credentials.length > 0 && (
                               <div className="flex flex-wrap gap-2">
                                 {agent.mindSource.credentials.map((cred, i) => (
-                                  <Badge key={i} variant="outline">
+                                  <Badge key={i} variant="squad" squadType={squadType} size="sm">
                                     {cred}
                                   </Badge>
                                 ))}
@@ -250,7 +260,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                                 <p className="text-xs text-tertiary mb-1">Frameworks:</p>
                                 <div className="flex flex-wrap gap-1">
                                   {agent.mindSource.frameworks.map((fw, i) => (
-                                    <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-glass-5 text-secondary">
+                                    <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-white/5 text-secondary">
                                       {fw}
                                     </span>
                                   ))}
@@ -264,7 +274,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                       {/* Integration */}
                       {agent.integration && (agent.integration.receivesFrom?.length || agent.integration.handoffTo?.length) && (
                         <div>
-                          <h3 className="text-sm font-semibold text-primary mb-3">Integracao</h3>
+                          <h3 className="text-sm font-semibold text-primary mb-3">Integração</h3>
                           <div className="grid grid-cols-2 gap-3">
                             {agent.integration.receivesFrom && agent.integration.receivesFrom.length > 0 && (
                               <div className="glass-subtle rounded-xl p-3">
@@ -314,7 +324,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                           <div className="h-12 w-12 mx-auto rounded-full glass-subtle flex items-center justify-center mb-3">
                             <CommandIcon />
                           </div>
-                          <p className="text-secondary text-sm">Nenhum comando disponivel</p>
+                          <p className="text-secondary text-sm">Nenhum comando disponível</p>
                           <p className="text-tertiary text-xs mt-1">Este agent aceita mensagens livres</p>
                         </div>
                       )}
@@ -366,11 +376,11 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                           <div className="space-y-3">
                             {agent.voiceDna.sentenceStarters && agent.voiceDna.sentenceStarters.length > 0 && (
                               <div className="glass-subtle rounded-xl p-3">
-                                <p className="text-xs text-tertiary mb-2">Frases iniciais tipicas:</p>
+                                <p className="text-xs text-tertiary mb-2">Frases iniciais típicas:</p>
                                 <div className="flex flex-wrap gap-2">
                                   {agent.voiceDna.sentenceStarters.slice(0, 5).map((starter, i) => (
-                                    <span key={i} className="text-xs px-2 py-1 rounded-lg bg-glass-5 text-secondary italic">
-                                      &quot;{starter}...&quot;
+                                    <span key={i} className="text-xs px-2 py-1 rounded-lg bg-white/5 text-secondary italic">
+                                      "{starter}..."
                                     </span>
                                   ))}
                                 </div>
@@ -378,7 +388,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                             )}
                             {agent.voiceDna.vocabulary?.alwaysUse && agent.voiceDna.vocabulary.alwaysUse.length > 0 && (
                               <div className="glass-subtle rounded-xl p-3">
-                                <p className="text-xs text-tertiary mb-2">Vocabulario preferido:</p>
+                                <p className="text-xs text-tertiary mb-2">Vocabulário preferido:</p>
                                 <div className="flex flex-wrap gap-1">
                                   {agent.voiceDna.vocabulary.alwaysUse.slice(0, 8).map((word, i) => (
                                     <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
@@ -395,7 +405,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                       {/* Anti-patterns */}
                       {agent.antiPatterns?.neverDo && agent.antiPatterns.neverDo.length > 0 && (
                         <div>
-                          <h3 className="text-sm font-semibold text-primary mb-3">Anti-padroes</h3>
+                          <h3 className="text-sm font-semibold text-primary mb-3">Anti-padrões</h3>
                           <div className="glass-subtle rounded-xl p-3">
                             <ul className="space-y-1">
                               {agent.antiPatterns.neverDo.slice(0, 5).map((item, i) => (
@@ -414,24 +424,26 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
               </div>
 
               {/* Footer */}
-              <div className="p-6 border-t border-glass-10">
-                <Button
-                  variant="default"
+              <div className="p-6 border-t border-white/10">
+                <GlassButton
+                  variant="primary"
                   className="w-full"
                   onClick={() => {
                     onStartChat?.();
                     onClose();
                   }}
+                  leftIcon={<ChatIcon />}
                 >
-                  <ChatIcon />
                   Iniciar Conversa com {agent.name}
-                </Button>
+                </GlassButton>
               </div>
             </div>
           </motion.div>
+          </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
@@ -444,7 +456,7 @@ interface CommandCardProps {
 
 function CommandCard({ command, onCopy, copied }: CommandCardProps) {
   return (
-    <div className="glass-subtle rounded-xl p-4 hover:bg-glass-5 transition-colors">
+    <div className="glass-subtle rounded-xl p-4 hover:bg-white/5 transition-colors">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -455,6 +467,7 @@ function CommandCard({ command, onCopy, copied }: CommandCardProps) {
                 'p-1 rounded transition-colors',
                 copied ? 'text-green-500' : 'text-tertiary hover:text-primary'
               )}
+              aria-label="Copiar comando"
             >
               {copied ? <CheckIcon /> : <CopyIcon />}
             </button>

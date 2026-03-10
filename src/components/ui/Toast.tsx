@@ -1,91 +1,8 @@
-'use client';
-
 import { motion, AnimatePresence } from 'framer-motion';
-import { create } from 'zustand';
-import { cn } from '@/lib/utils';
+import { useToastStore, type Toast, type ToastType } from '../../stores/toastStore';
+import { cn } from '../../lib/utils';
 
-// ============ Toast Store ============
-
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
-
-export interface Toast {
-  id: string;
-  type: ToastType;
-  title: string;
-  message?: string;
-  duration?: number;
-  action?: {
-    label: string;
-    onClick: () => void;
-  };
-}
-
-interface ToastState {
-  toasts: Toast[];
-  addToast: (toast: Omit<Toast, 'id'>) => string;
-  removeToast: (id: string) => void;
-  clearToasts: () => void;
-}
-
-let toastCounter = 0;
-
-export const useToastStore = create<ToastState>((set, get) => ({
-  toasts: [],
-
-  addToast: (toast) => {
-    const id = `toast-${++toastCounter}`;
-    const newToast: Toast = {
-      ...toast,
-      id,
-      duration: toast.duration ?? 5000,
-    };
-
-    set((state) => ({
-      toasts: [...state.toasts, newToast],
-    }));
-
-    // Auto-remove after duration (unless duration is 0)
-    if (newToast.duration && newToast.duration > 0) {
-      setTimeout(() => {
-        get().removeToast(id);
-      }, newToast.duration);
-    }
-
-    return id;
-  },
-
-  removeToast: (id) => {
-    set((state) => ({
-      toasts: state.toasts.filter((t) => t.id !== id),
-    }));
-  },
-
-  clearToasts: () => {
-    set({ toasts: [] });
-  },
-}));
-
-// Helper hook for easy toast creation
-export function useToast() {
-  const { addToast, removeToast, clearToasts } = useToastStore();
-
-  return {
-    toast: (toast: Omit<Toast, 'id'>) => addToast(toast),
-    success: (title: string, message?: string) =>
-      addToast({ type: 'success', title, message }),
-    error: (title: string, message?: string) =>
-      addToast({ type: 'error', title, message }),
-    warning: (title: string, message?: string) =>
-      addToast({ type: 'warning', title, message }),
-    info: (title: string, message?: string) =>
-      addToast({ type: 'info', title, message }),
-    dismiss: removeToast,
-    dismissAll: clearToasts,
-  };
-}
-
-// ============ Icons ============
-
+// Icons
 const SuccessIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -124,8 +41,6 @@ const CloseIcon = () => (
   </svg>
 );
 
-// ============ Style Maps ============
-
 const iconMap: Record<ToastType, React.FC> = {
   success: SuccessIcon,
   error: ErrorIcon,
@@ -135,28 +50,26 @@ const iconMap: Record<ToastType, React.FC> = {
 
 const styleMap: Record<ToastType, { bg: string; border: string; icon: string }> = {
   success: {
-    bg: 'bg-[var(--toast-success-bg,rgba(34,197,94,0.1))]',
-    border: 'border-[var(--toast-success-border,rgba(34,197,94,0.2))]',
-    icon: 'text-[var(--toast-success-text,rgb(34,197,94))]',
+    bg: 'bg-[var(--toast-success-bg)]',
+    border: 'border-[var(--toast-success-border)]',
+    icon: 'text-[var(--toast-success-text)]',
   },
   error: {
-    bg: 'bg-[var(--toast-error-bg,rgba(239,68,68,0.1))]',
-    border: 'border-[var(--toast-error-border,rgba(239,68,68,0.2))]',
-    icon: 'text-[var(--toast-error-text,rgb(239,68,68))]',
+    bg: 'bg-[var(--toast-error-bg)]',
+    border: 'border-[var(--toast-error-border)]',
+    icon: 'text-[var(--toast-error-text)]',
   },
   warning: {
-    bg: 'bg-[var(--toast-warning-bg,rgba(245,158,11,0.1))]',
-    border: 'border-[var(--toast-warning-border,rgba(245,158,11,0.2))]',
-    icon: 'text-[var(--toast-warning-text,rgb(245,158,11))]',
+    bg: 'bg-[var(--toast-warning-bg)]',
+    border: 'border-[var(--toast-warning-border)]',
+    icon: 'text-[var(--toast-warning-text)]',
   },
   info: {
-    bg: 'bg-[var(--toast-info-bg,rgba(59,130,246,0.1))]',
-    border: 'border-[var(--toast-info-border,rgba(59,130,246,0.2))]',
-    icon: 'text-[var(--toast-info-text,rgb(59,130,246))]',
+    bg: 'bg-[var(--toast-info-bg)]',
+    border: 'border-[var(--toast-info-border)]',
+    icon: 'text-[var(--toast-info-text)]',
   },
 };
-
-// ============ Toast Item ============
 
 interface ToastItemProps {
   toast: Toast;
@@ -168,11 +81,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
   const styles = styleMap[toast.type];
 
   // Icon animation variants based on toast type
-  const iconAnimations: Record<ToastType, {
-    initial: Record<string, number>;
-    animate: Record<string, number | number[]>;
-    transition: Record<string, string | number>;
-  }> = {
+  const iconAnimations = {
     success: {
       initial: { scale: 0, rotate: -180 },
       animate: { scale: 1, rotate: 0 },
@@ -180,7 +89,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
     },
     error: {
       initial: { scale: 0 },
-      animate: { scale: 1 },
+      animate: { scale: [0, 1.2, 1] },
       transition: { duration: 0.4, delay: 0.1 },
     },
     warning: {
@@ -226,9 +135,9 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-foreground font-medium text-sm">{toast.title}</p>
+        <p className="text-primary font-medium text-sm">{toast.title}</p>
         {toast.message && (
-          <p className="text-muted-foreground text-xs mt-0.5 line-clamp-2">{toast.message}</p>
+          <p className="text-secondary text-xs mt-0.5 line-clamp-2">{toast.message}</p>
         )}
         {toast.action && (
           <button
@@ -251,7 +160,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
       <button
         onClick={onDismiss}
         aria-label="Fechar notificacao"
-        className="flex-shrink-0 p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-glass-10 transition-colors"
+        className="flex-shrink-0 p-1 rounded-lg text-tertiary hover:text-primary hover:bg-white/10 transition-colors"
       >
         <CloseIcon aria-hidden="true" />
       </button>
@@ -269,8 +178,6 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
   );
 }
 
-// ============ Toast Container ============
-
 export function ToastContainer() {
   const { toasts, removeToast } = useToastStore();
 
@@ -286,3 +193,7 @@ export function ToastContainer() {
     </div>
   );
 }
+
+// Re-export for convenience
+export { useToast } from '../../stores/toastStore';
+export type { Toast, ToastType } from '../../stores/toastStore';

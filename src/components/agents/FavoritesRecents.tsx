@@ -1,11 +1,9 @@
-'use client';
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useFavorites } from '@/hooks/use-favorites';
-import { useChat } from '@/hooks/use-chat';
-import { cn, getSquadTheme } from '@/lib/utils';
-import { getSquadType } from '@/types';
+import { useFavorites } from '../../hooks/useFavorites';
+import { useChat } from '../../hooks/useChat';
+import { cn, getSquadTheme } from '../../lib/utils';
+import { getSquadType } from '../../types';
 
 // Icons
 const StarIcon = ({ filled }: { filled?: boolean }) => (
@@ -116,7 +114,7 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.03 }}
-                        className="group flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-glass-5 cursor-pointer transition-colors"
+                        className="group flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-white/5 cursor-pointer transition-colors"
                         onClick={() => handleSelectAgent(agent)}
                       >
                         <div className={cn(
@@ -133,6 +131,7 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
                           }}
                           className="opacity-0 group-hover:opacity-100 p-1 text-tertiary hover:text-yellow-500 transition-all"
                           title="Remover dos favoritos"
+                          aria-label="Remover dos favoritos"
                         >
                           <StarIcon filled />
                         </button>
@@ -177,7 +176,7 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.03 }}
-                        className="group flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-glass-5 cursor-pointer transition-colors"
+                        className="group flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-white/5 cursor-pointer transition-colors"
                         onClick={() => handleSelectAgent(agent)}
                       >
                         <div className={cn(

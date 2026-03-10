@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function formatRelativeTime(date: string | Date): string {
@@ -48,21 +48,7 @@ export {
   getBorderLeftColor,
   getCommandTypeTheme,
 } from './theme';
-
-// Legacy exports for backward compatibility - prefer using theme.ts directly
-export const squadColors = {
-  copywriting: 'var(--squad-copywriting)',
-  design: 'var(--squad-design)',
-  creator: 'var(--squad-creator)',
-  orchestrator: 'var(--squad-orchestrator)',
-  content: 'var(--squad-content)',
-  development: 'var(--squad-development)',
-  engineering: 'var(--squad-engineering)',
-  analytics: 'var(--squad-analytics)',
-  marketing: 'var(--squad-marketing)',
-  advisory: 'var(--squad-advisory)',
-  default: 'var(--squad-default)',
-} as const;
+export type { SquadTheme, TierTheme, StatusTheme } from './theme';
 
 export const squadLabels = {
   copywriting: 'Copywriting',

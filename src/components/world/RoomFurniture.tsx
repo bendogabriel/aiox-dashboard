@@ -1,12 +1,10 @@
-'use client';
-
 import {
   deskSvg, whiteboardSvg, plantSvg, coffeeSvg, bookshelfSvg, monitorSvg,
   serverRackSvg, cameraSvg, chartBoardSvg, rugSvg, lampSvg, couchSvg,
   meetingTableSvg, waterCoolerSvg, printerSvg, stickyWallSvg, cabinetSvg, projectorScreenSvg,
 } from './pixel-sprites';
 import type { FurnitureItem, DomainId } from './world-layout';
-import { domains } from './world-layout';
+import { useDomains } from './DomainContext';
 
 interface RoomFurnitureProps {
   items: FurnitureItem[];
@@ -59,6 +57,7 @@ function getFurnitureSvg(type: FurnitureItem['type'], color: string): string {
 }
 
 export function RoomFurniture({ items, domain, tileSize }: RoomFurnitureProps) {
+  const domains = useDomains();
   const domainCfg = domains[domain];
 
   return (
@@ -70,12 +69,13 @@ export function RoomFurniture({ items, domain, tileSize }: RoomFurnitureProps) {
         return (
           <div
             key={`${item.type}-${i}`}
-            className="absolute pointer-events-none [image-rendering:pixelated]"
+            className="absolute pointer-events-none"
             style={{
               left: item.x * tileSize,
               top: item.y * tileSize,
               width: size.w,
               height: size.h,
+              imageRendering: 'pixelated',
               // Z-ordering: rugs behind, everything else sorted by Y (depth)
               zIndex: item.type === 'rug' ? 0 : item.y + 2,
             }}

@@ -1,12 +1,7 @@
-'use client';
-
 import { motion } from 'framer-motion';
 import { Users, Cpu, Shield, Mic, Ban, Terminal } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ProgressBar } from '@/components/ui/progress-bar';
-import { cn } from '@/lib/utils';
-import type { SquadStats } from '@/types';
+import { GlassCard, Badge, ProgressBar } from '../ui';
+import type { SquadStats } from '../../types';
 
 interface SquadStatsPanelProps {
   stats: SquadStats | null | undefined;
@@ -35,13 +30,13 @@ function MetricCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.3 }}
     >
-      <Card className="p-4 h-full">
+      <GlassCard padding="md" className="h-full">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-cyan-400">{icon}</span>
           <span className="text-xs font-semibold text-secondary uppercase tracking-wider">{label}</span>
         </div>
         {children}
-      </Card>
+      </GlassCard>
     </motion.div>
   );
 }
@@ -51,10 +46,10 @@ export function SquadStatsPanel({ stats }: SquadStatsPanelProps) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i} className="p-4 h-24 animate-pulse">
-            <div className="h-3 w-20 bg-glass-5 rounded mb-3" />
-            <div className="h-6 w-16 bg-glass-5 rounded" />
-          </Card>
+          <GlassCard key={i} padding="md" className="h-24 animate-pulse">
+            <div className="h-3 w-20 bg-white/5 rounded mb-3" />
+            <div className="h-6 w-16 bg-white/5 rounded" />
+          </GlassCard>
         ))}
       </div>
     );
@@ -75,7 +70,7 @@ export function SquadStatsPanel({ stats }: SquadStatsPanelProps) {
       <MetricCard icon={<Cpu size={16} />} label="By Tier" delay={0.05}>
         <div className="flex flex-wrap gap-2">
           {tierBadges.map((t) => (
-            <Badge key={t.key} variant="default" className={cn('text-xs', t.bg)}>
+            <Badge key={t.key} variant="default" size="sm" className={t.bg}>
               <span className={t.color}>{t.label}: {byTier[t.key] || 0}</span>
             </Badge>
           ))}
@@ -87,8 +82,8 @@ export function SquadStatsPanel({ stats }: SquadStatsPanelProps) {
         <div className="space-y-2">
           <p className="text-2xl font-bold text-primary">{qualityScore}%</p>
           <ProgressBar
-            progress={qualityScore}
-            color={qualityScore >= 80 ? 'var(--color-green-500)' : qualityScore >= 50 ? 'var(--color-yellow-500)' : 'var(--color-red-500)'}
+            value={qualityScore}
+            variant={qualityScore >= 80 ? 'success' : qualityScore >= 50 ? 'warning' : 'error'}
             size="sm"
             glow
           />
@@ -102,7 +97,7 @@ export function SquadStatsPanel({ stats }: SquadStatsPanelProps) {
             <span className="text-lg font-bold">{quality.withVoiceDna}</span>
             <span className="text-tertiary"> / {totalAgents}</span>
           </p>
-          <ProgressBar progress={voiceDnaPct} color="var(--color-blue-400)" size="sm" showLabel />
+          <ProgressBar value={voiceDnaPct} variant="info" size="sm" showLabel />
         </div>
       </MetricCard>
 
@@ -113,7 +108,7 @@ export function SquadStatsPanel({ stats }: SquadStatsPanelProps) {
             <span className="text-lg font-bold">{quality.withAntiPatterns}</span>
             <span className="text-tertiary"> / {totalAgents}</span>
           </p>
-          <ProgressBar progress={antiPatternsPct} color="var(--color-blue-400)" size="sm" showLabel />
+          <ProgressBar value={antiPatternsPct} variant="info" size="sm" showLabel />
         </div>
       </MetricCard>
 
@@ -133,4 +128,3 @@ export function SquadStatsPanel({ stats }: SquadStatsPanelProps) {
     </div>
   );
 }
-

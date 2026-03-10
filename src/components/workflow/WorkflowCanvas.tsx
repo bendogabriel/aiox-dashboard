@@ -1,11 +1,9 @@
-'use client';
-
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
-import { GlassAvatar } from '@/components/ui/GlassAvatar';
-import { cn, getSquadTheme } from '@/lib/utils';
+import { Avatar } from '../ui';
+import { cn, getSquadTheme } from '../../lib/utils';
 import type { WorkflowNode, WorkflowEdge } from './types';
-import type { SquadType } from '@/types';
+import type { SquadType } from '../../types';
 
 interface WorkflowCanvasProps {
   nodes: WorkflowNode[];
@@ -36,7 +34,7 @@ export function WorkflowCanvas({
 
       // If container has no size yet, use fallback
       if (width === 0 || height === 0) {
-        setPan({ x: 50, y: 50 });
+        queueMicrotask(() => setPan({ x: 50, y: 50 }));
         return;
       }
 
@@ -53,13 +51,13 @@ export function WorkflowCanvas({
       const centerX = (width - contentWidth * zoom) / 2 - minX * zoom + 50;
       const centerY = (height - contentHeight * zoom) / 2 - minY * zoom + 30;
 
-      setPan({ x: centerX, y: centerY });
+      queueMicrotask(() => setPan({ x: centerX, y: centerY }));
     } else if (containerRef.current) {
       // Default centering when no nodes
       const { width, height } = containerRef.current.getBoundingClientRect();
-      setPan({ x: width / 4, y: height / 4 });
+      queueMicrotask(() => setPan({ x: width / 4, y: height / 4 }));
     }
-  }, [nodes.length, zoom]);
+  }, [nodes, zoom]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.target === containerRef.current || (e.target as HTMLElement).classList.contains('canvas-bg')) {
@@ -106,24 +104,25 @@ export function WorkflowCanvas({
   return (
     <div
       ref={containerRef}
-      className="w-full overflow-hidden cursor-grab active:cursor-grabbing relative h-full min-h-[400px]"
+      className="w-full overflow-hidden cursor-grab active:cursor-grabbing relative"
+      style={{ height: '100%', minHeight: '400px' }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onWheel={handleWheel}
     >
-      {/* Colorful gradient background similar to main interface */}
+      {/* Canvas background — uses workflow-canvas token when available (AIOX cockpit) */}
       <div
         className="absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse 80% 60% at 0% 100%, rgba(255, 90, 60, 0.35) 0%, transparent 55%),
-            radial-gradient(ellipse 70% 80% at 100% 0%, rgba(50, 180, 170, 0.30) 0%, transparent 55%),
-            radial-gradient(ellipse 90% 70% at 50% 50%, rgba(140, 60, 180, 0.25) 0%, transparent 50%),
-            radial-gradient(ellipse 80% 60% at 10% 30%, rgba(255, 160, 60, 0.25) 0%, transparent 50%),
-            radial-gradient(ellipse 60% 80% at 90% 70%, rgba(60, 140, 220, 0.25) 0%, transparent 50%),
-            linear-gradient(160deg, #1a1520 0%, #15181f 30%, #121420 50%, #181215 70%, #0d1015 100%)
+            var(--workflow-canvas,
+              radial-gradient(ellipse 80% 60% at 0% 100%, rgba(209, 255, 0, 0.06) 0%, transparent 55%),
+              radial-gradient(ellipse 70% 80% at 100% 0%, rgba(209, 255, 0, 0.04) 0%, transparent 55%),
+              radial-gradient(ellipse 90% 70% at 50% 50%, rgba(156, 156, 156, 0.03) 0%, transparent 50%),
+              linear-gradient(160deg, #0a0a0c 0%, #0f0f11 30%, #0d0d0f 50%, #0f0f11 70%, #0a0a0c 100%)
+            )
           `
         }}
       />
@@ -133,7 +132,7 @@ export function WorkflowCanvas({
         className="canvas-bg absolute inset-0"
         style={{
           backgroundImage: `
-            radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)
+            radial-gradient(circle at 1px 1px, var(--chart-grid, rgba(209,255,0,0.05)) 1px, transparent 0)
           `,
           backgroundSize: `${40 * zoom}px ${40 * zoom}px`,
           backgroundPosition: `${pan.x}px ${pan.y}px`,
@@ -152,30 +151,30 @@ export function WorkflowCanvas({
       >
         {/* Edges (SVG) */}
         <svg
-          className="absolute top-0 left-0 pointer-events-none overflow-visible"
-          style={{ width: 2000, height: 1000 }}
+          className="absolute top-0 left-0 pointer-events-none"
+          style={{ width: 2000, height: 1000, overflow: 'visible' }}
         >
           <defs>
-            {/* Gradient definitions for each squad */}
+            {/* Gradient definitions — monochromatic lime accent (AIOX cockpit) */}
             <linearGradient id="grad-copywriting" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#f97316" />
-              <stop offset="100%" stopColor="#fbbf24" />
+              <stop offset="0%" stopColor="var(--color-accent, #D1FF00)" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="var(--color-accent, #D1FF00)" stopOpacity="0.6" />
             </linearGradient>
             <linearGradient id="grad-design" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#a855f7" />
-              <stop offset="100%" stopColor="#ec4899" />
+              <stop offset="0%" stopColor="var(--color-accent, #D1FF00)" stopOpacity="0.75" />
+              <stop offset="100%" stopColor="var(--color-accent, #D1FF00)" stopOpacity="0.45" />
             </linearGradient>
             <linearGradient id="grad-creator" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#22c55e" />
-              <stop offset="100%" stopColor="#10b981" />
+              <stop offset="0%" stopColor="var(--color-accent, #D1FF00)" stopOpacity="0.85" />
+              <stop offset="100%" stopColor="var(--color-accent, #D1FF00)" stopOpacity="0.55" />
             </linearGradient>
             <linearGradient id="grad-orchestrator" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#06b6d4" />
-              <stop offset="100%" stopColor="#3b82f6" />
+              <stop offset="0%" stopColor="var(--color-accent, #D1FF00)" />
+              <stop offset="100%" stopColor="var(--color-accent, #D1FF00)" stopOpacity="0.7" />
             </linearGradient>
             <linearGradient id="grad-default" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#6b7280" />
-              <stop offset="100%" stopColor="#9ca3af" />
+              <stop offset="0%" stopColor="var(--color-text-secondary, #858585)" />
+              <stop offset="100%" stopColor="var(--color-text-tertiary, #6D6D6D)" />
             </linearGradient>
 
             {/* Animated dash pattern */}
@@ -234,33 +233,33 @@ export function WorkflowCanvas({
       </div>
 
       {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-scrim-40 backdrop-blur-xl border border-glass-10 rounded-xl p-3">
-        <p className="text-xs text-foreground-tertiary mb-2">Legenda</p>
-        <div className="flex items-center gap-4 text-xs">
+      <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 backdrop-blur-xl rounded-xl p-2 md:p-3" style={{ background: 'var(--glass-background-panel, rgba(0,0,0,0.4))', border: '1px solid var(--color-border-default, rgba(255,255,255,0.1))' }}>
+        <p className="text-[10px] md:text-xs mb-1.5 md:mb-2" style={{ color: 'var(--color-text-tertiary, rgba(255,255,255,0.5))' }}>Legenda</p>
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 text-[10px] md:text-xs">
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-green-500" />
-            <span className="text-foreground-secondary">Concluido</span>
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: 'var(--color-accent, #D1FF00)', opacity: 0.7 }} />
+            <span style={{ color: 'var(--color-text-secondary, rgba(255,255,255,0.7))' }}>Concluído</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
-            <span className="text-foreground-secondary">Ativo</span>
+            <span className="h-2 w-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--color-accent, #D1FF00)' }} />
+            <span style={{ color: 'var(--color-text-secondary, rgba(255,255,255,0.7))' }}>Ativo</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-yellow-500" />
-            <span className="text-foreground-secondary">Aguardando</span>
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: 'var(--color-text-secondary, #858585)' }} />
+            <span style={{ color: 'var(--color-text-secondary, rgba(255,255,255,0.7))' }}>Aguardando</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-gray-500" />
-            <span className="text-foreground-secondary">Pendente</span>
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: 'var(--color-text-tertiary, #6D6D6D)' }} />
+            <span style={{ color: 'var(--color-text-secondary, rgba(255,255,255,0.7))' }}>Pendente</span>
           </div>
         </div>
       </div>
 
       {/* Zoom hint */}
-      <div className="absolute bottom-4 right-4 bg-scrim-40 backdrop-blur-xl border border-glass-10 rounded-lg px-3 py-2">
-        <p className="text-[10px] text-foreground-tertiary">
-          <kbd className="px-1 py-0.5 rounded bg-glass-10 text-foreground-secondary">Cmd/Ctrl</kbd>
-          {' + scroll para zoom . arraste para mover'}
+      <div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg px-2 md:px-3 py-1.5 md:py-2 hidden sm:block">
+        <p className="text-[10px] text-white/50">
+          <kbd className="px-1 py-0.5 rounded bg-white/10 text-white/70">⌘/Ctrl</kbd>
+          {' + scroll para zoom · arraste para mover'}
         </p>
       </div>
     </div>
@@ -268,7 +267,7 @@ export function WorkflowCanvas({
 }
 
 // Edge Path Component
-function EdgePath({
+const EdgePath = memo(function EdgePath({
   edge,
   sourcePos,
   targetPos,
@@ -304,7 +303,7 @@ function EdgePath({
       <path
         d={pathD}
         fill="none"
-        stroke="rgba(255,255,255,0.1)"
+        stroke="var(--color-border-default, rgba(255,255,255,0.1))"
         strokeWidth="4"
         strokeLinecap="round"
       />
@@ -313,7 +312,7 @@ function EdgePath({
       <motion.path
         d={pathD}
         fill="none"
-        stroke={edge.status === 'completed' ? `url(#${gradientId})` : edge.status === 'active' ? `url(#${gradientId})` : 'rgba(255,255,255,0.2)'}
+        stroke={edge.status === 'completed' ? `url(#${gradientId})` : edge.status === 'active' ? `url(#${gradientId})` : 'var(--color-border-subtle, rgba(255,255,255,0.15))'}
         strokeWidth="2"
         strokeLinecap="round"
         strokeDasharray={edge.status === 'idle' ? '8 4' : 'none'}
@@ -326,7 +325,7 @@ function EdgePath({
       {edge.animated && edge.status === 'active' && (
         <circle
           r="4"
-          fill={sourceSquad === 'copywriting' ? '#f97316' : sourceSquad === 'design' ? '#a855f7' : sourceSquad === 'creator' ? '#22c55e' : '#06b6d4'}
+          fill="var(--color-accent, #D1FF00)"
           className="animate-flow-particle"
           style={{
             offsetPath: `path('${pathD}')`,
@@ -342,10 +341,10 @@ function EdgePath({
       )}
     </g>
   );
-}
+});
 
 // Node Component
-function WorkflowNodeComponent({
+const WorkflowNodeComponent = memo(function WorkflowNodeComponent({
   node,
   isSelected,
   onClick,
@@ -385,32 +384,32 @@ function WorkflowNodeComponent({
         <div
           className={cn(
             'h-14 w-14 rounded-full flex items-center justify-center',
-            'bg-overlay backdrop-blur-xl border transition-all',
-            node.type === 'start' && 'border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.2)]',
-            node.type === 'end' && 'border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.2)]',
-            node.type === 'checkpoint' && 'border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]',
+            'bg-black/50 backdrop-blur-xl border transition-all',
+            node.type === 'start' && 'border-[var(--color-accent,#D1FF00)]/50 shadow-[0_0_20px_rgba(209,255,0,0.2)]',
+            node.type === 'end' && 'border-[var(--color-accent,#D1FF00)]/30 shadow-[0_0_20px_rgba(209,255,0,0.1)]',
+            node.type === 'checkpoint' && 'border-[var(--color-text-secondary,#858585)]/50 shadow-[0_0_20px_rgba(156,156,156,0.15)]',
             isSelected && 'ring-2 ring-offset-2 ring-offset-transparent ring-white'
           )}
         >
           {node.type === 'start' && (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-green-500">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--color-accent, #D1FF00)' }}>
               <polygon points="5 3 19 12 5 21 5 3" />
             </svg>
           )}
           {node.type === 'end' && (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-blue-500">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--color-accent, #D1FF00)', opacity: 0.7 }}>
               <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
           )}
           {node.type === 'checkpoint' && (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-yellow-500">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--color-text-secondary, #858585)' }}>
               <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
               <line x1="4" y1="22" x2="4" y2="15" />
             </svg>
           )}
         </div>
-        <span className="text-xs text-foreground-secondary whitespace-nowrap">{node.label}</span>
+        <span className="text-xs text-white/70 whitespace-nowrap">{node.label}</span>
       </motion.div>
     );
   }
@@ -431,8 +430,8 @@ function WorkflowNodeComponent({
     >
       <div
         className={cn(
-          'bg-overlay backdrop-blur-xl rounded-xl p-3 border transition-all',
-          colors?.border || 'border-glass-10',
+          'bg-black/50 backdrop-blur-xl rounded-xl p-3 border transition-all',
+          colors?.border || 'border-white/10',
           isSelected && 'ring-2 ring-offset-2 ring-offset-transparent ring-white',
           node.status === 'active' && colors?.glow
         )}
@@ -444,40 +443,36 @@ function WorkflowNodeComponent({
       >
         {/* Header */}
         <div className="flex items-center gap-2 mb-2">
-          <GlassAvatar
+          <Avatar
             name={node.agentName || '?'}
             size="sm"
-            squadType={node.squadType as 'copywriting' | 'design' | 'creator' | 'orchestrator' | 'default'}
+            squadType={node.squadType}
             status={node.status === 'active' ? 'online' : node.status === 'waiting' ? 'busy' : 'offline'}
           />
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-foreground-primary font-medium truncate">{node.label}</p>
-            <p className="text-[10px] text-foreground-tertiary truncate">{node.agentName}</p>
+            <p className="text-xs text-white/95 font-medium truncate">{node.label}</p>
+            <p className="text-[10px] text-white/50 truncate">{node.agentName}</p>
           </div>
         </div>
 
         {/* Progress */}
         {node.progress !== undefined && (
           <div className="space-y-1">
-            <div className="h-1 rounded-full bg-glass-10 overflow-hidden">
+            <div className="h-1 rounded-full bg-white/10 overflow-hidden">
               <motion.div
                 className={cn(
                   'h-full rounded-full bg-gradient-to-r',
                   colors?.bg.replace('/20', '') || 'from-gray-500 to-gray-400'
                 )}
                 style={{
-                  background: node.squadType === 'copywriting' ? 'linear-gradient(to right, #f97316, #fbbf24)' :
-                             node.squadType === 'design' ? 'linear-gradient(to right, #a855f7, #ec4899)' :
-                             node.squadType === 'creator' ? 'linear-gradient(to right, #22c55e, #10b981)' :
-                             node.squadType === 'orchestrator' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
-                             'linear-gradient(to right, #6b7280, #9ca3af)'
+                  background: `linear-gradient(to right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 60%, transparent))`
                 }}
                 initial={{ width: 0 }}
                 animate={{ width: `${node.progress}%` }}
                 transition={{ duration: 0.5 }}
               />
             </div>
-            <p className="text-[10px] text-foreground-tertiary text-right">{node.progress}%</p>
+            <p className="text-[10px] text-white/50 text-right">{node.progress}%</p>
           </div>
         )}
 
@@ -485,8 +480,8 @@ function WorkflowNodeComponent({
         {node.status === 'active' && (
           <div className="absolute -top-1 -right-1">
             <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: 'var(--color-accent, #D1FF00)' }} />
+              <span className="relative inline-flex rounded-full h-3 w-3" style={{ backgroundColor: 'var(--color-accent, #D1FF00)' }} />
             </span>
           </div>
         )}
@@ -497,11 +492,11 @@ function WorkflowNodeComponent({
         <motion.div
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-2 bg-overlay backdrop-blur-xl border border-glass-10 rounded-lg px-2 py-1"
+          className="mt-2 bg-black/50 backdrop-blur-xl border border-white/10 rounded-lg px-2 py-1"
         >
-          <p className="text-[10px] text-foreground-secondary truncate">{node.currentAction}</p>
+          <p className="text-[10px] text-white/70 truncate">{node.currentAction}</p>
         </motion.div>
       )}
     </motion.div>
   );
-}
+});

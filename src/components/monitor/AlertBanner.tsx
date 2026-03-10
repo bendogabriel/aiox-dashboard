@@ -1,10 +1,8 @@
-'use client';
-
 import { AlertTriangle, AlertCircle, Info, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card } from '@/components/ui/card';
-import { useMonitorStore } from '@/stores/monitor-store';
-import { cn } from '@/lib/utils';
+import { GlassCard } from '../ui';
+import { useMonitorStore } from '../../stores/monitorStore';
+import { cn } from '../../lib/utils';
 
 const severityConfig = {
   info: {
@@ -24,16 +22,6 @@ const severityConfig = {
   },
 } as const;
 
-type AlertSeverity = keyof typeof severityConfig;
-
-interface Alert {
-  id: string;
-  severity: AlertSeverity;
-  message: string;
-  timestamp: string;
-  dismissed: boolean;
-}
-
 function formatAlertTime(isoString: string): string {
   const d = new Date(isoString);
   return d.toLocaleTimeString('pt-BR', {
@@ -43,18 +31,9 @@ function formatAlertTime(isoString: string): string {
   });
 }
 
-interface AlertBannerProps {
-  alerts?: Alert[];
-  onDismiss?: (id: string) => void;
-}
-
-export default function AlertBanner({ alerts: propAlerts, onDismiss }: AlertBannerProps) {
-  // Use prop alerts if provided, otherwise try store
-  const storeAlerts = useMonitorStore((s) => (s as unknown as Record<string, unknown>).alerts as Alert[] | undefined);
-  const storeDismiss = useMonitorStore((s) => (s as unknown as Record<string, unknown>).dismissAlert as ((id: string) => void) | undefined);
-
-  const alerts = propAlerts ?? storeAlerts ?? [];
-  const dismissAlert = onDismiss ?? storeDismiss ?? (() => {});
+export default function AlertBanner() {
+  const alerts = useMonitorStore((s) => s.alerts);
+  const dismissAlert = useMonitorStore((s) => s.dismissAlert);
 
   const activeAlerts = alerts.filter((a) => !a.dismissed);
 
@@ -75,7 +54,9 @@ export default function AlertBanner({ alerts: propAlerts, onDismiss }: AlertBann
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <Card
+              <GlassCard
+                padding="sm"
+                variant="subtle"
                 className={cn('flex items-center gap-3', config.borderClass)}
               >
                 <Icon className={cn('h-4 w-4 flex-shrink-0', config.iconColor)} />
@@ -87,12 +68,12 @@ export default function AlertBanner({ alerts: propAlerts, onDismiss }: AlertBann
                 </span>
                 <button
                   onClick={() => dismissAlert(alert.id)}
-                  className="p-0.5 rounded hover:bg-glass-10 transition-colors flex-shrink-0"
+                  className="p-0.5 rounded hover:bg-white/10 transition-colors flex-shrink-0"
                   aria-label="Dismiss alert"
                 >
                   <X className="h-3.5 w-3.5 text-tertiary" />
                 </button>
-              </Card>
+              </GlassCard>
             </motion.div>
           );
         })}

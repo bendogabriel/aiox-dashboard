@@ -1,22 +1,42 @@
-'use client';
-
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useUIStore } from '@/stores/uiStore';
+import { useUIStore } from '../../stores/uiStore';
+import { useMonitorStore } from '../../stores/monitorStore';
 import { WorldMap } from './WorldMap';
 import { RoomView } from './RoomView';
 import { WorldMinimap } from './WorldMinimap';
 import { WorldWorkflowPanel } from './WorldWorkflowPanel';
 import { WorldNotifications } from './WorldNotifications';
-import { rooms, domains } from './world-layout';
+import { rooms } from './world-layout';
+import { DomainProvider, useDomains } from './DomainContext';
 
 export function GatherWorld() {
+  return (
+    <DomainProvider>
+      <GatherWorldInner />
+    </DomainProvider>
+  );
+}
+
+function GatherWorldInner() {
+  const themedDomains = useDomains();
   const {
     worldZoom,
     selectedRoomId,
     enterRoom,
     exitRoom,
   } = useUIStore();
+
+  // Auto-connect to monitor for live agent activity
+  const { connected, connectToMonitor, disconnectFromMonitor } = useMonitorStore();
+  useEffect(() => {
+    if (!connected) {
+      connectToMonitor();
+    }
+    return () => {
+      disconnectFromMonitor();
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Zoom levels for map and room independently
   const [mapZoom, setMapZoom] = useState(1);
@@ -116,7 +136,7 @@ export function GatherWorld() {
               {/* Door frame silhouette */}
               {doorTransition === 'entering' && transitionRoomId && (() => {
                 const roomCfg = rooms.find((r) => r.squadId === transitionRoomId);
-                const domainCfg = roomCfg ? domains[roomCfg.domain] : null;
+                const domainCfg = roomCfg ? themedDomains[roomCfg.domain] : null;
                 return (
                   <motion.div
                     className="relative rounded-xl overflow-hidden"
@@ -150,8 +170,8 @@ export function GatherWorld() {
       >
         <button
           onClick={() => setCurrentZoom(Math.min(currentZoom + 0.2, worldZoom === 'map' ? 2.0 : 2.5))}
-          className="h-8 w-8 flex items-center justify-center rounded-lg glass-subtle hover:bg-glass-15 transition-colors text-secondary hover:text-primary"
-          title="Zoom in"
+          className="h-8 w-8 flex items-center justify-center rounded-lg glass-subtle hover:bg-white/15 transition-colors text-secondary hover:text-primary"
+          aria-label="Aumentar zoom"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="12" y1="5" x2="12" y2="19" />
@@ -161,16 +181,16 @@ export function GatherWorld() {
 
         <button
           onClick={() => setCurrentZoom(1)}
-          className="h-8 w-8 flex items-center justify-center rounded-lg glass-subtle hover:bg-glass-15 transition-colors text-[10px] font-mono text-secondary hover:text-primary"
-          title="Reset zoom"
+          className="h-8 w-8 flex items-center justify-center rounded-lg glass-subtle hover:bg-white/15 transition-colors text-[10px] font-mono text-secondary hover:text-primary"
+          aria-label="Resetar zoom"
         >
           {Math.round(currentZoom * 100)}%
         </button>
 
         <button
           onClick={() => setCurrentZoom(Math.max(currentZoom - 0.2, worldZoom === 'map' ? 0.4 : 0.5))}
-          className="h-8 w-8 flex items-center justify-center rounded-lg glass-subtle hover:bg-glass-15 transition-colors text-secondary hover:text-primary"
-          title="Zoom out"
+          className="h-8 w-8 flex items-center justify-center rounded-lg glass-subtle hover:bg-white/15 transition-colors text-secondary hover:text-primary"
+          aria-label="Diminuir zoom"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="5" y1="12" x2="19" y2="12" />

@@ -1,15 +1,11 @@
-'use client';
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { apiClient } from '@/services/api/client';
-import { cn, getSquadTheme } from '@/lib/utils';
-import { useSquads } from '@/hooks/use-squads';
-import { getSquadType } from '@/types';
+import { GlassCard, GlassButton, Badge } from '../ui';
+import { apiClient } from '../../services/api/client';
+import { cn, getSquadTheme } from '../../lib/utils';
+import { useSquads } from '../../hooks/useSquads';
+import { getSquadType } from '../../types';
 
 // Icons
 const FolderIcon = () => (
@@ -137,8 +133,7 @@ export function MemoryManager() {
   const [expandedSquads, setExpandedSquads] = useState<Set<string>>(new Set());
 
   // Fetch squads for agent knowledge view
-  const { squads: rawSquads } = useSquads();
-  const squads = rawSquads as unknown as Array<{ id: string; name: string; agentCount: number }> | undefined;
+  const { data: squads } = useSquads();
 
   // Fetch overview stats
   const { data: overview, refetch: refetchOverview } = useQuery<FileOverview>({
@@ -201,7 +196,7 @@ export function MemoryManager() {
       } catch {
         // Fallback: generate from squads data
         if (!squads) return [];
-        return squads.flatMap((squad) =>
+        return squads.flatMap(squad =>
           Array.from({ length: squad.agentCount }, (_, i) => ({
             agentId: `${squad.id}-agent-${i + 1}`,
             agentName: `Agent ${i + 1}`,
@@ -275,13 +270,13 @@ export function MemoryManager() {
   return (
     <div className="space-y-6">
       {/* Tabs */}
-      <div className="flex gap-2 p-1 bg-glass-5 rounded-xl">
+      <div className="flex gap-2 p-1 bg-white/5 rounded-xl">
         <button
           onClick={() => setActiveTab('global')}
           className={cn(
             'flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all',
             activeTab === 'global'
-              ? 'bg-glass-10 text-primary shadow-sm'
+              ? 'bg-white/10 text-primary shadow-sm'
               : 'text-secondary hover:text-primary'
           )}
         >
@@ -295,7 +290,7 @@ export function MemoryManager() {
           className={cn(
             'flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all',
             activeTab === 'agents'
-              ? 'bg-glass-10 text-primary shadow-sm'
+              ? 'bg-white/10 text-primary shadow-sm'
               : 'text-secondary hover:text-primary'
           )}
         >
@@ -313,45 +308,46 @@ export function MemoryManager() {
         <>
           {/* Stats Overview */}
           <div className="grid grid-cols-4 gap-4">
-            <Card className="text-center py-3">
+            <GlassCard className="text-center py-3">
               <div className="text-2xl font-bold text-cyan-500">{overview?.totalFiles || 0}</div>
               <p className="text-xs text-tertiary">Arquivos</p>
-            </Card>
-            <Card className="text-center py-3">
+            </GlassCard>
+            <GlassCard className="text-center py-3">
               <div className="text-2xl font-bold text-purple-500">{overview?.totalDirectories || 0}</div>
               <p className="text-xs text-tertiary">Pastas</p>
-            </Card>
-            <Card className="text-center py-3">
+            </GlassCard>
+            <GlassCard className="text-center py-3">
               <div className="text-2xl font-bold text-green-500">{formatSize(overview?.totalSize || 0)}</div>
               <p className="text-xs text-tertiary">Tamanho Total</p>
-            </Card>
-            <Card className="text-center py-3">
+            </GlassCard>
+            <GlassCard className="text-center py-3">
               <div className="text-2xl font-bold text-orange-500">
                 {Object.keys(overview?.byExtension || {}).length}
               </div>
               <p className="text-xs text-tertiary">Tipos</p>
-            </Card>
+            </GlassCard>
           </div>
 
           {/* File Browser */}
       <div className="flex gap-4 h-[500px]">
         {/* Directory Tree */}
-        <Card className="w-80 flex-shrink-0 flex flex-col">
+        <GlassCard className="w-80 flex-shrink-0 flex flex-col">
           {/* Toolbar */}
-          <div className="flex items-center gap-2 pb-3 border-b border-glass-10 mb-3">
-            <Button variant="ghost" size="icon" onClick={goHome} title="Início">
+          <div className="flex items-center gap-2 pb-3 border-b border-white/10 mb-3">
+            <GlassButton variant="ghost" size="icon" onClick={goHome} title="Início" aria-label="Inicio">
               <HomeIcon />
-            </Button>
-            <Button
+            </GlassButton>
+            <GlassButton
               variant="ghost"
               size="icon"
               onClick={goUp}
               disabled={!currentPath}
               title="Voltar"
+              aria-label="Voltar"
             >
               <ChevronLeftIcon />
-            </Button>
-            <Button
+            </GlassButton>
+            <GlassButton
               variant="ghost"
               size="icon"
               onClick={() => {
@@ -359,9 +355,10 @@ export function MemoryManager() {
                 refetchDir();
               }}
               title="Atualizar"
+              aria-label="Atualizar"
             >
               <RefreshIcon />
-            </Button>
+            </GlassButton>
           </div>
 
           {/* Breadcrumbs */}
@@ -404,7 +401,7 @@ export function MemoryManager() {
                       'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all group',
                       isSelected
                         ? 'bg-blue-500/20 border border-blue-500/30'
-                        : 'hover:bg-glass-5'
+                        : 'hover:bg-white/5'
                     )}
                   >
                     {item.type === 'directory' ? (
@@ -433,14 +430,14 @@ export function MemoryManager() {
               })
             )}
           </div>
-        </Card>
+        </GlassCard>
 
         {/* File Content Viewer */}
-        <Card className="flex-1 flex flex-col">
+        <GlassCard className="flex-1 flex flex-col">
           {selectedFile ? (
             <>
               {/* File Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-glass-10 mb-3">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
                 <div className="flex items-center gap-2">
                   <span className={fileTypeColors[fileContent?.extension || ''] || 'text-gray-400'}>
                     {fileContent?.extension === 'md' ? <FileTextIcon /> : <FileIcon />}
@@ -455,13 +452,14 @@ export function MemoryManager() {
                     </p>
                   </div>
                 </div>
-                <Button
+                <GlassButton
                   variant="ghost"
                   size="icon"
                   onClick={() => setSelectedFile(null)}
+                  aria-label="Fechar"
                 >
                   <CloseIcon />
-                </Button>
+                </GlassButton>
               </div>
 
               {/* File Content */}
@@ -469,7 +467,7 @@ export function MemoryManager() {
                 {loadingContent ? (
                   <div className="text-center py-8 text-tertiary">Carregando...</div>
                 ) : fileContent?.content ? (
-                  <pre className="text-sm text-secondary whitespace-pre-wrap font-mono p-2 bg-glass-5 rounded-lg">
+                  <pre className="text-sm text-secondary whitespace-pre-wrap font-mono p-2 bg-white/5 rounded-lg">
                     {fileContent.content}
                   </pre>
                 ) : (
@@ -498,7 +496,7 @@ export function MemoryManager() {
                       <button
                         key={file.path}
                         onClick={() => setSelectedFile(file.path)}
-                        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-glass-5 transition-colors"
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-white/5 transition-colors"
                       >
                         <span className={fileTypeColors[file.extension] || 'text-gray-400'}>
                           <FileTextIcon />
@@ -512,19 +510,19 @@ export function MemoryManager() {
               )}
             </div>
           )}
-        </Card>
+        </GlassCard>
       </div>
 
           {/* File Types Summary */}
           {overview?.byExtension && Object.keys(overview.byExtension).length > 0 && (
-            <Card>
+            <GlassCard>
               <h3 className="text-sm font-medium text-primary mb-3">Tipos de Arquivo</h3>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(overview.byExtension).map(([ext, count]) => (
                   <span
                     key={ext}
                     className={cn(
-                      'px-3 py-1 rounded-full text-xs border border-glass-10',
+                      'px-3 py-1 rounded-full text-xs border border-white/10',
                       fileTypeColors[ext] || 'text-gray-400'
                     )}
                   >
@@ -532,7 +530,7 @@ export function MemoryManager() {
                   </span>
                 ))}
               </div>
-            </Card>
+            </GlassCard>
           )}
         </>
       ) : (
@@ -540,24 +538,24 @@ export function MemoryManager() {
         <div className="space-y-4">
           {/* Agent Knowledge Stats */}
           <div className="grid grid-cols-3 gap-4">
-            <Card className="text-center py-3">
+            <GlassCard className="text-center py-3">
               <div className="text-2xl font-bold text-cyan-500">{Object.keys(agentsBySquad).length}</div>
               <p className="text-xs text-tertiary">Squads</p>
-            </Card>
-            <Card className="text-center py-3">
+            </GlassCard>
+            <GlassCard className="text-center py-3">
               <div className="text-2xl font-bold text-purple-500">{agentKnowledge?.length || 0}</div>
               <p className="text-xs text-tertiary">Agentes com Knowledge</p>
-            </Card>
-            <Card className="text-center py-3">
+            </GlassCard>
+            <GlassCard className="text-center py-3">
               <div className="text-2xl font-bold text-green-500">
                 {agentKnowledge?.reduce((sum, a) => sum + (a.files || 0), 0) || 0}
               </div>
               <p className="text-xs text-tertiary">Total de Arquivos</p>
-            </Card>
+            </GlassCard>
           </div>
 
           {/* Agent Knowledge by Squad */}
-          <Card className="max-h-[500px] overflow-y-auto glass-scrollbar">
+          <GlassCard className="max-h-[500px] overflow-y-auto glass-scrollbar">
             {loadingAgentKnowledge ? (
               <div className="text-center py-8 text-tertiary">Carregando...</div>
             ) : Object.keys(agentsBySquad).length === 0 ? (
@@ -573,21 +571,21 @@ export function MemoryManager() {
                 {Object.entries(agentsBySquad)
                   .sort(([a], [b]) => a.localeCompare(b))
                   .map(([squadId, agents]) => {
-                    const squad = squads?.find((s) => s.id === squadId);
+                    const squad = squads?.find(s => s.id === squadId);
                     const squadType = getSquadType(squadId);
                     const theme = getSquadTheme(squadType);
                     const isExpanded = expandedSquads.has(squadId);
                     const totalFiles = agents.reduce((sum, a) => sum + (a.files || 0), 0);
 
                     return (
-                      <div key={squadId} className="rounded-xl overflow-hidden border border-glass-10">
+                      <div key={squadId} className="rounded-xl overflow-hidden border border-white/10">
                         {/* Squad Header */}
                         <button
                           onClick={() => toggleSquadExpand(squadId)}
                           className={cn(
                             'w-full flex items-center gap-3 p-3 transition-colors',
-                            'hover:bg-glass-5',
-                            isExpanded && 'bg-glass-5'
+                            'hover:bg-white/5',
+                            isExpanded && 'bg-white/5'
                           )}
                         >
                           <div className={cn('w-2 h-2 rounded-full', theme.bg)} />
@@ -622,7 +620,7 @@ export function MemoryManager() {
                                     }}
                                     className={cn(
                                       'w-full flex items-center gap-3 p-2 rounded-lg text-left',
-                                      'hover:bg-glass-5 transition-colors group'
+                                      'hover:bg-white/5 transition-colors group'
                                     )}
                                   >
                                     <span className="text-yellow-500">
@@ -638,7 +636,7 @@ export function MemoryManager() {
                                     </div>
                                     <div className="flex items-center gap-2 flex-shrink-0">
                                       {agent.files !== undefined && (
-                                        <Badge variant="secondary">
+                                        <Badge variant="count" size="sm">
                                           {agent.files} files
                                         </Badge>
                                       )}
@@ -657,10 +655,10 @@ export function MemoryManager() {
                   })}
               </div>
             )}
-          </Card>
+          </GlassCard>
 
           {/* Info Card */}
-          <Card className="!bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/20">
+          <GlassCard className="!bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/20">
             <div className="flex items-start gap-3">
               <div className="h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-400">
@@ -677,7 +675,7 @@ export function MemoryManager() {
                 </p>
               </div>
             </div>
-          </Card>
+          </GlassCard>
         </div>
       )}
     </div>

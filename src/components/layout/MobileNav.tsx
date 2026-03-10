@@ -1,9 +1,7 @@
-'use client';
-
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { useUIStore } from '@/stores/uiStore';
+import { cn } from '../../lib/utils';
+import { useUIStore } from '../../stores/uiStore';
 
 // Icons
 const ChatIcon = () => (
@@ -50,10 +48,11 @@ const WorldIcon = () => (
   </svg>
 );
 
-type ViewType = 'chat' | 'world' | 'orchestrator' | 'dashboard' | 'settings';
+// Subset of views available in mobile bottom nav
+type MobileViewType = 'chat' | 'world' | 'orchestrator' | 'dashboard' | 'settings';
 
 interface NavItem {
-  id: ViewType;
+  id: MobileViewType;
   icon: React.ReactNode;
   label: string;
 }
@@ -70,7 +69,7 @@ export function MobileNav() {
   const { currentView, setCurrentView, setMobileMenuOpen } = useUIStore();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+    <nav aria-label="Navegacao mobile" className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
       {/* Safe area padding for devices with home indicator */}
       <div className="glass-lg border-t border-glass-border pb-safe">
         <div className="flex items-center justify-around px-2 py-2">
@@ -125,7 +124,7 @@ interface MobileHeaderProps {
 
 export function MobileHeader({ title, onBack, actions }: MobileHeaderProps) {
   return (
-    <header className="sticky top-0 z-40 glass-lg border-b border-glass-border px-4 py-3 md:hidden">
+    <header aria-label="Cabecalho mobile" className="sticky top-0 z-40 glass-lg border-b border-glass-border px-4 py-3 md:hidden">
       <div className="flex items-center gap-3">
         {onBack && (
           <button
@@ -207,6 +206,9 @@ export function PullToRefresh({ onRefresh, children, threshold = 80 }: PullToRef
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       className="relative overflow-auto h-full"
+      tabIndex={0}
+      role="region"
+      aria-label="Conteudo com pull to refresh"
     >
       {/* Pull indicator */}
       <motion.div

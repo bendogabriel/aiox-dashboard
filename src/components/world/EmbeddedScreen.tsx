@@ -1,8 +1,6 @@
-'use client';
-
 import { motion } from 'framer-motion';
 import type { DomainId } from './world-layout';
-import { domains } from './world-layout';
+import { useDomains } from './DomainContext';
 
 interface EmbeddedScreenProps {
   domain: DomainId;
@@ -18,17 +16,19 @@ const SCREEN_SIZES = {
 };
 
 export function EmbeddedScreen({ domain, type, x, y, tileSize }: EmbeddedScreenProps) {
+  const domains = useDomains();
   const cfg = SCREEN_SIZES[type];
   const d = domains[domain];
 
   return (
     <div
-      className="absolute pointer-events-none overflow-hidden rounded-sm"
+      className="absolute pointer-events-none overflow-hidden"
       style={{
         left: x * tileSize + cfg.offsetX,
         top: y * tileSize + cfg.offsetY,
         width: cfg.w,
         height: cfg.h,
+        borderRadius: 2,
         zIndex: y + 2,
       }}
     >

@@ -1,15 +1,10 @@
-'use client';
-
 import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
-import { GlassAvatar } from '@/components/ui/GlassAvatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { cn, squadLabels, formatRelativeTime } from '@/lib/utils';
-import type { PlatformAgent } from '@/types';
+import { GlassCard, Avatar, Badge, GlassButton } from '../ui';
+import { squadLabels, formatRelativeTime } from '../../lib/utils';
+import type { Agent } from '../../types';
 
 interface AgentProfileProps {
-  agent: PlatformAgent;
+  agent: Agent;
   onStartChat?: () => void;
   onClose?: () => void;
 }
@@ -22,25 +17,27 @@ export function AgentProfile({ agent, onStartChat, onClose }: AgentProfileProps)
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
     >
-      <Card className="max-w-md w-full p-6">
+      <GlassCard variant="strong" className="max-w-md w-full">
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-4">
-            <GlassAvatar
+            <Avatar
               name={agent.name}
               size="xl"
               squadType={agent.squadType}
+              status={agent.status}
             />
             <div>
               <h2 className="text-primary text-xl font-semibold">{agent.name}</h2>
               <p className="text-secondary">{agent.role}</p>
               <div className="flex items-center gap-2 mt-1">
-                <Badge variant="outline">
+                <Badge variant="squad" squadType={agent.squadType || 'default'}>
                   {squadLabels[agent.squadType || 'default']}
                 </Badge>
                 {agent.status && (
                   <Badge
-                    variant={agent.status === 'online' ? 'default' : agent.status === 'busy' ? 'secondary' : 'outline'}
+                    variant="status"
+                    status={agent.status === 'online' ? 'online' : agent.status === 'busy' ? 'busy' : 'offline'}
                   >
                     {agent.status === 'online' ? 'Online' : agent.status === 'busy' ? 'Ocupado' : 'Offline'}
                   </Badge>
@@ -50,12 +47,12 @@ export function AgentProfile({ agent, onStartChat, onClose }: AgentProfileProps)
           </div>
 
           {onClose && (
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar perfil">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
-            </Button>
+            </GlassButton>
           )}
         </div>
 
@@ -71,7 +68,7 @@ export function AgentProfile({ agent, onStartChat, onClose }: AgentProfileProps)
             <h3 className="text-sm font-semibold text-primary mb-2">Especialidades</h3>
             <div className="flex flex-wrap gap-2">
               {agent.capabilities.map((cap) => (
-                <Badge key={cap} variant="outline">
+                <Badge key={cap} variant="squad" squadType={agent.squadType || 'default'}>
                   {cap}
                 </Badge>
               ))}
@@ -85,15 +82,15 @@ export function AgentProfile({ agent, onStartChat, onClose }: AgentProfileProps)
             <p className="text-2xl font-bold text-primary">
               {agent.executionCount?.toLocaleString() || '0'}
             </p>
-            <p className="text-xs text-tertiary">Execucoes</p>
+            <p className="text-xs text-tertiary">Execuções</p>
           </div>
-          <div className="text-center border-x border-glass-10">
+          <div className="text-center border-x border-white/10">
             <p className="text-2xl font-bold text-primary">98%</p>
             <p className="text-xs text-tertiary">Taxa de Sucesso</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-primary">1.2s</p>
-            <p className="text-xs text-tertiary">Tempo Medio</p>
+            <p className="text-xs text-tertiary">Tempo Médio</p>
           </div>
         </div>
 
@@ -108,24 +105,26 @@ export function AgentProfile({ agent, onStartChat, onClose }: AgentProfileProps)
         {/* Last Active */}
         {agent.lastActive && (
           <p className="text-xs text-tertiary text-center mb-6">
-            Ultima atividade: {formatRelativeTime(agent.lastActive)}
+            Última atividade: {formatRelativeTime(agent.lastActive)}
           </p>
         )}
 
         {/* Action */}
         {onStartChat && (
-          <Button
-            variant="default"
+          <GlassButton
+            variant="primary"
             className="w-full"
             onClick={onStartChat}
+            leftIcon={
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+              </svg>
+            }
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-            </svg>
             Iniciar Conversa
-          </Button>
+          </GlassButton>
         )}
-      </Card>
+      </GlassCard>
     </motion.div>
   );
 }

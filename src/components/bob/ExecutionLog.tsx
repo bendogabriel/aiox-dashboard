@@ -1,16 +1,12 @@
-'use client';
-
 import { useEffect, useRef } from 'react';
-import { Badge } from '@/components/ui/badge';
-import type { ExecutionLogEntry, LogLevel } from '@/stores/executionLogStore';
+import { Badge } from '../ui';
+import type { ExecutionLogEntry } from '../../stores/bobStore';
 
-const levelBadge: Record<LogLevel, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-  info: { label: 'INFO', variant: 'secondary' },
-  success: { label: 'SUCCESS', variant: 'default' },
-  warning: { label: 'WARNING', variant: 'outline' },
-  error: { label: 'ERROR', variant: 'destructive' },
-  tool: { label: 'TOOL', variant: 'secondary' },
-  agent: { label: 'AGENT', variant: 'outline' },
+const typeBadge: Record<ExecutionLogEntry['type'], { label: string; status: 'online' | 'success' | 'warning' | 'error' }> = {
+  info: { label: 'INFO', status: 'online' },
+  action: { label: 'ACTION', status: 'success' },
+  decision: { label: 'DECISION', status: 'warning' },
+  error: { label: 'ERROR', status: 'error' },
 };
 
 export default function ExecutionLog({ entries }: { entries: ExecutionLogEntry[] }) {
@@ -25,7 +21,7 @@ export default function ExecutionLog({ entries }: { entries: ExecutionLogEntry[]
   if (entries.length === 0) {
     return (
       <div className="text-center py-6">
-        <p className="text-sm text-muted-foreground">No log entries yet</p>
+        <p className="text-sm text-tertiary">No log entries yet</p>
       </div>
     );
   }
@@ -33,22 +29,23 @@ export default function ExecutionLog({ entries }: { entries: ExecutionLogEntry[]
   return (
     <div
       ref={scrollRef}
-      className="max-h-64 overflow-y-auto space-y-1 rounded-xl bg-muted/30 p-3"
+      className="max-h-64 overflow-y-auto space-y-1 rounded-xl glass-subtle p-3"
+      tabIndex={0}
+      role="region"
+      aria-label="Log de execucao"
     >
       {entries.map((entry) => {
-        const badge = levelBadge[entry.level] || levelBadge.info;
+        const badge = typeBadge[entry.type];
         return (
           <div key={entry.id} className="flex items-start gap-2 py-1">
-            <span className="text-[10px] font-mono text-muted-foreground flex-shrink-0 pt-0.5 w-16">
+            <span className="text-[10px] font-mono text-tertiary flex-shrink-0 pt-0.5 w-16">
               {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
             </span>
-            <Badge variant={badge.variant} className="flex-shrink-0 text-[10px]">
+            <Badge variant="status" status={badge.status} size="sm" className="flex-shrink-0">
               {badge.label}
             </Badge>
-            {entry.agentName && (
-              <span className="text-[11px] text-muted-foreground flex-shrink-0">{entry.agentName}</span>
-            )}
-            <span className="text-xs text-foreground truncate">{entry.message}</span>
+            <span className="text-[11px] text-secondary flex-shrink-0">{entry.agent}</span>
+            <span className="text-xs text-primary truncate">{entry.message}</span>
           </div>
         );
       })}

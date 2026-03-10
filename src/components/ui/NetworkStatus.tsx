@@ -1,9 +1,7 @@
-'use client';
-
-import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { useNetworkStatus, useOfflineQueue } from '../../services/offline';
+import { GlassButton } from './GlassButton';
+import { cn } from '../../lib/utils';
 
 const WifiIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -34,60 +32,23 @@ const SyncIcon = () => (
   </svg>
 );
 
-// Self-contained network status hook (no external dependency)
-type NetworkStatusType = 'online' | 'offline' | 'slow';
-
-function useNetworkStatus() {
-  const [isOnline, setIsOnline] = useState(
-    typeof navigator !== 'undefined' ? navigator.onLine : true
-  );
-  const [isSlow, setIsSlow] = useState(false);
-
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    // Check connection quality via Navigator API
-    const connection = (navigator as unknown as { connection?: { effectiveType?: string } }).connection;
-    if (connection?.effectiveType) {
-      setIsSlow(connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g');
-    }
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  const status: NetworkStatusType = !isOnline ? 'offline' : isSlow ? 'slow' : 'online';
-
-  return { status, isOnline, isSlow };
-}
-
 interface NetworkStatusBannerProps {
   className?: string;
+  showQueueInfo?: boolean;
 }
 
-export function NetworkStatusBanner({ className }: NetworkStatusBannerProps) {
+export function NetworkStatusBanner({ className, showQueueInfo = true }: NetworkStatusBannerProps) {
   const { status, isOnline, isSlow } = useNetworkStatus();
-  const [dismissed, setDismissed] = useState(false);
+  const { queueSize, isSyncing, sync } = useOfflineQueue();
 
-  // Reset dismissed when status changes
-  useEffect(() => {
-    setDismissed(false);
-  }, [status]);
-
-  // Don't show if online and not slow, or if dismissed
-  if ((isOnline && !isSlow) || dismissed) {
+  // Don't show if online and no queue
+  if (isOnline && !isSlow && queueSize === 0) {
     return null;
   }
 
   return (
     <AnimatePresence>
-      {(!isOnline || isSlow) && (
+      {(!isOnline || isSlow || queueSize > 0) && (
         <motion.div
           initial={{ opacity: 0, y: -20, height: 0 }}
           animate={{ opacity: 1, y: 0, height: 'auto' }}
@@ -96,6 +57,7 @@ export function NetworkStatusBanner({ className }: NetworkStatusBannerProps) {
             'px-4 py-2 flex items-center justify-between gap-3',
             status === 'offline' && 'bg-red-500/10 border-b border-red-500/20',
             status === 'slow' && 'bg-yellow-500/10 border-b border-yellow-500/20',
+            status === 'online' && queueSize > 0 && 'bg-blue-500/10 border-b border-blue-500/20',
             className
           )}
         >
@@ -103,6 +65,7 @@ export function NetworkStatusBanner({ className }: NetworkStatusBannerProps) {
             <span className={cn(
               status === 'offline' && 'text-red-500',
               status === 'slow' && 'text-yellow-500',
+              status === 'online' && 'text-blue-500'
             )}>
               {status === 'offline' ? <WifiOffIcon /> : <WifiIcon />}
             </span>
@@ -110,20 +73,38 @@ export function NetworkStatusBanner({ className }: NetworkStatusBannerProps) {
               'text-sm font-medium',
               status === 'offline' && 'text-red-500',
               status === 'slow' && 'text-yellow-500',
+              status === 'online' && 'text-blue-500'
             )}>
               {status === 'offline' && 'Sem conexão'}
               {status === 'slow' && 'Conexão lenta'}
+              {status === 'online' && queueSize > 0 && 'Sincronizando...'}
             </span>
+            {showQueueInfo && queueSize > 0 && (
+              <span className="text-xs text-tertiary">
+                ({queueSize} pendente{queueSize > 1 ? 's' : ''})
+              </span>
+            )}
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setDismissed(true)}
-            className="h-7 text-xs"
-          >
-            Fechar
-          </Button>
+          {queueSize > 0 && isOnline && (
+            <GlassButton
+              variant="ghost"
+              size="sm"
+              onClick={sync}
+              disabled={isSyncing}
+              className="h-7 text-xs"
+              leftIcon={
+                <motion.span
+                  animate={isSyncing ? { rotate: 360 } : {}}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                >
+                  <SyncIcon />
+                </motion.span>
+              }
+            >
+              {isSyncing ? 'Sincronizando...' : 'Sincronizar'}
+            </GlassButton>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
@@ -137,11 +118,12 @@ interface NetworkStatusIndicatorProps {
 }
 
 export function NetworkStatusIndicator({ className, showLabel = false }: NetworkStatusIndicatorProps) {
-  const { status, isOnline } = useNetworkStatus();
+  const { status, quality } = useNetworkStatus();
+  const { queueSize } = useOfflineQueue();
 
   const getStatusColor = () => {
     if (status === 'offline') return 'bg-red-500';
-    if (status === 'slow') return 'bg-yellow-500';
+    if (status === 'slow' || quality < 0.5) return 'bg-yellow-500';
     return 'bg-green-500';
   };
 
@@ -152,7 +134,7 @@ export function NetworkStatusIndicator({ className, showLabel = false }: Network
           'w-2 h-2 rounded-full',
           getStatusColor()
         )} />
-        {isOnline && (
+        {status === 'online' && (
           <motion.div
             className={cn(
               'absolute inset-0 w-2 h-2 rounded-full',
@@ -164,10 +146,15 @@ export function NetworkStatusIndicator({ className, showLabel = false }: Network
         )}
       </div>
       {showLabel && (
-        <span className="text-xs text-muted-foreground">
+        <span className="text-xs text-tertiary">
           {status === 'offline' && 'Offline'}
           {status === 'slow' && 'Lento'}
           {status === 'online' && 'Online'}
+        </span>
+      )}
+      {queueSize > 0 && (
+        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-500">
+          {queueSize}
         </span>
       )}
     </div>

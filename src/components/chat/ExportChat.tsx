@@ -1,11 +1,8 @@
-'use client';
-
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/Toast';
-import { cn } from '@/lib/utils';
-import type { ChatSession } from '@/types';
+import { GlassButton, useToast } from '../ui';
+import { cn } from '../../lib/utils';
+import type { ChatSession } from '../../types';
 
 // Icons
 const ExportIcon = () => (
@@ -200,15 +197,15 @@ function sessionToJson(session: ChatSession): string {
 function sessionToTxt(session: ChatSession): string {
   const lines: string[] = [];
 
-  lines.push('='.repeat(50));
+  lines.push('═'.repeat(50));
   lines.push(`CONVERSA COM ${session.agentName.toUpperCase()}`);
-  lines.push('='.repeat(50));
+  lines.push('═'.repeat(50));
   lines.push('');
   lines.push(`Squad: ${session.squadId}`);
   lines.push(`Data: ${new Date(session.createdAt).toLocaleString('pt-BR')}`);
   lines.push(`Mensagens: ${session.messages.length}`);
   lines.push('');
-  lines.push('-'.repeat(50));
+  lines.push('─'.repeat(50));
   lines.push('');
 
   session.messages.forEach((message, index) => {
@@ -232,7 +229,7 @@ function sessionToTxt(session: ChatSession): string {
   });
 
   lines.push('');
-  lines.push('-'.repeat(50));
+  lines.push('─'.repeat(50));
   lines.push(`Exportado do AIOS Core em ${new Date().toLocaleString('pt-BR')}`);
 
   return lines.join('\n');
@@ -411,7 +408,7 @@ export function ExportChatModal({ isOpen, onClose, session }: ExportChatModalPro
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-overlay backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
             onClick={onClose}
           />
 
@@ -426,7 +423,7 @@ export function ExportChatModal({ isOpen, onClose, session }: ExportChatModalPro
           >
             <div className="glass-card rounded-2xl overflow-hidden flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-glass-10">
+              <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-xl glass-subtle flex items-center justify-center text-primary">
                     <ExportIcon />
@@ -438,14 +435,15 @@ export function ExportChatModal({ isOpen, onClose, session }: ExportChatModalPro
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-2 rounded-lg text-tertiary hover:text-primary hover:bg-glass-10 transition-colors"
+                  className="p-2 rounded-lg text-tertiary hover:text-primary hover:bg-white/10 transition-colors"
+                  aria-label="Fechar"
                 >
                   <CloseIcon />
                 </button>
               </div>
 
               {/* Format Selection */}
-              <div className="p-4 border-b border-glass-10">
+              <div className="p-4 border-b border-white/10">
                 <p className="text-xs text-tertiary mb-3">Selecione o formato de exportação:</p>
                 <div className="grid grid-cols-4 gap-2">
                   {formatOptions.map((format) => (
@@ -457,7 +455,7 @@ export function ExportChatModal({ isOpen, onClose, session }: ExportChatModalPro
                         'flex flex-col items-center gap-2',
                         selectedFormat === format.id
                           ? 'bg-blue-500/20 border-blue-500/50 text-blue-400'
-                          : 'bg-glass-5 border-glass-10 text-secondary hover:bg-glass-10 hover:text-primary'
+                          : 'bg-white/5 border-white/10 text-secondary hover:bg-white/10 hover:text-primary'
                       )}
                     >
                       <span className={cn(
@@ -488,29 +486,29 @@ export function ExportChatModal({ isOpen, onClose, session }: ExportChatModalPro
               </div>
 
               {/* Actions */}
-              <div className="p-4 border-t border-glass-10 flex items-center justify-between gap-3">
+              <div className="p-4 border-t border-white/10 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 text-xs text-tertiary">
-                  <span className="px-2 py-1 rounded bg-glass-5">{currentFormat.extension}</span>
+                  <span className="px-2 py-1 rounded bg-white/5">{currentFormat.extension}</span>
                   <span>·</span>
                   <span>{(new Blob([exportContent]).size / 1024).toFixed(1)} KB</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="glass-ghost"
+                  <GlassButton
+                    variant="ghost"
                     size="sm"
                     onClick={handleCopy}
+                    leftIcon={copied ? <CheckIcon /> : <CopyIcon />}
                   >
-                    {copied ? <CheckIcon /> : <CopyIcon />}
                     {copied ? 'Copiado!' : 'Copiar'}
-                  </Button>
-                  <Button
-                    variant="glass-primary"
+                  </GlassButton>
+                  <GlassButton
+                    variant="primary"
                     size="sm"
                     onClick={handleDownload}
+                    leftIcon={<DownloadIcon />}
                   >
-                    <DownloadIcon />
                     Download
-                  </Button>
+                  </GlassButton>
                 </div>
               </div>
             </div>
@@ -529,15 +527,16 @@ interface ExportChatButtonProps {
 
 export function ExportChatButton({ onClick, disabled }: ExportChatButtonProps) {
   return (
-    <Button
-      variant="glass-ghost"
-      size="icon-xs"
+    <GlassButton
+      variant="ghost"
+      size="icon"
       onClick={onClick}
       disabled={disabled}
       title="Exportar conversa"
+      aria-label="Exportar conversa"
       className="h-8 w-8"
     >
       <ExportIcon />
-    </Button>
+    </GlassButton>
   );
 }

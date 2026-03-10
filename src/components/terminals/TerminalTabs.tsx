@@ -1,74 +1,67 @@
-'use client';
-
 import { X } from 'lucide-react';
-import type { Terminal } from '@/stores/terminal-store';
-import { AGENT_CONFIG } from '@/types';
-import { cn } from '@/lib/utils';
+import { StatusDot } from '../ui';
+import type { TerminalSession } from './TerminalCard';
+import { cn } from '../../lib/utils';
 
 interface TerminalTabsProps {
-  terminals: Terminal[];
+  sessions: TerminalSession[];
   activeId: string | null;
   onSelect: (id: string) => void;
   onClose: (id: string) => void;
 }
 
-const statusColors: Record<string, string> = {
-  connected: 'bg-green-500',
-  connecting: 'bg-yellow-500',
-  disconnected: 'bg-muted-foreground',
-  error: 'bg-red-500',
-};
-
-export function TerminalTabs({ terminals, activeId, onSelect, onClose }: TerminalTabsProps) {
-  if (terminals.length === 0) return null;
+export function TerminalTabs({ sessions, activeId, onSelect, onClose }: TerminalTabsProps) {
+  if (sessions.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide flex-shrink-0">
-      {terminals.map((terminal) => {
-        const isActive = terminal.id === activeId;
-        const agentName = (AGENT_CONFIG as Record<string, { name: string }>)[terminal.agentId]?.name || terminal.agentId;
+    <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide flex-shrink-0" role="toolbar" aria-label="Sessoes de terminal">
+      {sessions.map((session) => {
+        const isActive = session.id === activeId;
 
         return (
-          <button
-            key={terminal.id}
-            onClick={() => onSelect(terminal.id)}
+          <div
+            key={session.id}
+            role="presentation"
             className={cn(
-              'flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors min-w-0',
+              'flex items-center gap-2 rounded-xl text-xs font-medium whitespace-nowrap transition-colors min-w-0',
               isActive
-                ? 'bg-accent text-foreground border border-border'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+                ? 'glass bg-white/10 text-primary'
+                : 'text-tertiary hover:text-secondary hover:bg-white/5',
             )}
-            aria-label={`Terminal ${agentName}`}
-            aria-selected={isActive}
-            role="tab"
           >
-            <span
-              className={cn(
-                'w-2 h-2 rounded-full flex-shrink-0',
-                statusColors[terminal.status] || statusColors.disconnected,
-                terminal.status === 'connecting' && 'animate-pulse',
-              )}
-            />
-            <span className="truncate max-w-[120px]">{agentName}</span>
             <span
               role="button"
               tabIndex={0}
-              onClick={(e) => {
-                e.stopPropagation();
-                onClose(terminal.id);
-              }}
+              aria-pressed={isActive}
+              aria-label={`Terminal ${session.agent}`}
+              onClick={() => onSelect(session.id)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                  e.stopPropagation();
-                  onClose(terminal.id);
+                  e.preventDefault();
+                  onSelect(session.id);
                 }
               }}
-              className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-              aria-label={`Close terminal ${agentName}`}
+              className="flex items-center gap-2 px-3 py-1.5 cursor-pointer truncate"
+            >
+              <StatusDot
+                status={session.status}
+                size="sm"
+                pulse={session.status === 'working'}
+              />
+              <span className="truncate max-w-[120px]">{session.agent}</span>
+            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose(session.id);
+              }}
+              className="p-0.5 mr-1 rounded hover:bg-white/10 text-tertiary hover:text-secondary transition-colors"
+              aria-label={`Fechar terminal ${session.agent}`}
+              tabIndex={-1}
             >
               <X className="h-3 w-3" />
-            </span>
-          </button>
+            </button>
+          </div>
         );
       })}
     </div>

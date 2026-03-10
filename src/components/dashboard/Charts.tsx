@@ -1,8 +1,12 @@
-'use client';
-
 import { useRef, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Helper: read a CSS custom property value at runtime
+function cssVar(name: string, fallback: string): string {
+  if (typeof document === 'undefined') return fallback;
+  const val = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return val || fallback;
+}
 
 // Simple Line Chart Component - uses actual pixel coordinates
 interface LineChartProps {
@@ -19,13 +23,18 @@ export function LineChart({
   data,
   labels,
   height = 120,
-  color = '#8B5CF6',
-  fillColor = 'rgba(139, 92, 246, 0.1)',
+  color,
+  fillColor,
   showGrid = true,
   showLabels = false,
 }: LineChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  // Resolve colors from CSS custom properties
+  const resolvedColor = color || cssVar('--chart-line', '#8B5CF6');
+  const resolvedFill = fillColor || cssVar('--chart-line-fill', 'rgba(139, 92, 246, 0.1)');
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -78,12 +87,12 @@ export function LineChart({
         {showGrid && (
           <div className="absolute inset-0 flex flex-col justify-between pointer-events-none" style={{ padding: `${padding.top}px ${padding.right}px ${padding.bottom}px ${padding.left}px` }}>
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="border-t border-glass-5 w-full" />
+              <div key={i} className="w-full" style={{ borderTop: '1px solid var(--chart-grid, rgba(255,255,255,0.05))' }} />
             ))}
           </div>
         )}
 
-        {dimensions.width > 0 && (
+        {dimensions.width > 0 && (<>
           <svg
             width={dimensions.width}
             height={chartHeight}
@@ -92,7 +101,7 @@ export function LineChart({
             {/* Fill area */}
             <motion.polygon
               points={areaPoints}
-              fill={fillColor}
+              fill={resolvedFill}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
@@ -102,7 +111,7 @@ export function LineChart({
             <motion.polyline
               points={polylinePoints}
               fill="none"
-              stroke={color}
+              stroke={resolvedColor}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -111,21 +120,87 @@ export function LineChart({
               transition={{ duration: 0.8, ease: 'easeOut' }}
             />
 
-            {/* Points */}
+            {/* Points — interactive with hover */}
             {points.map((point, index) => (
-              <motion.circle
-                key={index}
-                cx={point.x}
-                cy={point.y}
-                r="4"
-                fill={color}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.3 + index * 0.05, duration: 0.2 }}
-              />
+              <g key={index}>
+                {/* Invisible larger hit area */}
+                <circle
+                  cx={point.x}
+                  cy={point.y}
+                  r="12"
+                  fill="transparent"
+                  className="cursor-pointer"
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                />
+                {/* Glow ring on hover */}
+                {hoveredIndex === index && (
+                  <circle
+                    cx={point.x}
+                    cy={point.y}
+                    r="8"
+                    fill="none"
+                    stroke={resolvedColor}
+                    strokeWidth="2"
+                    opacity="0.3"
+                  />
+                )}
+                {/* Visible point */}
+                <motion.circle
+                  cx={point.x}
+                  cy={point.y}
+                  r={hoveredIndex === index ? 5 : 4}
+                  fill={resolvedColor}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.3 + index * 0.05, duration: 0.2 }}
+                />
+              </g>
             ))}
+
+            {/* Vertical guide line on hover */}
+            {hoveredIndex !== null && points[hoveredIndex] && (
+              <line
+                x1={points[hoveredIndex].x}
+                y1={padding.top}
+                x2={points[hoveredIndex].x}
+                y2={chartHeight - padding.bottom}
+                stroke={resolvedColor}
+                strokeWidth="1"
+                strokeDasharray="4 4"
+                opacity="0.3"
+              />
+            )}
           </svg>
-        )}
+
+          {/* Tooltip */}
+          <AnimatePresence>
+            {hoveredIndex !== null && points[hoveredIndex] && (
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 4 }}
+                transition={{ duration: 0.15 }}
+                className="absolute pointer-events-none z-10 px-2.5 py-1.5 rounded-lg text-xs font-medium shadow-lg"
+                style={{
+                  left: Math.min(
+                    Math.max(points[hoveredIndex].x - 30, 4),
+                    dimensions.width - 70
+                  ),
+                  top: Math.max(points[hoveredIndex].y - 36, 0),
+                  background: 'rgba(0,0,0,0.85)',
+                  border: `1px solid ${resolvedColor}40`,
+                  color: '#fff',
+                }}
+              >
+                <span style={{ color: resolvedColor }}>{points[hoveredIndex].value}</span>
+                {labels?.[hoveredIndex] && (
+                  <span className="ml-1.5 opacity-60">{labels[hoveredIndex]}</span>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>)}
       </div>
 
       {/* Labels */}
@@ -160,38 +235,49 @@ export function BarChart({
 
   const max = Math.max(...data.map((d) => d.value), 1);
   const defaultColors = [
-    '#3B82F6', // blue
-    '#8B5CF6', // purple
-    '#22C55E', // green
-    '#F59E0B', // amber
-    '#EF4444', // red
-    '#06B6D4', // cyan
+    cssVar('--chart-bar-1', '#3B82F6'),
+    cssVar('--chart-bar-2', '#8B5CF6'),
+    cssVar('--chart-bar-3', '#22C55E'),
+    cssVar('--chart-bar-4', '#F59E0B'),
+    cssVar('--chart-bar-5', '#EF4444'),
+    cssVar('--chart-bar-6', '#06B6D4'),
   ];
 
   if (horizontal) {
     return (
       <div className="space-y-3" style={{ minHeight: height }}>
-        {data.map((item, index) => (
-          <div key={item.label} className="space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-secondary">{item.label}</span>
-              {showValues && (
-                <span className="text-primary font-medium">{item.value}</span>
-              )}
+        {data.map((item, index) => {
+          const pct = Math.round((item.value / max) * 100);
+          const barColor = item.color || defaultColors[index % defaultColors.length];
+          return (
+            <div key={item.label} className="space-y-1 group">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-secondary group-hover:text-primary transition-colors">{item.label}</span>
+                {showValues && (
+                  <span className="text-primary font-medium">
+                    {item.value}
+                    <span className="text-tertiary ml-1 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">
+                      ({pct}%)
+                    </span>
+                  </span>
+                )}
+              </div>
+              <div className="h-2 rounded-full overflow-hidden group-hover:h-3 transition-all" style={{ background: 'var(--chart-ring-bg, rgba(255,255,255,0.1))' }}>
+                <motion.div
+                  className="h-full rounded-full transition-shadow"
+                  style={{
+                    backgroundColor: barColor,
+                    boxShadow: undefined,
+                  }}
+                  whileHover={{ boxShadow: `0 0 8px ${barColor}60` }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                />
+              </div>
             </div>
-            <div className="h-2 bg-scrim-10 dark:bg-glass-10 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full rounded-full"
-                style={{
-                  backgroundColor: item.color || defaultColors[index % defaultColors.length],
-                }}
-                initial={{ width: 0 }}
-                animate={{ width: `${(item.value / max) * 100}%` }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   }
@@ -224,7 +310,8 @@ export function BarChart({
                 x={x + (barWidth - gap) / 2}
                 y={y - 4}
                 textAnchor="middle"
-                className="text-[8px] fill-white/70"
+                className="text-[8px]"
+                style={{ fill: 'var(--chart-text, rgba(255,255,255,0.7))' }}
               >
                 {item.value}
               </text>
@@ -233,7 +320,8 @@ export function BarChart({
               x={x + (barWidth - gap) / 2}
               y={height - 6}
               textAnchor="middle"
-              className="text-[7px] fill-white/50"
+              className="text-[7px]"
+              style={{ fill: 'var(--chart-text-dim, rgba(255,255,255,0.5))' }}
             >
               {item.label.slice(0, 6)}
             </text>
@@ -267,14 +355,19 @@ export function DonutChart({
   const circumference = 2 * Math.PI * radius;
 
   const defaultColors = [
-    '#22C55E', // green
-    '#EF4444', // red
-    '#F59E0B', // amber
-    '#3B82F6', // blue
-    '#8B5CF6', // purple
+    cssVar('--chart-donut-1', '#22C55E'),
+    cssVar('--chart-donut-2', '#EF4444'),
+    cssVar('--chart-donut-3', '#F59E0B'),
+    cssVar('--chart-donut-4', '#3B82F6'),
+    cssVar('--chart-donut-5', '#8B5CF6'),
   ];
 
-  let currentOffset = 0;
+  // Pre-compute cumulative offsets to avoid mutation during render
+  const offsets = data.reduce<number[]>((acc, item, i) => {
+    const prev = i === 0 ? 0 : acc[i - 1] + data[i - 1].value / total;
+    acc.push(prev);
+    return acc;
+  }, []);
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
@@ -285,7 +378,7 @@ export function DonutChart({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.1)"
+          stroke={cssVar('--chart-ring-bg', 'rgba(255,255,255,0.1)')}
           strokeWidth={thickness}
         />
 
@@ -294,8 +387,7 @@ export function DonutChart({
           const percentage = item.value / total;
           const strokeDasharray = circumference;
           const strokeDashoffset = circumference * (1 - percentage);
-          const rotation = currentOffset * 360;
-          currentOffset += percentage;
+          const rotation = offsets[index] * 360;
 
           return (
             <motion.circle
@@ -343,12 +435,13 @@ interface SparklineProps {
 
 export function Sparkline({
   data,
-  color = '#22C55E',
+  color,
   height = 24,
   width = 60,
 }: SparklineProps) {
   if (data.length < 2) return null;
 
+  const resolvedColor = color || cssVar('--chart-sparkline', '#22C55E');
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
@@ -364,7 +457,7 @@ export function Sparkline({
       <motion.polyline
         points={points.join(' ')}
         fill="none"
-        stroke={color}
+        stroke={resolvedColor}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -392,10 +485,12 @@ export function ProgressRing({
   max = 100,
   size = 48,
   thickness = 4,
-  color = '#22C55E',
-  bgColor = 'rgba(255,255,255,0.1)',
+  color,
+  bgColor,
   showValue = true,
 }: ProgressRingProps) {
+  const resolvedColor = color || cssVar('--chart-progress-ring', '#22C55E');
+  const resolvedBg = bgColor || cssVar('--chart-ring-bg', 'rgba(255,255,255,0.1)');
   const percentage = Math.min((value / max) * 100, 100);
   const radius = (size - thickness) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -410,7 +505,7 @@ export function ProgressRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke={bgColor}
+          stroke={resolvedBg}
           strokeWidth={thickness}
         />
         {/* Progress */}
@@ -419,7 +514,7 @@ export function ProgressRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke={color}
+          stroke={resolvedColor}
           strokeWidth={thickness}
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}

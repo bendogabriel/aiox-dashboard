@@ -1,6 +1,6 @@
-import type { ApiError, StreamStartEvent, StreamTextEvent, StreamDoneEvent, StreamErrorEvent, StreamToolsEvent } from '@/types';
+import type { ApiError, StreamStartEvent, StreamTextEvent, StreamDoneEvent, StreamErrorEvent, StreamToolsEvent } from '../../types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Request/Response interceptor types
 type RequestInterceptor = (config: RequestConfig) => RequestConfig | Promise<RequestConfig>;
@@ -382,7 +382,7 @@ class ApiClient {
 
   async post<T>(endpoint: string, data?: unknown, options?: { timeout?: number; signal?: AbortSignal }): Promise<T> {
     const headers = data !== undefined ? this.headers : (() => {
-      const { 'Content-Type': _, ...rest } = this.headers;
+      const { 'Content-Type': _contentType, ...rest } = this.headers;
       return rest;
     })();
 
@@ -534,7 +534,7 @@ export const apiClient = new ApiClient(API_BASE_URL);
 // Setup default interceptors
 apiClient.addRequestInterceptor((config) => {
   // Add timestamp for debugging
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log(`[API] ${config.method} ${config.url}`);
   }
   return config;
@@ -542,7 +542,7 @@ apiClient.addRequestInterceptor((config) => {
 
 apiClient.addErrorInterceptor((error) => {
   // Log errors in development
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.error('[API Error]', error.code, error.message);
   }
   return error;

@@ -1,4 +1,4 @@
-import type { SquadType } from '@/types';
+import type { SquadType } from '../../types';
 
 export interface WorkflowNodeTodo {
   id: string;

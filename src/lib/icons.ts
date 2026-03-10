@@ -1,389 +1,323 @@
-/**
- * AIOS Dashboard - Icon System
- * Uses lucide-react for professional SVG icons
- * Pattern inspired by mmos icon-map.ts
- */
-
 import {
-  // Navigation & Layout
-  LayoutDashboard,
-  Kanban,
-  Terminal,
-  Settings,
-  Menu,
-  X,
-  ChevronDown,
-  ChevronRight,
-  ChevronLeft,
-  ChevronUp,
-
-  // Status & State
-  Circle,
-  CircleDot,
-  CheckCircle2,
-  Check,
-  XCircle,
-  AlertCircle,
-  AlertTriangle,
-  Clock,
-  Loader2,
-  Square,
-
-  // Actions
-  Play,
-  Pause,
-  RefreshCw,
-  Search,
-  Copy,
-  ExternalLink,
-  Plus,
-  Minus,
-  Trash2,
-  Edit,
-  Save,
-
-  // Content
-  FileText,
-  FilePlus,
-  FolderOpen,
-  GitBranch,
-  GitPullRequest,
-  GitCommit,
-  Archive,
-
-  // Agents & Roles
+  type LucideIcon,
+  BarChart3,
+  TrendingUp,
+  Target,
   Bot,
   User,
-  Users,
-  Code,
-  TestTube,
-  Building2,
-  BarChart3,
-  Target,
-  LineChart,
+  Settings,
+  Palette,
+  PenTool,
+  Monitor,
+  Clapperboard,
+  Video,
+  Tv,
+  FileText,
+  BookOpen,
+  Library,
+  Lightbulb,
+  Mail,
+  Megaphone,
+  Search,
+  Microscope,
   Wrench,
-
-  // UI Elements
+  Zap,
+  Flame,
+  Sparkles,
+  Gem,
+  Star,
+  Trophy,
+  Puzzle,
+  Link,
+  RefreshCw,
+  GitMerge,
+  Rocket,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  ClipboardList,
+  MessageSquare,
+  Landmark,
+  FlaskConical,
+  Paintbrush,
+  Rainbow,
+  Image,
+  UserCog,
+  DollarSign,
+  Smartphone,
+  Handshake,
+  Brain,
+  Globe,
+  PlugZap,
+  Keyboard,
+  Ruler,
+  LifeBuoy,
+  Tag,
+  Anchor,
+  Package,
+  Swords,
+  LogOut,
+  Scissors,
+  Newspaper,
+  Eye,
+  Calendar,
+  SearchCheck,
+  Hand,
+  Users,
+  Timer,
+  Signal,
   Sun,
   Moon,
-  Monitor,
-  ArrowDown,
-  ArrowUp,
-  GripVertical,
-  MoreHorizontal,
-  Info,
-  Bell,
-  MessageSquare,
-
-  // Network & Connectivity
-  Wifi,
-  WifiOff,
-  Globe,
-  Network,
-  Shield,
-  ArrowLeft,
-
-  // GitHub
-  Github,
-
-  // Navigation/Maps
-  Map,
-
-  // Analytics/Insights
-  TrendingUp,
-  Activity,
-  PieChart,
-  Zap,
-
-  // Context/Brain
-  Brain,
-  Layers,
-  BookOpen,
-  FileCode,
-
-  // Sales / Observation
-  Eye,
-  ShoppingCart,
-  Phone,
-  Headphones,
-
-  // Emotes
-  Heart,
-  ThumbsUp,
-  ThumbsDown,
-  Smile,
-  Frown,
-  Star,
-  Coffee,
-  Flame,
-
-  // Sales
-  Radio,
-
-  // Theme icons
   Laptop,
-
-  type LucideIcon,
+  CircleDot,
+  FolderOpen,
+  ThumbsUp,
+  Heart,
+  PartyPopper,
+  HelpCircle,
+  Check,
+  X,
+  ArrowRight,
+  Info,
+  TriangleAlert,
+  Cog,
 } from 'lucide-react';
 
-// Icon name to component mapping
-export const iconMap = {
-  // Navigation
-  dashboard: LayoutDashboard,
-  kanban: Kanban,
-  terminal: Terminal,
-  settings: Settings,
-  menu: Menu,
-  close: X,
-  'chevron-down': ChevronDown,
-  'chevron-right': ChevronRight,
-  'chevron-left': ChevronLeft,
-  'chevron-up': ChevronUp,
+export type { LucideIcon };
 
-  // Status
-  circle: Circle,
-  'circle-dot': CircleDot,
-  'check-circle': CheckCircle2,
-  check: Check,
-  'x-circle': XCircle,
-  'alert-circle': AlertCircle,
-  'alert-triangle': AlertTriangle,
-  clock: Clock,
-  loader: Loader2,
-  square: Square,
-
-  // Actions
-  play: Play,
-  pause: Pause,
-  refresh: RefreshCw,
-  search: Search,
-  copy: Copy,
-  'external-link': ExternalLink,
-  plus: Plus,
-  minus: Minus,
-  trash: Trash2,
-  edit: Edit,
-  save: Save,
-
-  // Content
-  'file-text': FileText,
-  'file-plus': FilePlus,
-  folder: FolderOpen,
-  'git-branch': GitBranch,
-  'git-pull-request': GitPullRequest,
-  'git-commit': GitCommit,
-  archive: Archive,
-
-  // Agents
-  bot: Bot,
-  user: User,
-  users: Users,
-  code: Code,
-  'test-tube': TestTube,
-  building: Building2,
-  'bar-chart': BarChart3,
-  target: Target,
-  'line-chart': LineChart,
-  wrench: Wrench,
-
-  // UI
-  sun: Sun,
-  moon: Moon,
-  monitor: Monitor,
-  'arrow-down': ArrowDown,
-  'arrow-up': ArrowUp,
-  'grip-vertical': GripVertical,
-  'more-horizontal': MoreHorizontal,
-  info: Info,
-  bell: Bell,
-  message: MessageSquare,
-
-  // Network
-  wifi: Wifi,
-  'wifi-off': WifiOff,
-  globe: Globe,
-  network: Network,
-  shield: Shield,
-  'arrow-left': ArrowLeft,
-
-  // GitHub
-  github: Github,
-
-  // Maps
-  map: Map,
-
-  // Analytics/Insights
-  'trending-up': TrendingUp,
-  activity: Activity,
-  'pie-chart': PieChart,
-  zap: Zap,
-
-  // Context/Brain
-  brain: Brain,
-  layers: Layers,
-  'book-open': BookOpen,
-  'file-code': FileCode,
-
-  // Sales / Observation
-  eye: Eye,
-  'shopping-cart': ShoppingCart,
-  phone: Phone,
-  headphones: Headphones,
-  radio: Radio,
-} as const;
-
-export type IconName = keyof typeof iconMap;
-
-// Size classes mapping
-export const iconSizes = {
-  xs: 'h-3 w-3',
-  sm: 'h-3.5 w-3.5',
-  md: 'h-4 w-4',
-  lg: 'h-5 w-5',
-  xl: 'h-6 w-6',
-} as const;
-
-export type IconSize = keyof typeof iconSizes;
-
-// Numeric icon sizes for lucide-react size prop
+/**
+ * Icon size constants for consistent sizing across the app.
+ */
 export const ICON_SIZES = {
   xs: 12,
   sm: 14,
   md: 16,
-  lg: 20,
-  xl: 24,
+  lg: 18,
+  xl: 20,
+  '2xl': 24,
 } as const;
 
-// ── Emote System ──
-
-export type EmoteKey = 'heart' | 'thumbsUp' | 'thumbsDown' | 'smile' | 'frown' | 'star' | 'coffee' | 'flame';
-
-export const EMOTE_LIST: Array<{ key: EmoteKey; label: string; Icon: LucideIcon }> = [
-  { key: 'heart', label: 'Love', Icon: Heart },
-  { key: 'thumbsUp', label: 'Like', Icon: ThumbsUp },
-  { key: 'thumbsDown', label: 'Dislike', Icon: ThumbsDown },
-  { key: 'smile', label: 'Happy', Icon: Smile },
-  { key: 'frown', label: 'Sad', Icon: Frown },
-  { key: 'star', label: 'Star', Icon: Star },
-  { key: 'coffee', label: 'Coffee', Icon: Coffee },
-  { key: 'flame', label: 'Fire', Icon: Flame },
-];
-
-// ── Icon Component Helpers ──
-
 /**
- * Get a LucideIcon component from a string key (icon name or emoji).
- * Falls back to FolderOpen if no match found.
+ * Maps a string name to a Lucide icon component.
+ * Used for data that persists icon names as strings (API responses, localStorage).
  */
-export function getIconComponent(key: string): LucideIcon {
-  // Check iconMap first
-  if (key in iconMap) {
-    return iconMap[key as IconName];
-  }
-  // Fallback for unknown keys/emojis
-  return FolderOpen;
-}
-
-// ── Theme Icons ──
-
-/** Map of theme IDs to their representative Lucide icons */
-export const ThemeIcons: Record<string, LucideIcon> = {
-  light: Sun,
-  dark: Moon,
-  glass: Layers,
-  matrix: Terminal,
-  system: Laptop,
-};
-
-// Export individual icons for direct imports
-export {
-  LayoutDashboard,
-  Kanban,
-  Terminal,
-  Settings,
-  Menu,
-  X,
-  ChevronDown,
-  ChevronRight,
-  ChevronLeft,
-  ChevronUp,
-  Circle,
-  CircleDot,
-  CheckCircle2,
-  Check,
-  XCircle,
-  AlertCircle,
-  AlertTriangle,
-  Clock,
-  Loader2,
-  Square,
-  Play,
-  Pause,
-  RefreshCw,
-  Search,
-  Copy,
-  ExternalLink,
-  Plus,
-  Minus,
-  Trash2,
-  Edit,
-  Save,
-  FileText,
-  FilePlus,
-  FolderOpen,
-  GitBranch,
-  GitPullRequest,
-  GitCommit,
-  Archive,
+const ICON_MAP: Record<string, LucideIcon> = {
+  BarChart3,
+  TrendingUp,
+  Target,
   Bot,
   User,
   Users,
-  Code,
-  TestTube,
-  Building2,
-  BarChart3,
-  Target,
-  LineChart,
-  Wrench,
-  Sun,
-  Moon,
+  Settings,
+  Palette,
+  PenTool,
   Monitor,
-  ArrowDown,
-  ArrowUp,
-  GripVertical,
-  MoreHorizontal,
-  Info,
-  Bell,
-  MessageSquare,
-  Wifi,
-  WifiOff,
-  Globe,
-  Network,
-  Shield,
-  ArrowLeft,
-  Github,
-  Map,
-  TrendingUp,
-  Activity,
-  PieChart,
-  Zap,
-  Brain,
-  Layers,
+  Clapperboard,
+  Video,
+  Tv,
+  FileText,
   BookOpen,
-  FileCode,
-  Heart,
-  ThumbsUp,
-  ThumbsDown,
-  Smile,
-  Frown,
-  Star,
-  Coffee,
+  Library,
+  Lightbulb,
+  Mail,
+  Megaphone,
+  Search,
+  Microscope,
+  Wrench,
+  Zap,
   Flame,
+  Sparkles,
+  Gem,
+  Star,
+  Trophy,
+  Puzzle,
+  Link,
+  RefreshCw,
+  GitMerge,
+  Rocket,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  ClipboardList,
+  MessageSquare,
+  Landmark,
+  FlaskConical,
+  Paintbrush,
+  Rainbow,
+  Image,
+  UserCog,
+  DollarSign,
+  Smartphone,
+  Handshake,
+  Brain,
+  Globe,
+  PlugZap,
+  Keyboard,
+  Ruler,
+  LifeBuoy,
+  Tag,
+  Anchor,
+  Package,
+  Swords,
+  LogOut,
+  Scissors,
+  Newspaper,
   Eye,
-  ShoppingCart,
-  Phone,
-  Headphones,
-  Radio,
-  Laptop,
-  type LucideIcon,
+  Calendar,
+  SearchCheck,
+  Hand,
+  Timer,
+  Signal,
+  Cog,
 };
+
+// Emoji → Lucide icon name mapping (brandbook: no emojis, use SVG icons)
+const EMOJI_TO_ICON: Record<string, string> = {
+  '\u{1F916}': 'Bot',        // 🤖
+  '\u{1F464}': 'User',       // 👤
+  '\u{1F465}': 'Users',      // 👥
+  '\u{1F3A8}': 'Palette',    // 🎨
+  '\u{270D}\uFE0F': 'PenTool', // ✍️
+  '\u{270D}': 'PenTool',     // ✍ (without VS16)
+  '\u{1F3AC}': 'Clapperboard', // 🎬
+  '\u{1F504}': 'RefreshCw',  // 🔄
+  '\u{1F4FA}': 'Tv',         // 📺
+  '\u{1F527}': 'Wrench',     // 🔧
+  '\u{2699}\uFE0F': 'Cog',   // ⚙️
+  '\u{2699}': 'Cog',         // ⚙ (without VS16)
+  '\u{1F4CA}': 'BarChart3',  // 📊
+  '\u{1F4E3}': 'Megaphone',  // 📣
+  '\u{1F4DA}': 'BookOpen',   // 📚
+  '\u{1F4E6}': 'Package',    // 📦
+  '\u{1F4C2}': 'FolderOpen', // 📂
+  '\u{1F4CB}': 'ClipboardList', // 📋
+  '\u{1F4AC}': 'MessageSquare', // 💬
+  '\u{1F30D}': 'Globe',      // 🌍
+  '\u{1F30E}': 'Globe',      // 🌎
+  '\u{1F30F}': 'Globe',      // 🌏
+  '\u{1F310}': 'Globe',      // 🌐
+  '\u{1F9E0}': 'Brain',      // 🧠
+  '\u{26A1}': 'Zap',         // ⚡
+  '\u{1F525}': 'Flame',      // 🔥
+  '\u{1F680}': 'Rocket',     // 🚀
+  '\u{1F4A1}': 'Lightbulb',  // 💡
+  '\u{1F50D}': 'Search',     // 🔍
+  '\u{1F50E}': 'Search',     // 🔎
+  '\u{1F3AF}': 'Target',     // 🎯
+  '\u{2B50}': 'Star',        // ⭐
+  '\u{1F4DD}': 'FileText',   // 📝
+  '\u{1F5A5}\uFE0F': 'Monitor', // 🖥️
+  '\u{1F5A5}': 'Monitor',    // 🖥
+  '\u{1F4BB}': 'Laptop',     // 💻
+  '\u{1F4F1}': 'Smartphone', // 📱
+  '\u{1F3C6}': 'Trophy',     // 🏆
+  '\u{1F48E}': 'Gem',        // 💎
+  '\u{2728}': 'Sparkles',    // ✨
+  '\u{1F9E9}': 'Puzzle',     // 🧩
+  '\u{1F517}': 'Link',       // 🔗
+  '\u{2705}': 'CheckCircle', // ✅
+  '\u{274C}': 'XCircle',     // ❌
+  '\u{26A0}\uFE0F': 'AlertTriangle', // ⚠️
+  '\u{26A0}': 'AlertTriangle', // ⚠
+  '\u{1F4D0}': 'Ruler',      // 📐
+  '\u{1F4C5}': 'Calendar',   // 📅
+  '\u{1F4C6}': 'Calendar',   // 📆
+  '\u{2702}\uFE0F': 'Scissors', // ✂️
+  '\u{2702}': 'Scissors',    // ✂
+  '\u{1F4F0}': 'Newspaper',  // 📰
+  '\u{1F441}\uFE0F': 'Eye',  // 👁️
+  '\u{1F441}': 'Eye',        // 👁
+  '\u{1F4E7}': 'Mail',       // 📧
+  '\u{2709}\uFE0F': 'Mail',  // ✉️
+  '\u{2709}': 'Mail',        // ✉
+  '\u{1F91D}': 'Handshake',  // 🤝
+  '\u{1F4B0}': 'DollarSign', // 💰
+  '\u{1F4B5}': 'DollarSign', // 💵
+  '\u{1F3D7}\uFE0F': 'Landmark', // 🏗️
+  '\u{1F3D7}': 'Landmark',   // 🏗
+};
+
+/**
+ * Resolves any icon string (Lucide name or emoji) to a LucideIcon component.
+ */
+export function getIconComponent(name: string): LucideIcon {
+  // Check if it's a known Lucide icon name first
+  if (ICON_MAP[name]) return ICON_MAP[name];
+  // Check emoji mapping
+  const mapped = EMOJI_TO_ICON[name];
+  if (mapped && ICON_MAP[mapped]) return ICON_MAP[mapped];
+  return Bot;
+}
+
+// ── Semantic icon aliases (replace emojis across the app) ──
+
+/** Theme selector icons */
+export const ThemeIcons = {
+  light: Sun,
+  dark: Moon,
+  system: Laptop,
+  matrix: CircleDot,
+  glass: Sparkles,
+  aiox: Zap,
+} as const;
+
+/** Category default icon */
+export const CategoryIcon = FolderOpen;
+
+/** Emote icons for world/game interactions */
+export const EmoteIcons = {
+  wave: Hand,
+  thumbsUp: ThumbsUp,
+  love: Heart,
+  celebrate: PartyPopper,
+  thinking: HelpCircle,
+  lightning: Zap,
+  fire: Flame,
+  idea: Lightbulb,
+} as const;
+
+export type EmoteKey = keyof typeof EmoteIcons;
+
+export const EMOTE_LIST: Array<{ key: EmoteKey; label: string; Icon: LucideIcon }> = [
+  { key: 'wave', label: 'Wave', Icon: Hand },
+  { key: 'thumbsUp', label: 'Thumbs up', Icon: ThumbsUp },
+  { key: 'love', label: 'Love', Icon: Heart },
+  { key: 'celebrate', label: 'Celebrate', Icon: PartyPopper },
+  { key: 'thinking', label: 'Thinking', Icon: HelpCircle },
+  { key: 'lightning', label: 'Lightning', Icon: Zap },
+  { key: 'fire', label: 'Fire', Icon: Flame },
+  { key: 'idea', label: 'Idea', Icon: Lightbulb },
+];
+
+/** Export chat role icons */
+export const ExportRoleIcons = {
+  user: User,
+  agent: Bot,
+  system: Cog,
+} as const;
+
+/** Inline status marks */
+export const StatusMark = {
+  check: Check,
+  cross: X,
+} as const;
+
+/** Workflow empty-state icons */
+export const WorkflowPlaceholderIcons = {
+  noWorkflows: RefreshCw,
+  noExecutions: ClipboardList,
+} as const;
+
+/** Notification type icons */
+export const NotificationTypeIcons = {
+  info: Info,
+  success: Check,
+  warning: TriangleAlert,
+  task: ArrowRight,
+} as const;
+
+/** Misc semantic icons */
+export const SemanticIcons = {
+  toolUse: Wrench,
+  whenToUse: Lightbulb,
+} as const;

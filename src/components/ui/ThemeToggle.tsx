@@ -1,9 +1,7 @@
-'use client';
-
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTheme } from 'next-themes';
-import { cn } from '@/lib/utils';
+import { useUIStore } from '../../stores/uiStore';
+import { cn } from '../../lib/utils';
 
 // Icons
 const SunIcon = () => (
@@ -39,15 +37,9 @@ interface ThemeToggleProps {
 }
 
 export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeToggleProps) {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme } = useUIStore();
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Avoid hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -60,10 +52,16 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const getSystemTheme = (): 'light' | 'dark' => {
+    if (typeof window === 'undefined') return 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  };
+
   const isMatrix = theme === 'matrix';
   const isGlass = theme === 'glass';
   const isAiox = theme === 'aiox';
-  const isDark = resolvedTheme === 'dark' || isMatrix || isGlass || isAiox;
+  const effectiveTheme = theme === 'system' ? getSystemTheme() : ((theme === 'matrix' || theme === 'glass' || theme === 'aiox') ? 'dark' : theme);
+  const isDark = effectiveTheme === 'dark';
 
   const handleToggle = () => {
     if (showDropdown) {
@@ -84,20 +82,13 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
     }
   };
 
-  const handleSelectTheme = (newTheme: string) => {
+  const handleSelectTheme = (newTheme: 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox') => {
     setTheme(newTheme);
     setIsOpen(false);
   };
 
   const buttonSize = size === 'sm' ? 'h-8 w-8' : 'h-10 w-10';
   const iconSize = size === 'sm' ? 14 : 16;
-
-  // Render placeholder until mounted to avoid hydration mismatch
-  if (!mounted) {
-    return (
-      <div className={cn(buttonSize, 'rounded-xl bg-glass-5 border border-[var(--glass-border,transparent)]')} />
-    );
-  }
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -106,7 +97,7 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
         className={cn(
           buttonSize,
           'relative rounded-xl flex items-center justify-center',
-          'bg-glass-5 hover:bg-glass-10 border border-[var(--glass-border,hsl(var(--border)))]',
+          'bg-white/5 hover:bg-white/10 border border-glass-border',
           'transition-colors overflow-hidden'
         )}
         whileTap={{ scale: 0.95 }}
@@ -122,15 +113,10 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
                 animate={{ scale: 1, rotate: 0, opacity: 1 }}
                 exit={{ scale: 0, rotate: 180, opacity: 0 }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="text-lime-400"
+                className="text-[#D1FF00]"
               >
                 <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <circle cx="12" cy="12" r="4" />
-                  <line x1="12" y1="2" x2="12" y2="6" />
-                  <line x1="12" y1="18" x2="12" y2="22" />
-                  <line x1="2" y1="12" x2="6" y2="12" />
-                  <line x1="18" y1="12" x2="22" y2="12" />
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                 </svg>
               </motion.div>
             ) : isMatrix ? (
@@ -168,7 +154,7 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
                 animate={{ scale: 1, rotate: 0, opacity: 1 }}
                 exit={{ scale: 0, rotate: 180, opacity: 0 }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="text-foreground"
+                className="text-primary"
               >
                 <SystemIcon />
               </motion.div>
@@ -202,14 +188,14 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
         <motion.div
           className={cn(
             'absolute inset-0 rounded-xl opacity-20 pointer-events-none',
-            isAiox ? 'bg-lime-500' : isMatrix ? 'bg-green-500' : isGlass ? 'bg-purple-500' : isDark ? 'bg-blue-500' : 'bg-amber-500'
+            isAiox ? 'bg-[#D1FF00]' : isMatrix ? 'bg-green-500' : isGlass ? 'bg-purple-500' : isDark ? 'bg-blue-500' : 'bg-amber-500'
           )}
           initial={false}
           animate={{
             opacity: [0, 0.15, 0],
           }}
           transition={{ duration: 0.6 }}
-          key={resolvedTheme}
+          key={effectiveTheme}
         />
       </motion.button>
 
@@ -264,25 +250,20 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
             <ThemeOption
               icon={
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <circle cx="12" cy="12" r="4" />
-                  <line x1="12" y1="2" x2="12" y2="6" />
-                  <line x1="12" y1="18" x2="12" y2="22" />
-                  <line x1="2" y1="12" x2="6" y2="12" />
-                  <line x1="18" y1="12" x2="22" y2="12" />
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                 </svg>
               }
               label="AIOX Cockpit"
-              description="Lima neon, modo cockpit"
+              description="Dark cockpit, lime neon"
               isSelected={theme === 'aiox'}
               onClick={() => handleSelectTheme('aiox')}
               accentColor="lime"
             />
-            <div className="h-px bg-glass-10 my-1" />
+            <div className="h-px bg-white/10 my-1" />
             <ThemeOption
               icon={<SystemIcon />}
               label="Sistema"
-              description={`Agora: ${resolvedTheme === 'dark' ? 'Escuro' : 'Claro'}`}
+              description={`Agora: ${getSystemTheme() === 'dark' ? 'Escuro' : 'Claro'}`}
               isSelected={theme === 'system'}
               onClick={() => handleSelectTheme('system')}
             />
@@ -307,7 +288,7 @@ function ThemeOption({ icon, label, description, isSelected, onClick, accentColo
     green: { bg: 'bg-green-500/15', text: 'text-green-500' },
     purple: { bg: 'bg-purple-500/15', text: 'text-purple-500' },
     blue: { bg: 'bg-blue-500/15', text: 'text-blue-500' },
-    lime: { bg: 'bg-lime-400/15', text: 'text-lime-400' },
+    lime: { bg: 'bg-[#D1FF00]/15', text: 'text-[#D1FF00]' },
   };
   const colorClasses = colorMap[accentColor];
 
@@ -318,19 +299,19 @@ function ThemeOption({ icon, label, description, isSelected, onClick, accentColo
         'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
         isSelected
           ? `${colorClasses.bg} ${colorClasses.text}`
-          : 'text-foreground hover:bg-glass-10'
+          : 'text-primary hover:bg-white/10'
       )}
     >
       <span className={cn(
         'transition-colors',
-        isSelected ? colorClasses.text : 'text-muted-foreground'
+        isSelected ? colorClasses.text : 'text-secondary'
       )}>
         {icon}
       </span>
       <div className="flex-1 text-left">
         <div className="font-medium">{label}</div>
         {description && (
-          <div className="text-[10px] text-muted-foreground">{description}</div>
+          <div className="text-[10px] text-tertiary">{description}</div>
         )}
       </div>
       {isSelected && (
@@ -348,27 +329,24 @@ function ThemeOption({ icon, label, description, isSelected, onClick, accentColo
 
 // Animated Toggle Switch variant
 export function ThemeToggleSwitch() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useUIStore();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const getSystemTheme = (): 'light' | 'dark' => {
+    if (typeof window === 'undefined') return 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  };
 
-  const isDark = resolvedTheme === 'dark';
+  const effectiveTheme = theme === 'system' ? getSystemTheme() : theme;
+  const isDark = effectiveTheme === 'dark' || effectiveTheme === 'matrix' || effectiveTheme === 'glass' || effectiveTheme === 'aiox';
 
   const handleToggle = () => {
     setTheme(isDark ? 'light' : 'dark');
   };
 
-  if (!mounted) {
-    return <div className="h-8 w-16 rounded-full bg-glass-10 border border-[var(--glass-border,transparent)]" />;
-  }
-
   return (
     <motion.button
       onClick={handleToggle}
-      className="relative h-8 w-16 rounded-full bg-glass-10 border border-[var(--glass-border,hsl(var(--border)))] overflow-hidden"
+      className="relative h-8 w-16 rounded-full bg-white/10 border border-glass-border overflow-hidden"
       whileTap={{ scale: 0.95 }}
       aria-label={`Alternar tema - atual: ${isDark ? 'Escuro' : 'Claro'}`}
     >
