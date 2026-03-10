@@ -238,10 +238,13 @@ const MarkdownImage = memo(function MarkdownImage({ src, alt }: { src?: string; 
   );
 });
 
+// Shared type for markdown components that only use children
+type MdChildren = { children?: React.ReactNode };
+
 // Custom components for markdown elements
 const components = {
   // Code blocks
-  code({ inline, className, children, ...props }: any) {
+  code({ inline, className, children, ...props }: { inline?: boolean; className?: string; children?: React.ReactNode } & React.HTMLAttributes<HTMLElement>) {
     const match = /language-(\w+)/.exec(className || '');
     const language = match ? match[1] : '';
     const value = String(children).replace(/\n$/, '');
@@ -254,7 +257,7 @@ const components = {
   },
 
   // Tables
-  table({ children }: any) {
+  table({ children }: MdChildren) {
     return (
       <div className="overflow-x-auto my-3 rounded-lg border border-glass-10">
         <table className="min-w-full divide-y divide-glass-10">
@@ -263,17 +266,17 @@ const components = {
       </div>
     );
   },
-  thead({ children }: any) {
+  thead({ children }: MdChildren) {
     return <thead className="bg-glass-5">{children}</thead>;
   },
-  th({ children }: any) {
+  th({ children }: MdChildren) {
     return (
       <th className="px-4 py-2 text-left text-xs font-semibold text-foreground-primary uppercase tracking-wider">
         {children}
       </th>
     );
   },
-  td({ children }: any) {
+  td({ children }: MdChildren) {
     return (
       <td className="px-4 py-2 text-sm text-foreground-secondary border-t border-glass-5">
         {children}
@@ -282,7 +285,7 @@ const components = {
   },
 
   // Links
-  a({ href, children }: any) {
+  a({ href, children }: { href?: string; children?: React.ReactNode }) {
     return (
       <a
         href={href}
@@ -296,37 +299,37 @@ const components = {
   },
 
   // Images with lightbox and download
-  img({ src, alt }: any) {
+  img({ src, alt }: { src?: string; alt?: string }) {
     return <MarkdownImage src={src} alt={alt} />;
   },
 
   // Headers
-  h1({ children }: any) {
+  h1({ children }: MdChildren) {
     return <h1 className="text-xl font-bold text-foreground-primary mt-4 mb-2">{children}</h1>;
   },
-  h2({ children }: any) {
+  h2({ children }: MdChildren) {
     return <h2 className="text-lg font-semibold text-foreground-primary mt-4 mb-2">{children}</h2>;
   },
-  h3({ children }: any) {
+  h3({ children }: MdChildren) {
     return <h3 className="text-base font-semibold text-foreground-primary mt-3 mb-1">{children}</h3>;
   },
-  h4({ children }: any) {
+  h4({ children }: MdChildren) {
     return <h4 className="text-sm font-semibold text-foreground-primary mt-2 mb-1">{children}</h4>;
   },
 
   // Lists
-  ul({ children }: any) {
+  ul({ children }: MdChildren) {
     return <ul className="list-disc list-inside space-y-1 my-2 text-foreground-primary">{children}</ul>;
   },
-  ol({ children }: any) {
+  ol({ children }: MdChildren) {
     return <ol className="list-decimal list-inside space-y-1 my-2 text-foreground-primary">{children}</ol>;
   },
-  li({ children }: any) {
+  li({ children }: MdChildren) {
     return <li className="text-sm leading-relaxed">{children}</li>;
   },
 
   // Blockquote
-  blockquote({ children }: any) {
+  blockquote({ children }: MdChildren) {
     return (
       <blockquote className="border-l-4 border-blue-500/50 pl-4 my-3 italic text-foreground-secondary">
         {children}
@@ -340,17 +343,17 @@ const components = {
   },
 
   // Paragraphs
-  p({ children }: any) {
+  p({ children }: MdChildren) {
     return <p className="text-sm leading-relaxed mb-2 last:mb-0">{children}</p>;
   },
 
   // Strong/Bold
-  strong({ children }: any) {
+  strong({ children }: MdChildren) {
     return <strong className="font-semibold text-foreground-primary">{children}</strong>;
   },
 
   // Emphasis/Italic
-  em({ children }: any) {
+  em({ children }: MdChildren) {
     return <em className="italic text-foreground-primary">{children}</em>;
   },
 };
@@ -363,7 +366,7 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
     <div className={cn('markdown-content', className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        components={components}
+        components={components as Record<string, React.ComponentType>}
       >
         {content}
       </ReactMarkdown>

@@ -267,13 +267,13 @@ export function useExecuteWorkflowStream() {
             executionId: data.executionId,
             workflowName: data.workflowName,
             status: 'created',
-            input: (data as any).input || prev.input, // Use input from server if available
-            steps: data.steps.map((s: any) => ({
+            input: (data as Record<string, unknown>).input as Record<string, unknown> || prev.input,
+            steps: data.steps.map((s: { id: string; type: string; status: string; name?: string; config?: LiveExecutionStep['config'] }) => ({
               id: s.id,
               type: s.type,
               status: s.status as LiveExecutionStep['status'],
-              name: s.name, // Step name from workflow definition
-              config: s.config, // Agent config (squadId, agentId, role)
+              name: s.name,
+              config: s.config,
             })),
           } : null);
         },
@@ -465,12 +465,12 @@ export function useSmartOrchestration() {
               workflowId: prev.workflowId || '',
               workflowName: data.workflowName || prev.workflowName || '',
               status: 'created',
-              steps: data.steps.map((s: any) => ({
+              steps: data.steps.map((s: { id: string; type: string; status: string; name?: string; config?: unknown }) => ({
                 id: s.id,
                 type: s.type,
                 status: s.status as LiveExecutionStep['status'],
                 name: s.name,
-                config: s.config,
+                config: s.config as LiveExecutionStep['config'],
               })),
               input: data.input as Record<string, unknown>,
             },

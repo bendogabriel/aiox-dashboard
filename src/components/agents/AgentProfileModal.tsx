@@ -7,7 +7,30 @@ import { GlassAvatar } from '@/components/ui/GlassAvatar';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { getSquadType } from '@/types';
-import type { SquadType } from '@/types';
+import type { SquadType, PlatformAgent, AgentCommand } from '@/types';
+
+// Extended agent type for profile modal (includes runtime config from API)
+interface AgentProfile extends PlatformAgent {
+  config?: {
+    voice_dna?: {
+      sentence_starters?: string[];
+      vocabulary?: { always_use?: string[]; never_use?: string[] };
+    };
+    integration?: {
+      receives_from?: string[];
+      handoff_to?: string[];
+    };
+    anti_patterns?: { never_do?: string[] };
+  };
+  identity?: string;
+  // Flattened quality flags (may come from API alongside quality.*)
+  hasVoiceDna?: boolean;
+  hasAntiPatterns?: boolean;
+  hasIntegration?: boolean;
+  // UI-enriched fields from agent list
+  frameworks?: string[];
+  sampleTasks?: string[];
+}
 
 // Focus trap hook for accessibility
 function useFocusTrap(isActive: boolean) {
@@ -103,7 +126,7 @@ const LinkIcon = () => (
 );
 
 interface AgentProfileModalProps {
-  agent: any;
+  agent: AgentProfile;
   isOpen: boolean;
   onClose: () => void;
   onStartChat?: () => void;
@@ -202,7 +225,7 @@ export function AgentProfileModal({ agent, isOpen, onClose, onStartChat }: Agent
                     <Badge variant="outline">
                       {agent.squad}
                     </Badge>
-                    {agent.commandCount > 0 && (
+                    {(agent.commandCount ?? 0) > 0 && (
                       <span className="text-xs text-foreground-tertiary">{agent.commandCount} comandos</span>
                     )}
                   </div>
@@ -308,7 +331,7 @@ export function AgentProfileModal({ agent, isOpen, onClose, onStartChat }: Agent
 }
 
 // Tab: Overview
-function TabOverview({ agent }: { agent: any }) {
+function TabOverview({ agent }: { agent: AgentProfile }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -345,11 +368,11 @@ function TabOverview({ agent }: { agent: any }) {
       {agent.corePrinciples && agent.corePrinciples.length > 0 && (
         <Section title="Principios Core" icon={<PrincipleIcon />}>
           <ul className="space-y-2">
-            {agent.corePrinciples.map((principle: any, i: number) => (
+            {agent.corePrinciples.map((principle: string, i: number) => (
               <li key={i} className="flex items-start gap-2">
                 <span className="text-blue-400 mt-1">&#8226;</span>
                 <span className="text-sm text-foreground-secondary">
-                  {typeof principle === 'string' ? principle : principle.principle}
+                  {String(principle)}
                 </span>
               </li>
             ))}
@@ -391,7 +414,7 @@ function TabOverview({ agent }: { agent: any }) {
 }
 
 // Tab: Commands
-function TabCommands({ agent }: { agent: any }) {
+function TabCommands({ agent }: { agent: AgentProfile }) {
   const commands = agent.commands || [];
 
   return (
@@ -407,7 +430,7 @@ function TabCommands({ agent }: { agent: any }) {
           <p className="mt-2">Nenhum comando especifico definido</p>
         </div>
       ) : (
-        commands.map((cmd: any, i: number) => (
+        commands.map((cmd: AgentCommand, i: number) => (
           <div
             key={i}
             className="p-4 rounded-xl bg-glass-5 border border-glass-10 hover:bg-glass-8 transition-colors"
@@ -426,7 +449,7 @@ function TabCommands({ agent }: { agent: any }) {
 }
 
 // Tab: Voice & Style
-function TabVoice({ agent }: { agent: any }) {
+function TabVoice({ agent }: { agent: AgentProfile }) {
   const voiceDna = agent.config?.voice_dna;
 
   if (!voiceDna) {
@@ -490,7 +513,7 @@ function TabVoice({ agent }: { agent: any }) {
 }
 
 // Tab: Integration
-function TabIntegration({ agent }: { agent: any }) {
+function TabIntegration({ agent }: { agent: AgentProfile }) {
   const integration = agent.config?.integration;
 
   if (!integration) {

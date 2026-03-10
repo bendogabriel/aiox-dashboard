@@ -25,9 +25,9 @@ function extractImagesFromToolResults(toolResults: StreamToolsEvent['toolResults
 
   for (const toolResult of toolResults) {
     // Use 'tool' field (backend) or 'name' field (fallback)
-    const toolName = toolResult.tool || (toolResult as any).name || '';
+    const toolName = String(toolResult.tool || (toolResult as Record<string, unknown>).name || '');
     // Use 'output' field (backend) or 'result' field (fallback)
-    const output = toolResult.output || (toolResult as any).result;
+    const output = toolResult.output || (toolResult as Record<string, unknown>).result;
 
     if (!toolResult.success || !output) continue;
 
@@ -129,11 +129,11 @@ export function useExecuteAgent() {
                 // Log tool usage
                 if (event.toolResults && event.toolResults.length > 0) {
                   for (const toolResult of event.toolResults) {
-                    const toolName = toolResult.tool || (toolResult as any).name || 'unknown';
+                    const toolName = String(toolResult.tool || (toolResult as Record<string, unknown>).name || 'unknown');
                     addToolUse(
                       toolName,
                       toolResult.success,
-                      toolResult.output || (toolResult as any).result,
+                      String(toolResult.output || (toolResult as Record<string, unknown>).result || ''),
                       toolResult.error
                     );
                   }

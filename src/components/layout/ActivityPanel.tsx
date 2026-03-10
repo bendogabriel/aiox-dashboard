@@ -18,7 +18,8 @@ import { formatRelativeTime, cn } from '@/lib/utils';
 import { getTierTheme } from '@/lib/theme';
 import { getSquadType } from '@/types';
 import { ExecutionLogPanel } from './ExecutionLogPanel';
-import type { Message, SquadType } from '@/types';
+import type { Message, SquadType, AgentCommand } from '@/types';
+import type { AgentWithUI } from '@/hooks/use-agents';
 
 // Icons
 const CheckIcon = () => (
@@ -324,7 +325,7 @@ export function ActivityPanel() {
 
 // Agent Info Card
 interface AgentInfoCardProps {
-  agent: any;
+  agent: AgentWithUI;
   squadType: SquadType;
 }
 
@@ -370,7 +371,7 @@ interface SquadCommand {
   file: string;
 }
 
-function AgentCommandsPanel({ agent }: { agent: any }) {
+function AgentCommandsPanel({ agent }: { agent: AgentWithUI }) {
   const { sendMessage } = useChat();
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
@@ -388,7 +389,7 @@ function AgentCommandsPanel({ agent }: { agent: any }) {
   });
 
   // Agent-level data
-  const agentActions = agent.actions || [];
+  const agentActions = (agent as AgentWithUI & Record<string, unknown>).actions as Array<Record<string, string>> || [];
   const agentCommands = agent.commands || [];
   const agentPrompts = agent.sampleTasks || [];
 
@@ -407,17 +408,31 @@ function AgentCommandsPanel({ agent }: { agent: any }) {
     }));
   };
 
-  // Command categories configuration
-  const categories = [
+  // Command category with loosely-typed callbacks to support heterogeneous item arrays
+  interface CommandCategory {
+    id: string;
+    label: string;
+    icon: React.ReactNode;
+    items: unknown[];
+    color: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getCommand: (item: any) => string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getLabel: (item: any) => string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getDescription: (item: any) => string | null;
+  }
+
+  const categories: CommandCategory[] = [
     {
       id: 'actions',
       label: 'Ações',
       icon: <ActionIcon />,
       items: agentActions,
       color: 'yellow',
-      getCommand: (item: any) => item.description || item.name,
-      getLabel: (item: any) => item.name,
-      getDescription: (item: any) => item.trigger,
+      getCommand: (item: Record<string, string>) => item.description || item.name,
+      getLabel: (item: Record<string, string>) => item.name,
+      getDescription: (item: Record<string, string>) => item.trigger,
     },
     {
       id: 'commands',
@@ -425,9 +440,9 @@ function AgentCommandsPanel({ agent }: { agent: any }) {
       icon: <CommandIcon />,
       items: agentCommands,
       color: 'purple',
-      getCommand: (item: any) => item.command,
-      getLabel: (item: any) => item.command,
-      getDescription: (item: any) => item.description,
+      getCommand: (item: AgentCommand) => item.command,
+      getLabel: (item: AgentCommand) => item.command,
+      getDescription: (item: AgentCommand) => item.description || '',
     },
     {
       id: 'prompts',
@@ -502,7 +517,7 @@ function AgentCommandsPanel({ agent }: { agent: any }) {
             {/* Category Items */}
             <div className="space-y-1.5">
               <AnimatePresence initial={false}>
-                {displayItems.map((item: any, index: number) => (
+                {displayItems.map((item, index: number) => (
                   <motion.button
                     key={index}
                     initial={index >= 3 ? { opacity: 0, height: 0 } : false}

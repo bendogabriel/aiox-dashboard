@@ -303,16 +303,16 @@ export function CategoryManager() {
           </p>
           <div className="flex flex-wrap gap-2">
             {uncategorizedSquads.map((squad) => (
-              <motion.div
+              <div
                 key={squad.id}
                 draggable
-                onDragStart={(e: any) => {
+                onDragStart={(e) => {
                   e.dataTransfer.setData('squadId', squad.id);
                 }}
                 className="px-3 py-1.5 rounded-lg border border-glass-20 bg-glass-5 text-sm text-primary cursor-grab hover:border-glass-40 transition-colors"
               >
                 {squad.icon} {squad.name}
-              </motion.div>
+              </div>
             ))}
           </div>
         </Card>
@@ -324,7 +324,7 @@ export function CategoryManager() {
 // Category Item Component
 interface CategoryItemProps {
   category: CategoryConfig;
-  squads: any[];
+  squads: Array<{ id: string; name: string; icon?: string; agentCount?: number }>;
   isExpanded: boolean;
   isEditing: boolean;
   onToggle: () => void;
@@ -360,6 +360,7 @@ function CategoryItem({
   const categorySquads = squads.filter((s) => category.squads.includes(s.id));
   const sortedSquads = category.squads
     .map((id) => squads.find((s) => s.id === id))
+    .filter((s): s is { id: string; name: string; icon?: string; agentCount?: number } => !!s)
     .filter(Boolean);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -477,7 +478,7 @@ function CategoryItem({
                   onReorder={onReorderSquads}
                   className="space-y-1"
                 >
-                  {sortedSquads.map((squad: any) => (
+                  {sortedSquads.map((squad: { id: string; name: string; icon?: string; agentCount?: number }) => (
                     <Reorder.Item
                       key={squad.id}
                       value={squad.id}

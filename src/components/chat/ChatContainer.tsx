@@ -52,7 +52,8 @@ import { useChatStore } from '@/stores/chatStore';
 import { useUIStore } from '@/stores/uiStore';
 import { apiClient } from '@/services/api/client';
 import { cn, squadLabels, getTierTheme } from '@/lib/utils';
-import type { PlatformSquad, SquadType, AgentSummary, AgentTier, ChatSession } from '@/types';
+import type { PlatformSquad, SquadType, AgentSummary, AgentTier, ChatSession, AgentCommand, Message } from '@/types';
+import type { AgentWithUI } from '@/hooks/use-agents';
 import { getSquadType } from '@/types';
 
 export function ChatContainer() {
@@ -321,8 +322,8 @@ function ChatConversationPanel({
 }
 
 interface ChatHeaderProps {
-  agent: any;
-  session: any;
+  agent: AgentWithUI;
+  session: ChatSession | null;
   chatSidebarOpen?: boolean;
   onToggleSidebar?: () => void;
 }
@@ -356,7 +357,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
 
   // Filter messages based on search
   const matchingMessages = searchQuery.length > 1 && session?.messages
-    ? session.messages.filter((m: any) =>
+    ? session.messages.filter((m: Message) =>
         m.content.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : [];
@@ -501,7 +502,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
                           <p className="text-xs text-tertiary px-2 py-1">
                             {matchingMessages.length} resultado(s)
                           </p>
-                          {matchingMessages.slice(0, 5).map((msg: any, i: number) => (
+                          {matchingMessages.slice(0, 5).map((msg: Message, i: number) => (
                             <div
                               key={i}
                               className="p-2 rounded-lg hover:bg-glass-10 cursor-pointer transition-colors"
@@ -586,7 +587,7 @@ function ChatHeader({ agent, session, chatSidebarOpen, onToggleSidebar }: ChatHe
                       onClick={() => {
                         if (session?.messages) {
                           const content = session.messages
-                            .map((m: any) => `${m.role}: ${m.content}`)
+                            .map((m: Message) => `${m.role}: ${m.content}`)
                             .join('\n\n');
                           navigator.clipboard.writeText(content);
                         }
@@ -656,7 +657,7 @@ function MenuOption({ icon, label, danger, onClick }: MenuOptionProps) {
 
 // Commands Modal - shows agent commands, tasks, and workflows
 interface CommandsModalProps {
-  agent: any;
+  agent: AgentWithUI;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -689,7 +690,7 @@ function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
   });
 
   // Agent-level data
-  const agentActions = agent.actions || [];
+  const agentActions = (agent as AgentWithUI & Record<string, unknown>).actions as Array<Record<string, string>> || [];
   const agentCommands = agent.commands || [];
   const agentPrompts = agent.sampleTasks || [];
 
@@ -830,7 +831,7 @@ function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
                         {agentActions.length === 0 ? (
                           <LocalEmptyState message="Nenhuma ação definida para este agent" />
                         ) : (
-                          agentActions.map((action: any, index: number) => (
+                          agentActions.map((action: Record<string, string>, index: number) => (
                             <CommandItem
                               key={index}
                               command={action.name}
@@ -849,11 +850,11 @@ function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
                         {agentCommands.length === 0 ? (
                           <LocalEmptyState message="Nenhum comando definido para este agent" />
                         ) : (
-                          agentCommands.map((cmd: any, index: number) => (
+                          agentCommands.map((cmd: AgentCommand, index: number) => (
                             <CommandItem
                               key={index}
                               command={cmd.command}
-                              description={cmd.description}
+                              description={cmd.description || ''}
                               type="command"
                               onUse={() => handleUseCommand(cmd.command)}
                             />
@@ -1057,7 +1058,7 @@ function LocalEmptyState({ message }: { message: string }) {
 }
 
 interface WelcomeMessageProps {
-  agent: any;
+  agent: AgentWithUI;
 }
 
 function WelcomeMessage({ agent }: WelcomeMessageProps) {
@@ -1111,7 +1112,7 @@ function WelcomeMessage({ agent }: WelcomeMessageProps) {
   );
 }
 
-function SuggestionPrompts({ agent }: { agent: any }) {
+function SuggestionPrompts({ agent }: { agent: AgentWithUI }) {
   const { sendMessage } = useChat();
 
   const suggestions = getSuggestionsForAgent(agent);
@@ -1245,13 +1246,13 @@ const squadSuggestions: Record<string, AgentSuggestion[]> = {
   ],
 };
 
-function getSuggestionsForAgent(agent: any): AgentSuggestion[] {
+function getSuggestionsForAgent(agent: AgentWithUI): AgentSuggestion[] {
   // Priority 1: Dynamic commands from agent markdown files (from backend)
   if (agent.commands && agent.commands.length > 0) {
-    const dynamicSuggestions = agent.commands.slice(0, 4).map((cmd: any) => ({
+    const dynamicSuggestions = agent.commands.slice(0, 4).map((cmd: AgentCommand) => ({
       icon: getCommandIcon(cmd.command),
       label: cmd.command.replace(/^\*/, ''),
-      prompt: cmd.description,
+      prompt: cmd.description || cmd.command,
     }));
     return dynamicSuggestions;
   }
