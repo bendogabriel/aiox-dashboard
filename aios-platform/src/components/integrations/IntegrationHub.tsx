@@ -12,6 +12,7 @@ import { WebhookAlerts } from './WebhookAlerts';
 import { ProfileSwitcher } from './ProfileSwitcher';
 import { IntegrationTestPanel } from './IntegrationTestPanel';
 import { IntegrationDocsPanel } from './IntegrationDocsPanel';
+import { TeamConfigSync } from './TeamConfigSync';
 
 // ── Integration metadata with categories ──────────────────
 
@@ -272,6 +273,7 @@ export default function IntegrationHub() {
           <ConfigShareQR />
           <WebhookAlerts />
           <IntegrationDocsPanel />
+          <TeamConfigSync />
         </div>
       </div>
 
