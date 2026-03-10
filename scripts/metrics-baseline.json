@@ -1,7 +1,7 @@
 {
-  "anyCount": 3,
+  "anyCount": 0,
   "testCount": 124,
-  "barrelExports": 28,
-  "buildSizeKB": 1962688,
-  "timestamp": "2026-03-10T19:51:56.211Z"
+  "barrelExports": 0,
+  "buildSizeKB": 2360280,
+  "timestamp": "2026-03-10T23:07:16.589Z"
 }
