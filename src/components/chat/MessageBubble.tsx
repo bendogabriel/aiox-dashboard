@@ -1,6 +1,6 @@
 'use client';
 
-import { lazy, Suspense, memo, useState } from 'react';
+import { lazy, Suspense, memo, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { GlassAvatar } from '@/components/ui/GlassAvatar';
@@ -12,6 +12,19 @@ import type { Message, MessageAttachment, SquadType } from '@/types';
 const MarkdownRenderer = lazy(() =>
   import('./MarkdownRenderer').then((m) => ({ default: m.MarkdownRenderer }))
 );
+
+// Animation constants (stable references, never recreated)
+const USER_ANIMATION = {
+  initial: { opacity: 0, y: 10, x: 20, scale: 0.95 },
+  animate: { opacity: 1, y: 0, x: 0, scale: 1 },
+  transition: { type: 'spring', damping: 25, stiffness: 400 },
+};
+const AGENT_ANIMATION = {
+  initial: { opacity: 0, y: 10, x: -10 },
+  animate: { opacity: 1, y: 0, x: 0 },
+  transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
+};
+const MARKDOWN_PATTERN = /[*_`#\[\]|>]/;
 
 interface MessageBubbleProps {
   message: Message;
@@ -32,18 +45,7 @@ export const MessageBubble = memo(function MessageBubble({
     return <SystemMessage content={message.content} />;
   }
 
-  // Different animations for user vs agent messages
-  const messageAnimation = isUser
-    ? {
-        initial: { opacity: 0, y: 10, x: 20, scale: 0.95 },
-        animate: { opacity: 1, y: 0, x: 0, scale: 1 },
-        transition: { type: 'spring', damping: 25, stiffness: 400 },
-      }
-    : {
-        initial: { opacity: 0, y: 10, x: -10 },
-        animate: { opacity: 1, y: 0, x: 0 },
-        transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
-      };
+  const messageAnimation = isUser ? USER_ANIMATION : AGENT_ANIMATION;
 
   return (
     <motion.div
@@ -141,7 +143,7 @@ function MessageContent({ content, isStreaming, isUser }: MessageContentProps) {
   }
 
   // Check if content has markdown formatting (for user messages)
-  const hasMarkdown = isUser && /[*_`#\[\]|>]/.test(content);
+  const hasMarkdown = isUser && MARKDOWN_PATTERN.test(content);
 
   // For user messages with markdown formatting, use markdown renderer
   // For simple user messages, use plain text for performance
@@ -169,9 +171,9 @@ interface MessageAttachmentsProps {
   attachments: MessageAttachment[];
 }
 
-function MessageAttachments({ attachments }: MessageAttachmentsProps) {
-  const images = attachments.filter(a => a.type === 'image');
-  const files = attachments.filter(a => a.type !== 'image');
+const MessageAttachments = memo(function MessageAttachments({ attachments }: MessageAttachmentsProps) {
+  const images = useMemo(() => attachments.filter(a => a.type === 'image'), [attachments]);
+  const files = useMemo(() => attachments.filter(a => a.type !== 'image'), [attachments]);
 
   return (
     <div className="mt-3 space-y-2">
@@ -199,7 +201,7 @@ function MessageAttachments({ attachments }: MessageAttachmentsProps) {
       )}
     </div>
   );
-}
+});
 
 // Image attachment with lightbox
 function ImageAttachment({ attachment }: { attachment: MessageAttachment }) {

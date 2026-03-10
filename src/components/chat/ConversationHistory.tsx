@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, memo } from 'react';
+import { useState, memo, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChatStore } from '@/stores/chatStore';
 import { useUIStore } from '@/stores/uiStore';
@@ -166,62 +166,65 @@ export function ConversationHistory() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
-  const { sessions, activeSessionId, setActiveSession, deleteSession, clearSessions } = useChatStore();
-  const { setSelectedAgentId } = useUIStore();
+  const sessions = useChatStore(s => s.sessions);
+  const activeSessionId = useChatStore(s => s.activeSessionId);
+  const setActiveSession = useChatStore(s => s.setActiveSession);
+  const deleteSession = useChatStore(s => s.deleteSession);
+  const clearSessions = useChatStore(s => s.clearSessions);
+  const setSelectedAgentId = useUIStore(s => s.setSelectedAgentId);
 
-  const handleSelect = (session: ChatSession) => {
+  const handleSelect = useCallback((session: ChatSession) => {
     setActiveSession(session.id);
-    // Set both atomically to avoid setSelectedSquadId clearing the agentId
     useUIStore.setState({
       selectedSquadId: session.squadId,
       selectedAgentId: session.agentId,
     });
     setSearchQuery('');
     setShowSearch(false);
-  };
+  }, [setActiveSession]);
 
-  const handleNewConversation = () => {
+  const handleNewConversation = useCallback(() => {
     setActiveSession(null);
     setSelectedAgentId(null);
-  };
+  }, [setActiveSession, setSelectedAgentId]);
 
-  const handleClearAll = () => {
+  const handleClearAll = useCallback(() => {
     if (confirm('Tem certeza que deseja excluir todas as conversas?')) {
       clearSessions();
       setSelectedAgentId(null);
     }
-  };
+  }, [clearSessions, setSelectedAgentId]);
 
-  // Filter sessions by search query
-  const filteredSessions = searchQuery.length > 0
-    ? sessions.filter(session => {
-        const query = searchQuery.toLowerCase();
-        // Search in agent name
-        if (session.agentName.toLowerCase().includes(query)) return true;
-        // Search in messages
-        return session.messages.some(m => m.content.toLowerCase().includes(query));
-      })
-    : sessions;
+  const filteredSessions = useMemo(() => {
+    if (searchQuery.length === 0) return sessions;
+    const query = searchQuery.toLowerCase();
+    return sessions.filter(session => {
+      if (session.agentName.toLowerCase().includes(query)) return true;
+      return session.messages.some(m => m.content.toLowerCase().includes(query));
+    });
+  }, [sessions, searchQuery]);
 
-  // Sort sessions by updatedAt (most recent first)
-  const sortedSessions = [...filteredSessions].sort(
-    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  const sortedSessions = useMemo(() =>
+    [...filteredSessions].sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    ),
+    [filteredSessions]
   );
 
-  // Group by today, yesterday, older
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  const grouped = {
-    today: sortedSessions.filter(s => new Date(s.updatedAt) >= today),
-    yesterday: sortedSessions.filter(s => {
-      const date = new Date(s.updatedAt);
-      return date >= yesterday && date < today;
-    }),
-    older: sortedSessions.filter(s => new Date(s.updatedAt) < yesterday),
-  };
+  const grouped = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    return {
+      today: sortedSessions.filter(s => new Date(s.updatedAt) >= today),
+      yesterday: sortedSessions.filter(s => {
+        const date = new Date(s.updatedAt);
+        return date >= yesterday && date < today;
+      }),
+      older: sortedSessions.filter(s => new Date(s.updatedAt) < yesterday),
+    };
+  }, [sortedSessions]);
 
   return (
     <div className="space-y-1">
