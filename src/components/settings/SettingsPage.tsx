@@ -1046,10 +1046,12 @@ function AppearanceSettings() {
     { id: 'dark' as const, label: 'Escuro', description: 'Interface escura para conforto visual' },
     { id: 'glass' as const, label: 'Liquid Glass', description: 'Painéis de vidro fosco sobre fundo colorido vibrante' },
     { id: 'matrix' as const, label: 'Matrix', description: 'Verde neon sobre preto — modo hacker' },
+    { id: 'aiox' as const, label: 'AIOX Cockpit', description: 'Lima neon sobre preto — modo cockpit' },
     { id: 'system' as const, label: 'Sistema', description: 'Segue as preferências do sistema' },
   ];
 
   const isMatrix = theme === 'matrix';
+  const isAiox = theme === 'aiox';
 
   return (
     <div className="space-y-6">
@@ -1062,21 +1064,24 @@ function AppearanceSettings() {
           <ThemeToggleSwitch />
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {themes.map((t) => {
             const isActive = theme === t.id;
             const isMatrixCard = t.id === 'matrix';
             const isGlassCard = t.id === 'glass';
+            const isAioxCard = t.id === 'aiox';
             return (
               <button
                 key={t.id}
                 onClick={() => {
-                  setTheme(t.id as 'light' | 'dark' | 'system' | 'matrix' | 'glass');
+                  setTheme(t.id as 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox');
                   success('Tema alterado', `Tema ${t.label} aplicado`);
                 }}
                 className={cn(
                   'p-4 rounded-xl border-2 transition-all text-center group',
-                  isActive && isMatrixCard
+                  isActive && isAioxCard
+                    ? 'border-lime-400 bg-lime-400/10'
+                    : isActive && isMatrixCard
                     ? 'border-green-500 bg-green-500/10'
                     : isActive && isGlassCard
                     ? 'border-purple-500 bg-purple-500/10'
@@ -1093,7 +1098,7 @@ function AppearanceSettings() {
                 {isActive && (
                   <div className={cn(
                     'mt-2',
-                    isMatrixCard ? 'text-green-500' : isGlassCard ? 'text-purple-500' : 'text-blue-500'
+                    isAioxCard ? 'text-lime-400' : isMatrixCard ? 'text-green-500' : isGlassCard ? 'text-purple-500' : 'text-blue-500'
                   )}>
                     <CheckIcon />
                   </div>

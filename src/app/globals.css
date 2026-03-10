@@ -316,6 +316,93 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   AIOX DARK COCKPIT - Theme Override
+   Lima neon (#D1FF00) on near-black
+   ═══════════════════════════════════════════════════════════════════════════ */
+html[data-theme="aiox"] {
+  /* Background scale */
+  --bg-base: #000000;
+  --bg-elevated: #050505;
+  --bg-surface: #0F0F11;
+  --bg-surface-hover: #181635;
+  --bg-overlay: #1C1E19;
+  --bg-hover: rgba(209, 255, 0, 0.03);
+
+  /* Core overrides */
+  --background: var(--bg-base);
+  --foreground: #ffffed;
+  --card: var(--bg-surface);
+  --card-hover: var(--bg-surface-hover);
+  --card-foreground: #ffffed;
+  --popover: var(--bg-surface);
+  --popover-foreground: #ffffed;
+
+  /* Borders */
+  --border: rgba(156, 156, 156, 0.10);
+  --border-subtle: rgba(156, 156, 156, 0.06);
+  --border-medium: rgba(156, 156, 156, 0.16);
+  --border-strong: rgba(156, 156, 156, 0.25);
+
+  /* Text hierarchy */
+  --text-primary: #ffffed;
+  --text-secondary: #9c9c9c;
+  --text-tertiary: #858585;
+  --text-muted: #696969;
+  --text-disabled: #3D3D3D;
+
+  /* Primary — Lime accent */
+  --primary: #D1FF00;
+  --primary-foreground: #050505;
+
+  /* Secondary */
+  --secondary: #0F0F11;
+  --secondary-foreground: #9c9c9c;
+
+  /* Muted */
+  --muted: #0F0F11;
+  --muted-foreground: #858585;
+
+  /* Accent — Lime system (remap gold → lime) */
+  --accent: rgba(209, 255, 0, 0.08);
+  --accent-foreground: #D1FF00;
+  --accent-gold: #D1FF00;
+  --accent-gold-light: #e8ff66;
+  --accent-gold-dim: rgba(209, 255, 0, 0.25);
+  --accent-gold-bg: rgba(209, 255, 0, 0.06);
+  --accent-gold-bg-hover: rgba(209, 255, 0, 0.10);
+  --border-gold: rgba(209, 255, 0, 0.25);
+  --border-gold-strong: rgba(209, 255, 0, 0.50);
+
+  /* Destructive */
+  --destructive: #EF4444;
+  --input: var(--border);
+  --ring: rgba(209, 255, 0, 0.50);
+
+  /* Focus */
+  --ring-color: rgba(209, 255, 0, 0.50);
+
+  /* Radius */
+  --radius-md: 8px;
+
+  /* Sidebar — deep black */
+  --sidebar: #030303;
+  --sidebar-foreground: #9c9c9c;
+  --sidebar-primary: #D1FF00;
+  --sidebar-primary-foreground: #050505;
+  --sidebar-accent: rgba(209, 255, 0, 0.08);
+  --sidebar-accent-foreground: #ffffed;
+  --sidebar-border: rgba(156, 156, 156, 0.06);
+  --sidebar-ring: rgba(209, 255, 0, 0.50);
+
+  /* Chart colors (AIOX palette) */
+  --chart-1: #D1FF00;
+  --chart-2: #0099FF;
+  --chart-3: #4ADE80;
+  --chart-4: #f59e0b;
+  --chart-5: #ED4609;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    TAILWIND THEME MAPPING
    ═══════════════════════════════════════════════════════════════════════════ */
 @theme inline {

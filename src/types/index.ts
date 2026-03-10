@@ -211,6 +211,7 @@ export type SidebarView =
   | 'github'
   | 'worktrees'
   | 'squads'
+  | 'sales-room'
   | 'settings';
 
 export interface SidebarItem {
@@ -272,6 +273,7 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: 'context', label: 'Context', icon: 'brain', href: '/context', shortcut: 'C' },
   { id: 'roadmap', label: 'Roadmap', icon: 'map', href: '/roadmap', shortcut: 'R' },
   { id: 'squads', label: 'Squads', icon: 'network', href: '/squads', shortcut: 'Q' },
+  { id: 'sales-room', label: 'Sales Room', icon: 'eye', href: '/sales-room', shortcut: 'L' },
   { id: 'github', label: 'GitHub', icon: 'github', href: '/github', shortcut: 'G' },
   { id: 'settings', label: 'Settings', icon: 'settings', href: '/settings', shortcut: 'S' },
 ];

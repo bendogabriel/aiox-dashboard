@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-type ThemeType = 'light' | 'dark' | 'system' | 'matrix' | 'glass';
+type ThemeType = 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox';
 
 type ViewType =
   | 'chat' | 'dashboard' | 'settings' | 'orchestrator' | 'world'
@@ -65,6 +65,9 @@ const applyTheme = (theme: ThemeType) => {
   } else if (theme === 'glass') {
     html.classList.add('dark');
     html.setAttribute('data-theme', 'glass');
+  } else if (theme === 'aiox') {
+    html.classList.add('dark');
+    html.setAttribute('data-theme', 'aiox');
   } else {
     const effectiveTheme = theme === 'system' ? getSystemTheme() : theme;
     if (effectiveTheme === 'dark') {
@@ -104,8 +107,10 @@ export const useUIStore = create<PlatformUIState & UIActions>()(
       toggleTheme: () => {
         const currentTheme = get().theme;
         let newTheme: ThemeType;
-        if (currentTheme === 'matrix') {
+        if (currentTheme === 'aiox') {
           newTheme = 'light';
+        } else if (currentTheme === 'matrix') {
+          newTheme = 'aiox';
         } else if (currentTheme === 'glass') {
           newTheme = 'matrix';
         } else {

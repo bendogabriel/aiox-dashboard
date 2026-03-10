@@ -101,6 +101,12 @@ import {
   BookOpen,
   FileCode,
 
+  // Sales / Observation
+  Eye,
+  ShoppingCart,
+  Phone,
+  Headphones,
+
   // Emotes
   Heart,
   ThumbsUp,
@@ -110,6 +116,9 @@ import {
   Star,
   Coffee,
   Flame,
+
+  // Sales
+  Radio,
 
   // Theme icons
   Laptop,
@@ -214,6 +223,13 @@ export const iconMap = {
   layers: Layers,
   'book-open': BookOpen,
   'file-code': FileCode,
+
+  // Sales / Observation
+  eye: Eye,
+  'shopping-cart': ShoppingCart,
+  phone: Phone,
+  headphones: Headphones,
+  radio: Radio,
 } as const;
 
 export type IconName = keyof typeof iconMap;
@@ -363,6 +379,11 @@ export {
   Star,
   Coffee,
   Flame,
+  Eye,
+  ShoppingCart,
+  Phone,
+  Headphones,
+  Radio,
   Laptop,
   type LucideIcon,
 };

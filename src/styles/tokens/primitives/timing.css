@@ -7,4 +7,22 @@
   --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
   --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --easing-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* AIOX Cockpit */
+  --duration-aiox-fast: 200ms;
+  --duration-aiox-medium: 400ms;
+  --duration-aiox-slow: 700ms;
+  --easing-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --easing-decel: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Brandbook easing curves */
+  --bb-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --bb-ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --bb-ease-decel: cubic-bezier(0, 0, 0.2, 1);
+  --bb-ease-accel: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Brandbook durations */
+  --bb-dur-fast: 0.2s;
+  --bb-dur-medium: 0.4s;
+  --bb-dur-slow: 0.7s;
 }

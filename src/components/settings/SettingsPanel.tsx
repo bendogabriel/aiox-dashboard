@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Sun, Moon, Monitor, RotateCcw } from 'lucide-react';
+import { Sun, Moon, Monitor, RotateCcw, Layers, Terminal, Crosshair } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { iconMap } from '@/lib/icons';
 import { useSettingsStore, type Theme } from '@/stores/settings-store';
@@ -10,6 +10,9 @@ import { AGENT_CONFIG, type AgentId } from '@/types';
 const THEME_OPTIONS: { value: Theme; label: string; icon: typeof Sun }[] = [
   { value: 'light', label: 'Light', icon: Sun },
   { value: 'dark', label: 'Dark', icon: Moon },
+  { value: 'glass', label: 'Glass', icon: Layers },
+  { value: 'matrix', label: 'Matrix', icon: Terminal },
+  { value: 'aiox', label: 'AIOX', icon: Crosshair },
   { value: 'system', label: 'System', icon: Monitor },
 ];
 
@@ -36,9 +39,22 @@ export function SettingsPanel() {
   useEffect(() => {
     const root = document.documentElement;
 
+    // Clean up
+    root.classList.remove('dark');
+    root.removeAttribute('data-theme');
+
     if (settings.theme === 'system') {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       root.classList.toggle('dark', prefersDark);
+    } else if (settings.theme === 'glass') {
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'glass');
+    } else if (settings.theme === 'matrix') {
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'matrix');
+    } else if (settings.theme === 'aiox') {
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'aiox');
     } else {
       root.classList.toggle('dark', settings.theme === 'dark');
     }
