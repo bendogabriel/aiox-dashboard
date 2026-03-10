@@ -10,6 +10,8 @@ import { EnvGenerator } from './EnvGenerator';
 import { ConfigShareQR } from './ConfigShareQR';
 import { WebhookAlerts } from './WebhookAlerts';
 import { ProfileSwitcher } from './ProfileSwitcher';
+import { IntegrationTestPanel } from './IntegrationTestPanel';
+import { IntegrationDocsPanel } from './IntegrationDocsPanel';
 
 // ── Integration metadata with categories ──────────────────
 
@@ -265,9 +267,11 @@ export default function IntegrationHub() {
           marginTop: '8px',
         }}>
           <ProfileSwitcher />
+          <IntegrationTestPanel />
           <EnvGenerator />
           <ConfigShareQR />
           <WebhookAlerts />
+          <IntegrationDocsPanel />
         </div>
       </div>
 

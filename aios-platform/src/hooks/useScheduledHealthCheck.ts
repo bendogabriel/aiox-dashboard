@@ -10,6 +10,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useHealthMonitorStore } from '../stores/healthMonitorStore';
 import { useIntegrationStore, type IntegrationId } from '../stores/integrationStore';
 import { probeIntegration } from './useHealthCheck';
+import { circuitBreaker } from '../lib/circuit-breaker';
 
 const ALL_INTEGRATIONS: IntegrationId[] = [
   'engine', 'supabase', 'api-keys', 'whatsapp',
@@ -30,8 +31,11 @@ export function useScheduledHealthCheck() {
     pollCountRef.current += 1;
 
     // Determine which integrations to check this cycle
-    // Apply backoff: only check failing integrations every N cycles
+    // Apply backoff + circuit breaker: skip open circuits and apply backoff for failing ones
     const toCheck = ALL_INTEGRATIONS.filter((id) => {
+      // Circuit breaker: skip if circuit is open (cooldown not elapsed)
+      if (!circuitBreaker.canProbe(id)) return false;
+
       const multiplier = monitor.getBackoffMultiplier(id);
       if (multiplier <= 1) return true;
       // Check on every Nth poll cycle
@@ -46,6 +50,7 @@ export function useScheduledHealthCheck() {
 
         const result = await probeIntegration(id);
         monitor.recordPollResult(id, result.ok);
+        circuitBreaker.recordResult(id, result.ok);
         return result;
       }),
     );

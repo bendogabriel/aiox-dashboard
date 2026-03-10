@@ -2,6 +2,9 @@ import React, { useMemo, useState, useEffect } from 'react'
 import { AlertTriangle } from 'lucide-react'
 import { HealthCard } from './HealthCard'
 import { DependencyGraph } from './DependencyGraph'
+import { EventLogViewer } from './EventLogViewer'
+import { SlaPanel } from './SlaPanel'
+import { NotificationCenter } from './NotificationCenter'
 import {
   CockpitKpiCard,
   CockpitAlert,
@@ -165,14 +168,26 @@ export default function CockpitDashboard({ viewToggle }: { viewToggle?: React.Re
         <HealthCard />
       </div>
 
+      {/* SLA / Uptime Goals */}
+      <CockpitSectionDivider label="SLA Goals" num="03b" concept="Uptime" style={{ marginBottom: '1rem' }} />
+      <div style={{ marginBottom: '1.5rem' }}>
+        <SlaPanel />
+      </div>
+
       {/* Dependency Map */}
       <CockpitSectionDivider label="Dependency Map" num="04" concept="Dependencies" style={{ marginBottom: '1rem' }} />
       <div style={{ marginBottom: '1.5rem' }}>
         <DependencyGraph />
       </div>
 
+      {/* Event Log */}
+      <CockpitSectionDivider label="Event Log" num="05" concept="Observability" style={{ marginBottom: '1rem' }} />
+      <div style={{ marginBottom: '1.5rem' }}>
+        <EventLogViewer />
+      </div>
+
       {/* Tokens Summary */}
-      <CockpitSectionDivider label="Token Usage" num="05" style={{ marginBottom: '1rem' }} />
+      <CockpitSectionDivider label="Token Usage" num="06" style={{ marginBottom: '1rem' }} />
       <div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
           <CockpitKpiCard
@@ -192,6 +207,11 @@ export default function CockpitDashboard({ viewToggle }: { viewToggle?: React.Re
             trend="neutral"
           />
         </div>
+      </div>
+
+      {/* Notifications */}
+      <div style={{ marginTop: '1.5rem' }}>
+        <NotificationCenter />
       </div>
 
       {/* Footer */}
