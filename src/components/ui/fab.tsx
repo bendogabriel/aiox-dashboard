@@ -63,9 +63,10 @@ export const FAB = forwardRef<HTMLButtonElement, FABProps>(
           positionStyles[position],
           className
         )}
+        aria-label={label || props['aria-label'] || icon}
         {...props}
       >
-        {IconComponent && <IconComponent className={iconSizeStyles[size]} />}
+        {IconComponent && <IconComponent className={iconSizeStyles[size]} aria-hidden="true" />}
         {label && <span>{label}</span>}
       </button>
     );
@@ -113,9 +114,10 @@ export const FABIcon = forwardRef<HTMLButtonElement, FABIconProps>(
           className
         )}
         title={tooltip}
+        aria-label={tooltip || icon}
         {...props}
       >
-        {IconComponent && <IconComponent className={iconSizeStyles[size]} />}
+        {IconComponent && <IconComponent className={iconSizeStyles[size]} aria-hidden="true" />}
       </button>
     );
   }
@@ -135,9 +137,10 @@ export function HelpFAB({ className, ...props }: Omit<FABIconProps, 'icon'>) {
         className
       )}
       title="Help"
+      aria-label="Ajuda"
       {...props}
     >
-      <span className="font-bold text-xs">?</span>
+      <span className="font-bold text-xs" aria-hidden="true">?</span>
     </button>
   );
 }

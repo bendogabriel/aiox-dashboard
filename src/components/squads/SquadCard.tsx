@@ -54,12 +54,17 @@ export const SquadCard = memo(function SquadCard({ squad, onClick }: SquadCardPr
     <div
       data-squad={squad.name}
       onClick={onClick}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Squad ${squad.name}`}
       className={cn(
         'group relative',
         'bg-card border border-border border-l-2',
         'transition-luxury hover-lift',
         'hover:bg-card-hover hover:border-border-medium',
-        'cursor-pointer'
+        'cursor-pointer',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
       )}
       style={{ borderLeftColor: domainColor }}
     >

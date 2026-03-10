@@ -152,6 +152,7 @@ export function Header() {
       {/* Search Button - Opens Global Search */}
       <button
         onClick={globalSearch.open}
+        aria-label="Abrir busca global (⌘K)"
         className="flex-1 max-w-md h-10 px-3 md:px-4 flex items-center gap-2 md:gap-3 rounded-xl bg-glass-5 hover:bg-glass-10 border border-glass-border transition-colors text-left group"
       >
         <SearchIcon />
@@ -174,6 +175,8 @@ export function Header() {
             variant="ghost"
             size="icon"
             className="relative"
+            aria-label={unreadCount > 0 ? `Notificações (${unreadCount} não lidas)` : 'Notificações'}
+            aria-expanded={showNotifications}
             style={showNotifications ? {
               backgroundColor: 'var(--sidebar-active-bg)',
               color: 'var(--sidebar-active-text)',
@@ -182,7 +185,7 @@ export function Header() {
           >
             <BellIcon />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 h-4 w-4 bg-red-500 rounded-full text-[10px] text-foreground-primary font-medium flex items-center justify-center">
+              <span aria-hidden="true" className="absolute top-1 right-1 h-4 w-4 bg-red-500 rounded-full text-[10px] text-foreground-primary font-medium flex items-center justify-center">
                 {unreadCount}
               </span>
             )}
@@ -196,6 +199,8 @@ export function Header() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
+                role="menu"
+                aria-label="Notificações"
                 className="absolute top-full right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-80 glass-lg rounded-xl overflow-hidden z-[999]"
               >
                 {/* Header */}
@@ -254,6 +259,7 @@ export function Header() {
                               e.stopPropagation();
                               dismissNotification(notification.id);
                             }}
+                            aria-label={`Dispensar notificação: ${notification.title}`}
                             className="text-tertiary hover:text-primary transition-colors p-1"
                           >
                             <CloseIcon />
@@ -286,8 +292,9 @@ export function Header() {
           variant="ghost"
           size="icon"
           onClick={toggleAgentExplorer}
+          aria-label="Explorar Agents"
+          aria-expanded={agentExplorerOpen}
           className={cn('hidden sm:flex', agentExplorerOpen && 'bg-emerald-500/10 text-emerald-500')}
-          title="Explorar Agents"
         >
           <CompassIcon />
         </Button>
@@ -297,8 +304,9 @@ export function Header() {
           variant="ghost"
           size="icon"
           onClick={toggleWorkflowView}
+          aria-label="Visualizar Workflow"
+          aria-expanded={workflowViewOpen}
           className={cn('hidden md:flex', workflowViewOpen && 'bg-purple-500/10 text-purple-500')}
-          title="Visualizar Workflow"
         >
           <WorkflowIcon />
         </Button>
@@ -308,6 +316,8 @@ export function Header() {
           variant="ghost"
           size="icon"
           onClick={toggleActivityPanel}
+          aria-label="Painel de Atividades"
+          aria-expanded={activityPanelOpen}
           className={cn('hidden lg:flex', activityPanelOpen && 'bg-blue-500/10 text-blue-500')}
         >
           <ActivityIcon />

@@ -166,6 +166,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                   }}
                   onKeyDown={handleKeyDown}
                   placeholder="Buscar agents por nome, skill ou squad..."
+                  aria-label="Buscar agents por nome, skill ou squad"
                   className="flex-1 bg-transparent text-primary placeholder:text-tertiary outline-none text-sm"
                 />
                 <div className="flex items-center gap-1 text-[10px] text-tertiary">

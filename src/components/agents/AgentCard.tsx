@@ -59,12 +59,17 @@ export const AgentCard = memo(function AgentCard({
   return (
     <div
       onClick={onClick}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Agent ${agent.name}${agent.status ? `, status: ${agent.status}` : ''}`}
       className={cn(
         'group relative p-4',
         'bg-card border border-border border-l-2',
         'transition-luxury hover-lift',
         'hover:bg-card-hover hover:border-border-medium',
-        'cursor-pointer'
+        'cursor-pointer',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
       )}
       style={{ borderLeftColor: isActive ? agent.color : 'var(--border)' }}
     >
