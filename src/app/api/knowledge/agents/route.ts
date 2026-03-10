@@ -103,7 +103,7 @@ async function parseAgentNameFromFile(filePath: string, fallback: string): Promi
  * GET /api/knowledge/agents
  * Returns knowledge information per agent from:
  *   1. .aios-core/development/agents/ (core agent definitions)
- *   2. squads/*/agents/ (squad-specific agents)
+ *   2. squads/[name]/agents/ (squad-specific agents)
  */
 export async function GET() {
   // Return cached result if fresh
