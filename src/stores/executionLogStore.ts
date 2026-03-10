@@ -118,7 +118,7 @@ export const useExecutionLogStore = create<ExecutionLogState>((set, get) => ({
     };
 
     set((state) => ({
-      logs: [...state.logs, newEntry],
+      logs: [...state.logs, newEntry].slice(-500),
     }));
   },
 
