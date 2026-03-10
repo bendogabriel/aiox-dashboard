@@ -22,6 +22,7 @@ interface ToastState {
 }
 
 let toastCounter = 0;
+const toastTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
 export const useToastStore = create<ToastState>((set, get) => ({
   toasts: [],
@@ -40,21 +41,32 @@ export const useToastStore = create<ToastState>((set, get) => ({
 
     // Auto-remove after duration (unless duration is 0)
     if (newToast.duration && newToast.duration > 0) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
+        toastTimers.delete(id);
         get().removeToast(id);
       }, newToast.duration);
+      toastTimers.set(id, timer);
     }
 
     return id;
   },
 
   removeToast: (id) => {
+    // Cancel pending auto-dismiss timer
+    const timer = toastTimers.get(id);
+    if (timer) {
+      clearTimeout(timer);
+      toastTimers.delete(id);
+    }
     set((state) => ({
       toasts: state.toasts.filter((t) => t.id !== id),
     }));
   },
 
   clearToasts: () => {
+    // Cancel all pending timers
+    toastTimers.forEach((timer) => clearTimeout(timer));
+    toastTimers.clear();
     set({ toasts: [] });
   },
 }));

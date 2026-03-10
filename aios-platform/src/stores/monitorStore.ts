@@ -11,9 +11,12 @@ export interface MonitorEvent {
   success?: boolean;
 }
 
+export type ConnectionSource = 'sse' | 'ws' | 'demo' | 'none';
+
 interface MonitorState {
   connected: boolean;
   connectionMode: ConnectionMode;
+  connectionSource: ConnectionSource;
   roomId: string | null;
   cliConnected: boolean;
   events: MonitorEvent[];
@@ -30,7 +33,9 @@ interface MonitorState {
   addEvent: (event: MonitorEvent) => void;
   clearEvents: () => void;
   setConnected: (connected: boolean) => void;
+  setConnectionSource: (source: ConnectionSource) => void;
   setCurrentTool: (tool: { name: string; startedAt: string } | null) => void;
+  updateStats: (stats: Partial<MonitorState['stats']>) => void;
   setMetrics: (metrics: MonitorState['metrics']) => void;
   addAlert: (alert: MonitorState['alerts'][0]) => void;
   dismissAlert: (id: string) => void;
@@ -77,6 +82,7 @@ function mapServerEvent(raw: Record<string, unknown>): MonitorEvent {
 export const useMonitorStore = create<MonitorState>((set, get) => ({
   connected: false,
   connectionMode: 'local',
+  connectionSource: 'none',
   roomId: null,
   cliConnected: false,
   events: [],
@@ -118,7 +124,14 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
 
   setConnected: (connected) => set({ connected }),
 
+  setConnectionSource: (source) => set({ connectionSource: source }),
+
   setCurrentTool: (tool) => set({ currentTool: tool }),
+
+  updateStats: (newStats) =>
+    set((state) => ({
+      stats: { ...state.stats, ...newStats },
+    })),
 
   setMetrics: (metrics) => set({ metrics }),
 

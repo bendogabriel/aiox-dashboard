@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Package, Bot, Zap, CheckCircle } from 'lucide-react';
+import { Package, Bot, Zap, CheckCircle, BookOpen, GitBranch } from 'lucide-react';
 import { GlassCard, Badge } from '../ui';
 import { LiveMetricCard } from './LiveMetricCard';
 import { useSquads } from '../../hooks/useSquads';
 import { useAgents } from '../../hooks/useAgents';
 import { useExecutionHistory, useTokenUsage, useLLMHealth } from '../../hooks/useExecute';
 import { useMCPStats } from '../../hooks/useDashboard';
+import { useDashboardOverview } from '../../hooks/useDashboardOverview';
 import { LineChart, DonutChart } from './Charts';
 import { HealthCard, formatNumber } from './DashboardHelpers';
 import { RegistryQuickAccess } from './RegistryQuickAccess';
@@ -78,11 +79,12 @@ export function OverviewTab() {
   const { data: tokenUsage } = useTokenUsage();
   const { data: llmHealth } = useLLMHealth();
   const { data: mcpStats } = useMCPStats();
+  const { overview: dashOverview, mcp: dashMcp, loading: dashLoading } = useDashboardOverview();
 
   // Show skeleton only during initial load — never block forever
   const [initialLoad, setInitialLoad] = useState(true);
   useEffect(() => { const t = setTimeout(() => setInitialLoad(false), 1500); return () => clearTimeout(t); }, []);
-  const isLoading = initialLoad && !squads && !agents && !historyData;
+  const isLoading = initialLoad && !squads && !agents && !historyData && dashLoading;
 
   const executions = useMemo(() => historyData?.executions || [], [historyData?.executions]);
   const completedCount = executions.filter(e => e.status === 'completed').length;

@@ -1,16 +1,35 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useIntegrationStore } from '../stores/integrationStore';
 import { engineApi } from '../services/api/engine';
 import { getEngineUrl } from '../lib/connection';
 import { getGoogleAuthStatus } from '../lib/integration-sync';
-import type { IntegrationId } from '../stores/integrationStore';
+import type { IntegrationId, IntegrationStatus } from '../stores/integrationStore';
+
+/** Polling interval for server-side health checks (ms) */
+const HEALTH_POLL_INTERVAL_MS = 30_000;
+
+/** Response shape from /api/integrations/health */
+interface HealthApiResponse {
+  integrations: Record<string, {
+    status: IntegrationStatus;
+    message: string;
+    lastChecked: number;
+  }>;
+}
 
 /**
- * Hook that checks all integration health on mount and provides a refresh function.
+ * Hook that checks all integration health on mount, polls every 30s,
+ * and provides a refresh function.
+ *
+ * Uses a hybrid approach:
+ * - Server-side API route checks env vars and network services
+ * - Client-side checks handle localStorage-based state and engine APIs
+ *
  * Updates the integration store with live status.
  */
 export function useIntegrationStatus() {
   const { integrations, setStatus } = useIntegrationStore();
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const checkEngine = useCallback(async () => {
     const url = getEngineUrl();

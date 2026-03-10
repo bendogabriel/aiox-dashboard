@@ -85,3 +85,13 @@ export { useActivityFeed } from './useActivityFeed';
 export type { ActivityEvent, ActivityFeedData, ActivityType as ActivityEventType } from './useActivityFeed';
 export { useAgentStatus } from './useAgentStatus';
 export { useActiveAgents } from './useActiveAgents';
+export { useDashboardOverview } from './useDashboardOverview';
+export type {
+  DashboardOverviewData,
+  DashboardOverviewMetrics,
+  DashboardAgentStat,
+  DashboardMCPServer,
+  DashboardMCPInfo,
+  DashboardCosts,
+  DashboardSystemInfo,
+} from './useDashboardOverview';
