@@ -9,6 +9,7 @@ import { ConfigExportImport } from './ConfigExportImport';
 import { EnvGenerator } from './EnvGenerator';
 import { ConfigShareQR } from './ConfigShareQR';
 import { WebhookAlerts } from './WebhookAlerts';
+import { ProfileSwitcher } from './ProfileSwitcher';
 
 // ── Integration metadata with categories ──────────────────
 
@@ -263,6 +264,7 @@ export default function IntegrationHub() {
           gap: '8px',
           marginTop: '8px',
         }}>
+          <ProfileSwitcher />
           <EnvGenerator />
           <ConfigShareQR />
           <WebhookAlerts />
