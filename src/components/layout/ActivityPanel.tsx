@@ -408,19 +408,16 @@ function AgentCommandsPanel({ agent }: { agent: AgentWithUI }) {
     }));
   };
 
-  // Command category with loosely-typed callbacks to support heterogeneous item arrays
+  // Command category — callbacks use unknown + cast to support heterogeneous item arrays
   interface CommandCategory {
     id: string;
     label: string;
     icon: React.ReactNode;
     items: unknown[];
     color: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getCommand: (item: any) => string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getLabel: (item: any) => string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getDescription: (item: any) => string | null;
+    getCommand: (item: unknown) => string;
+    getLabel: (item: unknown) => string;
+    getDescription: (item: unknown) => string | null;
   }
 
   const categories: CommandCategory[] = [
@@ -430,9 +427,9 @@ function AgentCommandsPanel({ agent }: { agent: AgentWithUI }) {
       icon: <ActionIcon />,
       items: agentActions,
       color: 'yellow',
-      getCommand: (item: Record<string, string>) => item.description || item.name,
-      getLabel: (item: Record<string, string>) => item.name,
-      getDescription: (item: Record<string, string>) => item.trigger,
+      getCommand: (item) => { const a = item as Record<string, string>; return a.description || a.name; },
+      getLabel: (item) => (item as Record<string, string>).name,
+      getDescription: (item) => (item as Record<string, string>).trigger,
     },
     {
       id: 'commands',
@@ -440,9 +437,9 @@ function AgentCommandsPanel({ agent }: { agent: AgentWithUI }) {
       icon: <CommandIcon />,
       items: agentCommands,
       color: 'purple',
-      getCommand: (item: AgentCommand) => item.command,
-      getLabel: (item: AgentCommand) => item.command,
-      getDescription: (item: AgentCommand) => item.description || '',
+      getCommand: (item) => (item as AgentCommand).command,
+      getLabel: (item) => (item as AgentCommand).command,
+      getDescription: (item) => (item as AgentCommand).description || '',
     },
     {
       id: 'prompts',
@@ -450,8 +447,8 @@ function AgentCommandsPanel({ agent }: { agent: AgentWithUI }) {
       icon: <PromptIcon />,
       items: agentPrompts,
       color: 'green',
-      getCommand: (item: string) => item,
-      getLabel: (item: string) => item.slice(0, 40) + (item.length > 40 ? '...' : ''),
+      getCommand: (item) => item as string,
+      getLabel: (item) => { const s = item as string; return s.slice(0, 40) + (s.length > 40 ? '...' : ''); },
       getDescription: () => null,
     },
     {
@@ -460,9 +457,9 @@ function AgentCommandsPanel({ agent }: { agent: AgentWithUI }) {
       icon: <TaskIcon />,
       items: tasks,
       color: 'orange',
-      getCommand: (item: SquadCommand) => `*${item.id}`,
-      getLabel: (item: SquadCommand) => item.name || item.id,
-      getDescription: (item: SquadCommand) => item.description,
+      getCommand: (item) => `*${(item as SquadCommand).id}`,
+      getLabel: (item) => { const t = item as SquadCommand; return t.name || t.id; },
+      getDescription: (item) => (item as SquadCommand).description,
     },
     {
       id: 'workflows',
@@ -470,9 +467,9 @@ function AgentCommandsPanel({ agent }: { agent: AgentWithUI }) {
       icon: <WorkflowIcon />,
       items: workflows,
       color: 'cyan',
-      getCommand: (item: SquadCommand) => `@workflow:${item.id}`,
-      getLabel: (item: SquadCommand) => item.name || item.id,
-      getDescription: (item: SquadCommand) => item.description,
+      getCommand: (item) => `@workflow:${(item as SquadCommand).id}`,
+      getLabel: (item) => { const w = item as SquadCommand; return w.name || w.id; },
+      getDescription: (item) => (item as SquadCommand).description,
     },
   ];
 
