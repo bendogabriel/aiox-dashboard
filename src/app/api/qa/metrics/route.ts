@@ -59,7 +59,7 @@ function getProjectRoot(): string {
   if (process.env.AIOS_PROJECT_ROOT) {
     return process.env.AIOS_PROJECT_ROOT;
   }
-  return path.resolve(process.cwd(), '..', '..');
+  return path.resolve(process.cwd(), '..');
 }
 
 async function loadJsonFile<T>(filePath: string, defaultValue: T): Promise<T> {

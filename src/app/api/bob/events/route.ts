@@ -7,7 +7,7 @@ function getProjectRoot(): string {
   if (process.env.AIOS_PROJECT_ROOT) {
     return process.env.AIOS_PROJECT_ROOT;
   }
-  return path.resolve(process.cwd(), '..', '..');
+  return path.resolve(process.cwd(), '..');
 }
 
 const BOB_STATUS_FILE_NAME = '.aios/dashboard/bob-status.json';

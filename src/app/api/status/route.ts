@@ -13,7 +13,7 @@ function getProjectRoot(): string {
     return process.env.AIOS_PROJECT_ROOT;
   }
   // Default: assume running from apps/dashboard/
-  return path.resolve(process.cwd(), '..', '..');
+  return path.resolve(process.cwd(), '..');
 }
 
 // Default response when CLI is not running

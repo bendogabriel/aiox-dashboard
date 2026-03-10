@@ -5,12 +5,12 @@ import path from 'path';
 // Bob status file path relative to project root
 const BOB_STATUS_FILE_NAME = '.aios/dashboard/bob-status.json';
 
-// Get the project root path
+// Get the project root path (one level up from dashboard/ to apps/)
 function getProjectRoot(): string {
   if (process.env.AIOS_PROJECT_ROOT) {
     return process.env.AIOS_PROJECT_ROOT;
   }
-  return path.resolve(process.cwd(), '..', '..');
+  return path.resolve(process.cwd(), '..');
 }
 
 // Default response when Bob is not running
