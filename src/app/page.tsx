@@ -32,7 +32,6 @@ export default function Home() {
 
   const handleNewStory = useCallback(() => {
     // TODO: Open new story modal
-    console.log('Create new story');
   }, []);
 
   // Show FAB on views that support creation

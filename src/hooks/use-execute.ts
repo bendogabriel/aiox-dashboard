@@ -23,15 +23,11 @@ import type {
 function extractImagesFromToolResults(toolResults: StreamToolsEvent['toolResults']): string {
   const imageMarkdown: string[] = [];
 
-  console.log('[extractImages] Processing tool results:', toolResults);
-
   for (const toolResult of toolResults) {
     // Use 'tool' field (backend) or 'name' field (fallback)
     const toolName = toolResult.tool || (toolResult as any).name || '';
     // Use 'output' field (backend) or 'result' field (fallback)
     const output = toolResult.output || (toolResult as any).result;
-
-    console.log('[extractImages] Tool:', toolName, 'Success:', toolResult.success, 'Output:', output);
 
     if (!toolResult.success || !output) continue;
 
@@ -40,7 +36,6 @@ function extractImagesFromToolResults(toolResults: StreamToolsEvent['toolResults
     // Handle thumbnail generation results
     if (toolName.includes('thumbnail') || toolName.includes('image')) {
       const imageUrl = result.thumbnail_url || result.image_url || result.url;
-      console.log('[extractImages] Found image URL in thumbnail tool:', imageUrl);
       if (typeof imageUrl === 'string' && imageUrl.startsWith('http')) {
         const altText = (result.message as string) || 'Thumbnail gerada';
         imageMarkdown.push(`\n\n![${altText}](${imageUrl})\n`);
@@ -56,7 +51,6 @@ function extractImagesFromToolResults(toolResults: StreamToolsEvent['toolResults
            url.includes('fal.run') || url.includes('storage.googleapis'))) {
         // Avoid duplicates
         if (!imageMarkdown.some(md => md.includes(url))) {
-          console.log('[extractImages] Found image URL in field', key, ':', url);
           const altText = (result.message as string) || (result.original_path as string) || 'Imagem';
           imageMarkdown.push(`\n\n![${altText}](${url})\n`);
         }
@@ -64,7 +58,6 @@ function extractImagesFromToolResults(toolResults: StreamToolsEvent['toolResults
     }
   }
 
-  console.log('[extractImages] Final markdown:', imageMarkdown);
   return imageMarkdown.join('');
 }
 

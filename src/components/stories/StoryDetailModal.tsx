@@ -187,7 +187,7 @@ export function StoryDetailModal({
           {story.filePath && (
             <button
               onClick={() => {
-                console.log('Open file:', story.filePath);
+                // TODO: Implement file opening
               }}
               className="flex items-center gap-1.5 px-2 py-1 transition-luxury hover:opacity-80 text-text-muted"
               onMouseEnter={(e) => {

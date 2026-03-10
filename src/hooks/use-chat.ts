@@ -54,20 +54,14 @@ export function useChat() {
 
   const selectAgent = useCallback(
     (agent: AgentSummary) => {
-      console.log('[useChat.selectAgent] Selecting agent:', agent.id);
-
       // Check if there's already a session for this agent
       const existingSession = getSessionByAgent(agent.id);
       const squadType = getSquadTypeUtil(agent.squad);
 
       if (existingSession) {
-        console.log('[useChat.selectAgent] Using existing session:', existingSession.id);
         setActiveSession(existingSession.id);
       } else {
-        // Create new session
-        console.log('[useChat.selectAgent] Creating new session');
-        const newSessionId = createSession(agent.id, agent.name, agent.squad, squadType);
-        console.log('[useChat.selectAgent] New session created:', newSessionId);
+        createSession(agent.id, agent.name, agent.squad, squadType);
       }
 
       // Update UI store - set both values atomically to avoid clearing agentId
@@ -91,20 +85,7 @@ export function useChat() {
       // Get latest state directly from store to avoid stale closure
       const { activeSessionId: currentSessionId, isStreaming: currentIsStreaming } = useChatStore.getState();
 
-      console.log('[useChat.sendMessage] Called with:', {
-        content,
-        attachments: attachments?.length || 0,
-        selectedAgent: selectedAgent?.id,
-        activeSessionId: currentSessionId,
-        isStreaming: currentIsStreaming
-      });
-
       if (!selectedAgent || !currentSessionId || currentIsStreaming) {
-        console.log('[useChat.sendMessage] Early return - missing:', {
-          hasAgent: !!selectedAgent,
-          hasSession: !!currentSessionId,
-          isStreaming: currentIsStreaming
-        });
         return;
       }
 
@@ -113,7 +94,6 @@ export function useChat() {
 
       setError(null);
 
-      console.log('[useChat.sendMessage] Executing mutation with sessionId:', currentSessionId);
       try {
         await executeMutation.mutateAsync({
           sessionId: currentSessionId,

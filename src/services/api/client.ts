@@ -264,7 +264,7 @@ class ApiClient {
         // Attempt retry for retryable errors
         if (isRetryable && retryCount < this.retryConfig.maxRetries) {
           const delay = this.getRetryDelay(retryCount);
-          console.log(`[API] Retrying request (${retryCount + 1}/${this.retryConfig.maxRetries}) after ${delay}ms`);
+          console.warn(`[API] Retrying request (${retryCount + 1}/${this.retryConfig.maxRetries}) after ${delay}ms`);
           await this.sleep(delay);
           return this.request<T>({ ...config, retryCount: retryCount + 1 });
         }
@@ -309,7 +309,7 @@ class ApiClient {
         // Retry timeout errors
         if (retryCount < this.retryConfig.maxRetries) {
           const delay = this.getRetryDelay(retryCount);
-          console.log(`[API] Retrying after timeout (${retryCount + 1}/${this.retryConfig.maxRetries})`);
+          console.warn(`[API] Retrying after timeout (${retryCount + 1}/${this.retryConfig.maxRetries})`);
           await this.sleep(delay);
           return this.request<T>({ ...config, retryCount: retryCount + 1 });
         }
@@ -330,7 +330,7 @@ class ApiClient {
 
         if (retryCount < this.retryConfig.maxRetries) {
           const delay = this.getRetryDelay(retryCount);
-          console.log(`[API] Retrying after network error (${retryCount + 1}/${this.retryConfig.maxRetries})`);
+          console.warn(`[API] Retrying after network error (${retryCount + 1}/${this.retryConfig.maxRetries})`);
           await this.sleep(delay);
           return this.request<T>({ ...config, retryCount: retryCount + 1 });
         }
@@ -535,7 +535,7 @@ export const apiClient = new ApiClient(API_BASE_URL);
 apiClient.addRequestInterceptor((config) => {
   // Add timestamp for debugging
   if (process.env.NODE_ENV === 'development') {
-    console.log(`[API] ${config.method} ${config.url}`);
+    console.debug(`[API] ${config.method} ${config.url}`);
   }
   return config;
 });

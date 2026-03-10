@@ -314,7 +314,7 @@ export function useExecuteWorkflowStream() {
           });
         },
         onStepFailed: (data) => {
-          console.log('[LiveExecution] Step failed:', data);
+          console.error('[LiveExecution] Step failed:', data);
           setState((prev) => {
             if (!prev) return null;
             return {
@@ -339,7 +339,7 @@ export function useExecuteWorkflowStream() {
           queryClient.invalidateQueries({ queryKey: ['workflowExecutions'] });
         },
         onExecutionFailed: (data) => {
-          console.log('[LiveExecution] Execution failed:', data);
+          console.error('[LiveExecution] Execution failed:', data);
           setState((prev) => prev ? {
             ...prev,
             status: 'failed',
@@ -522,7 +522,7 @@ export function useSmartOrchestration() {
           });
         },
         onStepFailed: (data) => {
-          console.log('[SmartOrchestration] Step failed:', data);
+          console.error('[SmartOrchestration] Step failed:', data);
           setState((prev) => {
             if (!prev.executionState) return prev;
             return {
@@ -555,7 +555,7 @@ export function useSmartOrchestration() {
           queryClient.invalidateQueries({ queryKey: ['workflows'] });
         },
         onExecutionFailed: (data) => {
-          console.log('[SmartOrchestration] Execution failed:', data);
+          console.error('[SmartOrchestration] Execution failed:', data);
           setState((prev) => ({
             ...prev,
             phase: 'failed',

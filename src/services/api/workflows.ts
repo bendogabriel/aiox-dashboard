@@ -192,7 +192,6 @@ export const workflowsApi = {
           const processEvent = (eventType: string, dataStr: string) => {
             try {
               const data = JSON.parse(dataStr);
-              console.log('[SSE] Event:', eventType, data);
 
               switch (eventType) {
                 case 'connected':
@@ -344,7 +343,6 @@ export const workflowsApi = {
           const processEvent = (eventType: string, dataStr: string) => {
             try {
               const data = JSON.parse(dataStr);
-              console.log('[Orchestration SSE] Event:', eventType, data);
 
               switch (eventType) {
                 case 'connected':
