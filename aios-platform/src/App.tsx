@@ -114,6 +114,10 @@ const SalesRoomPanel = lazy(() =>
   import('./components/sales-room/SalesRoomPanel')
 );
 
+const IntegrationHub = lazy(() =>
+  import('./components/integrations/IntegrationHub')
+);
+
 // CockpitDashboard removed — consolidated into DashboardWorkspace
 
 // View map — maps ViewType to lazy component
@@ -145,6 +149,7 @@ const viewMap: Record<string, ComponentType> = {
   'authority-matrix': AuthorityMatrix,
   'handoff-flows': HandoffVisualization,
   'sales-room': SalesRoomPanel,
+  integrations: IntegrationHub,
 };
 
 // Loading messages per view
@@ -175,6 +180,7 @@ const viewLoaderMessages: Record<string, string> = {
   'authority-matrix': 'Carregando matriz de autoridade...',
   'handoff-flows': 'Carregando fluxos de handoff...',
   'sales-room': 'Carregando sala de observacao...',
+  integrations: 'Carregando integrações...',
   cockpit: 'Carregando dashboard...', // backward compat
   timeline: 'Carregando monitor...', // backward compat
 };

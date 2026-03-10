@@ -25,6 +25,7 @@ import {
   Shield,
   ArrowRightLeft,
   Eye,
+  Plug,
 } from 'lucide-react';
 import { GlassCard, GlassButton, AioxLogo } from '../ui';
 import { useUIStore } from '../../stores/uiStore';
@@ -58,7 +59,8 @@ const navItems = [
   { id: 'stories' as const, icon: BookOpen, label: 'Stories', shortcut: 'Y', separator: false },
   { id: 'github' as const, icon: Github, label: 'GitHub', shortcut: 'G', separator: false },
   { id: 'sales-room' as const, icon: Eye, label: 'Sales Room', shortcut: 'L', separator: false },
-  { id: 'engine' as const, icon: Server, label: 'Engine', shortcut: 'E', separator: true },
+  { id: 'engine' as const, icon: Server, label: 'Engine', shortcut: 'E', separator: false },
+  { id: 'integrations' as const, icon: Plug, label: 'Integrations', shortcut: 'I', separator: true },
   // Registry views
   { id: 'agent-directory' as const, icon: UsersRound, label: 'Agent Dir', shortcut: '', separator: false },
   { id: 'task-catalog' as const, icon: ListTodo, label: 'Tasks', shortcut: '', separator: false },

@@ -10,7 +10,8 @@ type ViewType =
   | 'chat' | 'dashboard' | 'cockpit' | 'settings' | 'orchestrator' | 'world'
   | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor' | 'timeline'
   | 'insights' | 'context' | 'knowledge' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories'
-  | 'share' | 'engine' | 'agent-directory' | 'task-catalog' | 'workflow-catalog' | 'authority-matrix' | 'handoff-flows';
+  | 'share' | 'engine' | 'agent-directory' | 'task-catalog' | 'workflow-catalog' | 'authority-matrix' | 'handoff-flows'
+  | 'integrations';
 export type SettingsSection = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
 interface UIActions {
