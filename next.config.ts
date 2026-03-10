@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 import path from "path";
 
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 const nextConfig: NextConfig = {
   // Externalize native modules that can't be bundled
   serverExternalPackages: ['chokidar'],
@@ -9,4 +13,4 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.resolve(__dirname),
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
