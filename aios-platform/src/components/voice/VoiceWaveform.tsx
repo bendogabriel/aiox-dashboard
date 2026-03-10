@@ -82,10 +82,15 @@ export function VoiceWaveform({
   // Smoothed amplitude buffer (persists across frames for lerp)
   const smoothedRef = useRef<Float32Array | null>(null);
 
+  // Ref to hold latest draw function (avoids self-reference in useCallback)
+  const drawRef = useRef<() => void>(() => {});
+
   // Keep refs in sync without re-triggering the animation loop
-  dataRef.current = timeDomainData;
-  isActiveRef.current = isActive;
-  stateRef.current = state;
+  useEffect(() => {
+    dataRef.current = timeDomainData;
+    isActiveRef.current = isActive;
+    stateRef.current = state;
+  });
 
   // Resolve active color based on state
   const resolveColor = useCallback((): string => {
@@ -145,7 +150,7 @@ export function VoiceWaveform({
 
     if (!active || !data || data.length === 0) {
       drawCenterLine(0.25);
-      rafRef.current = requestAnimationFrame(draw);
+      rafRef.current = requestAnimationFrame(() => drawRef.current());
       return;
     }
 
@@ -154,7 +159,7 @@ export function VoiceWaveform({
     const totalBarWidth = BAR_WIDTH + BAR_GAP;
     const barCount = Math.floor(logicalW / totalBarWidth);
     if (barCount === 0) {
-      rafRef.current = requestAnimationFrame(draw);
+      rafRef.current = requestAnimationFrame(() => drawRef.current());
       return;
     }
 
@@ -258,15 +263,20 @@ export function VoiceWaveform({
 
     // ---- Schedule next frame -----------------------------------------
 
-    rafRef.current = requestAnimationFrame(draw);
+    rafRef.current = requestAnimationFrame(() => drawRef.current());
   }, [resolveColor]);
+
+  // Keep drawRef in sync
+  useEffect(() => {
+    drawRef.current = draw;
+  }, [draw]);
 
   // ------------------------------------------------------------------
   // Animation loop lifecycle
   // ------------------------------------------------------------------
 
   useEffect(() => {
-    rafRef.current = requestAnimationFrame(draw);
+    rafRef.current = requestAnimationFrame(() => drawRef.current());
     return () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
