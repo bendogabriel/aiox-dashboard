@@ -7,13 +7,18 @@
  * Phase 2 will add GitHub OAuth + JWT.
  */
 
-/** Default API key for development */
-const DEV_API_KEY = 'aios_dev_key_2024';
-
 /** Parse configured API keys from environment */
 function getApiKeys(): Set<string> {
   const keys = process.env.RELAY_API_KEYS;
-  if (!keys) return new Set([DEV_API_KEY]);
+  if (!keys) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('RELAY_API_KEYS env var is required in production. Set comma-separated API keys.');
+    }
+    console.warn('[auth] RELAY_API_KEYS not set — generating ephemeral dev key. Do NOT use in production.');
+    const devKey = `aios_dev_${Date.now().toString(36)}`;
+    console.warn(`[auth] Dev API key: ${devKey}`);
+    return new Set([devKey]);
+  }
   return new Set(keys.split(',').map((k) => k.trim()).filter(Boolean));
 }
 

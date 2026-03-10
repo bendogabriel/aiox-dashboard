@@ -151,11 +151,14 @@ const _server = Bun.serve({
       return undefined;
     }
 
-    // CORS headers
+    // CORS headers — restrict to known development origins
+    const allowedOrigins = (process.env.MONITOR_CORS_ORIGINS || 'http://localhost:3000,http://localhost:5173,http://localhost:4173').split(',');
+    const origin = req.headers.get('Origin') || '';
+    const corsOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
     const headers = {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': corsOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
 
     if (req.method === 'OPTIONS') {
@@ -164,6 +167,17 @@ const _server = Bun.serve({
 
     // API: Receive events from hooks
     if (url.pathname === '/events' && req.method === 'POST') {
+      // Optional auth: if MONITOR_TOKEN is set, require it
+      const monitorToken = process.env.MONITOR_TOKEN;
+      if (monitorToken) {
+        const auth = req.headers.get('Authorization');
+        if (auth !== `Bearer ${monitorToken}`) {
+          return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            status: 401,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+      }
       try {
         const payload = (await req.json()) as EventPayload;
 
@@ -298,28 +312,24 @@ const _server = Bun.serve({
       });
     }
 
-    // API: GitHub auth status
+    // API: GitHub auth status (sanitized — only exposes connection boolean, no env details)
     if (url.pathname === '/github/status') {
       try {
         const proc = Bun.spawnSync(['gh', 'auth', 'status', '--hostname', 'github.com'], {
           stdout: 'pipe',
           stderr: 'pipe',
         });
-        const output = proc.stdout.toString() + proc.stderr.toString();
         const loggedIn = proc.exitCode === 0;
-        // Extract username from output
-        const userMatch = output.match(/Logged in to github\.com account (\S+)/);
         return new Response(
           JSON.stringify({
             connected: loggedIn,
-            username: userMatch?.[1] || null,
             message: loggedIn ? 'GitHub connected' : 'GitHub not connected',
           }),
           { headers: { ...headers, 'Content-Type': 'application/json' } }
         );
       } catch {
         return new Response(
-          JSON.stringify({ connected: false, username: null, message: 'gh CLI not found' }),
+          JSON.stringify({ connected: false, message: 'gh CLI not available' }),
           { headers: { ...headers, 'Content-Type': 'application/json' } }
         );
       }
