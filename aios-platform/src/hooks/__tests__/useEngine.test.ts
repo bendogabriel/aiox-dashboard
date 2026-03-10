@@ -365,7 +365,7 @@ describe('useActiveWorkflows', () => {
   it('busca workflows ativos', async () => {
     const mockActive = {
       workflows: [
-        { id: 'wf-1', definition: 'sdc', status: 'running', current_phase: 'phase-2', started_at: '2025-01-01T10:00:00Z' },
+        { id: 'wf-1', workflowId: 'wf-wf-1', definitionId: 'sdc', status: 'running', currentPhase: 'phase-2', iterationCount: 0, createdAt: '2025-01-01T10:00:00Z', updatedAt: '2025-01-01T10:00:00Z' },
       ],
     };
     global.fetch = mockFetchSuccess(mockActive);
@@ -373,6 +373,6 @@ describe('useActiveWorkflows', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.workflows).toHaveLength(1);
-    expect(result.current.data?.workflows[0].current_phase).toBe('phase-2');
+    expect(result.current.data?.workflows[0].currentPhase).toBe('phase-2');
   });
 });

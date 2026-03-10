@@ -1,0 +1,21 @@
+{
+  "name": "aios-engine",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "test": "bun test",
+    "db:reset": "rm -f data/engine.db && bun src/index.ts"
+  },
+  "dependencies": {
+    "hono": "^4.7.0",
+    "ulid": "^2.3.0",
+    "croner": "^9.0.0",
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "typescript": "^5.8.0"
+  }
+}

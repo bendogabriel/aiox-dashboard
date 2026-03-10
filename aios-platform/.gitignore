@@ -12,6 +12,33 @@ dist
 dist-ssr
 *.local
 
+# ─── Environment files (NEVER commit secrets) ────────────
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+# Keep example files tracked:
+!.env.example
+!.env.local.example
+!engine/.env.example
+
+# ─── Test & build artifacts ──────────────────────────────
+test-results/
+coverage/
+playwright-report/
+storybook-static/
+audit-screenshots/
+outputs/
+
+# ─── Engine runtime ─────────────────────────────────────
+engine/.workspace/
+engine/data/
+
+# ─── Supabase local state ───────────────────────────────
+supabase/.temp/
+supabase/.branches/
+
 # AIOS squads and AI agent configs (local only)
 .squads-design/
 .codex/

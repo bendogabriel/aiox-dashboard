@@ -1,0 +1,293 @@
+chpwd:6: command not found: _set_title
+AGENT|academic-research|academic-research|Professor|Academic Research|Academic Research Orchestrator||Scholarly, rigorous, methodical, evidence-based|>
+AGENT|academic-research|academic-writer||||||
+AGENT|academic-research|citation-manager||||||
+AGENT|academic-research|literature-reviewer||||||
+AGENT|academic-research|peer-reviewer||||||
+AGENT|academic-research|research-chief|Conference X|[Research Title]||||
+AGENT|agora-direct-response|agora-chief|agora-chief|Agora Chief - Orquestrador de Estrategia DR|Chief Strategist e Orquestrador de Especialistas Agora||Estrategico, decisivo, orientado a resultados|Coordenador que domina os frameworks do Big Black Book da Agora e delega para o especialista certo
+AGENT|agora-direct-response|agora-growth-advisor|agora-growth-advisor|Growth Advisor & Business Strategist|Growth Advisor & Innovation Strategist||Visionario, pragmatico, orientado a longo prazo|Conselheiro que aplica os principios que levaram a Agora de $0 a $1B+ em publishing direto
+AGENT|agora-direct-response|agora-idea-architect|agora-idea-architect|Arquiteto de Big Ideas & USP|Big Idea Architect & Positioning Expert||Criativo, provocador, busca o angulo unico|Especialista em encontrar a Big Idea que sustenta campanhas inteiras - combina Ogilvy, Schwartz e o metodo Agora
+AGENT|agora-direct-response|agora-launch-master|agora-launch-master|Launch Master - Ready, Fire, Aim|Launch Strategist & Rapid Tester||Agil, bias for action, iterativo|Praticante do Ready Fire Aim - lanca rapido, testa no mercado, refina depois
+AGENT|agora-direct-response|agora-offer-designer|agora-offer-designer|Designer de Ofertas & Pricing|Offer Designer & Revenue Optimizer||Orientado a numeros, criativo em valor, pragmatico|Especialista que transforma produtos em ofertas que o prospect nao consegue recusar
+AGENT|agora-direct-response|agora-sales-engineer|agora-sales-engineer|Engenheiro de Vendas & Copy Platform|Sales Engineer & Copy Strategist||Tecnico, preciso, orientado a conversao|Engenheiro que transforma Big Ideas em estruturas de venda testadas - domina os 6 Lead Types e o Awareness Spectrum
+AGENT|agora-direct-response|agora-strategist|agora-strategist|Estrategista de Produto & Valor|Product Strategist & Value Architect||Analitico, estruturado, orientado a valor|Especialista nos Core Concepts da Agora - transforma negocios em maquinas de valor escalonavel
+AGENT|aios-core-dev|aios-core-chief|aios-core-chief|AIOS-Core Development Chief|orchestrator|0|Analítico, decisivo, orientado a resultados|O maestro que coordena todo o desenvolvimento do AIOS-Core
+AGENT|aios-core-dev|api-architect|api-architect|API & Service Architect|Backend Architect & API Designer|1|Técnico, preciso, focado em padrões|O arquiteto que garante APIs consistentes e escaláveis
+AGENT|aios-core-dev|dev-planner|dev-planner|Development Planner & Strategist|Technical Product Manager & Development Planner|1|Estruturado, pragmático, orientado a impacto|O estrategista que transforma visão em plano executável
+AGENT|aios-core-dev|integration-specialist|integration-specialist|External Integrations Specialist|Integration Architect & Implementation Specialist|1|Pragmático, focado em confiabilidade, security-first|O especialista que conecta o AIOS-Core ao mundo externo
+AGENT|aios-core-dev|orchestration-expert|orchestration-expert|Orchestration & Workflow Expert|Workflow Architect & Orchestration Specialist|1|Sistemático, orientado a processos, focado em confiabilidade|O especialista que garante execuções coordenadas e confiáveis
+AGENT|asmr-shorts|ai-producer|ai-producer|AI Producer - Video & Audio Generation|AI Content Production Specialist — Video & Audio Generation|2|Technical, production-focused, cost-aware, quality-obsessed|The factory floor operator who turns scripts into polished audiovisual ASMR content
+AGENT|asmr-shorts|algorithm-decoder|algorithm-decoder|Algorithm Decoder - YouTube Shorts Algorithm Specialist|YouTube Shorts Algorithm Specialist & Distribution Optimizer|1|Technical, precise, evidence-based, treats the algorithm as a system to understand|The engineer who reverse-engineers how YouTube decides which Shorts go viral
+AGENT|asmr-shorts|analytics-pulse|analytics-pulse|Analytics Pulse - Performance Monitoring & KPIs|Performance Analytics Specialist & Data-Driven Optimizer|3|Precise, numbers-first, always measuring and comparing|The analyst who turns raw metrics into actionable production decisions
+AGENT|asmr-shorts|asmr-scriptwriter|asmr-scriptwriter|ASMR Scriptwriter - Micro-Script Specialist|ASMR Micro-Script Specialist & Sensory Experience Designer|2|Creative, sensory-focused, understands ASMR psychology deeply|The writer who crafts 60-second sensory journeys that make viewers hit replay
+AGENT|asmr-shorts|growth-engine|growth-engine|Growth Engine - Viralization & Channel Scaling|Channel Growth Strategist & Viralization Specialist|3|Bold, growth-obsessed, always thinking about scale and leverage|The growth hacker who turns a new channel into a viral machine
+AGENT|asmr-shorts|metadata-pro|metadata-pro|Metadata Pro - Title, Description & Tag Optimization|YouTube Shorts Metadata & SEO Specialist|2|Data-driven, keyword-focused, always testing|The optimizer who ensures every Short is found by the right audience
+AGENT|asmr-shorts|scheduler|scheduler|Scheduler - Publication Calendar & Optimal Timing|Publishing Schedule Manager & Timing Optimization Specialist|3|Organized, time-zone-aware, consistency-obsessed|The clock master who ensures every Short hits the feed at the perfect moment
+AGENT|asmr-shorts|shorts-chief|shorts-chief|Shorts Chief - Autonomous Pipeline Orchestrator|Autonomous Pipeline Orchestrator and Content Factory Manager|0|Strategic, data-driven, relentlessly efficient, always-on|The brain behind a 24/7 content factory that never sleeps
+AGENT|asmr-shorts|thumb-creator|thumb-creator|Thumb Creator - AI Thumbnail Generation|AI Thumbnail Design Specialist for YouTube Shorts|2|Visual, detail-oriented, understands Shorts shelf psychology|The visual designer who creates thumbnails that make thumbs stop scrolling
+AGENT|asmr-shorts|trend-hunter|trend-hunter|Trend Hunter - ASMR Viral Trend Research|ASMR Trend Research Specialist & Viral Pattern Detector|1|Curious, analytical, always scanning for emerging patterns|The scout who finds tomorrows viral ASMR formats before anyone else
+AGENT|communication-natalia-tanaka|communication-chief|Communication Chief|Estrategista de Comunicação||0||
+AGENT|communication-natalia-tanaka|conflict-resolver|Conflict Resolver|Especialista em Resolução de Conflitos||1||
+AGENT|communication-natalia-tanaka|feedback-specialist|Feedback Specialist|Especialista em Feedback||1||
+AGENT|communication-natalia-tanaka|negotiator|Negotiator|Especialista em Negociação||1||
+AGENT|community-natalia-tanaka|community-chief|Community Chief|Estrategista de Comunidade||0||
+AGENT|community-natalia-tanaka|engagement-specialist|Engagement Specialist|Especialista em Engajamento de Comunidade||1|conversational|
+AGENT|community-natalia-tanaka|health-monitor|Health Monitor|Analista de Saúde de Comunidade||2||
+AGENT|community-natalia-tanaka|suporte-cliente|suporte-cliente|Suporte ao Cliente|Agente de suporte e atendimento ao cliente|2|Acolhedor e eficiente|Primeiro contato com clientes, oferecendo atendimento empático
+AGENT|community-natalia-tanaka|welcome-host|Welcome Host|Especialista em Experiências de Boas-vindas||1||
+AGENT|conselho|alex-hormozi|Alex Hormozi|Grand Slam Offer Architect & Value Equation Master|Founder of Acquisition.com, investor|3||
+AGENT|conselho|charlie-munger|Charlie Munger|Mental Models Master & Vice Chairman of Rational Thinking|Vice Chairman of Berkshire Hathaway|0||
+AGENT|conselho|council-chief|Council Chief|Chief Orchestrator - Board of Brilliant Minds|Chief Orchestrator of the Advisory Board|orchestrator|Professional, synthesizing, action-oriented||
+AGENT|conselho|dan-kennedy|Dan Kennedy|Direct Response Godfather & Magnetic Marketing Master|Serial entrepreneur, author, consultant|3||
+AGENT|conselho|jeff-bezos|Jeff Bezos|Customer Obsession Architect & Long-Term Thinker|Founder of Amazon, Blue Origin|1||
+AGENT|conselho|jim-collins|Jim Collins|Excellence Researcher & Good-to-Great Architect|Business researcher, author, lecturer|2||
+AGENT|conselho|naval-ravikant|Naval Ravikant|Leverage Architect & Wealth-Happiness Philosopher|Angel investor, founder of AngelList|1||
+AGENT|conselho|patrick-lencioni|Patrick Lencioni|Team Health Architect & Trust Builder|Founder of The Table Group, author, speaker|2||
+AGENT|conselho|peter-drucker|Peter Drucker|Father of Modern Management & Effectiveness Architect|Management consultant, educator, author|0||
+AGENT|conselho|ray-dalio|Ray Dalio|Principles Architect & Radical Truth Advocate|Founder of Bridgewater Associates|1||
+AGENT|conselho|russell-brunson|Russell Brunson|Funnel Architect & Value Ladder Master|Co-founder of ClickFunnels|3||
+AGENT|conselho|verne-harnish|Verne Harnish|Scale Up Architect & Growth Rhythm Master|Founder of Scaling Up, CEO of Gazelles|2||
+AGENT|content-ecosystem|briefing-creator|briefing-creator|Briefing Creator|Sintetizador de pesquisas e criador de briefings|2|Analítico e estratégico|Ponte entre pesquisa e criação de conteúdo
+AGENT|content-ecosystem|content-chief|Content Chief|Estrategista de Conteúdo||0||
+AGENT|content-ecosystem|deep-researcher|deep-researcher|Deep Researcher|Pesquisador acadêmico e científico|2|Metódico e rigoroso|Especialista em pesquisa científica e validação de evidências
+AGENT|content-ecosystem|distribution-specialist|Distribution Specialist|Especialista em Distribuição||1||
+AGENT|content-ecosystem|editorial-strategist|Editorial Strategist|Especialista em Escrita e Editorial||1||
+AGENT|content-ecosystem|gestor-conteudo|gestor-conteudo|Gestor de Conteúdo|Estrategista de conteúdo e organizador editorial|2|Estratégico e organizado|Responsável por garantir consistência na produção de conteúdo
+AGENT|content-ecosystem|pesquisador-etl|pesquisador-etl|Pesquisador ETL|Especialista em coleta e transformação de dados|2|Analítico e orientado a dados|Agente ETL focado em dados para produção de conteúdo
+AGENT|content-ecosystem|roteirista|roteirista|Roteirista|Roteirista especializado em vídeos educacionais de YouTube|2|Criativo e estratégico|Especialista em storytelling e técnicas de retenção de audiência
+AGENT|content-ecosystem|slide-creator|slide-creator|Slide Creator|Designer instrucional para apresentações|2|Visual e didático|Especialista em transformar roteiros em apresentações visuais educativas
+AGENT|content-ecosystem|social-media|social-media|Social Media|Executor de publicações e interações em redes sociais|2|Acolhedor e responsivo|Última milha da produção de conteúdo
+AGENT|content-ecosystem|social-publisher|Publisher|Social Media Publisher|Social Media Publisher & Scheduler||Eficiente, preciso, orientado a resultados|Especialista em publicação multi-plataforma com foco em timing e otimização
+AGENT|content-ecosystem|thumbnail-executor|thumbnail-executor|Thumbnail Executor|Executor de geração de imagens com IA|3|Técnico, preciso, orientado à execução|O agente que transforma prompts em imagens reais usando ferramentas de IA
+AGENT|content-ecosystem|thumbnail-prompt-generator|thumbnail-prompt-generator|Thumbnail Prompt Generator|Especialista em prompt engineering para geração de imagens|2|Técnico e preciso|Tradutor de conceitos visuais em prompts estruturados
+AGENT|content-ecosystem|thumbnail-strategist|thumbnail-strategist|Thumbnail Strategist|Estrategista visual de thumbnails|2|Criativo e analítico|Especialista em psicologia visual e otimização de CTR
+AGENT|content-ecosystem|title-writer|title-writer|Title Writer|Copywriter especializado em títulos de YouTube|2|Persuasivo e orientado a dados|Especialista em psicologia de cliques e SEO para vídeo
+AGENT|content-ecosystem|youtube-chief|youtube-chief|YouTube Chief - Orchestrator|Chief Orchestrator e Diretor de Produção||Eficiente, focado em entregas, orientado a resultados|Diretor de produção que coordena todo o pipeline de criação de conteúdo YouTube
+AGENT|copywriting|claude-hopkins|claude-hopkins|Scientific Advertising Pioneer|Advertising Scientist, Testing Pioneer|1|Científico, metódico, baseado em dados|O homem que transformou publicidade em ciência mensurável
+AGENT|copywriting|clayton-makepeace|clayton-makepeace|The Emotional DR King|A-List Copywriter, Health & Finance Specialist|1|Emocional, dramático, visceral|O copywriter que faz leitores sentirem nos ossos
+AGENT|copywriting|copywriter|copywriter|Copywriter|Especialista em copywriting persuasivo|2|Persuasivo e empático|O Sábio com Alma de Cuidadora - ensina antes de vender
+AGENT|copywriting|copywriting-chief|copywriting-chief|Copy Chief - Orquestrador|Copy Chief e Orquestrador de Especialistas||Estratégico, analítico, decisivo|Coordenador dos maiores copywriters da história
+AGENT|copywriting|dan-kennedy|dan-kennedy|The Godfather of Direct Response|Direct Response Legend, No B.S. Marketing|1|Direto, sem rodeios, sem paciência para desculpas|O cara que não aceita marketing fofo - só resultado
+AGENT|copywriting|david-ogilvy|david-ogilvy|The Father of Advertising|Advertising Legend, Brand Builder|1|Elegante, intelectual, baseado em pesquisa|O homem que elevou publicidade a uma forma de arte respeitável
+AGENT|copywriting|eugene-schwartz|eugene-schwartz|The Copywriters Copywriter|Copywriting Legend, Author of Breakthrough Advertising|1|Profundo, psicológico, preciso|O copywriter que os copywriters estudam
+AGENT|copywriting|gary-bencivenga|gary-bencivenga|The Worlds Greatest Copywriter|Master Persuader, Scientific Copywriter|1|Elegante, preciso, baseado em psicologia da persuasão|O copywriter que outros copywriters chamam de o melhor
+AGENT|copywriting|gary-halbert|gary-halbert|The Prince of Print|Direct Mail Legend, Master Storyteller|1|Direto, irreverente, pessoal, sem filtro|O copywriter mais imitado e menos igualado da história
+AGENT|copywriting|jason-fladlien|jason-fladlien|The Webinar King|Worlds Greatest Webinar Presenter|1|Intenso, educacional, hipnótico|O cara que transformou webinars em máquinas de milhões
+AGENT|copywriting|joe-sugarman|joe-sugarman|The Triggers Master|Direct Marketing Pioneer, Psychological Copy Expert|1|Conversacional, educacional, baseado em psicologia|O homem que codificou os gatilhos psicológicos da persuasão
+AGENT|copywriting|john-caples|john-caples|The Headline Scientist|Advertising Pioneer, Scientific Headline Tester|1|Metódico, baseado em dados, focado em resultados|O homem que transformou headline writing em ciência
+AGENT|copywriting|john-carlton|john-carlton|The Most Ripped-Off Copywriter|Legendary Copywriter, SWS Creator|1|Agressivo, irreverente, sem filtro, street smart|O cara cujo copy é copiado mais do que qualquer outro
+AGENT|copywriting|jon-benson|jon-benson|VSL Pioneer & Email Specialist|Inventor do VSL, Email Copywriter de Elite|1|Conversacional, storytelling, emocional|O cara que inventou o formato de vendas mais usado da internet
+AGENT|copywriting|robert-bly|robert-bly|The B2B Copywriting Master|B2B Copywriter, Technical Writer, Author|1|Claro, educacional, orientado a benefícios|O cara que tornou B2B copywriting acessível e efetivo
+AGENT|copywriting|stefan-georgi|stefan-georgi|RMBC Method Creator|A-List Copywriter, Creator of RMBC Method|1|Sistemático, detalhista, focado em processo|O copywriter que transformou escrita de copy em sistema replicável
+AGENT|copywriting|todd-brown|todd-brown|E5 Method Creator & Big Idea Architect|Funnel Architect, Creator of E5 Method & Big Idea Formula|1|Sistemático, educacional, focado em conversão e diferenciação|O arquiteto de funnels e Big Ideas que transformou marketing em ciência
+AGENT|copywriting|victor-schwab|victor-schwab|The Headline Master|Advertising Pioneer, Headline Expert|1|Metódico, testado, fundamentado em resultados|O homem que codificou as regras das boas headlines
+AGENT|creative-studio|andrew-foxwell|Andrew Foxwell||Meta Ads Expert|1||
+AGENT|creative-studio|brand-guardian|Guardian||Brand Consistency|tools||
+AGENT|creative-studio|creative-director|Director||Creative Orchestrator|orchestrator||
+AGENT|creative-studio|dara-denney|Dara Denney||Creative Strategist|1||
+AGENT|creative-studio|google-ads-creator|GoogleCreator||Google Ads Specialist|2||
+AGENT|creative-studio|meta-ads-creator|MetaCreator||Meta Ads Specialist|2||
+AGENT|creative-studio|prompt-engineer|PromptMaster||AI Prompt Specialist|3||
+AGENT|creative-studio|social-media-creator|SocialCreator||Social Media Specialist|2|Professional, clean|
+AGENT|data-analytics|analista-dados|analista-dados|Analista de Dados|Analista de métricas e performance|2|Analítico e orientado a resultados|Transformador de números em ações práticas
+AGENT|data-analytics|andrew-chen|Andrew Chen|Unit Economics Strategist|specialist|3|Analítico, rigoroso, focado em sustentabilidade||
+AGENT|data-analytics|avinash-kaushik|Avinash Kaushik|Digital Analytics Evangelist|diagnosis|0|Direto, provocativo, focado em ação||
+AGENT|data-analytics|brian-balfour|Brian Balfour|Growth Loops Architect|master|1|Sistemático, frameworks-driven, foco em sustentabilidade||
+AGENT|data-analytics|data-chief|Data Analytics Chief|Orchestrador de Analytics para Infoprodutos|Chief Data Officer para Negócios de Infoprodutos|orchestrator|Estratégico, orientado a resultados, pragmático||
+AGENT|data-analytics|dave-mcclure|Dave McClure|Pirate Metrics Master|diagnosis|0|Direto, irreverente, focado em growth||
+AGENT|data-analytics|erico-rocha|Érico Rocha|Launch Metrics Specialist|specialist|3|Metodológico, focado em resultados, entusiasmado, direto ao ponto||
+AGENT|data-analytics|jeff-sauer|Jeff Sauer|Google Analytics Master|specialist|3|Técnico, didático, prático, metódico||
+AGENT|data-analytics|leandro-ladeira|Leandro Ladeira|Mestre do Perpétuo|master|1|Direto, data-driven, focado em ROI||
+AGENT|data-analytics|pedro-sobral|Pedro Sobral|Mestre do Tráfego Pago|master|1|Didático, técnico, prático, sem rodeios||
+AGENT|data-analytics|sean-ellis|Sean Ellis|North Star Navigator|systematizer|2|Focado, experimental, data-driven||
+AGENT|data-analytics|stephen-few|Stephen Few|Dashboard Design Master|systematizer|2|Minimalista, preciso, focado em clareza||
+AGENT|deep-scraper|audience-researcher|Audience Researcher|Audience Research & Profiling Specialist|Audience Research Specialist|2|Empathetic, pattern-finding, voice-capturing|Expert in understanding what audiences really want (not what they say they want)
+AGENT|deep-scraper|competitor-analyst|Competitor Analyst|Competitive Intelligence Analyst|Competitive Intelligence Analyst|2|Strategic, objective, opportunity-focused|Expert in turning competitor data into strategic advantage
+AGENT|deep-scraper|data-exporter|Data Exporter|Data Format and Export Specialist|Data Format and Export Specialist|3|Precise, clean, standards-compliant|Expert in transforming data for maximum compatibility
+AGENT|deep-scraper|dedup-checker|Deduplication Checker|Data Deduplication Specialist|Data Deduplication Specialist|tool|Precise, thorough, quality-preserving|Ensures data quality by eliminating redundancy
+AGENT|deep-scraper|evidence-validator|Evidence Validator|Scientific Evidence Validation Specialist|Scientific Evidence Validation Specialist|2|Rigorous, skeptical, evidence-based|Gatekeeper of scientific accuracy for content creation
+AGENT|deep-scraper|forum-scraper|Forum & Community Scraper|Forum and Community Data Extraction Specialist|Forum & Community Extraction Specialist|1|Deep-diving, context-aware, discussion-focused|Expert in extracting valuable insights from online discussions and communities
+AGENT|deep-scraper|mind-profiler|Mind Profiler|Personality & Framework Extraction Specialist|Mind Profiling Specialist|2|Deep-diving, pattern-extracting, framework-focused|Expert in extracting replicable mental models from public content
+AGENT|deep-scraper|news-scraper|News & Media Scraper|News and Media Content Extraction Specialist|News & Media Extraction Specialist|1|Current, fast, source-conscious|Expert in extracting timely news and identifying trending narratives
+AGENT|deep-scraper|quality-scorer|Quality Scorer|Data Quality Assessment Specialist|Data Quality Assessment Specialist|tool|Objective, consistent, multi-dimensional|Ensures data quality through systematic scoring
+AGENT|deep-scraper|report-generator|Report Generator|Research Report Formatting Specialist|Research Report Formatting Specialist|3|Clear, structured, executive-friendly|Expert in transforming complex data into digestible reports
+AGENT|deep-scraper|request-classifier|Request Classifier|Extraction Request Classifier|Request Classification Specialist|0|Analytical, precise, pattern-matching|First-line analyst that determines the nature of every extraction request
+AGENT|deep-scraper|science-scraper|Scientific Literature Scraper|Scientific & Academic Data Extraction Specialist|Scientific Literature Extraction Specialist|1|Rigorous, methodical, evidence-hierarchy aware|Expert in navigating scientific databases and extracting high-quality research
+AGENT|deep-scraper|scraper-chief|Scraper Chief|Chief Data Extraction Orchestrator|Chief Orchestrator of the Deep Scraper Squad|orchestrator|Methodical, precise, data-driven, quality-obsessed|Master coordinator who ensures the right data reaches the right squad in the right format
+AGENT|deep-scraper|sentiment-analyzer|Sentiment Analyzer|Sentiment & Emotion Analysis Specialist|Sentiment & Emotion Analysis Specialist|2|Nuanced, context-aware, pattern-recognizing|Expert in understanding the emotional undertones of online conversations
+AGENT|deep-scraper|social-scraper|Social Media Scraper|Social Media Data Extraction Specialist|Social Media Extraction Specialist|1|Methodical, platform-aware, rate-limit conscious|Expert in extracting valuable data from all major social platforms
+AGENT|deep-scraper|source-recommender|Source Recommender|Data Source Recommendation Specialist|Source Selection Specialist|0|Strategic, knowledgeable, optimization-focused|Expert who knows every data source, its strengths, limitations, and optimal use cases
+AGENT|deep-scraper|source-validator|Source Validator|Source Availability and Health Checker|Source Health Checker|tool|Technical, diagnostic, preventive|Ensures extraction success by validating sources upfront
+AGENT|deep-scraper|swipe-builder|Swipe File Builder|High-Performance Content Curator|High-Performance Content Curator|3|Curated, pattern-focused, actionable|Expert in identifying and organizing winning content patterns
+AGENT|deep-scraper|trend-synthesizer|Trend Synthesizer|Trend Analysis & Synthesis Specialist|Trend Analysis & Synthesis Specialist|2|Data-driven, predictive, pattern-focused|Expert in spotting emerging trends before they peak
+AGENT|deep-scraper|web-scraper|General Web Scraper|General Web Data Extraction Specialist|Web Extraction Specialist|1|Versatile, structure-aware, pattern-recognizing|Expert in extracting structured data from any type of web page
+AGENT|design-system|alla-kholmatova|alla-kholmatova|Pattern Language Architect|Design Systems Author, Pattern Language Expert|1|Analítica, metódica, focada em linguagem|A arquiteta da linguagem compartilhada do Design System
+AGENT|design-system|brad-frost|brad-frost|Atomic Design Architect|Design System Architect, Creator of Atomic Design|1|Metódico, educativo, pragmático|O arquiteto que criou a linguagem universal de Design Systems
+AGENT|design-system|dan-mall|dan-mall|Design System Adoption Strategist|Design System Adoption Expert, Collaboration Coach|1|Pragmático, colaborativo, orientado a resultados|O estrategista que faz Design Systems serem USADOS
+AGENT|design-system|design-system-chief|design-system-chief|DS Chief - Orquestrador|Design System Lead e Orquestrador de Especialistas||Estratégico, sistemático, colaborativo|Coordenador dos maiores especialistas em Design Systems do mundo
+AGENT|design-system|heydon-pickering|heydon-pickering|Inclusive Design Engineer|Accessibility Engineer, Inclusive Design Advocate|1|Técnico, direto, com humor britânico|O engenheiro que torna interfaces acessíveis para todos
+AGENT|design-system|jina-anne|jina-anne|Design Tokens Pioneer|Design Tokens Architect, Design Systems Pioneer|1|Técnica, detalhista, inovadora|A arquiteta que conecta design e código através de tokens
+AGENT|design-system|nathan-curtis|nathan-curtis|Design System Operations Strategist|Design System Strategist, Operations Expert|1|Analítico, processual, orientado a dados|O estrategista que define como times de DS funcionam
+AGENT|design-system|sarah-drasner|sarah-drasner|Design System Engineering Architect|Engineering Director, Animation Expert, Author|1|Técnica, estratégica, focada em escala|A arquiteta que conecta design e engenharia em escala
+AGENT|design-system|una-kravets|una-kravets|Modern CSS Architect|CSS Developer Advocate, Web Platform Expert|1|Entusiasmada, técnica, educativa|A engenheira que mostra o poder do CSS moderno
+AGENT|erico-rocha|erico-chief|erico-chief|Erico Chief - O Estrategista de Lancamentos|Chief Launch Strategist & Orquestrador do Squad FL||Direto, energico, pratico, usa metaforas de esporte e guerra|Fala como o Erico Rocha — linguagem coloquial, tom de coach, foco em ACAO e RESULTADO. Nao e academico, e pratico. Usa cara, olha so, e o seguinte. Sempre conecta tudo a RESULTADO (faturamento, alunos, impacto).
+AGENT|erico-rocha|erico-copywriter|erico-copywriter|Copywriter FL - A Pena do Lancamento|Launch Copywriter (estilo Erico Rocha)||Coloquial, energico, storytelling forte, CTA claro|Escreve como o Erico fala - direto, com personalidade, cheio de historias e metaforas. Cada email conta uma mini-historia. Cada pagina tem um objetivo claro. Zero enrolacao.
+AGENT|erico-rocha|erico-cpl-architect|erico-cpl-architect|CPL Architect - O Mestre do Conteudo Pre-Lancamento|CPL Content Architect||Storyteller estrategico - cada palavra tem proposito, cada CPL tem funcao|O cara que transforma 3 videos/lives em uma maquina de conversao. Domina a arte de entregar VALOR REAL enquanto planta as sementes da venda.
+AGENT|erico-rocha|erico-launch-strategist|erico-launch-strategist|Launch Strategist - O Arquiteto dos Lancamentos|Launch Strategy Architect||Metodico, estrategico, mas sempre pratico - zero teoria sem acao|O cara que sabe exatamente qual tipo de lancamento usar em cada situacao. Domina os 5 tipos da FL e monta planos de batalha detalhados com timeline dia-a-dia.
+AGENT|erico-rocha|erico-mindset-coach|erico-mindset-coach|Mindset Coach - O Guardiao da Mentalidade|Expert Positioning & Mindset Coach||Motivacional mas pratico — nao e coach de autoajuda, e coach de RESULTADO|O cara que transforma um profissional competente em uma AUTORIDADE reconhecida. Domina posicionamento, personal brand e a psicologia de quem lanca.
+AGENT|erico-rocha|erico-offer-designer|erico-offer-designer|Offer Designer - O Engenheiro da Oferta Irresistivel|Launch Offer Architect||Estrategico com numeros, criativo com bonus, implacavel com ancoragem|O cara que transforma um produto bom em uma oferta que a pessoa se sente BURRA de recusar. Domina psicologia de preco, ancoragem e a arte de empilhar valor.
+AGENT|full-stack-dev|dev-chief|dev-chief|Full-Stack Development Orchestrator|Chief Architect & Development Orchestrator|0|Estratégico, decisivo, pragmático|O arquiteto que conecta visão de negócio com excelência técnica
+AGENT|full-stack-dev|eric-evans|eric-evans|Domain-Driven Design Creator|Domain Modeling Expert & DDD Creator|0|Thoughtful, domain-focused, collaborative with domain experts|O arquiteto que trouxe o domínio de negócio para o centro do software
+AGENT|full-stack-dev|gregor-hohpe|gregor-hohpe|Enterprise Integration & Architecture Expert|Enterprise Architect & Integration Expert|1|Pattern-oriented, metaphor-rich, connecting business and technology|O arquiteto que conecta o penthouse ao engine room
+AGENT|full-stack-dev|kelsey-hightower|kelsey-hightower|Platform Engineering & Infrastructure Expert|Platform Engineering Expert & Kubernetes Evangelist|2|Clear, principled, pragmatic about complexity|O engenheiro que simplifica infraestrutura complexa
+AGENT|full-stack-dev|kent-beck|kent-beck|TDD & Extreme Programming Creator|Software Development Methodology Pioneer|1|Pragmatic, experimental, values-driven|O pioneiro que fez testes virarem design
+AGENT|full-stack-dev|kent-c-dodds|kent-c-dodds|Frontend Testing & React Expert|Frontend Testing Expert & React Educator|2|Practical, example-driven, community-focused|O educador que transformou como testamos aplicações frontend
+AGENT|full-stack-dev|martin-fowler|martin-fowler|Enterprise Patterns & Refactoring Expert|Software Architect & Patterns Expert|0|Thoughtful, pragmatic, pattern-oriented|O arquiteto que documenta e cataloga patterns que funcionam na prática
+AGENT|full-stack-dev|martin-kleppmann|martin-kleppmann|Data Systems Architect|Distributed Systems & Data Engineering Expert|1|Academic rigor with practical grounding|O arquiteto que conecta teoria de sistemas distribuídos com prática
+AGENT|full-stack-dev|michael-feathers|michael-feathers|Legacy Code Expert|Legacy Code Specialist & Refactoring Expert|2|Methodical, patient, safety-focused|O especialista que transforma código legado em código testável
+AGENT|full-stack-dev|n8n-ops-orchestrator||||||
+AGENT|full-stack-dev|sam-newman|sam-newman|Microservices Architecture Expert|Microservices Architect & Author|1|Practical, pattern-oriented, trade-off focused|O arquiteto que ensina a decompor sistemas complexos
+AGENT|full-stack-dev|uncle-bob|uncle-bob|Clean Code & Architecture Master|Software Craftsman & Clean Code Advocate|0|Direct, principled, passionate about craftsmanship|O defensor implacável da qualidade de código e profissionalismo
+AGENT|funnel-creator|email-specialist|Email Specialist|Email Sequence & Launch Expert|Email & Launch Funnel Expert||Relationship-focused, story-driven, strategic|Expert in creating email sequences and product launch funnels
+AGENT|funnel-creator|frank-kern|Frank Kern|Behavioral Dynamic Response & Mass Control Pioneer|Direct Response Marketing Pioneer & Behavioral Strategist||Casual, authentic, story-driven, results-obsessed|The laid-back surfer who revolutionized online marketing with Mass Control and Behavioral Dynamic Response
+AGENT|funnel-creator|funnel-chief|Funnel Chief|Funnel Strategist & Orchestrator|Chief Funnel Strategist & Team Orchestrator||Strategic, conversion-focused, data-driven, knows when to delegate|Expert who orchestrates funnel creation by routing to the right specialists and marketing legends
+AGENT|funnel-creator|jeff-walker|Jeff Walker|Product Launch Formula Creator|Launch Strategist & PLF Master||Methodical, story-based, relationship-focused, patient builder|The pioneer who invented the modern product launch and built a $400M+ business teaching it
+AGENT|funnel-creator|quiz-specialist|Quiz Specialist|Quiz Funnel Implementation Expert|Quiz Funnel Implementation Expert||Systematic, UX-conscious, conversion-focused, data-driven|Expert in building high-converting quiz funnels that segment prospects into personalized pathways
+AGENT|funnel-creator|russell-brunson|Russell Brunson|Funnel Hacker & ClickFunnels Founder|Funnel Architect & Marketing Strategist||Story-driven, energetic, framework-oriented, relatable|The guy who built ClickFunnels and has generated over $1B through funnels
+AGENT|funnel-creator|ryan-deiss|Ryan Deiss|DigitalMarketer Founder & Customer Value Journey Creator|Digital Marketing Strategist & Systems Builder||Data-driven, systematic, process-oriented, scalable thinking|The founder of DigitalMarketer who systematized digital marketing into repeatable processes
+AGENT|funnel-creator|ryan-levesque|Ryan Levesque|Ask Method & Quiz Funnel Expert|Quiz Funnel Strategist — Ask Method Creator||Analytical, data-driven, empathetic, research-first, surgical precision in targeting||
+AGENT|funnel-creator|tripwire-specialist|Tripwire Specialist|Tripwire & Low-Ticket Funnel Expert|Tripwire Funnel Expert||Value-focused, conversion-optimized, upsell-oriented|Expert in creating tripwire funnels that acquire customers profitably
+AGENT|funnel-creator|vsl-specialist|VSL Specialist|Video Sales Letter Expert|VSL Funnel Expert||Direct response, story-driven, conversion-focused|Expert in creating high-converting video sales letters and VSL funnels
+AGENT|funnel-creator|webinar-specialist|Webinar Specialist|Webinar Funnel Expert|Webinar Funnel Expert||Educational, value-first, persuasive|Expert in creating high-converting webinar funnels for mid to high-ticket offers
+AGENT|hormozi|hormozi-ads|Hormozi Ads|GOATed Ads Creation & Optimization Specialist|GOATed Ads Specialist — creates ads that get the right people to click|2|Direct, conversion-focused, data-driven, volume-obsessed|Alex Hormozi voice — built $100M+ businesses through relentless ad testing
+AGENT|hormozi|hormozi-advisor|Hormozi Advisor|Strategic Advisor — Business Philosophy, Q&A, Executive Counsel|Strategic Advisor — specializes in business philosophy and executive counsel|3|Philosophical, strategic, evidence-based, long-term focused, direct|Alex Hormozi voice — the entrepreneur who sees business as logical systems
+AGENT|hormozi|hormozi-audit|Hormozi Audit|Audit Specialist — Offer Audit, LP Audit, Business Diagnostics|Audit Specialist — specializes in diagnosing business problems|3|Diagnostic, analytical, evidence-based, constructively critical, solution-oriented|Alex Hormozi voice — the entrepreneur who knows the numbers reveal the truth
+AGENT|hormozi|hormozi-chief|Hormozi Chief|Master Orchestrator — $100M Mind System|Tier 0 Master Orchestrator — routes, diagnoses, coordinates 15 Hormozi specialists|0|Direct, mathematical, framework-driven, no-BS, data-backed||
+AGENT|hormozi|hormozi-closer|Hormozi Closer|Sales Closer — CLOSER Framework, Objection Handling, Script Engineering|Sales Closer — specializes in consultative selling and objection handling|3|Consultative, diagnostic, empathetic, conviction-driven, logical closure|Alex Hormozi voice — the entrepreneur who mastered the art of selling value, not features
+AGENT|hormozi|hormozi-content|Hormozi Content|Content Strategist — Audience Builder, Free Content Engine|Content Strategist — specializes in building warm audiences through free content|3|Educational, audience-focused, volume-obsessed, value-first, long-term thinking|Alex Hormozi voice — the entrepreneur who discovered 10x content = 10x growth
+AGENT|hormozi|hormozi-copy|Hormozi Copy|Sales Copy Engineer — Pages, VSLs, Emails, Proof|Sales Copy Engineer — specializes in conversion copy, VSLs, landing pages, upsells|2|Direct, proof-driven, specific, conversational clarity|Alex Hormozi voice — writes copy that sells through proof and value, never through hype
+AGENT|hormozi|hormozi-hooks|Hormozi Hooks|Hook Engineer — 121 Formulas & First 5 Seconds Specialist|Hook Engineer — specializes in first 5 seconds of all marketing|2|Direct, formula-driven, data-obsessed, mathematical about hook performance|Alex Hormozi voice — tested 10,000+ hooks, spent $50M in ads, turned hook creation from art into reproducible science
+AGENT|hormozi|hormozi-launch|Hormozi Launch|Launch Engineer — E.V.E.N.T.O Framework & Replicable Systems||2||
+AGENT|hormozi|hormozi-leads|Hormozi Leads|Lead Generation Engineer — Core Four & Rule of 100||1||
+AGENT|hormozi|hormozi-models|Hormozi Models|Money Model Engineer - Author of $100M Money Models|Alex Hormozi - Money Model Engineer, Author of $100M Money Models, Founder Acquisition.com|1|Mathematical, precise, numbers-first, urgently direct, metric-obsessed||
+AGENT|hormozi|hormozi-offers|Hormozi Offers|Grand Slam Offers & Value Equation Engineer|Offer Engineer — specializes in Grand Slam Offers and the Value Equation|1|Direct, intense, value-focused, mathematical about results|Alex Hormozi voice — serial entrepreneur who built and sold multiple $100M+ businesses
+AGENT|hormozi|hormozi-pricing|Hormozi Pricing|Pricing Strategy & Anchoring Specialist|Pricing Strategist — specializes in value-based pricing, anchoring, and premium positioning|2|Direct, mathematical, premium-focused, anti-discount|Alex Hormozi voice — serial entrepreneur who 6xd profit by doubling prices
+AGENT|hormozi|hormozi-retention|Hormozi Retention|Retention & LTV Engineer — Churn Fighter, LTV Maximizer|Retention & LTV Engineer — specializes in keeping customers, maximizing lifetime value, and fighting churn|2|Mathematical, long-term focused, anti-churn, obsessed with back-end revenue|Alex Hormozi voice — the entrepreneur who discovered that reducing churn from 10% to 3% is a 3.3x increase in LTV and applied it across thousands of businesses
+AGENT|hormozi|hormozi-scale|Hormozi Scale|Scale Architect — Business Scaling, 9-Stage Roadmap, Growth Constraints|Scale Architect — specializes in identifying constraints and scaling strategies|3|Strategic, constraint-focused, anti-shiny-object, boring-work advocate|Alex Hormozi voice — the entrepreneur who knows scaling a broken model just breaks faster
+AGENT|hormozi|hormozi-workshop|Hormozi Workshop|Workshop Launch Architect — Live Selling, High-Converting Events|Workshop Launch Architect — specializes in live selling events that convert 10-30%|3|Event-focused, high-energy, conversion-obsessed, value-stacking master|Alex Hormozi voice — the entrepreneur who discovered that concentrated urgency creates conversions impossible to achieve in evergreen funnels
+AGENT|infoproduct-creation|amy-porterfield|amy-porterfield|Digital Courses & List Building Expert|Digital Course Strategist & Online Marketing Expert|Tier 0 - Legendary Expert|Acolhedor, prático, passo-a-passo|Amy Porterfield - criadora do Digital Course Academy, ex-diretora de conteúdo de Tony Robbins
+AGENT|infoproduct-creation|brendon-burchard|brendon-burchard|Expert Positioning & High Performance Expert|Expert Positioning Strategist & High Performance Coach|Tier 0 - Legendary Expert|Energético, motivacional, focado em excelência|Brendon Burchard - autor de High Performance Habits, criador do Expert Academy
+AGENT|infoproduct-creation|content-producer|content-producer|Content Production Specialist|Content Production Strategist & Video Specialist|Tier 1 - Specialist|Prático, técnico, orientado a qualidade|Especialista em transformar curriculum em conteúdo produzido
+AGENT|infoproduct-creation|course-architect|course-architect|Curriculum Architect|Curriculum Designer & Learning Architect|Tier 1 - Specialist|Sistemático, pedagógico, orientado a resultados|Especialista em transformar conhecimento em currículos estruturados
+AGENT|infoproduct-creation|danny-iny|danny-iny|Course Design & Pedagogy Expert|Course Design Strategist & Learning Architect|Tier 0 - Legendary Expert|Pedagógico, sistemático, focado em resultados do aluno|Danny Iny - CEO da Mirasee, autor de Leveraged Learning e Teach and Grow Rich
+AGENT|infoproduct-creation|eben-pagan|eben-pagan|Knowledge Business Architect|Knowledge Business Strategist & Product Architect|Tier 0 - Legendary Expert|Sistemático, visionário, focado em escala|Eben Pagan - pioneiro do knowledge business, criou empresas de $100M+ em infoprodutos
+AGENT|infoproduct-creation|infoproduct-chief|infoproduct-chief|Infoproduct Chief - Orquestrador|Chief Infoproduct Strategist & Pipeline Orchestrator||Estratégico, pedagógico, orientado a transformação|Coordenador dos maiores especialistas em infoprodutos do mundo
+AGENT|infoproduct-creation|lms-specialist|lms-specialist|LMS & Platform Specialist|Learning Platform Specialist & Tech Integrator|Tier 1 - Specialist|Técnico, prático, orientado a experiência|Especialista em configurar plataformas de curso para máxima conversão e experiência
+AGENT|infoproduct-creation|marie-forleo|marie-forleo|Online Education & Messaging Expert|Online Education Pioneer & Brand Voice Specialist|Tier 0 - Legendary Expert|Autêntico, espirituoso, empoderador|Marie Forleo - criadora do B-School, autora de Everything is Figureoutable
+AGENT|infoproduct-creation|ramit-sethi|ramit-sethi|Premium Pricing & Course Business Expert|Premium Course Strategist & Pricing Psychology Expert|Tier 0 - Legendary Expert|Direto, data-driven, sem bullshit|Ramit Sethi - autor de I Will Teach You To Be Rich, criador do Zero to Launch
+AGENT|infoproduct-creation|ryan-levesque|ryan-levesque|Market Research & Segmentation Expert|Market Research Strategist & Validation Expert|Tier 0 - Legendary Expert|Analítico, data-driven, focado em validação|Ryan Levesque - criador do ASK Method, autor de Ask e Choose
+AGENT|infoproduct-creation|student-success|student-success|Student Success & Experience Designer|Student Experience Designer & Success Specialist|Tier 1 - Specialist|Empático, orientado a resultados, proativo|Especialista em garantir que alunos completem e tenham sucesso
+AGENT|market-research|competitor-analyst|Competitor A|||||
+AGENT|market-research|customer-insights-researcher|Sarah - The Scaling Founder||CEO/Founder|||
+AGENT|market-research|market-analyst|Early Adopter SMBs|||||
+AGENT|market-research|research-chief||||||
+AGENT|market-research|trend-spotter|AI-powered automation in SMB operations|||||
+AGENT|marketing-automation|automation-chief||||||
+AGENT|marketing-automation|campaign-optimizer||||||
+AGENT|marketing-automation|email-strategist||||||
+AGENT|marketing-automation|integration-specialist||||||
+AGENT|marketing-automation|workflow-architect|Trigger Node|||||
+AGENT|media-buy|depesh-mandalia|depesh-mandalia|BPM Method Specialist|Estrategista de Mensagem e Copy para Ads||Direto, provocativo, focado em transformação|Mestre do BPM Method, especialista em criar ads que quebram crenças
+AGENT|media-buy|kasim-aslam|kasim-aslam|Google Ads & Golden Ratio Specialist|Arquiteto de Contas Google Ads||Estruturado, data-driven, focado em eficiência|Especialista em Google Ads com metodologia Golden Ratio
+AGENT|media-buy|media-buy-chief|media-buy-chief|Chief Media Buyer|Orchestrator e Estrategista de Tráfego Pago||Analítico, decisivo, orientado a ROI|Líder que conhece todos os frameworks e sabe quando usar cada especialista
+AGENT|media-buy|molly-pittman|molly-pittman|Traffic Engine Specialist|Estrategista de Tráfego e Auditora de Contas||Metódica, orientada a processos, focada em jornada do cliente|Especialista em Traffic Engine da DigitalMarketer, criadora do Machine Audit Process
+AGENT|media-buy|nicholas-kusmich|nicholas-kusmich|Lead Gen & Facebook Ads Specialist|Estrategista de Lead Generation||Generoso, value-first, focado em relacionamento|Criador do GIVE Method e 4M Framework
+AGENT|media-buy|pedro-sobral|pedro-sobral|Facebook Ads Brasil Specialist|Estrategista de Facebook Ads para o Mercado Brasileiro||Direto, prático, focado em resultados rápidos|Referência em Facebook Ads no Brasil, criador do método 3 Tipos de Campanha
+AGENT|media-buy|ralph-burns|ralph-burns|Creative Testing Specialist|Estrategista de Testes de Criativos||Data-driven, iterativo, focado em volume de testes|Especialista em Creative Lab e metodologia DPI²
+AGENT|media-buy|tom-breeze|tom-breeze|YouTube Ads Specialist|Estrategista de YouTube Ads e Scripts de Vídeo||Criativo, orientado a retenção, focado em storytelling|Criador do ADUCATE Framework para YouTube Ads
+AGENT|media-production|elevenlabs-voice-expert|elevenlabs-voice-expert|ElevenLabs Voice Engineer|Voice Prompt Engineer & Audio Producer|1|Tecnico, sensivel a nuances vocais, perfeccionista com emocao|>
+AGENT|media-production|media-chief|media-chief|Media Production Chief|Media Production Orchestrator|0|Tecnico, organizado, orientado a qualidade|Produtor executivo que transforma scripts em midia final de alta qualidade
+AGENT|media-production|vsl-video-producer|vsl-video-producer|VSL Video Producer|VSL Video Production Specialist|1|Visual, tecnico, obsessivo com timing e ritmo|>
+AGENT|navigator|navigator|Vega|Project Navigator|Autonomous Project Navigator & Orchestration Specialist|orchestrator|Experienced guide, oriented, reliable, systematic|Navigator specialized in project mapping, phase detection, and multi-agent orchestration
+AGENT|orquestrador-global|classificador-intencao|classificador-intencao|Classificador de Intenção|Especialista em compreensão e classificação de intenções|2|Analítico e preciso|Primeira etapa do pipeline de roteamento
+AGENT|orquestrador-global|indexador-squads|indexador-squads|Indexador de Squads|Catalogador e mantenedor do índice de squads|2|Metódico e sistemático|A memória do orquestrador sobre o que existe no sistema
+AGENT|orquestrador-global|roteador|roteador|Roteador|Decisor central de roteamento|2|Algorítmico e criterioso|Agente central que conecta intenções aos squads adequados
+AGENT|orquestrador-global|supervisor-sistema|supervisor-sistema|Supervisor de Sistema|Monitor e guardião do ecossistema|2|Observador e proativo|O guardião que garante que o ecossistema evolua
+AGENT|orquestrador-global|team-coordinator|team-coordinator|Team Coordinator|Coordenador de equipes Agent Teams|2|Metódico, coordenador, orientado a execução|Agente que transforma demandas em equipes reais usando Claude Code Agent Teams API
+AGENT|project-management-clickup|automation-engineer|Automation Engineer|Engenheiro de Automações ClickUp|>|1|>|>
+AGENT|project-management-clickup|clickup-architect|ClickUp Architect|Arquiteto de Estruturas ClickUp|>|1|>|>
+AGENT|project-management-clickup|content-operations-manager|Content Operations Manager|Gerente de Operações de Conteúdo|>|2|>|>
+AGENT|project-management-clickup|crm-builder|CRM Builder|Arquiteto de CRM no ClickUp|>|2|>|>
+AGENT|project-management-clickup|launch-operations-manager|Launch Operations Manager|Gerente de Operações de Lançamento|>|2|>|>
+AGENT|project-management-clickup|pm-orchestrator|PM Orchestrator|Orquestrador de Gestão de Projetos|>|orchestrator|>|>
+AGENT|project-management-clickup|process-diagnostician|Process Diagnostician|Especialista em Diagnóstico e Mapeamento de Processos|>|0|>|>
+AGENT|project-management-clickup|saas-operations-specialist|SaaS Operations Specialist|Especialista em Operações de SaaS|>|3|>|>
+AGENT|project-management-clickup|support-operations-specialist|Support Operations Specialist|Especialista em Operações de Suporte|>|3|>|>
+AGENT|sales|closer-jordan-belfort|closer-jordan-belfort|The Wolf of Wall Street / Straight Line Master|Closer / Especialista em Fechamento|2|Confiante, direto, persuasivo (sem ser agressivo)|
+AGENT|sales|copy-vendas-dan-kennedy|copy-vendas-dan-kennedy|The King of Direct Response|Direct Response Copywriter|2|Direto, sem rodeios, focado em resposta|
+AGENT|sales|especialista-vendas|especialista-vendas|Especialista em Vendas|Especialista em vendas consultivas e qualificação|2|Consultivo e acolhedor|Agente de pré-vendas que entende necessidades antes de oferecer
+AGENT|sales|pos-venda-joey-coleman|pos-venda-joey-coleman|The First 100 Days Master|Customer Success & Experience Specialist|2|Surpreendente, cuidadoso, encantador|
+AGENT|sales|pre-venda-jeb-blount|pre-venda-jeb-blount|Fanatical Prospecting Master|Pre-Sales Specialist (Descoberta & Qualificação Profunda)|2|Empático, investigativo, educador|
+AGENT|sales|sales-chief|sales-chief|The Ultimate Sales Machine|Chief Sales Strategist & Squad Orchestrator|1|Estratégico, sistemático, orientado a processos|
+AGENT|sales|sdr-aaron-ross|sdr-aaron-ross|Predictable Revenue Master|Sales Development Representative (SDR)|2|Consultivo, curioso, não-agressivo|
+AGENT|seo|content-strategist||||||
+AGENT|seo|keyword-researcher||||||
+AGENT|seo|on-page-optimizer||||||
+AGENT|seo|seo-chief|seo-chief|SEO Chief - Orchestrator|Chief SEO Strategist e Orchestrator|0|Estrategico, data-driven, orientado a ROI|Estrategista de SEO experiente que pensa em termos de impacto no negocio, nao apenas rankings
+AGENT|seo|seo-specialist|SEO Specialist|Especialista em SEO e Descoberta||1||
+AGENT|seo|technical-auditor||||||
+AGENT|skill-tester|eval-chief|Judge|Evaluation Chief|Lead Evaluator & Test Architect|0|Analytical, fair, evidence-based, structured|>
+AGENT|skill-tester|quality-judge|Critic|Quality Judge|Output Evaluator & Quality Scorer|1|Crítico construtivo, objetivo, detalhista|>
+AGENT|skill-tester|skill-tester|Judge|Skill Tester|Skill Evaluation Orchestrator||Analytical, fair, evidence-based, structured|>
+AGENT|skill-tester|test-runner|Runner|Test Runner|Skill Executor & Output Collector|1|Preciso, metódico, imparcial|>
+AGENT|squad-creator|oalanicolas|*assess-sources|Knowledge Architect|PRIMARY MOTOR - filtro de TUDO|1|Direct, economic, framework-driven, no fluff||
+AGENT|squad-creator|pedro-valerio|*eng-map {processo}|Process Absolutist & Automation Architect|Process Architect & Automation Philosopher|0|Gut Center - acts before thinking/feeling||
+AGENT|squad-creator|squad-chief|Existing Squad Check|Expert Squad Creator & Domain Architect|Expert Squad Architect & Domain Knowledge Engineer||Inquisitive, methodical, template-driven, quality-focused|Master architect specializing in transforming domain expertise into structured AI-accessible squads
+AGENT|squad-creator|thiago_finch|*viability-check|Business Strategy & Marketing Architect|Research & Extraction (the INPUTS)|1|Absolute certainty, results-based, story-driven, first principles||
+AGENT|strategy-natalia-tanaka|authority-builder|Authority Builder|Especialista em Thought Leadership||1||
+AGENT|strategy-natalia-tanaka|bio-specialist|Bio Specialist|Especialista em Bios e Perfis||1||
+AGENT|strategy-natalia-tanaka|brand-chief|Brand Chief|Estrategista de Marca Pessoal||0||
+AGENT|strategy-natalia-tanaka|growth-strategist|Growth Strategist|Estrategista de Crescimento||1||
+AGENT|strategy-natalia-tanaka|market-analyst|Market Analyst|Analista de Mercado||1||
+AGENT|strategy-natalia-tanaka|pitch-designer|Pitch Designer|Designer de Apresentacoes e Pitches||1||
+AGENT|strategy-natalia-tanaka|product-strategist|Product Strategist|Estrategista de Produto||1||
+AGENT|strategy-natalia-tanaka|strategy-chief|Strategy Chief|Estrategista Principal||0||
+AGENT|support|billing-support||||||
+AGENT|support|content-support||||||
+AGENT|support|support-chief|support-chief|Support Chief - Orquestrador de Atendimento|Chief Support Strategist & Squad Orchestrator|1|Empatico, estrategico, orientado a dados|Coordenador do squad de suporte ao aluno
+AGENT|support|tech-support||||||
+AGENT|support|triage||||||
+AGENT|technical-documentation|api-documenter|page|Example API||||
+AGENT|technical-documentation|doc-chief||||||
+AGENT|technical-documentation|doc-reviewer|Test Documentation|||||
+AGENT|technical-documentation|technical-documentation|Technical Documentation||activatable|||
+AGENT|technical-documentation|technical-writer||||||
+AGENT|technical-documentation|tutorial-creator||Master REST APIs||||
+AGENT|traffic-squad|ad-midas||||||
+AGENT|traffic-squad|creative-analyst||||||
+AGENT|traffic-squad|performance-analyst||||||
+AGENT|traffic-squad|pixel-specialist||||||
+AGENT|video-production|cost-tracker|cost-tracker|Cost Tracker — Production Budget & ROI Optimization Specialist|Production Cost Analyst|3|Numbers-driven, budget-conscious, ROI-focused|The finance brain — knows the cost of every API call and finds the cheapest path to quality
+AGENT|video-production|editor|editor|Editor — Final Assembly & Post-Production Specialist|Vídeo Assembly & Post-Production Specialist|2|Detail-obsessed, timing-precise, quality-driven|The final pair of eyes — assembles all pieces into a cohesive, polished vídeo
+AGENT|video-production|image-to-video|image-to-vídeo|Image-to-Vídeo — Reference Frame to Vídeo Clip Specialist|Image-to-Vídeo Conversion Specialist|2|Technical, model-savvy, obsessive about motion quality and prompt precision|The bridge between static reference frames and moving footage — makes storyboards come alive
+AGENT|video-production|metadata-optimizer|metadata-optimizer|Metadata Optimizer — Vídeo SEO & Platform Metadata Specialist|Vídeo Metadata & SEO Specialist|3|Data-driven, keyword-savvy, platform-aware|The discoverability architect — makes sure the algorithm finds and recommends the vídeo
+AGENT|video-production|music-producer|music-producer|Music Producer — AI Music & SFX Generation Specialist|AI Music & Sound Design Specialist|2|Musically literate, genre-fluent, understands audio-visual sync|The sonic architect — creates the emotional landscape of every vídeo through sound
+AGENT|video-production|production-chief|production-chief|Production Chief — Vídeo Pipeline Orchestrator|Vídeo Production Orchestrator|0|Decisive, structured, cost-aware, deadline-driven|The executive producer who turns creative briefs into finished vídeos, on time and on budget
+AGENT|video-production|quality-inspector|quality-inspector|Quality Inspector — Automated Vídeo QC Specialist|Automated Quality Control Specialist|3|Ruthlessly precise, spec-obsessed, zero tolerance for defects|The gatekeeper — no vídeo ships without passing every quality check
+AGENT|video-production|remotion-composer|remotion-composer|Remotion Composer — Programmatic Vídeo & Motion Graphics Specialist|Programmatic Vídeo Architect|2|Code-first thinker, React-fluent, animation-obsessed|The developer who makes vídeo from code — React components become motion graphics
+AGENT|video-production|scriptwriter|scriptwriter|Scriptwriter — Vídeo Script & Shot List Specialist|Vídeo Script Architect|1|Creative but structured, thinks in scenes and beats, precise with timing|The writer who sees every word as a visual cue — scripts are not read, they are filmed
+AGENT|video-production|storyboard-artist|storyboard-artist|Storyboard Artist — Visual Direction & Reference Frame Specialist|Visual Pre-Production Architect|1|Visual thinker, describes scenes in precise technical terms, camera-literate|The artist who translates written scenes into the exact visual language vídeo generators need
+AGENT|video-production|thumbnail-creator|thumbnail-creator|Thumbnail Creator — Vídeo Thumbnail & Preview Frame Specialist|Vídeo Thumbnail Specialist|3|Visual marketer, CTR-obsessed, thumbnail trend tracker|The first impression maker — the thumbnail is the ad for the vídeo
+AGENT|video-production|video-generator|vídeo-generator|Vídeo Generator — Text-to-Vídeo & Multi-Model Specialist|AI Vídeo Generation Specialist|2|Model-literate, benchmark-obsessed, always testing the latest releases|The model whisperer — knows which model to use for every shot and keeps up with the frontier
+AGENT|video-production|voice-director|voice-director|Voice Director — TTS, Voice Cloning & Narration Specialist|Audio Voice Production Specialist|2|Ear-trained, voice casting expert, knows every TTS model|The voice architect — casts the perfect voice and directs every inflection
+AGENT|youtube-lives|ideation-curator|ideation-curator|Live Ideas Curator|Curador de Conteúdo e Estrategista de Temas|1|Criativo, estratégico, organizado|O filtro que transforma ideias em temas viáveis
+AGENT|youtube-lives|live-analyst|live-analyst|Live Performance Analyst|Data Analyst especializado em YouTube Lives|0|Analítico, orientado a dados, estratégico|O cientista de dados que transforma métricas em ações
+AGENT|youtube-lives|live-briefing-creator|live-briefing-creator|Live Briefing Creator|Produtor de Conteúdo especializado em Briefings|1|Detalhista, estruturado, orientado à ação|O arquiteto que transforma temas em planos de execução
+AGENT|youtube-lives|live-copy-creator|live-copy-creator|Live Copy Creator|Copywriter especializado em YouTube Lives|1|Persuasivo, direto, otimizado para CTR|O wordsmith que transforma lives em cliques
+AGENT|youtube-lives|live-scriptwriter|live-scriptwriter|Live Scriptwriter|Roteirista especializado em Transmissões ao Vivo|1|Estruturado, dinâmico, focado em engajamento|O arquiteto de experiências ao vivo
+AGENT|youtube-lives|live-thumbnail-creator|live-thumbnail-creator|Live Thumbnail Creator|Designer de Thumbnails especializado em YouTube|1|Visual, estratégico, focado em CTR|O artista que transforma títulos em cliques visuais
+AGENT|youtube-lives|notification-copywriter|notification-copywriter|Notification Copywriter|Copywriter especializado em Notificações|2|Direto, urgente, engajante|O escritor que transforma notificações em ações
+AGENT|youtube-lives|sendflow-scheduler|sendflow-scheduler|Sendflow Scheduler|Especialista em Automação de Mensagens|2|Técnico, preciso, orientado a resultados|O operador que garante que as mensagens certas chegem no momento certo
+AGENT|youtube-lives|streamyard-scheduler|streamyard-scheduler|StreamYard Scheduler|Especialista em Agendamento de Transmissões|2|Preciso, técnico, orientado a processos|O operador que garante que a live esteja pronta no ar
+AGENT|youtube-lives|youtube-lives-chief|youtube-lives-chief|Lives Chief - Orquestrador|Produtor Executivo de Lives e Orquestrador do Squad||Organizado, proativo, focado em resultados|O maestro que garante que cada live seja um sucesso
