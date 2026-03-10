@@ -10,14 +10,17 @@ describe('integrationStore', () => {
         supabase: { id: 'supabase', status: 'disconnected', config: {} },
         'api-keys': { id: 'api-keys', status: 'disconnected', config: {} },
         voice: { id: 'voice', status: 'disconnected', config: {} },
+        telegram: { id: 'telegram', status: 'disconnected', config: {} },
+        'google-drive': { id: 'google-drive', status: 'disconnected', config: {} },
+        'google-calendar': { id: 'google-calendar', status: 'disconnected', config: {} },
       },
       setupModalOpen: null,
     });
   });
 
-  it('should have all 5 integrations', () => {
+  it('should have all 8 integrations', () => {
     const ids = Object.keys(useIntegrationStore.getState().integrations);
-    expect(ids).toEqual(['engine', 'whatsapp', 'supabase', 'api-keys', 'voice']);
+    expect(ids).toEqual(['engine', 'whatsapp', 'supabase', 'api-keys', 'voice', 'telegram', 'google-drive', 'google-calendar']);
   });
 
   it('should default all integrations to disconnected', () => {

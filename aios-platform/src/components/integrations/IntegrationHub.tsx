@@ -1,4 +1,4 @@
-import { Server, MessageSquare, Database, KeyRound, Mic } from 'lucide-react';
+import { Server, MessageSquare, Database, KeyRound, Mic, Send, HardDrive, CalendarDays } from 'lucide-react';
 import { useIntegrationStatus } from '../../hooks/useIntegrationStatus';
 import { useIntegrationStore, type IntegrationId } from '../../stores/integrationStore';
 import { IntegrationCard } from './IntegrationCard';
@@ -39,6 +39,24 @@ const integrationsMeta: {
     name: 'Voice / TTS',
     description: 'Text-to-speech provider configuration',
     icon: <Mic size={20} />,
+  },
+  {
+    id: 'telegram',
+    name: 'Telegram',
+    description: 'Bot messaging via Telegram Bot API',
+    icon: <Send size={20} />,
+  },
+  {
+    id: 'google-drive',
+    name: 'Google Drive',
+    description: 'File storage, docs, and shared drives',
+    icon: <HardDrive size={20} />,
+  },
+  {
+    id: 'google-calendar',
+    name: 'Google Calendar',
+    description: 'Calendar events, scheduling, and availability',
+    icon: <CalendarDays size={20} />,
   },
 ];
 

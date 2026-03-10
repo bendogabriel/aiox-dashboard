@@ -29,6 +29,9 @@ describe('useIntegrationStatus (unit logic)', () => {
         supabase: { id: 'supabase', status: 'disconnected', config: {} },
         'api-keys': { id: 'api-keys', status: 'disconnected', config: {} },
         voice: { id: 'voice', status: 'disconnected', config: {} },
+        telegram: { id: 'telegram', status: 'disconnected', config: {} },
+        'google-drive': { id: 'google-drive', status: 'disconnected', config: {} },
+        'google-calendar': { id: 'google-calendar', status: 'disconnected', config: {} },
       },
       setupModalOpen: null,
     });

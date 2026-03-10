@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Server, MessageSquare, Database, Copy, Check, ExternalLink, QrCode, KeyRound, Mic, Plus, Trash2, Send } from 'lucide-react';
+import { X, Server, MessageSquare, Database, Copy, Check, ExternalLink, QrCode, KeyRound, Mic, Plus, Trash2, Send as SendIcon, HardDrive, CalendarDays } from 'lucide-react';
 import { useIntegrationStore } from '../../stores/integrationStore';
 import { getEngineUrl } from '../../lib/connection';
 
@@ -353,7 +353,7 @@ function WhatsAppSetup({ onClose }: { onClose: () => void }) {
             }}
             style={{ ...primaryBtnStyle, flex: 1, background: 'rgba(37, 211, 102, 0.15)', color: '#25D366', border: '1px solid rgba(37, 211, 102, 0.3)' }}
           >
-            <Send size={14} style={{ display: 'inline', marginRight: 6 }} />
+            <SendIcon size={14} style={{ display: 'inline', marginRight: 6 }} />
             Send Test
           </button>
         </div>
@@ -656,6 +656,238 @@ function VoiceSetup({ onClose }: { onClose: () => void }) {
   );
 }
 
+// ── Telegram Setup ───────────────────────────────────────
+
+function TelegramSetup({ onClose }: { onClose: () => void }) {
+  const engineUrl = getEngineUrl() || '';
+  const [statusMsg, setStatusMsg] = useState<string | null>(null);
+
+  const checkStatus = async () => {
+    if (!engineUrl) { setStatusMsg('Engine not configured'); return; }
+    try {
+      const res = await fetch(`${engineUrl}/telegram/status`);
+      const data = await res.json() as { configured: boolean; bot_username?: string; webhook_set?: boolean };
+      setStatusMsg(
+        data.configured
+          ? `@${data.bot_username} — webhook: ${data.webhook_set ? 'active' : 'not set'}`
+          : 'Not configured',
+      );
+    } catch {
+      setStatusMsg('Cannot reach engine');
+    }
+  };
+
+  const setWebhook = async () => {
+    if (!engineUrl) return;
+    setStatusMsg('Setting webhook...');
+    try {
+      const res = await fetch(`${engineUrl}/telegram/webhook`, { method: 'POST' });
+      const data = await res.json() as { success?: boolean; message?: string; error?: string };
+      setStatusMsg(data.success ? 'Webhook set successfully' : `Failed: ${data.error || data.message}`);
+    } catch {
+      setStatusMsg('Cannot reach engine');
+    }
+  };
+
+  return (
+    <ModalShell title="Telegram Bot" onClose={onClose}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#26A5E4' }}>
+          <SendIcon size={20} />
+          <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>Telegram Bot API</span>
+        </div>
+
+        <div style={hintStyle}>
+          <strong style={{ color: 'var(--aiox-cream)' }}>Setup:</strong><br />
+          1. Create a bot via{' '}
+          <a href="https://t.me/BotFather" target="_blank" rel="noreferrer" style={{ color: '#26A5E4' }}>
+            @BotFather <ExternalLink size={11} style={{ display: 'inline' }} />
+          </a><br />
+          2. Set env vars in <code>engine/.env</code>:<br />
+          <code style={{ color: 'var(--aiox-lime)' }}>TELEGRAM_BOT_TOKEN=123456:ABC-...</code><br />
+          <code style={{ color: 'var(--aiox-lime)' }}>TELEGRAM_WEBHOOK_URL={engineUrl}/telegram/webhook</code><br />
+          3. Restart engine, then click "Set Webhook" below
+        </div>
+
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={checkStatus} style={{ ...primaryBtnStyle, flex: 1, background: 'transparent', color: 'var(--aiox-cream)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            Check Status
+          </button>
+          <button onClick={setWebhook} style={{ ...primaryBtnStyle, flex: 1, background: 'rgba(38, 165, 228, 0.15)', color: '#26A5E4', border: '1px solid rgba(38, 165, 228, 0.3)' }}>
+            Set Webhook
+          </button>
+        </div>
+
+        {statusMsg && (
+          <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', color: 'var(--aiox-gray-muted)', background: 'rgba(255,255,255,0.02)', borderLeft: '2px solid rgba(38, 165, 228, 0.3)' }}>
+            {statusMsg}
+          </div>
+        )}
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── Google Drive Setup ───────────────────────────────────
+
+const GOOGLE_DRIVE_KEY = 'aios-google-drive';
+
+function GoogleDriveSetup({ onClose }: { onClose: () => void }) {
+  const [clientId, setClientId] = useState<string>(() => {
+    try {
+      const raw = localStorage.getItem(GOOGLE_DRIVE_KEY);
+      return raw ? JSON.parse(raw)?.clientId || '' : '';
+    } catch { return ''; }
+  });
+  const [saved, setSaved] = useState(false);
+
+  const hasAuth = (() => {
+    try {
+      const raw = localStorage.getItem(GOOGLE_DRIVE_KEY);
+      return raw ? !!(JSON.parse(raw)?.accessToken || JSON.parse(raw)?.refreshToken) : false;
+    } catch { return false; }
+  })();
+
+  const saveConfig = () => {
+    const existing = (() => {
+      try {
+        const raw = localStorage.getItem(GOOGLE_DRIVE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch { return {}; }
+    })();
+    localStorage.setItem(GOOGLE_DRIVE_KEY, JSON.stringify({ ...existing, clientId: clientId.trim() }));
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <ModalShell title="Google Drive" onClose={onClose}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#4285F4' }}>
+          <HardDrive size={20} />
+          <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>Google Drive API</span>
+        </div>
+
+        {hasAuth && (
+          <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', background: 'rgba(66,133,244,0.06)', border: '1px solid rgba(66,133,244,0.2)', color: '#4285F4' }}>
+            <Check size={14} style={{ display: 'inline', marginRight: 6 }} />
+            Authenticated
+          </div>
+        )}
+
+        <div>
+          <label style={labelStyle}>OAuth Client ID</label>
+          <input
+            value={clientId}
+            onChange={(e) => setClientId(e.target.value)}
+            placeholder="xxxx.apps.googleusercontent.com"
+            style={inputStyle}
+          />
+        </div>
+
+        <button onClick={saveConfig} disabled={!clientId.trim()} style={primaryBtnStyle}>
+          {saved ? 'Saved!' : 'Save Client ID'}
+        </button>
+
+        <div style={hintStyle}>
+          <strong style={{ color: 'var(--aiox-cream)' }}>Setup:</strong><br />
+          1. Go to{' '}
+          <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer" style={{ color: '#4285F4' }}>
+            Google Cloud Console <ExternalLink size={11} style={{ display: 'inline' }} />
+          </a><br />
+          2. Create OAuth 2.0 Client ID (Web application)<br />
+          3. Add <code style={{ color: 'var(--aiox-lime)' }}>{window.location.origin}</code> to authorized redirect URIs<br />
+          4. Enable Google Drive API in the project<br />
+          5. Paste the Client ID above
+        </div>
+
+        <p style={{ ...hintStyle, fontSize: '10px' }}>
+          For engine-side access, set <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_ID</code> and{' '}
+          <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_SECRET</code> in <code>engine/.env</code>.
+        </p>
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── Google Calendar Setup ────────────────────────────────
+
+const GOOGLE_CALENDAR_KEY = 'aios-google-calendar';
+
+function GoogleCalendarSetup({ onClose }: { onClose: () => void }) {
+  const [clientId, setClientId] = useState<string>(() => {
+    try {
+      const raw = localStorage.getItem(GOOGLE_CALENDAR_KEY);
+      return raw ? JSON.parse(raw)?.clientId || '' : '';
+    } catch { return ''; }
+  });
+  const [saved, setSaved] = useState(false);
+
+  const hasAuth = (() => {
+    try {
+      const raw = localStorage.getItem(GOOGLE_CALENDAR_KEY);
+      return raw ? !!(JSON.parse(raw)?.accessToken || JSON.parse(raw)?.refreshToken) : false;
+    } catch { return false; }
+  })();
+
+  const saveConfig = () => {
+    const existing = (() => {
+      try {
+        const raw = localStorage.getItem(GOOGLE_CALENDAR_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch { return {}; }
+    })();
+    localStorage.setItem(GOOGLE_CALENDAR_KEY, JSON.stringify({ ...existing, clientId: clientId.trim() }));
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <ModalShell title="Google Calendar" onClose={onClose}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#4285F4' }}>
+          <CalendarDays size={20} />
+          <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>Google Calendar API</span>
+        </div>
+
+        {hasAuth && (
+          <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', background: 'rgba(66,133,244,0.06)', border: '1px solid rgba(66,133,244,0.2)', color: '#4285F4' }}>
+            <Check size={14} style={{ display: 'inline', marginRight: 6 }} />
+            Authenticated
+          </div>
+        )}
+
+        <div>
+          <label style={labelStyle}>OAuth Client ID</label>
+          <input
+            value={clientId}
+            onChange={(e) => setClientId(e.target.value)}
+            placeholder="xxxx.apps.googleusercontent.com"
+            style={inputStyle}
+          />
+          <p style={hintStyle}>
+            Uses the same Google Cloud project as Drive. You can share the Client ID.
+          </p>
+        </div>
+
+        <button onClick={saveConfig} disabled={!clientId.trim()} style={primaryBtnStyle}>
+          {saved ? 'Saved!' : 'Save Client ID'}
+        </button>
+
+        <div style={hintStyle}>
+          <strong style={{ color: 'var(--aiox-cream)' }}>Setup:</strong><br />
+          1. Enable Google Calendar API in{' '}
+          <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com" target="_blank" rel="noreferrer" style={{ color: '#4285F4' }}>
+            Google Cloud Console <ExternalLink size={11} style={{ display: 'inline' }} />
+          </a><br />
+          2. Use the same OAuth Client ID from Google Drive setup<br />
+          3. Calendar scopes: <code style={{ color: 'var(--aiox-lime)' }}>calendar.readonly</code>, <code style={{ color: 'var(--aiox-lime)' }}>calendar.events</code>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
 // ── Router ────────────────────────────────────────────────
 
 const modals: Record<string, React.ComponentType<{ onClose: () => void }>> = {
@@ -664,6 +896,9 @@ const modals: Record<string, React.ComponentType<{ onClose: () => void }>> = {
   supabase: SupabaseSetup,
   'api-keys': ApiKeysSetup,
   voice: VoiceSetup,
+  telegram: TelegramSetup,
+  'google-drive': GoogleDriveSetup,
+  'google-calendar': GoogleCalendarSetup,
 };
 
 export function IntegrationSetupModal() {

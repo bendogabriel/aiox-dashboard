@@ -115,12 +115,82 @@ export function useIntegrationStatus() {
     }
   }, [setStatus]);
 
+  const checkTelegram = useCallback(async () => {
+    const url = getEngineUrl();
+    if (!url) {
+      setStatus('telegram', 'disconnected', 'Engine not configured');
+      return;
+    }
+    setStatus('telegram', 'checking');
+    try {
+      const res = await fetch(`${url}/telegram/status`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json() as {
+        configured: boolean;
+        bot_username?: string;
+        webhook_set?: boolean;
+      };
+      if (!data.configured) {
+        setStatus('telegram', 'disconnected', 'Bot token not configured');
+      } else if (data.webhook_set) {
+        setStatus('telegram', 'connected', `@${data.bot_username} — webhook active`);
+      } else {
+        setStatus('telegram', 'partial', `@${data.bot_username} — webhook not set`);
+      }
+    } catch {
+      setStatus('telegram', 'disconnected', 'Engine unavailable');
+    }
+  }, [setStatus]);
+
+  const checkGoogleDrive = useCallback(() => {
+    try {
+      const raw = localStorage.getItem('aios-google-drive');
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (data?.accessToken || data?.refreshToken) {
+          setStatus('google-drive', 'connected', data.email || 'Authenticated');
+        } else if (data?.clientId) {
+          setStatus('google-drive', 'partial', 'Client ID set, not authenticated');
+        } else {
+          setStatus('google-drive', 'disconnected', 'Not configured');
+        }
+      } else {
+        setStatus('google-drive', 'disconnected', 'Not configured');
+      }
+    } catch {
+      setStatus('google-drive', 'disconnected', 'Not configured');
+    }
+  }, [setStatus]);
+
+  const checkGoogleCalendar = useCallback(() => {
+    try {
+      const raw = localStorage.getItem('aios-google-calendar');
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (data?.accessToken || data?.refreshToken) {
+          setStatus('google-calendar', 'connected', data.email || 'Authenticated');
+        } else if (data?.clientId) {
+          setStatus('google-calendar', 'partial', 'Client ID set, not authenticated');
+        } else {
+          setStatus('google-calendar', 'disconnected', 'Not configured');
+        }
+      } else {
+        setStatus('google-calendar', 'disconnected', 'Not configured');
+      }
+    } catch {
+      setStatus('google-calendar', 'disconnected', 'Not configured');
+    }
+  }, [setStatus]);
+
   const checkAll = useCallback(async () => {
-    // Run network checks in parallel, local checks sync
+    // Run local checks sync
     checkApiKeys();
     checkVoice();
-    await Promise.allSettled([checkEngine(), checkWhatsApp(), checkSupabase()]);
-  }, [checkEngine, checkWhatsApp, checkSupabase, checkApiKeys, checkVoice]);
+    checkGoogleDrive();
+    checkGoogleCalendar();
+    // Run network checks in parallel
+    await Promise.allSettled([checkEngine(), checkWhatsApp(), checkSupabase(), checkTelegram()]);
+  }, [checkEngine, checkWhatsApp, checkSupabase, checkApiKeys, checkVoice, checkTelegram, checkGoogleDrive, checkGoogleCalendar]);
 
   const checkOne = useCallback(async (id: IntegrationId) => {
     switch (id) {
@@ -129,8 +199,11 @@ export function useIntegrationStatus() {
       case 'supabase': return checkSupabase();
       case 'api-keys': return checkApiKeys();
       case 'voice': return checkVoice();
+      case 'telegram': return checkTelegram();
+      case 'google-drive': return checkGoogleDrive();
+      case 'google-calendar': return checkGoogleCalendar();
     }
-  }, [checkEngine, checkWhatsApp, checkSupabase, checkApiKeys, checkVoice]);
+  }, [checkEngine, checkWhatsApp, checkSupabase, checkApiKeys, checkVoice, checkTelegram, checkGoogleDrive, checkGoogleCalendar]);
 
   // Check all on mount
   useEffect(() => {

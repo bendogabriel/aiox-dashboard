@@ -9,7 +9,10 @@ export type IntegrationId =
   | 'whatsapp'
   | 'supabase'
   | 'api-keys'
-  | 'voice';
+  | 'voice'
+  | 'telegram'
+  | 'google-drive'
+  | 'google-calendar';
 
 export type IntegrationStatus = 'connected' | 'disconnected' | 'checking' | 'error' | 'partial';
 
@@ -50,6 +53,9 @@ const defaultIntegrations: Record<IntegrationId, IntegrationEntry> = {
   supabase: makeEntry('supabase'),
   'api-keys': makeEntry('api-keys'),
   voice: makeEntry('voice'),
+  telegram: makeEntry('telegram'),
+  'google-drive': makeEntry('google-drive'),
+  'google-calendar': makeEntry('google-calendar'),
 };
 
 // ── Store ─────────────────────────────────────────────────
