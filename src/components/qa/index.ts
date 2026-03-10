@@ -1,1 +1,1 @@
-export * from './QAMetricsPanel';
+export { QAMetricsPanel } from './QAMetricsPanel';

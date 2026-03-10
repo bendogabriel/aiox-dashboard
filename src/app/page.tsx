@@ -1,23 +1,25 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, lazy, Suspense } from 'react';
 import { useUIStore } from '@/stores/ui-store';
 import { KanbanBoard } from '@/components/kanban';
 import { StoryDetailModal } from '@/components/stories';
-import { AgentMonitor } from '@/components/agents';
-import { SettingsPanel } from '@/components/settings';
-import { TerminalGrid } from '@/components/terminals';
-import { GitHubPanel } from '@/components/github';
-import { RoadmapView } from '@/components/roadmap';
-import { InsightsPanel } from '@/components/insights';
-import { ContextPanel } from '@/components/context';
-import { MonitorPanel } from '@/components/monitor';
-import { BobOrchestrationView } from '@/components/bob';
-import { SquadsPanel } from '@/components/squads';
-import { SalesRoomPanel } from '@/components/sales-room';
 import { FAB, HelpFAB } from '@/components/ui/fab';
 import { useStories } from '@/hooks/use-stories';
 import type { Story, SidebarView } from '@/types';
+
+// Lazy-load view panels -- only the active view is loaded
+const AgentMonitor = lazy(() => import('@/components/agents/AgentMonitor').then(m => ({ default: m.AgentMonitor })));
+const SettingsPanel = lazy(() => import('@/components/settings/SettingsPanel').then(m => ({ default: m.SettingsPanel })));
+const TerminalGrid = lazy(() => import('@/components/terminals/TerminalGrid').then(m => ({ default: m.TerminalGrid })));
+const GitHubPanel = lazy(() => import('@/components/github/GitHubPanel').then(m => ({ default: m.GitHubPanel })));
+const RoadmapView = lazy(() => import('@/components/roadmap/RoadmapView').then(m => ({ default: m.RoadmapView })));
+const InsightsPanel = lazy(() => import('@/components/insights/InsightsPanel').then(m => ({ default: m.InsightsPanel })));
+const ContextPanel = lazy(() => import('@/components/context/ContextPanel').then(m => ({ default: m.ContextPanel })));
+const MonitorPanel = lazy(() => import('@/components/monitor/MonitorPanel').then(m => ({ default: m.MonitorPanel })));
+const BobOrchestrationView = lazy(() => import('@/components/bob/BobOrchestrationView').then(m => ({ default: m.BobOrchestrationView })));
+const SquadsPanel = lazy(() => import('@/components/squads/SquadsPanel').then(m => ({ default: m.SquadsPanel })));
+const SalesRoomPanel = lazy(() => import('@/components/sales-room/SalesRoomPanel').then(m => ({ default: m.SalesRoomPanel })));
 
 export default function Home() {
   const { activeView } = useUIStore();
@@ -39,12 +41,14 @@ export default function Home() {
 
   return (
     <div className="h-full relative">
-      <ViewContent
-        view={activeView}
-        onStoryClick={handleStoryClick}
-        onRefresh={refresh}
-        isLoading={isLoading}
-      />
+      <Suspense fallback={<ViewLoading />}>
+        <ViewContent
+          view={activeView}
+          onStoryClick={handleStoryClick}
+          onRefresh={refresh}
+          isLoading={isLoading}
+        />
+      </Suspense>
 
       <StoryDetailModal
         story={selectedStory}
@@ -121,6 +125,14 @@ function ViewContent({ view, onStoryClick, onRefresh, isLoading }: ViewContentPr
     default:
       return <PlaceholderView title={view} description="Coming soon" />;
   }
+}
+
+function ViewLoading() {
+  return (
+    <div className="flex h-full items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground" />
+    </div>
+  );
 }
 
 function PlaceholderView({ title, description }: { title: string; description: string }) {

@@ -1,6 +1,6 @@
-export * from './TerminalOutput';
-export * from './TerminalCard';
-export * from './TerminalGrid';
-export * from './TerminalStream';
-export * from './TerminalTabs';
-export * from './TerminalsView';
+export { TerminalOutput } from './TerminalOutput';
+export { TerminalCard } from './TerminalCard';
+export { TerminalGrid } from './TerminalGrid';
+export { TerminalStream } from './TerminalStream';
+export { TerminalTabs } from './TerminalTabs';
+export { TerminalsView } from './TerminalsView';

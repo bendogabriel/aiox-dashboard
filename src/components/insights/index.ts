@@ -1,1 +1,1 @@
-export * from './InsightsPanel';
+export { InsightsPanel } from './InsightsPanel';

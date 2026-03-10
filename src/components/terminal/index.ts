@@ -1,1 +1,1 @@
-export * from './TerminalOutput';
+export { TerminalOutput } from './TerminalOutput';

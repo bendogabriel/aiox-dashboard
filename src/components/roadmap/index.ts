@@ -1,2 +1,2 @@
-export * from './RoadmapView';
-export * from './RoadmapCard';
+export { RoadmapView } from './RoadmapView';
+export { RoadmapCard } from './RoadmapCard';

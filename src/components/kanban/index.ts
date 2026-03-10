@@ -1,3 +1,3 @@
-export * from './KanbanBoard';
-export * from './KanbanColumn';
-export * from './SortableStoryCard';
+export { KanbanBoard } from './KanbanBoard';
+export { KanbanColumn } from './KanbanColumn';
+export { SortableStoryCard } from './SortableStoryCard';

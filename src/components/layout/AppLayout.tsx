@@ -6,10 +6,19 @@ import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { ActivityPanel } from './ActivityPanel';
 import { MobileNav } from './MobileNav';
-import { AgentExplorer } from '@/components/agents/AgentExplorer';
-import { GlobalSearch, useGlobalSearch } from '@/components/search';
+import { useGlobalSearch } from '@/components/search';
 import { ToastContainer } from '@/components/ui/Toast';
-import { KeyboardShortcuts } from '@/components/ui/KeyboardShortcuts';
+
+// Lazy-load modal/overlay components -- only loaded when opened
+const AgentExplorer = lazy(() =>
+  import('@/components/agents/AgentExplorer').then((m) => ({ default: m.AgentExplorer }))
+);
+const GlobalSearch = lazy(() =>
+  import('@/components/search').then((m) => ({ default: m.GlobalSearch }))
+);
+const KeyboardShortcuts = lazy(() =>
+  import('@/components/ui/KeyboardShortcuts').then((m) => ({ default: m.KeyboardShortcuts }))
+);
 import { SkipLinks } from '@/components/ui/SkipLinks';
 import { StatusBar } from './StatusBar';
 import { ProjectTabs } from './ProjectTabs';
@@ -142,26 +151,38 @@ export function AppLayout({ children }: AppLayoutProps) {
         </AnimatePresence>
       </div>
 
-      {/* Agent Explorer Modal */}
-      <AgentExplorer
-        isOpen={agentExplorerOpen}
-        onClose={() => setAgentExplorerOpen(false)}
-      />
+      {/* Agent Explorer Modal (lazy-loaded) */}
+      {agentExplorerOpen && (
+        <Suspense fallback={null}>
+          <AgentExplorer
+            isOpen={agentExplorerOpen}
+            onClose={() => setAgentExplorerOpen(false)}
+          />
+        </Suspense>
+      )}
 
-      {/* Global Search Modal (Cmd+K) */}
-      <GlobalSearch
-        isOpen={globalSearch.isOpen}
-        onClose={globalSearch.close}
-      />
+      {/* Global Search Modal (lazy-loaded, Cmd+K) */}
+      {globalSearch.isOpen && (
+        <Suspense fallback={null}>
+          <GlobalSearch
+            isOpen={globalSearch.isOpen}
+            onClose={globalSearch.close}
+          />
+        </Suspense>
+      )}
 
       {/* Toast Notifications */}
       <ToastContainer />
 
-      {/* Keyboard Shortcuts Modal */}
-      <KeyboardShortcuts
-        isOpen={showShortcuts}
-        onClose={() => setShowShortcuts(false)}
-      />
+      {/* Keyboard Shortcuts Modal (lazy-loaded) */}
+      {showShortcuts && (
+        <Suspense fallback={null}>
+          <KeyboardShortcuts
+            isOpen={showShortcuts}
+            onClose={() => setShowShortcuts(false)}
+          />
+        </Suspense>
+      )}
 
       {/* Mobile Bottom Navigation */}
       <MobileNav />

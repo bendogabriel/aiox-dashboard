@@ -1,4 +1,4 @@
-export * from './SettingsPanel';
+export { SettingsPanel } from './SettingsPanel';
 export { CategoryManager } from './CategoryManager';
 export { MemoryManager } from './MemoryManager';
 export { SettingsPage } from './SettingsPage';

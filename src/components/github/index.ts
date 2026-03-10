@@ -1,1 +1,1 @@
-export * from './GitHubPanel';
+export { GitHubPanel } from './GitHubPanel';

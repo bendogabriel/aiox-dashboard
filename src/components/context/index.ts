@@ -1,1 +1,1 @@
-export * from './ContextPanel';
+export { ContextPanel } from './ContextPanel';

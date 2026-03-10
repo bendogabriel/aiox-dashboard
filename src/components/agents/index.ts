@@ -1,6 +1,6 @@
 // Dashboard native agent components
-export * from './AgentCard';
-export * from './AgentMonitor';
+export { AgentCard } from './AgentCard';
+export { AgentMonitor } from './AgentMonitor';
 
 // Platform-migrated agent components
 export { PlatformAgentCard, AgentExplorerCard } from './PlatformAgentCard';
