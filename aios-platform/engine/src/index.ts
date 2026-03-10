@@ -17,18 +17,23 @@ import { memory } from './routes/memory';
 import { cron } from './routes/cron';
 import { stream } from './routes/stream';
 import { whatsapp } from './routes/whatsapp';
+import { registry } from './routes/registry';
 
 // ============================================================
 // AIOS Agent Execution Engine — v0.4.0
 // ============================================================
 
+import { getProjectPaths } from './lib/config';
+
 const config = loadConfig();
 setLogLevel(config.logging.level);
 
+const paths = getProjectPaths();
 log.info('Starting AIOS Agent Execution Engine', {
-  version: '0.4.0',
+  version: '0.5.0',
   port: config.server.port,
   pool_max: config.pool.max_concurrent,
+  project_root: paths.projectRoot,
 });
 
 // Initialize database (runs migrations)
@@ -76,6 +81,7 @@ app.route('/webhook', createWebhookRoutes(config));
 app.route('/memory', memory);
 app.route('/cron', cron);
 app.route('/whatsapp', whatsapp);
+app.route('/registry', registry);
 
 // Catch-all 404
 app.notFound((c) => c.json({ error: 'Not found' }, 404));
@@ -117,6 +123,7 @@ log.info('Endpoints:', {
   stream: '/stream/agent (SSE)',
   webhook: '/webhook/:squadId, /webhook/orchestrator',
   whatsapp: '/whatsapp/webhook, /whatsapp/events (SSE), /whatsapp/send, /whatsapp/status',
+  registry: '/registry/project, /registry/squads, /registry/agents, /registry/workflows, /registry/tasks',
   memory: '/memory/:scope, /memory/recall, /memory/store',
   cron: '/cron (CRUD)',
   ws: 'ws://*/live',
