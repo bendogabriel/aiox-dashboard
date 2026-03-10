@@ -2,3 +2,5 @@ export * from './TerminalOutput';
 export * from './TerminalCard';
 export * from './TerminalGrid';
 export * from './TerminalStream';
+export * from './TerminalTabs';
+export * from './TerminalsView';

@@ -2,6 +2,11 @@
 @import "tw-animate-css";
 @import "highlight.js/styles/github-dark-dimmed.css";
 
+/* Liquid Glass Design System — Token Hierarchy (Primitive → Semantic → Component → Theme) */
+@import "../styles/tokens/index.css";
+/* Liquid Glass Component Classes & Utilities */
+@import "../styles/liquid-glass.css";
+
 @custom-variant dark (&:is(.dark *));
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -311,6 +316,93 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   AIOX DARK COCKPIT - Theme Override
+   Lima neon (#D1FF00) on near-black
+   ═══════════════════════════════════════════════════════════════════════════ */
+html[data-theme="aiox"] {
+  /* Background scale */
+  --bg-base: #000000;
+  --bg-elevated: #050505;
+  --bg-surface: #0F0F11;
+  --bg-surface-hover: #181635;
+  --bg-overlay: #1C1E19;
+  --bg-hover: rgba(209, 255, 0, 0.03);
+
+  /* Core overrides */
+  --background: var(--bg-base);
+  --foreground: #ffffed;
+  --card: var(--bg-surface);
+  --card-hover: var(--bg-surface-hover);
+  --card-foreground: #ffffed;
+  --popover: var(--bg-surface);
+  --popover-foreground: #ffffed;
+
+  /* Borders */
+  --border: rgba(156, 156, 156, 0.10);
+  --border-subtle: rgba(156, 156, 156, 0.06);
+  --border-medium: rgba(156, 156, 156, 0.16);
+  --border-strong: rgba(156, 156, 156, 0.25);
+
+  /* Text hierarchy */
+  --text-primary: #ffffed;
+  --text-secondary: #9c9c9c;
+  --text-tertiary: #858585;
+  --text-muted: #696969;
+  --text-disabled: #3D3D3D;
+
+  /* Primary — Lime accent */
+  --primary: #D1FF00;
+  --primary-foreground: #050505;
+
+  /* Secondary */
+  --secondary: #0F0F11;
+  --secondary-foreground: #9c9c9c;
+
+  /* Muted */
+  --muted: #0F0F11;
+  --muted-foreground: #858585;
+
+  /* Accent — Lime system (remap gold → lime) */
+  --accent: rgba(209, 255, 0, 0.08);
+  --accent-foreground: #D1FF00;
+  --accent-gold: #D1FF00;
+  --accent-gold-light: #e8ff66;
+  --accent-gold-dim: rgba(209, 255, 0, 0.25);
+  --accent-gold-bg: rgba(209, 255, 0, 0.06);
+  --accent-gold-bg-hover: rgba(209, 255, 0, 0.10);
+  --border-gold: rgba(209, 255, 0, 0.25);
+  --border-gold-strong: rgba(209, 255, 0, 0.50);
+
+  /* Destructive */
+  --destructive: #EF4444;
+  --input: var(--border);
+  --ring: rgba(209, 255, 0, 0.50);
+
+  /* Focus */
+  --ring-color: rgba(209, 255, 0, 0.50);
+
+  /* Radius */
+  --radius-md: 8px;
+
+  /* Sidebar — deep black */
+  --sidebar: #030303;
+  --sidebar-foreground: #9c9c9c;
+  --sidebar-primary: #D1FF00;
+  --sidebar-primary-foreground: #050505;
+  --sidebar-accent: rgba(209, 255, 0, 0.08);
+  --sidebar-accent-foreground: #ffffed;
+  --sidebar-border: rgba(156, 156, 156, 0.06);
+  --sidebar-ring: rgba(209, 255, 0, 0.50);
+
+  /* Chart colors (AIOX palette) */
+  --chart-1: #D1FF00;
+  --chart-2: #0099FF;
+  --chart-3: #4ADE80;
+  --chart-4: #f59e0b;
+  --chart-5: #ED4609;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    TAILWIND THEME MAPPING
    ═══════════════════════════════════════════════════════════════════════════ */
 @theme inline {
@@ -408,11 +500,122 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  /* ─────────────────────────────────────────────────────────────────────────
+     LIQUID GLASS — Foreground (text) semantic tokens
+     Used as: text-foreground-primary, text-foreground-secondary, etc.
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-foreground-primary: var(--color-text-primary, var(--text-primary));
+  --color-foreground-secondary: var(--color-text-secondary, var(--text-secondary));
+  --color-foreground-tertiary: var(--color-text-tertiary, var(--text-tertiary));
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     LIQUID GLASS — Surface tokens for replacing hardcoded colors
+     Used as: bg-surface, bg-surface-hover, bg-overlay, bg-overlay-heavy
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-surface: var(--bg-surface, var(--color-background-tertiary));
+  --color-surface-hover: var(--bg-surface-hover, var(--color-background-hover));
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-overlay-heavy: rgba(0, 0, 0, 0.9);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     LIQUID GLASS — Glass surface scale (replaces hardcoded white/X)
+     Semi-transparent white overlays for dark glassmorphism surfaces.
+     Used as: bg-glass-5, bg-glass-10, text-glass-60, border-glass-10, etc.
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-glass-5: rgba(255, 255, 255, 0.05);
+  --color-glass-8: rgba(255, 255, 255, 0.08);
+  --color-glass-10: rgba(255, 255, 255, 0.10);
+  --color-glass-12: rgba(255, 255, 255, 0.12);
+  --color-glass-15: rgba(255, 255, 255, 0.15);
+  --color-glass-20: rgba(255, 255, 255, 0.20);
+  --color-glass-25: rgba(255, 255, 255, 0.25);
+  --color-glass-30: rgba(255, 255, 255, 0.30);
+  --color-glass-40: rgba(255, 255, 255, 0.40);
+  --color-glass-50: rgba(255, 255, 255, 0.50);
+  --color-glass-60: rgba(255, 255, 255, 0.60);
+  --color-glass-70: rgba(255, 255, 255, 0.70);
+  --color-glass-80: rgba(255, 255, 255, 0.80);
+  --color-glass-90: rgba(255, 255, 255, 0.90);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     LIQUID GLASS — Scrim/overlay scale (replaces hardcoded black/X)
+     Semi-transparent black overlays for modals, backdrops.
+     Used as: bg-scrim-20, bg-scrim-40, bg-scrim-60, bg-scrim-80
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-scrim-5: rgba(0, 0, 0, 0.05);
+  --color-scrim-10: rgba(0, 0, 0, 0.10);
+  --color-scrim-20: rgba(0, 0, 0, 0.20);
+  --color-scrim-30: rgba(0, 0, 0, 0.30);
+  --color-scrim-40: rgba(0, 0, 0, 0.40);
+  --color-scrim-50: rgba(0, 0, 0, 0.50);
+  --color-scrim-60: rgba(0, 0, 0, 0.60);
+  --color-scrim-70: rgba(0, 0, 0, 0.70);
+  --color-scrim-80: rgba(0, 0, 0, 0.80);
+  --color-scrim-90: rgba(0, 0, 0, 0.90);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     LIQUID GLASS — Border scale extension
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-border-strong: var(--border-strong);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     LIQUID GLASS — Squad colors with alpha variants
+     Used as: bg-squad-copywriting, text-squad-design, etc.
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-squad-copywriting: var(--squad-copywriting-default);
+  --color-squad-design: var(--squad-design-default);
+  --color-squad-creator: var(--squad-creator-default);
+  --color-squad-orchestrator: var(--squad-orchestrator-default);
+  --color-squad-development: var(--squad-development-default);
+  --color-squad-marketing: var(--squad-marketing-default);
+  --color-squad-content: var(--squad-content-default);
+  --color-squad-engineering: var(--squad-engineering-default);
+  --color-squad-analytics: var(--squad-analytics-default);
+  --color-squad-advisory: var(--squad-advisory-default);
+  --color-squad-default: var(--squad-default-default);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     LIQUID GLASS — Tier colors
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-tier-0: var(--tier-0-default);
+  --color-tier-1: var(--tier-1-default);
+  --color-tier-2: var(--tier-2-default);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     LIQUID GLASS — Priority / Complexity / Category
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-priority-must: var(--priority-must);
+  --color-priority-should: var(--priority-should);
+  --color-priority-could: var(--priority-could);
+  --color-priority-wont: var(--priority-wont);
+
+  --color-complexity-simple: var(--complexity-simple);
+  --color-complexity-standard: var(--complexity-standard);
+  --color-complexity-complex: var(--complexity-complex);
+
+  --color-category-feature: var(--category-feature);
+  --color-category-fix: var(--category-fix);
+  --color-category-refactor: var(--category-refactor);
+  --color-category-docs: var(--category-docs);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     LIQUID GLASS — Status extended tokens (bg, border, glow)
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-status-error-bg: var(--status-error-bg);
+  --color-status-error-border: var(--status-error-border);
+  --color-status-info-bg: var(--status-info-bg);
+  --color-status-info-border: var(--status-info-border);
+  --color-status-idle-bg: var(--status-idle-bg);
+
   /* Radius */
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
+
+  /* Border radius - Liquid Glass additions */
+  --radius-glass: 1.25rem;
+  --radius-glass-lg: 1.5rem;
 
   /* ─────────────────────────────────────────────────────────────────────────
      TYPOGRAPHY SCALE - Compact Dashboard

@@ -1,0 +1,1202 @@
+/* ============================================
+   MATRIX THEME
+   Cyberpunk / hacker aesthetic — green neon on black
+   Applied via data-theme="matrix" on <html>
+   Also adds .dark class so Tailwind dark: utilities work
+   ============================================ */
+
+[data-theme="matrix"] {
+  /* ----- Background ----- */
+  --color-background-primary: rgba(8, 24, 8, 0.65);
+  --color-background-secondary: rgba(6, 18, 6, 0.55);
+  --color-background-tertiary: rgba(10, 28, 10, 0.45);
+  --color-background-base: #020802;
+  --color-background-hover: rgba(16, 48, 16, 0.5);
+  --color-background-active: rgba(20, 60, 20, 0.55);
+  --color-background-disabled: rgba(8, 16, 8, 0.2);
+
+  /* ----- Text (high contrast on black) ----- */
+  --color-text-primary: #d4eed4;
+  --color-text-secondary: #8fbc8f;
+  --color-text-tertiary: #5a8a5a;
+  --color-text-disabled: #3a5a3a;
+  --color-text-inverse: #020802;
+
+  /* ----- Borders ----- */
+  --color-border-default: rgba(90, 140, 90, 0.2);
+  --color-border-subtle: rgba(90, 140, 90, 0.1);
+  --color-border-strong: rgba(90, 170, 90, 0.35);
+  --color-border-focus: rgba(90, 170, 106, 0.6);
+
+  /* ----- Glass (green-tinted, calibrated for #020802 bg) ----- */
+  --glass-border-color: rgba(90, 160, 90, 0.2);
+  --glass-border-color-subtle: rgba(90, 140, 90, 0.12);
+  --glass-background-panel: rgba(8, 20, 8, 0.85);
+  --glass-background-panel-hover: rgba(14, 30, 14, 0.9);
+  --glass-background-card: rgba(10, 24, 10, 0.8);
+  --glass-background-card-active: linear-gradient(135deg, rgba(74, 154, 90, 0.15) 0%, rgba(58, 138, 74, 0.1) 100%);
+  --glass-background-input: rgba(6, 14, 6, 0.85);
+  --glass-background-button: rgba(14, 32, 14, 0.6);
+  --glass-background-button-primary: linear-gradient(135deg, #2a7a3a, #1a6a2a);
+  --glass-background-button-primary-hover: linear-gradient(135deg, #3a8a4a, #2a7a3a);
+
+  /* ----- Glass Shadows (calibrated for dark bg) ----- */
+  --shadow-glass: 0 0 0 1px rgba(90, 140, 90, 0.1) inset, 0 0 15px rgba(74, 200, 90, 0.03), 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glass-lg: 0 0 0 1px rgba(90, 140, 90, 0.12) inset, 0 0 20px rgba(74, 200, 90, 0.04), 0 12px 48px rgba(0, 0, 0, 0.6);
+  --shadow-glass-hover: 0 0 0 1px rgba(90, 140, 90, 0.18) inset, 0 0 25px rgba(74, 200, 90, 0.06), 0 16px 56px rgba(0, 0, 0, 0.6);
+  --glass-shadow-default: var(--shadow-glass);
+  --glass-shadow-large: var(--shadow-glass-lg);
+  --glass-shadow-hover: var(--shadow-glass-hover);
+
+  /* ----- Accent / Selection ----- */
+  --color-accent: #4a9a5a;
+  --color-accent-subtle: rgba(74, 154, 90, 0.18);
+  --color-selection-bg: rgba(74, 154, 90, 0.3);
+  --color-selection-text: #d4eed4;
+
+  /* ----- Interactive ----- */
+  --color-interactive-default: #5aaa6a;
+  --color-interactive-hover: #6aba7a;
+  --color-interactive-active: #3a8a4a;
+  --color-interactive-disabled: rgba(58, 106, 58, 0.35);
+
+  /* ----- Status (monochrome green — brightness only) ----- */
+  --color-status-success: #4ac94a;
+  --color-status-warning: #7ab87a;
+  --color-status-error: #8a5a5a;
+  --color-status-info: #5aaa6a;
+  --color-status-success-subtle: rgba(74, 201, 74, 0.1);
+  --color-status-warning-subtle: rgba(122, 184, 122, 0.1);
+  --color-status-error-subtle: rgba(138, 90, 90, 0.1);
+  --color-status-info-subtle: rgba(90, 170, 106, 0.1);
+
+  /* ----- Squads (monochrome — brightness tiers) ----- */
+  --squad-copywriting-default: #5ab85a;
+  --squad-copywriting-subtle: rgba(90, 184, 90, 0.1);
+  --squad-copywriting-gradient: linear-gradient(90deg, #5ab85a, #4aa84a);
+  --squad-design-default: #4a9a5a;
+  --squad-design-subtle: rgba(74, 154, 90, 0.1);
+  --squad-design-gradient: linear-gradient(90deg, #4a9a5a, #5aaa6a);
+  --squad-creator-default: #6aba6a;
+  --squad-creator-subtle: rgba(106, 186, 106, 0.1);
+  --squad-creator-gradient: linear-gradient(90deg, #6aba6a, #5aaa5a);
+  --squad-orchestrator-default: #3a8a4a;
+  --squad-orchestrator-subtle: rgba(58, 138, 74, 0.1);
+  --squad-orchestrator-gradient: linear-gradient(90deg, #3a8a4a, #4a9a5a);
+  --squad-development-default: #5ab85a;
+  --squad-development-subtle: rgba(90, 184, 90, 0.1);
+  --squad-development-gradient: linear-gradient(90deg, #5ab85a, #4aa84a);
+  --squad-marketing-default: #7aba5a;
+  --squad-marketing-subtle: rgba(122, 186, 90, 0.1);
+  --squad-marketing-gradient: linear-gradient(90deg, #7aba5a, #6aaa4a);
+  --squad-default-default: #3a6a3a;
+  --squad-default-subtle: rgba(58, 106, 58, 0.1);
+  --squad-default-gradient: linear-gradient(90deg, #3a6a3a, #4a7a4a);
+
+  /* ----- Dashboard Tokens (monochrome green) ----- */
+  --status-success: #4ac94a;
+  --status-error: #8a5a5a;
+  --status-warning: #7ab87a;
+  --status-info: #5aaa6a;
+  --status-idle: #3a6a3a;
+  --status-success-bg: rgba(74, 201, 74, 0.08);
+  --status-error-bg: rgba(138, 90, 90, 0.08);
+  --status-warning-bg: rgba(122, 184, 122, 0.08);
+  --status-info-bg: rgba(90, 170, 106, 0.08);
+  --status-idle-bg: rgba(58, 106, 58, 0.08);
+
+  /* Agents — different green brightness levels */
+  --agent-dev: #5abb5a;
+  --agent-qa: #4a9a5a;
+  --agent-architect: #6aca6a;
+  --agent-pm: #7ab87a;
+  --agent-po: #3a8a4a;
+  --agent-analyst: #5aaa6a;
+  --agent-devops: #4aa84a;
+
+  /* Phases — brightness gradient */
+  --phase-planning: #4a9a5a;
+  --phase-coding: #5abb5a;
+  --phase-testing: #6aca6a;
+  --phase-reviewing: #7ab87a;
+  --phase-deploying: #4aa84a;
+
+  /* Complexity — brightness */
+  --complexity-simple: #5abb5a;
+  --complexity-standard: #4a9a5a;
+  --complexity-complex: #7ab87a;
+
+  /* Category — brightness */
+  --category-feature: #5aaa6a;
+  --category-fix: #8a5a5a;
+  --category-refactor: #4a9a5a;
+  --category-docs: #3a8a4a;
+
+  /* Priority — brightness (bright=urgent, dim=low) */
+  --priority-must: #8a6a5a;
+  --priority-should: #7ab87a;
+  --priority-could: #5aaa6a;
+  --priority-wont: #3a6a3a;
+
+  /* ----- Component tokens ----- */
+  --button-danger-bg: rgba(138, 90, 90, 0.1);
+  --button-danger-text: #8a5a5a;
+  --button-danger-bg-hover: rgba(138, 90, 90, 0.2);
+  --button-danger-border: rgba(138, 90, 90, 0.2);
+  --button-ghost-hover: rgba(90, 140, 90, 0.08);
+  --button-focus-ring: rgba(74, 154, 90, 0.4);
+
+  --input-focus-ring: rgba(74, 154, 90, 0.3);
+  --input-error-ring: rgba(138, 90, 90, 0.3);
+  --input-error-border: rgba(138, 90, 90, 0.5);
+  --input-error-border-focus: #8a5a5a;
+  --input-error-text: #8a5a5a;
+  --input-success-ring: rgba(74, 201, 74, 0.3);
+  --input-success-border: rgba(74, 201, 74, 0.5);
+  --input-success-border-focus: #4ac94a;
+  --input-success-text: #4ac94a;
+  --input-required-text: #8a5a5a;
+
+  --toast-success-bg: rgba(74, 201, 74, 0.1);
+  --toast-success-border: rgba(74, 201, 74, 0.3);
+  --toast-success-text: #4ac94a;
+  --toast-error-bg: rgba(138, 90, 90, 0.1);
+  --toast-error-border: rgba(138, 90, 90, 0.3);
+  --toast-error-text: #8a5a5a;
+  --toast-warning-bg: rgba(122, 184, 122, 0.1);
+  --toast-warning-border: rgba(122, 184, 122, 0.3);
+  --toast-warning-text: #7ab87a;
+  --toast-info-bg: rgba(90, 170, 106, 0.1);
+  --toast-info-border: rgba(90, 170, 106, 0.3);
+  --toast-info-text: #5aaa6a;
+
+  --badge-count-bg: #2a7a3a;
+  --badge-count-text: #d4eed4;
+
+  --progress-default: #5ab85a;
+  --progress-success: #4ac94a;
+  --progress-warning: #7ab87a;
+  --progress-error: #8a5a5a;
+  --progress-info: #5aaa6a;
+  --progress-track: rgba(90, 140, 90, 0.1);
+  --progress-default-glow: rgba(90, 184, 90, 0.5);
+  --progress-success-glow: rgba(74, 201, 74, 0.5);
+  --progress-warning-glow: rgba(122, 184, 122, 0.5);
+  --progress-error-glow: rgba(138, 90, 90, 0.5);
+  --progress-info-glow: rgba(90, 170, 106, 0.5);
+
+  --status-dot-idle: #3a6a3a;
+  --status-dot-working: #4ac94a;
+  --status-dot-waiting: #7ab87a;
+  --status-dot-error: #8a5a5a;
+  --status-dot-success: #4ac94a;
+  --status-dot-offline: #3a6a3a;
+  --status-dot-working-glow: rgba(74, 201, 74, 0.6);
+  --status-dot-waiting-glow: rgba(122, 184, 122, 0.6);
+  --status-dot-error-glow: rgba(138, 90, 90, 0.6);
+  --status-dot-success-glow: rgba(74, 201, 74, 0.6);
+
+  --sidebar-active-bg: rgba(74, 154, 90, 0.1);
+  --sidebar-active-border: rgba(74, 154, 90, 0.3);
+  --sidebar-active-text: #5aaa6a;
+  --sidebar-active-kbd-bg: rgba(74, 154, 90, 0.2);
+  --sidebar-active-kbd-text: #5aaa6a;
+  --sidebar-logo-gradient: linear-gradient(to bottom right, #3a8a4a, #4a9a5a, #5aaa6a);
+
+  --loader-ring: rgba(74, 154, 90, 0.2);
+  --loader-arc: #4a9a5a;
+  --loader-dot-from: #4a9a5a;
+  --loader-dot-to: #5aaa6a;
+
+  /* ----- Scrollbar ----- */
+  scrollbar-color: rgba(90, 140, 90, 0.2) transparent;
+}
+
+/* ============================================
+   MATRIX — TOTAL MONOCHROMATIC OVERRIDE
+   Every color becomes green — brightness only.
+   Palette:
+     Bright:  #6aba7a / #5aaa6a
+     Medium:  #4a9a5a / #3a8a4a
+     Dim:     #2a6a3a / #1a5a2a
+     Muted:   #5a8a5a / #3a6a3a
+     Danger:  #3a5a3a (dim, no red)
+     Surfaces: rgba(90, 140, 90, alpha)
+   ============================================ */
+
+/* ---- TEXT: all color classes → monochrome green ---- */
+[data-theme="matrix"] [class*="text-blue-"],
+[data-theme="matrix"] [class*="text-purple-"],
+[data-theme="matrix"] [class*="text-violet-"],
+[data-theme="matrix"] [class*="text-pink-"],
+[data-theme="matrix"] [class*="text-rose-"],
+[data-theme="matrix"] [class*="text-fuchsia-"],
+[data-theme="matrix"] [class*="text-cyan-"],
+[data-theme="matrix"] [class*="text-teal-"],
+[data-theme="matrix"] [class*="text-sky-"],
+[data-theme="matrix"] [class*="text-indigo-"],
+[data-theme="matrix"] [class*="text-emerald-"],
+[data-theme="matrix"] [class*="text-lime-"],
+[data-theme="matrix"] [class*="text-amber-"],
+[data-theme="matrix"] [class*="text-orange-"],
+[data-theme="matrix"] [class*="text-yellow-"],
+[data-theme="matrix"] [class*="text-red-"],
+[data-theme="matrix"] [class*="text-green-"],
+[data-theme="matrix"] [class*="text-slate-"] {
+  color: #5a8a5a !important;
+}
+
+/* ---- BORDER: all color classes → dim green ---- */
+[data-theme="matrix"] [class*="border-blue-"],
+[data-theme="matrix"] [class*="border-purple-"],
+[data-theme="matrix"] [class*="border-violet-"],
+[data-theme="matrix"] [class*="border-pink-"],
+[data-theme="matrix"] [class*="border-rose-"],
+[data-theme="matrix"] [class*="border-fuchsia-"],
+[data-theme="matrix"] [class*="border-cyan-"],
+[data-theme="matrix"] [class*="border-teal-"],
+[data-theme="matrix"] [class*="border-sky-"],
+[data-theme="matrix"] [class*="border-indigo-"],
+[data-theme="matrix"] [class*="border-emerald-"],
+[data-theme="matrix"] [class*="border-lime-"],
+[data-theme="matrix"] [class*="border-amber-"],
+[data-theme="matrix"] [class*="border-orange-"],
+[data-theme="matrix"] [class*="border-yellow-"],
+[data-theme="matrix"] [class*="border-red-"],
+[data-theme="matrix"] [class*="border-green-"] {
+  border-color: rgba(90, 140, 90, 0.18) !important;
+}
+
+/* ---- BACKGROUND: solid color → dark green ---- */
+[data-theme="matrix"] [class*="bg-blue-5"],
+[data-theme="matrix"] [class*="bg-purple-5"],
+[data-theme="matrix"] [class*="bg-violet-5"],
+[data-theme="matrix"] [class*="bg-pink-5"],
+[data-theme="matrix"] [class*="bg-rose-5"],
+[data-theme="matrix"] [class*="bg-fuchsia-5"],
+[data-theme="matrix"] [class*="bg-cyan-5"],
+[data-theme="matrix"] [class*="bg-teal-5"],
+[data-theme="matrix"] [class*="bg-sky-5"],
+[data-theme="matrix"] [class*="bg-indigo-5"],
+[data-theme="matrix"] [class*="bg-emerald-5"],
+[data-theme="matrix"] [class*="bg-lime-5"],
+[data-theme="matrix"] [class*="bg-amber-5"],
+[data-theme="matrix"] [class*="bg-orange-5"],
+[data-theme="matrix"] [class*="bg-yellow-5"],
+[data-theme="matrix"] [class*="bg-red-5"],
+[data-theme="matrix"] [class*="bg-green-5"] {
+  background-color: rgba(58, 106, 58, 0.1) !important;
+}
+
+/* Background with alpha (slash) variants */
+[data-theme="matrix"] [class*="bg-blue-4"],
+[data-theme="matrix"] [class*="bg-purple-4"],
+[data-theme="matrix"] [class*="bg-violet-4"],
+[data-theme="matrix"] [class*="bg-pink-4"],
+[data-theme="matrix"] [class*="bg-rose-4"],
+[data-theme="matrix"] [class*="bg-cyan-4"],
+[data-theme="matrix"] [class*="bg-teal-4"],
+[data-theme="matrix"] [class*="bg-indigo-4"],
+[data-theme="matrix"] [class*="bg-emerald-4"],
+[data-theme="matrix"] [class*="bg-amber-4"],
+[data-theme="matrix"] [class*="bg-orange-4"],
+[data-theme="matrix"] [class*="bg-red-4"],
+[data-theme="matrix"] [class*="bg-green-4"] {
+  background-color: rgba(58, 106, 58, 0.12) !important;
+}
+
+/* Background 600 variants */
+[data-theme="matrix"] [class*="bg-blue-6"],
+[data-theme="matrix"] [class*="bg-purple-6"],
+[data-theme="matrix"] [class*="bg-orange-6"],
+[data-theme="matrix"] [class*="bg-green-6"],
+[data-theme="matrix"] [class*="bg-cyan-6"],
+[data-theme="matrix"] [class*="bg-red-6"] {
+  background-color: rgba(58, 106, 58, 0.08) !important;
+}
+
+/* Hover background overrides */
+[data-theme="matrix"] [class*="hover\:bg-blue-"]:hover,
+[data-theme="matrix"] [class*="hover\:bg-purple-"]:hover,
+[data-theme="matrix"] [class*="hover\:bg-red-"]:hover,
+[data-theme="matrix"] [class*="hover\:bg-orange-"]:hover,
+[data-theme="matrix"] [class*="hover\:bg-yellow-"]:hover,
+[data-theme="matrix"] [class*="hover\:bg-cyan-"]:hover,
+[data-theme="matrix"] [class*="hover\:bg-green-"]:hover,
+[data-theme="matrix"] [class*="hover\:bg-pink-"]:hover {
+  background-color: rgba(58, 106, 58, 0.15) !important;
+}
+
+/* White opacity → green-tinted grays */
+[data-theme="matrix"] .border-white\/5 { border-color: rgba(90, 140, 90, 0.08) !important; }
+[data-theme="matrix"] .border-white\/10 { border-color: rgba(90, 140, 90, 0.12) !important; }
+[data-theme="matrix"] .border-white\/20 { border-color: rgba(90, 140, 90, 0.18) !important; }
+[data-theme="matrix"] .bg-white\/5 { background-color: rgba(90, 140, 90, 0.05) !important; }
+[data-theme="matrix"] .bg-white\/10 { background-color: rgba(90, 140, 90, 0.08) !important; }
+[data-theme="matrix"] .bg-white\/20 { background-color: rgba(90, 140, 90, 0.12) !important; }
+[data-theme="matrix"] .hover\:bg-white\/5:hover { background-color: rgba(90, 140, 90, 0.06) !important; }
+[data-theme="matrix"] .hover\:bg-white\/10:hover { background-color: rgba(90, 140, 90, 0.1) !important; }
+[data-theme="matrix"] .hover\:bg-white\/20:hover { background-color: rgba(90, 140, 90, 0.14) !important; }
+[data-theme="matrix"] .hover\:border-white\/20:hover { border-color: rgba(90, 140, 90, 0.22) !important; }
+
+/* text-white on colored elements → matrix green */
+[data-theme="matrix"] .text-white { color: #d4eed4 !important; }
+[data-theme="matrix"] [class*="text-white\/"] { color: rgba(212, 238, 212, 0.6) !important; }
+[data-theme="matrix"] [class*="placeholder-white"] { --tw-placeholder-opacity: 1; color: rgba(90, 140, 90, 0.3) !important; }
+[data-theme="matrix"] [class*="placeholder\:text-white"]::placeholder { color: rgba(90, 140, 90, 0.3) !important; }
+
+/* Gray → dark green */
+[data-theme="matrix"] .bg-gray-900\/95 { background-color: rgba(4, 14, 4, 0.97) !important; }
+[data-theme="matrix"] [class*="bg-gray-"] { background-color: rgba(8, 24, 8, 0.6) !important; }
+[data-theme="matrix"] [class*="bg-slate-"] { background-color: rgba(8, 24, 8, 0.6) !important; }
+[data-theme="matrix"] .text-gray-400,
+[data-theme="matrix"] .text-gray-300 { color: #5a8a5a !important; }
+[data-theme="matrix"] .text-gray-500,
+[data-theme="matrix"] .text-gray-600 { color: #3a6a3a !important; }
+
+/* ---- GRADIENTS: all from-/to-/via- → monochrome green ---- */
+[data-theme="matrix"] [class*="from-blue-"],
+[data-theme="matrix"] [class*="from-purple-"],
+[data-theme="matrix"] [class*="from-violet-"],
+[data-theme="matrix"] [class*="from-pink-"],
+[data-theme="matrix"] [class*="from-rose-"],
+[data-theme="matrix"] [class*="from-fuchsia-"],
+[data-theme="matrix"] [class*="from-cyan-"],
+[data-theme="matrix"] [class*="from-teal-"],
+[data-theme="matrix"] [class*="from-sky-"],
+[data-theme="matrix"] [class*="from-indigo-"],
+[data-theme="matrix"] [class*="from-emerald-"],
+[data-theme="matrix"] [class*="from-lime-"],
+[data-theme="matrix"] [class*="from-amber-"],
+[data-theme="matrix"] [class*="from-orange-"],
+[data-theme="matrix"] [class*="from-yellow-"],
+[data-theme="matrix"] [class*="from-red-"],
+[data-theme="matrix"] [class*="from-green-"] {
+  --tw-gradient-from: #1a4a2a !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(26, 74, 42, 0)) !important;
+}
+
+[data-theme="matrix"] [class*="via-blue-"],
+[data-theme="matrix"] [class*="via-purple-"],
+[data-theme="matrix"] [class*="via-violet-"],
+[data-theme="matrix"] [class*="via-pink-"],
+[data-theme="matrix"] [class*="via-cyan-"],
+[data-theme="matrix"] [class*="via-orange-"],
+[data-theme="matrix"] [class*="via-amber-"],
+[data-theme="matrix"] [class*="via-green-"],
+[data-theme="matrix"] [class*="via-red-"] {
+  --tw-gradient-via: #2a5a3a !important;
+}
+
+[data-theme="matrix"] [class*="to-blue-"],
+[data-theme="matrix"] [class*="to-purple-"],
+[data-theme="matrix"] [class*="to-violet-"],
+[data-theme="matrix"] [class*="to-pink-"],
+[data-theme="matrix"] [class*="to-rose-"],
+[data-theme="matrix"] [class*="to-fuchsia-"],
+[data-theme="matrix"] [class*="to-cyan-"],
+[data-theme="matrix"] [class*="to-teal-"],
+[data-theme="matrix"] [class*="to-sky-"],
+[data-theme="matrix"] [class*="to-indigo-"],
+[data-theme="matrix"] [class*="to-emerald-"],
+[data-theme="matrix"] [class*="to-lime-"],
+[data-theme="matrix"] [class*="to-amber-"],
+[data-theme="matrix"] [class*="to-orange-"],
+[data-theme="matrix"] [class*="to-yellow-"],
+[data-theme="matrix"] [class*="to-red-"],
+[data-theme="matrix"] [class*="to-green-"] {
+  --tw-gradient-to: #2a6a3a !important;
+}
+
+/* ---- RING / FOCUS / ACCENT ---- */
+[data-theme="matrix"] [class*="ring-blue-"],
+[data-theme="matrix"] [class*="ring-purple-"],
+[data-theme="matrix"] [class*="ring-cyan-"],
+[data-theme="matrix"] [class*="ring-red-"],
+[data-theme="matrix"] [class*="ring-green-"],
+[data-theme="matrix"] [class*="ring-orange-"],
+[data-theme="matrix"] [class*="ring-yellow-"],
+[data-theme="matrix"] [class*="ring-pink-"],
+[data-theme="matrix"] [class*="ring-indigo-"] {
+  --tw-ring-color: rgba(74, 154, 90, 0.2) !important;
+}
+
+[data-theme="matrix"] [class*="focus\:ring-blue-"]:focus,
+[data-theme="matrix"] [class*="focus\:ring-cyan-"]:focus,
+[data-theme="matrix"] [class*="focus\:ring-green-"]:focus {
+  --tw-ring-color: rgba(74, 154, 90, 0.3) !important;
+}
+
+[data-theme="matrix"] [class*="focus\:border-blue-"]:focus,
+[data-theme="matrix"] [class*="focus\:border-cyan-"]:focus {
+  border-color: rgba(74, 154, 90, 0.4) !important;
+}
+
+[data-theme="matrix"] [class*="accent-blue"],
+[data-theme="matrix"] [class*="accent-purple"],
+[data-theme="matrix"] [class*="accent-cyan"] { accent-color: #4a9a5a !important; }
+
+/* ---- SHADOW: colored shadows → green ---- */
+[data-theme="matrix"] [class*="shadow-blue-"],
+[data-theme="matrix"] [class*="shadow-purple-"],
+[data-theme="matrix"] [class*="shadow-cyan-"],
+[data-theme="matrix"] [class*="shadow-red-"],
+[data-theme="matrix"] [class*="shadow-green-"],
+[data-theme="matrix"] [class*="shadow-orange-"] {
+  --tw-shadow-color: rgba(74, 154, 90, 0.15) !important;
+}
+
+/* Inline box-shadow overrides for rgba colors */
+[data-theme="matrix"] [style*="box-shadow"] {
+  --tw-shadow-color: rgba(74, 154, 90, 0.15) !important;
+}
+
+/* ---- BORDER-L / BORDER-B colored indicators ---- */
+[data-theme="matrix"] [class*="border-l-blue-"],
+[data-theme="matrix"] [class*="border-l-purple-"],
+[data-theme="matrix"] [class*="border-l-cyan-"],
+[data-theme="matrix"] [class*="border-l-red-"],
+[data-theme="matrix"] [class*="border-l-green-"],
+[data-theme="matrix"] [class*="border-l-orange-"],
+[data-theme="matrix"] [class*="border-l-yellow-"],
+[data-theme="matrix"] [class*="border-l-pink-"] {
+  border-left-color: rgba(90, 140, 90, 0.3) !important;
+}
+
+[data-theme="matrix"] [class*="border-b-blue-"],
+[data-theme="matrix"] [class*="border-b-purple-"],
+[data-theme="matrix"] [class*="border-b-cyan-"] {
+  border-bottom-color: rgba(90, 140, 90, 0.3) !important;
+}
+
+[data-theme="matrix"] [class*="border-t-blue-"],
+[data-theme="matrix"] [class*="border-t-purple-"],
+[data-theme="matrix"] [class*="border-t-cyan-"] {
+  border-top-color: transparent !important;
+}
+
+/* ---- DECORATION / DIVIDE ---- */
+[data-theme="matrix"] [class*="divide-blue-"] > * + * { border-color: rgba(90, 140, 90, 0.12) !important; }
+[data-theme="matrix"] [class*="decoration-blue-"] { text-decoration-color: rgba(90, 140, 90, 0.3) !important; }
+
+/* ---- SVG icon color enforcement ---- */
+[data-theme="matrix"] svg { color: inherit; }
+[data-theme="matrix"] svg [fill]:not([fill="none"]):not([fill="currentColor"]):not([fill="white"]):not([fill="#fff"]) {
+  fill: currentColor !important;
+}
+
+/* ---- Spinner / loader overrides ---- */
+[data-theme="matrix"] [class*="animate-spin"] {
+  border-color: rgba(90, 140, 90, 0.2) !important;
+  border-top-color: #4a9a5a !important;
+}
+[data-theme="matrix"] .animate-spin[class*="border-blue-"],
+[data-theme="matrix"] .animate-spin[class*="border-2"] {
+  border-color: rgba(90, 140, 90, 0.2) !important;
+  border-top-color: transparent !important;
+  border-left-color: #4a9a5a !important;
+}
+
+/* ============================================
+   MATRIX — Background (fully opaque, no color bleed)
+   ============================================ */
+
+[data-theme="matrix"] body,
+[data-theme="matrix"] html {
+  background: #020802 !important;
+}
+
+[data-theme="matrix"] .app-background {
+  background: #020802 !important;
+}
+
+[data-theme="matrix"] .app-background::before {
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 30%, rgba(0, 200, 50, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(0, 140, 35, 0.06) 0%, transparent 50%),
+    #020802 !important;
+  animation: none !important;
+}
+
+/* Scanline overlay — CRT horizontal lines */
+[data-theme="matrix"] .app-background::after {
+  opacity: 0.12;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 200, 50, 0.08) 2px,
+      rgba(0, 200, 50, 0.08) 4px
+    ) !important;
+  background-size: 100% 4px !important;
+  animation: none !important;
+}
+
+/* ============================================
+   MATRIX — Component overrides
+   ============================================ */
+
+/* Scrollbar */
+[data-theme="matrix"] .glass-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(90, 140, 90, 0.18);
+}
+[data-theme="matrix"] .glass-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(90, 140, 90, 0.3);
+}
+
+/* Message bubbles */
+[data-theme="matrix"] .message-bubble-user {
+  background: linear-gradient(135deg, #1a5a2a, #145020);
+  color: #c4dec4;
+  text-shadow: none;
+}
+[data-theme="matrix"] .message-bubble-agent {
+  background: rgba(10, 22, 10, 0.85);
+  border-color: rgba(90, 140, 90, 0.12);
+}
+
+/* Primary button text on green bg */
+[data-theme="matrix"] .glass-button-primary {
+  color: #d4eed4;
+  font-weight: 600;
+  text-shadow: none;
+}
+
+/* Typing indicator */
+[data-theme="matrix"] .typing-dot {
+  background: #4a7a4a;
+}
+
+/* Shimmer */
+[data-theme="matrix"] .shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(10, 22, 10, 0.3) 0%,
+    rgba(90, 140, 90, 0.05) 50%,
+    rgba(10, 22, 10, 0.3) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Workflow nodes */
+[data-theme="matrix"] .workflow-node.active {
+  animation: matrixNodePulse 2.5s ease-in-out infinite;
+}
+
+@keyframes matrixNodePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 154, 90, 0.25); }
+  50% { box-shadow: 0 0 0 8px rgba(74, 154, 90, 0); }
+}
+
+[data-theme="matrix"] .workflow-node-glow.copywriting,
+[data-theme="matrix"] .workflow-node-glow.design,
+[data-theme="matrix"] .workflow-node-glow.creator,
+[data-theme="matrix"] .workflow-node-glow.orchestrator {
+  background: radial-gradient(circle, rgba(74, 154, 90, 0.1) 0%, transparent 70%);
+}
+
+/* Headings — pulsing neon glow */
+[data-theme="matrix"] h1,
+[data-theme="matrix"] h2,
+[data-theme="matrix"] h3 {
+  animation: matrixTextGlow 4s ease-in-out infinite;
+}
+
+@keyframes matrixTextGlow {
+  0%, 100% { text-shadow: 0 0 10px rgba(74, 200, 90, 0.12), 0 0 30px rgba(74, 200, 90, 0.05); }
+  50% { text-shadow: 0 0 15px rgba(74, 200, 90, 0.25), 0 0 50px rgba(74, 200, 90, 0.1); }
+}
+
+/* Code blocks */
+[data-theme="matrix"] .prose code {
+  color: #6aba7a;
+  background: rgba(90, 140, 90, 0.06);
+  border: 1px solid rgba(90, 140, 90, 0.1);
+}
+
+/* Select/dropdown elements */
+[data-theme="matrix"] select,
+[data-theme="matrix"] select option {
+  background-color: #080e08;
+  color: #c4dec4;
+}
+
+/* Color input */
+[data-theme="matrix"] input[type="color"] {
+  background: rgba(10, 22, 10, 0.85);
+}
+
+/* Range input */
+[data-theme="matrix"] input[type="range"] {
+  accent-color: #4a9a5a;
+}
+
+/* ============================================
+   MATRIX — Inline style box-shadow override
+   Forces ALL box-shadow colors to monochrome green.
+   Catches glow values set via style={{boxShadow:...}}
+   ============================================ */
+[data-theme="matrix"] [style*="box-shadow"],
+[data-theme="matrix"] [style*="boxShadow"] {
+  filter: saturate(0) brightness(0.7) sepia(1) hue-rotate(70deg) saturate(0.5) !important;
+}
+
+/* Exempt elements that should NOT have the filter */
+[data-theme="matrix"] [style*="box-shadow"] img,
+[data-theme="matrix"] [style*="box-shadow"] svg,
+[data-theme="matrix"] [style*="boxShadow"] img,
+[data-theme="matrix"] [style*="boxShadow"] svg {
+  filter: none !important;
+}
+
+/* ============================================
+   MATRIX — Avatar gradient override
+   Force avatar gradient circles to monochrome green
+   ============================================ */
+[data-theme="matrix"] [class*="bg-gradient-to-br"][class*="from-orange-"],
+[data-theme="matrix"] [class*="bg-gradient-to-br"][class*="from-purple-"],
+[data-theme="matrix"] [class*="bg-gradient-to-br"][class*="from-cyan-"],
+[data-theme="matrix"] [class*="bg-gradient-to-br"][class*="from-blue-"],
+[data-theme="matrix"] [class*="bg-gradient-to-br"][class*="from-green-"],
+[data-theme="matrix"] [class*="bg-gradient-to-br"][class*="from-amber-"],
+[data-theme="matrix"] [class*="bg-gradient-to-br"][class*="from-red-"],
+[data-theme="matrix"] [class*="bg-gradient-to-br"][class*="from-pink-"],
+[data-theme="matrix"] [class*="bg-gradient-to-br"][class*="from-indigo-"],
+[data-theme="matrix"] [class*="bg-gradient-to-r"][class*="from-orange-"],
+[data-theme="matrix"] [class*="bg-gradient-to-r"][class*="from-purple-"],
+[data-theme="matrix"] [class*="bg-gradient-to-r"][class*="from-cyan-"],
+[data-theme="matrix"] [class*="bg-gradient-to-r"][class*="from-blue-"],
+[data-theme="matrix"] [class*="bg-gradient-to-r"][class*="from-green-"],
+[data-theme="matrix"] [class*="bg-gradient-to-r"][class*="from-red-"],
+[data-theme="matrix"] [class*="bg-gradient-to-r"][class*="from-yellow-"] {
+  background: linear-gradient(135deg, #1a4a2a, #2a6a3a) !important;
+}
+
+/* ============================================
+   MATRIX — Onboarding & progress bars
+   ============================================ */
+[data-theme="matrix"] [class*="bg-gradient-to-r"][class*="from-blue-"][class*="to-purple-"],
+[data-theme="matrix"] [class*="bg-gradient-to-r"][class*="from-blue-"][class*="via-"],
+[data-theme="matrix"] [class*="bg-gradient-to-r"][class*="from-orange-"][class*="to-"],
+[data-theme="matrix"] [class*="bg-gradient-to-r"][class*="from-green-"][class*="to-"] {
+  background: linear-gradient(90deg, #1a4a2a, #2a6a3a) !important;
+}
+
+/* Progress bar fills */
+[data-theme="matrix"] [class*="h-full"][class*="bg-gradient-to-r"],
+[data-theme="matrix"] [class*="h-full"][class*="bg-blue-"],
+[data-theme="matrix"] [class*="h-full"][class*="bg-green-"],
+[data-theme="matrix"] [class*="h-full"][class*="bg-orange-"] {
+  background: linear-gradient(90deg, #2a6a3a, #3a8a4a) !important;
+}
+
+/* Small colored dots (status dots, legend dots) */
+[data-theme="matrix"] span[class*="rounded-full"][class*="bg-gradient-to-r"],
+[data-theme="matrix"] span[class*="rounded-full"][class*="bg-blue-"],
+[data-theme="matrix"] span[class*="rounded-full"][class*="bg-red-"],
+[data-theme="matrix"] span[class*="rounded-full"][class*="bg-green-"],
+[data-theme="matrix"] span[class*="rounded-full"][class*="bg-orange-"],
+[data-theme="matrix"] span[class*="rounded-full"][class*="bg-yellow-"],
+[data-theme="matrix"] span[class*="rounded-full"][class*="bg-purple-"],
+[data-theme="matrix"] span[class*="rounded-full"][class*="bg-cyan-"] {
+  background: #4a9a5a !important;
+}
+
+/* Notification badges (red dots with white text) */
+[data-theme="matrix"] span[class*="bg-red-500"][class*="rounded-full"] {
+  background: #2a6a3a !important;
+  color: #d4eed4 !important;
+}
+
+/* Tab active indicators */
+[data-theme="matrix"] [class*="h-0.5"][class*="bg-blue-"],
+[data-theme="matrix"] [class*="h-0.5"][class*="bg-green-"],
+[data-theme="matrix"] [class*="border-b-2"][class*="border-blue-"] {
+  background-color: #4a9a5a !important;
+  border-color: #4a9a5a !important;
+}
+
+/* ============================================
+   MATRIX — World/Gather pixel sprites monochrome
+   Forces SVG pixel art into green monochrome
+   ============================================ */
+[data-theme="matrix"] svg[class*="agent-sprite"],
+[data-theme="matrix"] [class*="world-"] svg,
+[data-theme="matrix"] [class*="World"] svg,
+[data-theme="matrix"] [class*="Gather"] svg,
+[data-theme="matrix"] [class*="room-"] svg,
+[data-theme="matrix"] [class*="Room"] svg,
+[data-theme="matrix"] [class*="sprite"] svg {
+  filter: saturate(0) brightness(0.8) sepia(1) hue-rotate(70deg) saturate(0.6) !important;
+}
+
+/* ============================================
+   MATRIX — Chart / data-viz monochrome
+   ============================================ */
+[data-theme="matrix"] [class*="chart-"],
+[data-theme="matrix"] [class*="Chart"] canvas,
+[data-theme="matrix"] [class*="recharts"] {
+  filter: saturate(0) brightness(0.8) sepia(1) hue-rotate(70deg) saturate(0.5);
+}
+
+/* ============================================
+   MATRIX — Solid bg-color-500 overrides
+   These override raw Tailwind solid backgrounds
+   that are NOT caught by the alpha (/) wildcards
+   ============================================ */
+[data-theme="matrix"] .bg-blue-500,
+[data-theme="matrix"] .bg-purple-500,
+[data-theme="matrix"] .bg-indigo-500 {
+  background-color: #2a6a3a !important;
+}
+[data-theme="matrix"] .bg-green-500,
+[data-theme="matrix"] .bg-emerald-500,
+[data-theme="matrix"] .bg-teal-500 {
+  background-color: #3a8a4a !important;
+}
+[data-theme="matrix"] .bg-red-500,
+[data-theme="matrix"] .bg-rose-500 {
+  background-color: #2a4a2a !important;
+}
+[data-theme="matrix"] .bg-orange-500,
+[data-theme="matrix"] .bg-amber-500,
+[data-theme="matrix"] .bg-yellow-500 {
+  background-color: #3a6a3a !important;
+}
+[data-theme="matrix"] .bg-cyan-500,
+[data-theme="matrix"] .bg-sky-500 {
+  background-color: #2a5a3a !important;
+}
+[data-theme="matrix"] .bg-pink-500,
+[data-theme="matrix"] .bg-fuchsia-500 {
+  background-color: #2a5a3a !important;
+}
+
+/* Toggles and switches: checked state */
+[data-theme="matrix"] [class*="checked"][class*="bg-blue-"],
+[data-theme="matrix"] button[class*="bg-blue-500"] {
+  background-color: #2a6a3a !important;
+}
+
+/* Solid bg-*-400 variants (used in avatar gradients) */
+[data-theme="matrix"] .bg-orange-400,
+[data-theme="matrix"] .bg-purple-400,
+[data-theme="matrix"] .bg-cyan-400,
+[data-theme="matrix"] .bg-blue-400,
+[data-theme="matrix"] .bg-green-400 {
+  background-color: #2a6a3a !important;
+}
+
+/* ============================================
+   MATRIX — Colored text on solid backgrounds
+   Ensure text-white on green bg stays readable
+   ============================================ */
+[data-theme="matrix"] .bg-blue-500 .text-white,
+[data-theme="matrix"] .bg-red-500 .text-white,
+[data-theme="matrix"] .bg-green-500 .text-white,
+[data-theme="matrix"] .bg-purple-500 .text-white {
+  color: #d4eed4 !important;
+}
+
+/* ============================================
+   MATRIX — ANIMATIONS & EFFECTS
+   Full cyberpunk/hacker visual layer
+   ============================================ */
+
+/* ---- 1. SCANLINE SWEEP ----
+   A single bright line that sweeps top-to-bottom
+   continuously, like a CRT refresh.
+   -------------------------------------------- */
+[data-theme="matrix"] .matrix-scanline-sweep {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  overflow: hidden;
+}
+
+[data-theme="matrix"] .matrix-scanline-sweep::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(74, 200, 90, 0.15) 15%,
+    rgba(74, 200, 90, 0.3) 50%,
+    rgba(74, 200, 90, 0.15) 85%,
+    transparent 100%
+  );
+  box-shadow: 0 0 20px rgba(74, 200, 90, 0.2), 0 0 60px rgba(74, 200, 90, 0.08);
+  animation: matrixScanlineSweep 6s linear infinite;
+}
+
+@keyframes matrixScanlineSweep {
+  0% { top: -2px; }
+  100% { top: 100vh; }
+}
+
+/* ---- 2. BORDER SCAN on glass-card ----
+   A light beam that travels along the top border
+   of every card, like a scanner.
+   -------------------------------------------- */
+[data-theme="matrix"] .glass-card {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="matrix"] .glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(74, 200, 90, 0.6),
+    rgba(160, 255, 160, 1),
+    rgba(74, 200, 90, 0.6),
+    transparent
+  );
+  box-shadow: 0 0 8px rgba(74, 200, 90, 0.3), 0 0 20px rgba(74, 200, 90, 0.1);
+  z-index: 1;
+  animation: matrixBorderScan 5s ease-in-out infinite;
+}
+
+@keyframes matrixBorderScan {
+  0% { left: -60%; }
+  100% { left: 100%; }
+}
+
+/* Stagger different cards */
+[data-theme="matrix"] .glass-card:nth-child(2n)::before {
+  animation-delay: -2s;
+  animation-duration: 6s;
+}
+[data-theme="matrix"] .glass-card:nth-child(3n)::before {
+  animation-delay: -3.5s;
+  animation-duration: 7s;
+}
+
+/* ---- 3. TERMINAL CURSOR BLINK ----
+   Green blinking block cursor on inputs.
+   -------------------------------------------- */
+[data-theme="matrix"] input:focus,
+[data-theme="matrix"] textarea:focus {
+  caret-color: #4ac94a;
+  animation: matrixInputGlow 2s ease-in-out infinite;
+}
+
+@keyframes matrixInputGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 1px rgba(74, 200, 90, 0.35), 0 0 10px rgba(74, 200, 90, 0.08), inset 0 0 10px rgba(74, 200, 90, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 0 1px rgba(74, 200, 90, 0.55), 0 0 20px rgba(74, 200, 90, 0.15), inset 0 0 20px rgba(74, 200, 90, 0.08);
+  }
+}
+
+/* Standalone terminal cursor (used in boot sequence) */
+.matrix-terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background: #4ac94a;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: matrixCursorBlink 0.8s step-end infinite;
+}
+
+@keyframes matrixCursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ---- 4. STATUS DOT HEARTBEAT ----
+   Aggressive pulse for active status indicators.
+   -------------------------------------------- */
+[data-theme="matrix"] [class*="animate-pulse"][class*="bg-green"],
+[data-theme="matrix"] [class*="animate-pulse"][class*="bg-emerald"],
+[data-theme="matrix"] [class*="rounded-full"][class*="bg-green-400"],
+[data-theme="matrix"] [class*="rounded-full"][class*="bg-emerald-400"] {
+  animation: matrixHeartbeat 1.5s ease-in-out infinite !important;
+}
+
+@keyframes matrixHeartbeat {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(74, 200, 90, 0.6);
+    transform: scale(1);
+  }
+  25% {
+    box-shadow: 0 0 0 4px rgba(74, 200, 90, 0.3);
+    transform: scale(1.15);
+  }
+  50% {
+    box-shadow: 0 0 0 0 rgba(74, 200, 90, 0);
+    transform: scale(1);
+  }
+  75% {
+    box-shadow: 0 0 0 3px rgba(74, 200, 90, 0.15);
+    transform: scale(1.08);
+  }
+}
+
+/* ---- 5. PHOSPHOR AFTERIMAGE ----
+   Elements leave a green ghost trail when
+   they animate out (framer-motion opacity:0).
+   -------------------------------------------- */
+[data-theme="matrix"] [style*="opacity: 0"],
+[data-theme="matrix"] [style*="opacity:0"] {
+  filter: brightness(1.5) blur(2px) !important;
+  transition: filter 0.6s ease-out !important;
+}
+
+/* Glass panels leaving view get a phosphor fade */
+[data-theme="matrix"] .glass-card,
+[data-theme="matrix"] .glass-panel,
+[data-theme="matrix"] .glass-subtle {
+  transition: box-shadow 0.4s ease-out, border-color 0.3s ease-out;
+}
+
+/* ---- 6. HOVER GLOW EFFECTS ----
+   Interactive elements get a neon glow on hover.
+   -------------------------------------------- */
+
+/* Buttons — neon glow on hover */
+[data-theme="matrix"] button:hover,
+[data-theme="matrix"] [role="button"]:hover {
+  text-shadow: 0 0 10px rgba(74, 200, 90, 0.4);
+  transition: text-shadow 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+
+/* Glass cards — border lights up + ambient glow */
+[data-theme="matrix"] .glass-card:hover {
+  border-color: rgba(74, 200, 90, 0.3) !important;
+  box-shadow:
+    0 0 1px rgba(74, 200, 90, 0.2),
+    0 0 25px rgba(74, 200, 90, 0.08),
+    0 0 50px rgba(74, 200, 90, 0.03),
+    inset 0 0 25px rgba(74, 200, 90, 0.04) !important;
+  transition: all 0.25s ease-out;
+}
+
+/* Nav items — glow trail */
+[data-theme="matrix"] nav a:hover,
+[data-theme="matrix"] nav button:hover {
+  text-shadow: 0 0 15px rgba(74, 200, 90, 0.5);
+  transition: text-shadow 0.15s ease-out;
+}
+
+/* Links */
+[data-theme="matrix"] a:hover {
+  text-shadow: 0 0 10px rgba(74, 200, 90, 0.4);
+}
+
+/* ---- 7. SIDEBAR ACTIVE GLOW ----
+   Active nav item gets a pulsing left border
+   and ambient glow.
+   -------------------------------------------- */
+[data-theme="matrix"] [class*="sidebar-active"],
+[data-theme="matrix"] nav [class*="bg-"][class*="border-l"],
+[data-theme="matrix"] [class*="glass-card-active"] {
+  animation: matrixSidebarGlow 3s ease-in-out infinite;
+  border-left-color: #4ac94a !important;
+}
+
+@keyframes matrixSidebarGlow {
+  0%, 100% {
+    box-shadow: inset 3px 0 10px rgba(74, 200, 90, 0.15), 0 0 15px rgba(74, 200, 90, 0.05);
+  }
+  50% {
+    box-shadow: inset 3px 0 20px rgba(74, 200, 90, 0.3), 0 0 30px rgba(74, 200, 90, 0.1);
+  }
+}
+
+/* ---- 8. GLITCH MICRO-EFFECT ----
+   Very subtle periodic glitch on main content.
+   Fires every ~10s for a brief moment.
+   -------------------------------------------- */
+[data-theme="matrix"] main > div {
+  animation: matrixMicroGlitch 12s ease-in-out infinite;
+}
+
+@keyframes matrixMicroGlitch {
+  0%, 99.5%, 100% {
+    transform: translate(0);
+    filter: none;
+  }
+  /* Glitch window: 99.5% - 99.9% of the cycle (~60ms of a 12s cycle) */
+  99.6% {
+    transform: translate(-1px, 0);
+    filter: hue-rotate(30deg);
+  }
+  99.7% {
+    transform: translate(2px, -1px);
+    filter: hue-rotate(-20deg) saturate(1.2);
+  }
+  99.8% {
+    transform: translate(-1px, 1px);
+    filter: hue-rotate(10deg);
+  }
+  99.9% {
+    transform: translate(0);
+    filter: none;
+  }
+}
+
+/* ---- 9. GLASS CARD MATRIX RAIN PATTERN ----
+   Very subtle falling-characters texture inside cards.
+   Uses a CSS pattern to hint at the matrix rain.
+   -------------------------------------------- */
+[data-theme="matrix"] .glass-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.045;
+  background-image:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 14px,
+      rgba(74, 200, 90, 0.25) 14px,
+      rgba(74, 200, 90, 0.25) 15px
+    );
+  background-size: 16px 16px;
+  animation: matrixCardRain 8s linear infinite;
+  border-radius: inherit;
+}
+
+@keyframes matrixCardRain {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 160px; }
+}
+
+/* ---- 10. FONT ENHANCEMENT ----
+   Monospace font for the full matrix experience.
+   -------------------------------------------- */
+[data-theme="matrix"] body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  letter-spacing: 0.02em;
+}
+
+/* Keep headings slightly different for hierarchy */
+[data-theme="matrix"] h1,
+[data-theme="matrix"] h2,
+[data-theme="matrix"] h3 {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.95em;
+}
+
+/* ---- 11. VIGNETTE EFFECT ----
+   Dark edges like a CRT monitor.
+   -------------------------------------------- */
+[data-theme="matrix"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  background: radial-gradient(
+    ellipse 75% 75% at 50% 50%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+}
+
+/* ---- 12. FLICKER EFFECT ----
+   Very subtle screen flicker like an old CRT.
+   Barely perceptible but adds to the atmosphere.
+   -------------------------------------------- */
+[data-theme="matrix"] body {
+  animation: matrixFlicker 0.15s infinite;
+}
+
+@keyframes matrixFlicker {
+  0% { opacity: 1; }
+  5% { opacity: 0.98; }
+  10% { opacity: 1; }
+  15% { opacity: 0.99; }
+  20% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* ---- 13. TOOLTIP / TOAST GLOW ----
+   Notifications and toasts get a matrix glow.
+   -------------------------------------------- */
+[data-theme="matrix"] [role="alert"],
+[data-theme="matrix"] [class*="toast"] {
+  box-shadow: 0 0 20px rgba(74, 200, 90, 0.15), 0 0 50px rgba(74, 200, 90, 0.06) !important;
+  border-color: rgba(74, 200, 90, 0.35) !important;
+}
+
+/* ---- 14. LOADING SPINNERS ----
+   Matrix-green pulsing spinners.
+   -------------------------------------------- */
+[data-theme="matrix"] [class*="animate-spin"] {
+  filter: drop-shadow(0 0 6px rgba(74, 200, 90, 0.6)) drop-shadow(0 0 12px rgba(74, 200, 90, 0.2));
+}
+
+/* ---- 15. SELECTION GLOW ----
+   Text selection has a matrix neon effect.
+   -------------------------------------------- */
+[data-theme="matrix"] ::selection {
+  background: rgba(74, 200, 90, 0.35) !important;
+  color: #e0ffe0 !important;
+  text-shadow: 0 0 8px rgba(74, 200, 90, 0.5);
+}
+
+/* ---- 16. SCROLLBAR GLOW ----
+   Scrollbar thumb glows on hover.
+   -------------------------------------------- */
+[data-theme="matrix"] ::-webkit-scrollbar-thumb:hover {
+  box-shadow: 0 0 6px rgba(74, 200, 90, 0.3);
+}
+
+/* ---- 17. BADGE / PILL PULSE ----
+   Count badges get a subtle pulse.
+   -------------------------------------------- */
+[data-theme="matrix"] [class*="badge"],
+[data-theme="matrix"] [class*="Badge"] {
+  animation: matrixBadgePulse 3s ease-in-out infinite;
+}
+
+@keyframes matrixBadgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 200, 90, 0.15); }
+  50% { box-shadow: 0 0 10px rgba(74, 200, 90, 0.25); }
+}
+
+/* ---- 18. CODE / MONOSPACE GLOW ----
+   Code blocks glow green.
+   -------------------------------------------- */
+[data-theme="matrix"] pre,
+[data-theme="matrix"] code,
+[data-theme="matrix"] .prose code {
+  text-shadow: 0 0 8px rgba(74, 200, 90, 0.25);
+}
+
+/* ============================================
+   MATRIX — Performance: reduce-motion
+   Respects user preference for reduced motion.
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="matrix"] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  [data-theme="matrix"] .matrix-scanline-sweep::before,
+  [data-theme="matrix"] body::before,
+  [data-theme="matrix"] .glass-card::before,
+  [data-theme="matrix"] .glass-card::after {
+    display: none !important;
+  }
+}

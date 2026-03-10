@@ -1,0 +1,37 @@
+{
+  "name": "fal-nano-banana-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Nano Banana Pro image generation with reference image support",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "fal-nano-banana-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "keywords": [
+    "mcp",
+    "fal",
+    "nano-banana",
+    "image-generation",
+    "ai"
+  ],
+  "author": "AIOS",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0",
+    "@fal-ai/client": "^1.2.0",
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

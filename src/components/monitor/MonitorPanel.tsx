@@ -27,13 +27,11 @@ export const MonitorPanel = memo(function MonitorPanel({ className }: MonitorPan
 
   return (
     <div
-      className={cn('flex flex-col h-full', className)}
-      style={{ backgroundColor: 'var(--bg-base)' }}
+      className={cn('flex flex-col h-full bg-[var(--bg-base)]', className)}
     >
       {/* Header */}
       <div
-        className="flex items-center justify-between px-4 py-3 border-b"
-        style={{ borderColor: 'var(--border-subtle)' }}
+        className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-subtle)]"
       >
         <div className="flex items-center gap-3">
           <ActivityIcon className="h-4 w-4 text-gold" />
@@ -64,7 +62,7 @@ export const MonitorPanel = memo(function MonitorPanel({ className }: MonitorPan
 
       {/* Current Tool Indicator */}
       {connected && (
-        <div className="px-4 py-2 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+        <div className="px-4 py-2 border-b border-[var(--border-subtle)]">
           <CurrentToolIndicator />
         </div>
       )}
@@ -77,11 +75,7 @@ export const MonitorPanel = memo(function MonitorPanel({ className }: MonitorPan
       {/* Stats Footer */}
       {connected && stats && (
         <div
-          className="px-4 py-2 border-t flex items-center justify-between"
-          style={{
-            backgroundColor: 'var(--bg-elevated)',
-            borderColor: 'var(--border-subtle)',
-          }}
+          className="px-4 py-2 border-t flex items-center justify-between bg-[var(--bg-elevated)] border-[var(--border-subtle)]"
         >
           <div className="flex items-center gap-4 text-detail text-text-muted">
             <span>

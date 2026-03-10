@@ -1,0 +1,1046 @@
+/* ============================================
+   AIOX COCKPIT — Component Style Overrides
+   Transforms glass components into brandbook cockpit aesthetic:
+   - Monospace labels, uppercase, letter-spacing 0.08em
+   - Solid dark surfaces instead of heavy blur
+   - Brutalist borders (no rounded corners)
+   - Neon lime glow on interactive states
+
+   STRATEGY:
+   1. Nuclear border-radius reset on all elements
+   2. Glass → Solid surface replacements
+   3. Flat app background (no gradients/blobs)
+   4. Hover: no translateY, use neon glow
+   5. Cover tabs, dropdowns, tooltips, sidebar, modals
+   ============================================ */
+
+/* ============================================
+   BRUTALIST RESET — Zero Radius on Containers
+   Targets containers, cards, buttons, inputs, panels.
+   Preserves: dots, indicators, pings, spinners, SVG.
+   ============================================ */
+
+html[data-theme="aiox"] div,
+html[data-theme="aiox"] section,
+html[data-theme="aiox"] article,
+html[data-theme="aiox"] aside,
+html[data-theme="aiox"] main,
+html[data-theme="aiox"] nav,
+html[data-theme="aiox"] header,
+html[data-theme="aiox"] footer,
+html[data-theme="aiox"] button,
+html[data-theme="aiox"] input,
+html[data-theme="aiox"] select,
+html[data-theme="aiox"] textarea,
+html[data-theme="aiox"] a,
+html[data-theme="aiox"] span,
+html[data-theme="aiox"] kbd,
+html[data-theme="aiox"] li,
+html[data-theme="aiox"] p,
+html[data-theme="aiox"] [role="dialog"],
+html[data-theme="aiox"] [role="tablist"],
+html[data-theme="aiox"] [role="tab"],
+html[data-theme="aiox"] [role="tooltip"],
+html[data-theme="aiox"] [role="menu"],
+html[data-theme="aiox"] [role="listbox"] {
+  border-radius: 0 !important;
+}
+
+/* Preserve round shapes: status dots, pings, spinners */
+html[data-theme="aiox"] .status-online,
+html[data-theme="aiox"] .status-busy,
+html[data-theme="aiox"] .status-offline,
+html[data-theme="aiox"] [class*="rounded-full"]:is(
+  .h-2, .h-3, .w-2, .w-3, .h-4, .w-4,
+  [class*="animate-ping"], [class*="animate-pulse"]
+) {
+  border-radius: 9999px !important;
+}
+
+/* Small indicator dots (h-2 w-2, h-3 w-3, h-4 w-4) always round */
+html[data-theme="aiox"] span[class*="rounded-full"][class*="h-2"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="h-3"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="w-2"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="w-3"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="h-4"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="w-4"]:not([class*="px-"]) {
+  border-radius: 9999px !important;
+}
+
+/* Toggle switch knobs stay round */
+html[data-theme="aiox"] [role="switch"] span,
+html[data-theme="aiox"] [data-state] > span[class*="rounded-full"][class*="block"] {
+  border-radius: 9999px !important;
+}
+
+/* Ping/pulse animations stay round */
+html[data-theme="aiox"] [class*="animate-ping"],
+html[data-theme="aiox"] .animate-spin {
+  border-radius: 9999px !important;
+}
+
+/* Avatar: brutalist square shape (not round) */
+html[data-theme="aiox"] [class*="avatar"] img,
+html[data-theme="aiox"] [class*="avatar"] div[class*="rounded-full"] {
+  border-radius: 0 !important;
+}
+html[data-theme="aiox"] img[class*="rounded-full"][alt] {
+  border-radius: 0 !important;
+}
+
+/* Scrollbar thumb: tiny radius for usability */
+html[data-theme="aiox"] ::-webkit-scrollbar-thumb {
+  border-radius: 2px !important;
+}
+
+/* Progress bar fill keeps radius for visual continuity */
+html[data-theme="aiox"] [class*="rounded-full"][class*="h-1"],
+html[data-theme="aiox"] [class*="rounded-full"][class*="h-1\\.5"],
+html[data-theme="aiox"] [class*="rounded-full"][class*="h-2"][class*="overflow"] {
+  border-radius: 0 !important;
+}
+
+/* ============================================
+   APP BACKGROUND — Flat Near-Black
+   No gradients, no blobs, no noise animation.
+   ============================================ */
+
+html[data-theme="aiox"] .app-background::before {
+  background: var(--aiox-dark) !important;
+  animation: none !important;
+  filter: none !important;
+}
+
+html[data-theme="aiox"] .app-background::after {
+  opacity: 0 !important;
+}
+
+/* ============================================
+   GLASS → SOLID — All Glass Utilities
+   Replace backdrop-blur with solid surfaces.
+   ============================================ */
+
+html[data-theme="aiox"] .glass {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-lg {
+  background: var(--aiox-surface-panel) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-xl {
+  background: var(--aiox-surface-deep) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-subtle {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.1) !important;
+}
+
+/* ============================================
+   BACKDROP-BLUR KILL — Remove All Blur Effects
+   The AIOX cockpit uses solid opaque surfaces, not
+   frosted glass. Removes blur globally.
+   ============================================ */
+
+html[data-theme="aiox"] [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ============================================
+   SEMITRANSPARENT BG FIX — Solid Replacements
+   bg-black/50, bg-black/40 etc. are invisible
+   without blur on flat dark backgrounds.
+   Give them a solid surface color instead.
+   Excludes fullscreen overlays (inset-0).
+   ============================================ */
+
+html[data-theme="aiox"] [class*="backdrop-blur"]:not([class*="inset-0"]):not(.app-background) {
+  background: var(--aiox-surface) !important;
+}
+
+/* Fullscreen overlays stay dark + opaque */
+html[data-theme="aiox"] [class*="backdrop-blur"][class*="inset-0"] {
+  background: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* ============================================
+   GLASS CARD — Solid Cockpit Panel
+   ============================================ */
+
+html[data-theme="aiox"] .glass-card {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-card:hover {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-card-active {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(209, 255, 0, 0.3) !important;
+  box-shadow: 0 0 12px var(--aiox-lime-glow-soft) !important;
+}
+
+/* ============================================
+   GLASS PANEL — Sidebar & Major Panels
+   ============================================ */
+
+html[data-theme="aiox"] .glass-panel {
+  background: var(--aiox-dark) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.12) !important;
+  box-shadow: none !important;
+}
+
+/* ============================================
+   INTERACTIVE STATES — No Lift, Neon Glow
+   ============================================ */
+
+html[data-theme="aiox"] .glass-interactive:hover {
+  background: rgba(209, 255, 0, 0.04) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  border-color: rgba(209, 255, 0, 0.15) !important;
+}
+
+html[data-theme="aiox"] .glass-interactive:active {
+  transform: none !important;
+  background: rgba(209, 255, 0, 0.08) !important;
+}
+
+/* ============================================
+   BUTTONS — Cockpit Style
+   ============================================ */
+
+html[data-theme="aiox"] .glass-button {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+html[data-theme="aiox"] .glass-button:hover {
+  background: rgba(209, 255, 0, 0.06) !important;
+  border-color: rgba(209, 255, 0, 0.2) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-button:active {
+  transform: none !important;
+}
+
+html[data-theme="aiox"] .glass-button-primary {
+  background: var(--aiox-lime) !important;
+  color: var(--aiox-dark) !important;
+  border: none !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+html[data-theme="aiox"] .glass-button-primary:hover {
+  box-shadow: 0 0 20px var(--aiox-lime-glow), 0 0 60px var(--aiox-lime-glow-soft) !important;
+  transform: none !important;
+}
+
+/* Small button */
+html[data-theme="aiox"] .glass-button[class*="text-xs"],
+html[data-theme="aiox"] .glass-button[class*="text-sm"],
+html[data-theme="aiox"] button[class*="text-xs"] {
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+}
+
+/* Generic buttons inherit mono font */
+html[data-theme="aiox"] button {
+  font-family: var(--font-family-mono);
+}
+
+/* Action buttons get uppercase. Discriminator: inline-flex = action button,
+   w-full + flex + text-left = content-wrapper button (file lists, cards).
+   GlassButton always renders with inline-flex. */
+html[data-theme="aiox"] .glass-button,
+html[data-theme="aiox"] .glass-button-primary,
+html[data-theme="aiox"] button[class*="inline-flex"],
+html[data-theme="aiox"] nav button {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Content-wrapper buttons: restore mixed-case for file lists, card items.
+   These are w-full + text-left buttons used as clickable rows (NOT nav items). */
+html[data-theme="aiox"] button[class*="text-left"] {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Sidebar nav ALWAYS uppercase (higher specificity to win over content-wrapper) */
+html[data-theme="aiox"] nav[aria-label] button {
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* ============================================
+   INPUTS — Cockpit Precision
+   ============================================ */
+
+html[data-theme="aiox"] .glass-input {
+  font-family: var(--font-family-mono);
+  font-size: 0.7rem;
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] .glass-input:focus {
+  border-color: var(--aiox-lime) !important;
+  box-shadow: 0 0 0 1px var(--aiox-lime) !important;
+}
+
+html[data-theme="aiox"] .glass-input::placeholder {
+  color: var(--aiox-gray-dim);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+html[data-theme="aiox"] textarea.glass-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* All native inputs/selects */
+html[data-theme="aiox"] input:not([type="color"]),
+html[data-theme="aiox"] select,
+html[data-theme="aiox"] textarea {
+  font-family: var(--font-family-mono);
+  background: var(--aiox-surface);
+  border: 1px solid rgba(156, 156, 156, 0.15);
+}
+
+/* Color picker — preserve native rendering */
+html[data-theme="aiox"] input[type="color"] {
+  background: transparent;
+  border: 1px solid rgba(156, 156, 156, 0.15);
+  padding: 2px;
+  cursor: pointer;
+}
+
+html[data-theme="aiox"] input:focus,
+html[data-theme="aiox"] select:focus,
+html[data-theme="aiox"] textarea:focus {
+  border-color: var(--aiox-lime);
+  box-shadow: 0 0 0 1px var(--aiox-lime);
+}
+
+/* Native select dropdown options — ensure readability in dark theme */
+html[data-theme="aiox"] select {
+  color: var(--aiox-cream);
+  cursor: pointer;
+}
+
+html[data-theme="aiox"] select option {
+  background-color: #111;
+  color: #e5e5e5;
+  padding: 0.5rem;
+}
+
+/* ============================================
+   BADGES — Cockpit Labels
+   ============================================ */
+
+html[data-theme="aiox"] .glass-badge {
+  font-family: var(--font-family-mono);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-theme="aiox"] .glass-badge-squad {
+  background: var(--aiox-neon-dim);
+  color: var(--aiox-lime);
+  border: 1px solid rgba(209, 255, 0, 0.2);
+}
+
+/* ============================================
+   MESSAGE BUBBLES — Solid Cockpit
+   ============================================ */
+
+html[data-theme="aiox"] .message-bubble-user {
+  background: var(--aiox-lime) !important;
+  color: var(--aiox-dark) !important;
+}
+
+html[data-theme="aiox"] .message-bubble-agent {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+/* Markdown content inside agent bubbles */
+html[data-theme="aiox"] .message-bubble-agent .markdown-content {
+  color: var(--aiox-cream);
+}
+
+html[data-theme="aiox"] .message-bubble-agent .markdown-content a {
+  color: var(--aiox-lime);
+}
+
+html[data-theme="aiox"] .message-bubble-agent .markdown-content blockquote {
+  border-left-color: rgba(209, 255, 0, 0.3);
+  background: rgba(209, 255, 0, 0.03);
+}
+
+html[data-theme="aiox"] .message-bubble-agent .markdown-content hr {
+  border-color: rgba(156, 156, 156, 0.15);
+}
+
+/* Audio/video players in AIOX theme */
+html[data-theme="aiox"] .message-bubble-agent audio {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-theme="aiox"] .message-bubble-agent video {
+  border-radius: 0;
+}
+
+/* ============================================
+   DIALOG / MODAL — Cockpit Overlay
+   ============================================ */
+
+html[data-theme="aiox"] [role="dialog"] {
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+  background: var(--aiox-dark) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Dialog backdrop */
+html[data-theme="aiox"] [data-radix-overlay],
+html[data-theme="aiox"] .dialog-overlay,
+html[data-theme="aiox"] [role="dialog"] + div[class*="overlay"],
+html[data-theme="aiox"] [class*="backdrop"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* ============================================
+   DROPDOWNS & POPOVERS
+   ============================================ */
+
+html[data-theme="aiox"] [role="listbox"],
+html[data-theme="aiox"] [role="menu"],
+html[data-theme="aiox"] [data-radix-popper-content-wrapper] > *,
+html[data-theme="aiox"] [class*="dropdown"],
+html[data-theme="aiox"] [class*="popover"] {
+  background: var(--aiox-dark) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+/* ============================================
+   TABS — Cockpit Navigation
+   ============================================ */
+
+html[data-theme="aiox"] [role="tablist"] {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [role="tab"] {
+  font-family: var(--font-family-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+html[data-theme="aiox"] [role="tab"][aria-selected="true"] {
+  background: rgba(209, 255, 0, 0.08) !important;
+  color: var(--aiox-lime) !important;
+  border: 1px solid rgba(209, 255, 0, 0.2) !important;
+}
+
+/* ============================================
+   TOOLTIPS
+   ============================================ */
+
+html[data-theme="aiox"] [role="tooltip"] {
+  background: var(--aiox-dark) !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.6rem;
+}
+
+/* ============================================
+   DIVIDERS — Sharp Lines
+   ============================================ */
+
+html[data-theme="aiox"] .glass-divider {
+  background: rgba(156, 156, 156, 0.15) !important;
+}
+
+/* ============================================
+   TABLES — Data-Dense Cockpit
+   ============================================ */
+
+html[data-theme="aiox"] table {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  border-collapse: collapse;
+}
+
+html[data-theme="aiox"] th {
+  background: var(--aiox-surface);
+  border-bottom: 1px solid rgba(156, 156, 156, 0.15);
+  font-size: 0.55rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.75rem 1.25rem;
+  color: var(--aiox-gray-dim);
+}
+
+html[data-theme="aiox"] td {
+  border-bottom: 1px solid rgba(156, 156, 156, 0.10);
+  padding: 0.75rem 1.25rem;
+}
+
+html[data-theme="aiox"] tr:hover td {
+  background: rgba(209, 255, 0, 0.02);
+}
+
+/* Tabular numbers for data columns */
+html[data-theme="aiox"] td[class*="num"],
+html[data-theme="aiox"] td[class*="count"],
+html[data-theme="aiox"] td[class*="value"] {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ============================================
+   TOAST — Cockpit Notifications
+   ============================================ */
+
+html[data-theme="aiox"] [role="alert"] {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+}
+
+/* ============================================
+   HEADINGS — Display Font
+   ============================================ */
+
+html[data-theme="aiox"] h1,
+html[data-theme="aiox"] h2 {
+  font-family: var(--font-family-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+}
+
+html[data-theme="aiox"] h1 {
+  font-size: var(--font-size-2xl);
+  line-height: 1;
+}
+
+html[data-theme="aiox"] h2 {
+  font-size: var(--font-size-xl);
+  line-height: 1.05;
+}
+
+/* Card-level headings with text-sm/text-xs — reset display font overrides */
+html[data-theme="aiox"] h2[class*="text-sm"],
+html[data-theme="aiox"] h2[class*="text-xs"],
+html[data-theme="aiox"] h3[class*="text-sm"],
+html[data-theme="aiox"] h3[class*="text-xs"] {
+  font-family: var(--font-family-mono);
+  font-size: inherit;
+  font-weight: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: inherit;
+}
+
+/* ============================================
+   LABELS & META — Mono Uppercase
+   ============================================ */
+
+html[data-theme="aiox"] .section-label,
+html[data-theme="aiox"] label,
+html[data-theme="aiox"] legend {
+  font-family: var(--font-family-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================
+   SIDEBAR & NAVIGATION
+   ============================================ */
+
+html[data-theme="aiox"] nav {
+  font-family: var(--font-family-mono);
+}
+
+html[data-theme="aiox"] nav button,
+html[data-theme="aiox"] nav a {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Active nav item: lime accent left border */
+html[data-theme="aiox"] nav button[class*="glass"],
+html[data-theme="aiox"] nav a[class*="glass"] {
+  background: rgba(209, 255, 0, 0.06) !important;
+  border-left: 2px solid var(--aiox-lime) !important;
+}
+
+/* ============================================
+   PROGRESS BARS & RINGS
+   ============================================ */
+
+html[data-theme="aiox"] progress {
+  background: var(--aiox-surface);
+}
+
+html[data-theme="aiox"] progress::-webkit-progress-bar {
+  background: var(--aiox-surface);
+}
+
+html[data-theme="aiox"] progress::-webkit-progress-value {
+  background: var(--aiox-lime);
+}
+
+/* ============================================
+   GRADIENT OVERRIDES — Tame Glass Gradients
+   Only override large container gradients (cards with
+   from-*-500/20). Preserve progress bar gradients and
+   inline-style gradients used for data visualization.
+   ============================================ */
+
+html[data-theme="aiox"] .glass-card[class*="bg-gradient-to"],
+html[data-theme="aiox"] div[class*="bg-gradient-to"][class*="border"] {
+  background: var(--aiox-surface) !important;
+}
+
+/* ============================================
+   SCROLLBAR — Cockpit Style
+   ============================================ */
+
+html[data-theme="aiox"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html[data-theme="aiox"] ::-webkit-scrollbar-track {
+  background: var(--aiox-dark);
+}
+
+html[data-theme="aiox"] ::-webkit-scrollbar-thumb {
+  background: rgba(156, 156, 156, 0.15);
+}
+
+html[data-theme="aiox"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 156, 156, 0.25);
+}
+
+/* ============================================
+   SELECTION — Lime on Dark
+   ============================================ */
+
+html[data-theme="aiox"] ::selection {
+  background: var(--aiox-dark);
+  color: var(--aiox-lime);
+}
+
+/* ============================================
+   FOCUS — Lime Ring
+   ============================================ */
+
+html[data-theme="aiox"] *:focus-visible {
+  outline: 2px solid rgba(209, 255, 0, 0.5) !important;
+  outline-offset: 2px !important;
+}
+
+html[data-theme="aiox"] input:focus-visible,
+html[data-theme="aiox"] textarea:focus-visible,
+html[data-theme="aiox"] select:focus-visible {
+  outline: none !important;
+}
+
+/* ============================================
+   REDUCED MOTION — Accessibility
+   ============================================ */
+
+/* ============================================
+   COLOR REMAPPING — AIOX Palette Enforcement
+   Overrides Tailwind color utilities to map to
+   the AIOX palette when data-theme="aiox" is active.
+
+   Palette:
+   - Lime:    #D1FF00 (primary accent)
+   - Red:     #FF3B30 (errors, critical)
+   - Amber:   #FFB800 (warnings, in-progress)
+   - Surface: #0a0a0a / rgba(255,255,255,0.05) (neutral bg)
+   - Gray:    #666 (dim labels)
+   ============================================ */
+
+/* --- Success / Active / Online → Lime --- */
+html[data-theme="aiox"] [class*="bg-green-500\/1"] {
+  background-color: rgba(209, 255, 0, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-green-4"],
+html[data-theme="aiox"] [class*="text-green-5"] {
+  color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="border-green-500"] {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+}
+
+/* --- Info / Default → Lime dim --- */
+html[data-theme="aiox"] [class*="bg-blue-500\/1"] {
+  background-color: rgba(209, 255, 0, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="text-blue-4"],
+html[data-theme="aiox"] [class*="text-blue-5"] {
+  color: rgba(209, 255, 0, 0.7) !important;
+}
+html[data-theme="aiox"] [class*="border-blue-500"] {
+  border-color: rgba(209, 255, 0, 0.15) !important;
+}
+
+/* Solid blue backgrounds (progress dots, indicators) → lime */
+html[data-theme="aiox"] [class*="bg-blue-500"]:not([class*="/"]) {
+  background-color: #D1FF00 !important;
+}
+
+/* --- Cyan → Lime --- */
+html[data-theme="aiox"] [class*="bg-cyan-500\/"] {
+  background-color: rgba(209, 255, 0, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="bg-cyan-4"] {
+  background-color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="text-cyan-4"],
+html[data-theme="aiox"] [class*="text-cyan-5"] {
+  color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="border-cyan-500"] {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+}
+
+/* --- Purple → Surface muted --- */
+html[data-theme="aiox"] [class*="bg-purple-500\/1"] {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+html[data-theme="aiox"] [class*="text-purple-4"],
+html[data-theme="aiox"] [class*="text-purple-5"] {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+html[data-theme="aiox"] [class*="border-purple-500"] {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* --- Error / Critical → AIOX Red --- */
+html[data-theme="aiox"] [class*="bg-red-500\/1"] {
+  background-color: rgba(255, 59, 48, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-red-4"],
+html[data-theme="aiox"] [class*="text-red-5"] {
+  color: #FF3B30 !important;
+}
+html[data-theme="aiox"] [class*="border-red-500"] {
+  border-color: rgba(255, 59, 48, 0.2) !important;
+}
+
+/* --- Warning / In-Progress → AIOX Amber --- */
+html[data-theme="aiox"] [class*="bg-yellow-500\/"],
+html[data-theme="aiox"] [class*="bg-amber-500\/"] {
+  background-color: rgba(255, 184, 0, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-yellow-4"],
+html[data-theme="aiox"] [class*="text-yellow-6"],
+html[data-theme="aiox"] [class*="text-amber-4"] {
+  color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="border-yellow-500"],
+html[data-theme="aiox"] [class*="border-amber-500"] {
+  border-color: rgba(255, 184, 0, 0.2) !important;
+}
+
+/* --- Orange → AIOX Amber --- */
+html[data-theme="aiox"] [class*="bg-orange-500\/1"] {
+  background-color: rgba(255, 184, 0, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-orange-5"] {
+  color: #FFB800 !important;
+}
+
+/* --- Pink → Muted surface --- */
+html[data-theme="aiox"] [class*="bg-pink-500\/1"] {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+html[data-theme="aiox"] [class*="text-pink-4"],
+html[data-theme="aiox"] [class*="text-pink-5"] {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ============================================
+   CODE BLOCKS & TERMINAL — Cockpit Console
+   ============================================ */
+
+html[data-theme="aiox"] pre,
+html[data-theme="aiox"] code {
+  font-family: var(--font-family-mono);
+}
+
+html[data-theme="aiox"] pre {
+  background: var(--aiox-surface-deep) !important;
+  border: 1px solid rgba(156, 156, 156, 0.12) !important;
+  font-size: 0.7rem;
+}
+
+html[data-theme="aiox"] code:not(pre code) {
+  background: rgba(209, 255, 0, 0.06);
+  color: var(--aiox-lime);
+  padding: 0.1em 0.35em;
+  font-size: 0.85em;
+}
+
+html[data-theme="aiox"] pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+/* ============================================
+   CHARTS & SVG — AIOX Palette
+   Map common chart colors to AIOX palette.
+   ============================================ */
+
+html[data-theme="aiox"] svg text {
+  font-family: var(--font-family-mono);
+  fill: var(--aiox-gray-dim);
+}
+
+html[data-theme="aiox"] svg [class*="chart"] text,
+html[data-theme="aiox"] svg [class*="axis"] text {
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   SKELETON LOADERS — Cockpit Pulse
+   ============================================ */
+
+html[data-theme="aiox"] [class*="skeleton"],
+html[data-theme="aiox"] [class*="animate-pulse"] > div {
+  background: rgba(209, 255, 0, 0.04) !important;
+}
+
+@keyframes aiox-skeleton {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+html[data-theme="aiox"] [class*="skeleton"] {
+  animation: aiox-skeleton 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   COMMAND PALETTE — Cockpit Search Overlay
+   ============================================ */
+
+html[data-theme="aiox"] [class*="command-palette"],
+html[data-theme="aiox"] [cmdk-root] {
+  background: var(--aiox-dark) !important;
+  border: 1px solid rgba(209, 255, 0, 0.15) !important;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), 0 0 8px var(--aiox-lime-glow-soft) !important;
+}
+
+html[data-theme="aiox"] [cmdk-input] {
+  font-family: var(--font-family-mono);
+  background: var(--aiox-surface) !important;
+  border-bottom: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [cmdk-item][aria-selected="true"],
+html[data-theme="aiox"] [cmdk-item]:hover {
+  background: rgba(209, 255, 0, 0.06) !important;
+}
+
+html[data-theme="aiox"] [cmdk-group-heading] {
+  font-family: var(--font-family-mono);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--aiox-gray-dim);
+}
+
+/* ============================================
+   AGENT CARDS — Cockpit Style Override
+   Map agent border colors to AIOX palette.
+   ============================================ */
+
+html[data-theme="aiox"] [class*="agent-card"],
+html[data-theme="aiox"] [class*="agent"] > [class*="card"] {
+  border-color: rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [class*="agent-card"]:hover,
+html[data-theme="aiox"] [class*="agent"] > [class*="card"]:hover {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+  box-shadow: 0 0 12px var(--aiox-lime-glow-soft) !important;
+}
+
+/* ============================================
+   KANBAN COLUMNS — Cockpit Board
+   ============================================ */
+
+html[data-theme="aiox"] [class*="kanban"] [class*="column"],
+html[data-theme="aiox"] [class*="kanban"] [class*="lane"] {
+  background: var(--aiox-surface) !important;
+  border: 1px solid rgba(156, 156, 156, 0.12) !important;
+}
+
+html[data-theme="aiox"] [class*="kanban"] [class*="column-header"],
+html[data-theme="aiox"] [class*="kanban"] [class*="lane-header"] {
+  font-family: var(--font-family-mono);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid rgba(156, 156, 156, 0.12);
+}
+
+/* Drag-over state */
+html[data-theme="aiox"] [class*="kanban"] [class*="drag-over"],
+html[data-theme="aiox"] [class*="kanban"] [class*="drop-target"] {
+  background: rgba(209, 255, 0, 0.04) !important;
+  border-color: rgba(209, 255, 0, 0.2) !important;
+}
+
+/* ============================================
+   EMPTY STATES — Cockpit Placeholder
+   ============================================ */
+
+html[data-theme="aiox"] [class*="empty-state"],
+html[data-theme="aiox"] [class*="no-data"],
+html[data-theme="aiox"] [class*="placeholder"] {
+  font-family: var(--font-family-mono);
+  color: var(--aiox-gray-dim);
+}
+
+html[data-theme="aiox"] [class*="empty-state"] svg,
+html[data-theme="aiox"] [class*="no-data"] svg {
+  opacity: 0.3;
+  color: var(--aiox-gray-dim);
+}
+
+/* ============================================
+   TOGGLE SWITCHES — Cockpit Style
+   ============================================ */
+
+html[data-theme="aiox"] [role="switch"] {
+  background: var(--aiox-surface) !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [role="switch"][aria-checked="true"],
+html[data-theme="aiox"] [role="switch"][data-state="checked"] {
+  background: rgba(209, 255, 0, 0.15) !important;
+  border-color: rgba(209, 255, 0, 0.3) !important;
+}
+
+html[data-theme="aiox"] [role="switch"][aria-checked="true"] span,
+html[data-theme="aiox"] [role="switch"][data-state="checked"] span {
+  background: var(--aiox-lime) !important;
+}
+
+/* ============================================
+   KBD / KEYBOARD SHORTCUTS — Cockpit Keys
+   ============================================ */
+
+html[data-theme="aiox"] kbd {
+  background: var(--aiox-surface) !important;
+  border: 1px solid rgba(156, 156, 156, 0.2) !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--aiox-gray-muted);
+}
+
+/* ============================================
+   NOTIFICATION BADGES — Cockpit Counters
+   ============================================ */
+
+html[data-theme="aiox"] [class*="notification-badge"],
+html[data-theme="aiox"] [class*="badge-count"] {
+  background: var(--aiox-lime) !important;
+  color: var(--aiox-dark) !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.5rem;
+  font-weight: 700;
+}
+
+/* ============================================
+   REDUCED MOTION — Accessibility
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="aiox"] *,
+  html[data-theme="aiox"] *::before,
+  html[data-theme="aiox"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

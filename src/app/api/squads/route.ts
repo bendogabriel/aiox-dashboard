@@ -61,13 +61,17 @@ async function fileExists(filePath: string): Promise<boolean> {
 async function readSquadConfig(
   squadPath: string
 ): Promise<Record<string, unknown> | null> {
-  const manifestPath = path.join(squadPath, 'squad.yaml');
-  try {
-    const content = await fs.readFile(manifestPath, 'utf-8');
-    return yaml.load(content) as Record<string, unknown>;
-  } catch {
-    return null;
+  // Try squad.yaml first, then config.yaml as fallback
+  for (const filename of ['squad.yaml', 'config.yaml']) {
+    const manifestPath = path.join(squadPath, filename);
+    try {
+      const content = await fs.readFile(manifestPath, 'utf-8');
+      return yaml.load(content) as Record<string, unknown>;
+    } catch {
+      continue;
+    }
   }
+  return null;
 }
 
 function asRecord(value: unknown): Record<string, unknown> | undefined {
@@ -309,7 +313,9 @@ export async function GET() {
             continue;
 
           const squadDir = path.join(squadsDir, entry.name);
-          const hasSquadManifest = await fileExists(path.join(squadDir, 'squad.yaml'));
+          const hasSquadManifest =
+            (await fileExists(path.join(squadDir, 'squad.yaml'))) ||
+            (await fileExists(path.join(squadDir, 'config.yaml')));
           if (!hasSquadManifest) {
             continue;
           }

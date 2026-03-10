@@ -139,7 +139,7 @@ function _formatDuration(seconds: number): string {
 const _server = Bun.serve({
   port: PORT,
 
-  async fetch(req, server) {
+  async fetch(req: Request, server: any) {
     const url = new URL(req.url);
 
     // WebSocket upgrade
@@ -151,11 +151,14 @@ const _server = Bun.serve({
       return undefined;
     }
 
-    // CORS headers
+    // CORS headers — restrict to known development origins
+    const allowedOrigins = (process.env.MONITOR_CORS_ORIGINS || 'http://localhost:3000,http://localhost:5173,http://localhost:4173').split(',');
+    const origin = req.headers.get('Origin') || '';
+    const corsOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
     const headers = {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': corsOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
 
     if (req.method === 'OPTIONS') {
@@ -164,6 +167,17 @@ const _server = Bun.serve({
 
     // API: Receive events from hooks
     if (url.pathname === '/events' && req.method === 'POST') {
+      // Optional auth: if MONITOR_TOKEN is set, require it
+      const monitorToken = process.env.MONITOR_TOKEN;
+      if (monitorToken) {
+        const auth = req.headers.get('Authorization');
+        if (auth !== `Bearer ${monitorToken}`) {
+          return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            status: 401,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+      }
       try {
         const payload = (await req.json()) as EventPayload;
 
@@ -298,6 +312,160 @@ const _server = Bun.serve({
       });
     }
 
+    // API: GitHub auth status (sanitized — only exposes connection boolean, no env details)
+    if (url.pathname === '/github/status') {
+      try {
+        const proc = Bun.spawnSync(['gh', 'auth', 'status', '--hostname', 'github.com'], {
+          stdout: 'pipe',
+          stderr: 'pipe',
+        });
+        const loggedIn = proc.exitCode === 0;
+        return new Response(
+          JSON.stringify({
+            connected: loggedIn,
+            message: loggedIn ? 'GitHub connected' : 'GitHub not connected',
+          }),
+          { headers: { ...headers, 'Content-Type': 'application/json' } }
+        );
+      } catch {
+        return new Response(
+          JSON.stringify({ connected: false, message: 'gh CLI not available' }),
+          { headers: { ...headers, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // API: GitHub commits (all branches, all authors)
+    if (url.pathname === '/github/commits') {
+      try {
+        const limit = parseInt(url.searchParams.get('limit') || '30');
+        const proc = Bun.spawnSync(
+          [
+            'git',
+            'log',
+            '--all',
+            '--date-order',
+            `--max-count=${limit}`,
+            '--format=%H%x1f%h%x1f%s%x1f%an%x1f%aI%x1f%D',
+          ],
+          { stdout: 'pipe', stderr: 'pipe' }
+        );
+        if (proc.exitCode !== 0) {
+          const err = proc.stderr.toString();
+          return new Response(JSON.stringify({ error: err }), {
+            status: 500,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        const output = proc.stdout.toString().trim();
+        if (!output) {
+          return new Response(JSON.stringify([]), {
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        const commits = output.split('\n').map((line: string) => {
+          const [fullSha, sha, message, author, date, refs] = line.split('\x1f');
+          return {
+            sha,
+            message,
+            author,
+            date,
+            url: `https://github.com/SynkraAI/aios-dashboard/commit/${fullSha}`,
+            refs: refs
+              ? refs
+                  .split(', ')
+                  .map((r: string) => r.trim())
+                  .filter(Boolean)
+              : [],
+          };
+        });
+        return new Response(JSON.stringify(commits), {
+          headers: { ...headers, 'Content-Type': 'application/json' },
+        });
+      } catch (e) {
+        return new Response(
+          JSON.stringify({ error: 'Failed to fetch commits' }),
+          { status: 500, headers: { ...headers, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // API: GitHub pull requests
+    if (url.pathname === '/github/pulls') {
+      try {
+        const proc = Bun.spawnSync(
+          [
+            'gh',
+            'pr',
+            'list',
+            '--repo',
+            'SynkraAI/aios-dashboard',
+            '--state',
+            'open',
+            '--json',
+            'number,title,state,author,createdAt,headRefName,url',
+            '--limit',
+            '20',
+          ],
+          { stdout: 'pipe', stderr: 'pipe' }
+        );
+        if (proc.exitCode !== 0) {
+          const err = proc.stderr.toString();
+          return new Response(JSON.stringify({ error: err }), {
+            status: 500,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        const pulls = JSON.parse(proc.stdout.toString());
+        return new Response(JSON.stringify(pulls), {
+          headers: { ...headers, 'Content-Type': 'application/json' },
+        });
+      } catch (e) {
+        return new Response(
+          JSON.stringify({ error: 'Failed to fetch pull requests' }),
+          { status: 500, headers: { ...headers, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // API: GitHub issues
+    if (url.pathname === '/github/issues') {
+      try {
+        const proc = Bun.spawnSync(
+          [
+            'gh',
+            'issue',
+            'list',
+            '--repo',
+            'SynkraAI/aios-dashboard',
+            '--state',
+            'open',
+            '--json',
+            'number,title,state,author,createdAt,labels,url',
+            '--limit',
+            '20',
+          ],
+          { stdout: 'pipe', stderr: 'pipe' }
+        );
+        if (proc.exitCode !== 0) {
+          const err = proc.stderr.toString();
+          return new Response(JSON.stringify({ error: err }), {
+            status: 500,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        const issues = JSON.parse(proc.stdout.toString());
+        return new Response(JSON.stringify(issues), {
+          headers: { ...headers, 'Content-Type': 'application/json' },
+        });
+      } catch (e) {
+        return new Response(
+          JSON.stringify({ error: 'Failed to fetch issues' }),
+          { status: 500, headers: { ...headers, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     // API: Health check
     if (url.pathname === '/health') {
       return new Response(
@@ -328,6 +496,9 @@ const _server = Bun.serve({
             'GET /stats': 'Aggregated statistics',
             'GET /transcripts': 'List Claude transcripts',
             'WS /stream': 'WebSocket for real-time events',
+            'GET /github/commits': 'Recent commits',
+            'GET /github/pulls': 'Open pull requests',
+            'GET /github/issues': 'Open issues',
             'GET /health': 'Health check',
           },
         }),
@@ -341,7 +512,7 @@ const _server = Bun.serve({
   },
 
   websocket: {
-    open(ws) {
+    open(ws: any) {
       clients.add(ws as unknown as ServerWebSocket<unknown>);
       console.log(`[WS] Client connected (${clients.size} total)`);
 
@@ -349,11 +520,11 @@ const _server = Bun.serve({
       const recent = getRecentEvents(20);
       ws.send(JSON.stringify({ type: 'init', events: recent }));
     },
-    close(ws) {
+    close(ws: any) {
       clients.delete(ws as unknown as ServerWebSocket<unknown>);
       console.log(`[WS] Client disconnected (${clients.size} remaining)`);
     },
-    message(ws, message) {
+    message(ws: any, message: string | Buffer) {
       // Handle ping/pong
       if (message === 'ping') {
         ws.send('pong');

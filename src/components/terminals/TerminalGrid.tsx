@@ -33,13 +33,13 @@ export function TerminalGrid({ className }: TerminalGridProps) {
 
   if (!settings.useMockData || terminals.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center" style={{ backgroundColor: 'var(--bg-base)' }}>
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-[var(--bg-base)]">
         <TerminalIcon className="h-8 w-8 mb-4 text-border" />
         <h3 className="text-sm font-light mb-1 text-text-tertiary">No Active Terminals</h3>
         <p className="text-label mb-4 text-text-muted">
           Enable Demo Mode in Settings to see sample terminals.
         </p>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 text-label border transition-luxury hover:opacity-80 text-text-secondary" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-hover)' }}>
+        <button className="flex items-center gap-1.5 px-3 py-1.5 text-label border transition-luxury hover:opacity-80 text-text-secondary border-[var(--border)] bg-[var(--bg-hover)]">
           <PlusIcon className="h-3 w-3" />
           New Terminal
         </button>
@@ -48,15 +48,15 @@ export function TerminalGrid({ className }: TerminalGridProps) {
   }
 
   return (
-    <div className={cn('h-full flex flex-col', className)} style={{ backgroundColor: 'var(--bg-base)' }}>
+    <div className={cn('h-full flex flex-col bg-[var(--bg-base)]', className)}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+      <div className="flex items-center justify-between p-4 border-b border-[var(--border-subtle)]">
         <div className="flex items-center gap-4">
           <div>
             <span className="text-detail uppercase tracking-[0.2em] block mb-1 text-gold">Terminals</span>
             <h2 className="text-sm font-light text-text-primary">Agent Sessions</h2>
           </div>
-          <div className="h-8 w-px" style={{ backgroundColor: 'var(--border-subtle)' }} />
+          <div className="h-8 w-px bg-[var(--border-subtle)]" />
           <div className="flex items-baseline gap-1">
             <span className="text-2xl font-light text-text-primary">{activeCount}</span>
             <span className="text-label text-text-muted">/ {totalCount} active</span>
@@ -65,7 +65,7 @@ export function TerminalGrid({ className }: TerminalGridProps) {
 
         <div className="flex items-center gap-3">
           {/* Layout Toggle */}
-          <div className="flex items-center p-0.5 border" style={{ backgroundColor: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}>
+          <div className="flex items-center p-0.5 border bg-[var(--bg-hover)] border-[var(--border-subtle)]">
             <button
               onClick={() => setLayout('grid')}
               className="p-1.5 transition-luxury"
@@ -90,10 +90,10 @@ export function TerminalGrid({ className }: TerminalGridProps) {
             </button>
           </div>
 
-          <button className="flex items-center gap-1.5 px-3 py-1.5 text-label border transition-luxury hover:opacity-80 text-text-secondary" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-hover)' }}>
+          <button className="flex items-center gap-1.5 px-3 py-1.5 text-label border transition-luxury hover:opacity-80 text-text-secondary border-[var(--border)] bg-[var(--bg-hover)]">
             <PlusIcon className="h-3 w-3" />
             New Terminal
-            <kbd className="ml-2 text-caption px-1 border text-text-muted" style={{ borderColor: 'var(--border)' }}>⌘T</kbd>
+            <kbd className="ml-2 text-caption px-1 border text-text-muted border-[var(--border)]">⌘T</kbd>
           </button>
         </div>
       </div>
@@ -118,7 +118,7 @@ export function TerminalGrid({ className }: TerminalGridProps) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between px-4 py-2 border-t" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
+      <div className="flex items-center justify-between px-4 py-2 border-t border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
         <span className="text-detail text-text-muted">
           {settings.useMockData ? 'Demo Mode' : 'Connected to AIOS'}
         </span>
@@ -126,7 +126,7 @@ export function TerminalGrid({ className }: TerminalGridProps) {
           <span className="uppercase tracking-wider">
             Capacity: {totalCount}/{maxTerminals}
           </span>
-          <div className="h-1 w-24 overflow-hidden" style={{ backgroundColor: 'var(--border-subtle)' }}>
+          <div className="h-1 w-24 overflow-hidden bg-[var(--border-subtle)]">
             <div
               className="h-full transition-luxury"
               style={{

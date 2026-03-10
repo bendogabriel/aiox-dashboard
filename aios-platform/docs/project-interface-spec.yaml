@@ -1,0 +1,190 @@
+# ============================================================
+# AIOS Project Interface Specification v1.0
+# ============================================================
+#
+# This defines the directory structure and file formats that the
+# AIOS engine expects when connecting to a project. Any project
+# that follows this spec can use the AIOS dashboard and engine.
+#
+# Quick start:  aios init
+# Full docs:    https://github.com/your-org/aios-platform
+
+version: "1.0"
+
+# ── Required Structure ─────────────────────────────────────
+
+structure:
+  # Minimum viable project (aios init creates this)
+  required:
+    - path: ".aios-core/"
+      description: "Core AIOS configuration directory"
+
+    - path: ".aios-core/constitution.md"
+      description: "Project principles and non-negotiable rules"
+      format: markdown
+
+    - path: ".aios-core/SQUAD-REGISTRY.yaml"
+      description: "Registry of all squads and their agents"
+      format: yaml
+      schema:
+        squads:
+          - id: string          # kebab-case identifier
+            name: string        # Display name
+            domain: string      # Category (engineering, design, marketing, etc.)
+            description: string # What the squad does
+            agents: string[]    # List of agent IDs
+
+  # Optional but recommended
+  optional:
+    - path: ".aios-core/development/agents/"
+      description: "Core agent persona definitions (Markdown)"
+      contents: "*.md files, one per agent"
+
+    - path: ".aios-core/development/tasks/"
+      description: "Executable task definitions"
+      contents: "*.md files with task instructions"
+
+    - path: ".aios-core/development/workflows/"
+      description: "Multi-phase workflow definitions"
+      contents: "*.yaml files with phase definitions"
+
+    - path: ".aios-core/development/templates/"
+      description: "Document and code templates"
+
+    - path: ".aios-core/development/checklists/"
+      description: "Quality checklists for validation gates"
+
+    - path: "squads/"
+      description: "Squad-specific directories with agents and tasks"
+      structure:
+        - "{squad-id}/squad.yaml"        # Squad config
+        - "{squad-id}/agents/*.md"       # Squad-specific agents
+        - "{squad-id}/tasks/*.md"        # Squad-specific tasks
+
+    - path: ".claude/rules/"
+      description: "Claude Code rules (authority matrix, workflows, etc.)"
+      contents: "*.md files loaded as system instructions"
+
+# ── Agent Definition Format ────────────────────────────────
+
+agent_format:
+  location: ".aios-core/development/agents/{agent-id}.md OR squads/{squad-id}/agents/{agent-id}.md"
+  naming: "kebab-case, e.g., dev.md, qa-engineer.md"
+  structure: |
+    # Agent Name
+
+    Brief description of the agent (first non-heading line becomes description).
+
+    **Role**: Agent's primary role
+
+    ## Core Principles
+    - Principle 1
+    - Principle 2
+
+    ## Commands
+    - *command-name — Description of what this command does
+
+    ## Integration
+    - Receives from: @other-agent
+    - Hands off to: @another-agent
+
+# ── Squad Config Format ────────────────────────────────────
+
+squad_config:
+  location: "squads/{squad-id}/squad.yaml OR squads/{squad-id}/config.yaml"
+  schema:
+    name: string              # Display name
+    description: string       # What the squad does
+    domain: string            # Category
+    agents:                   # Optional agent list
+      - id: string
+        role: string
+
+# ── Workflow Definition Format ─────────────────────────────
+
+workflow_format:
+  location: ".aios-core/development/workflows/{workflow-id}.yaml"
+  schema:
+    name: string
+    description: string
+    phases:
+      - name: string
+        agent: string         # @agent-id
+        task: string          # task file reference
+        input: object         # Phase input config
+        output: object        # Expected output
+    triggers:                 # Optional
+      - type: "manual|schedule|event|webhook"
+        config: object
+
+# ── Engine Configuration ───────────────────────────────────
+
+engine_config:
+  location: "engine.config.yaml (project root or engine directory)"
+  schema:
+    project:
+      root: string            # "" = auto-detect
+      aios_core: string       # Relative path (default: .aios-core)
+      squads: string          # Relative path (default: squads)
+      rules: string           # Relative path (default: .claude/rules)
+    server:
+      port: number            # Default: 4002
+      host: string            # Default: 0.0.0.0
+      cors_origins: string[]  # Allowed origins
+
+# ── Resolution Priority ───────────────────────────────────
+
+project_resolution:
+  description: "How the engine finds the project root"
+  priority:
+    1: "Explicit: initProjectResolver({ projectRoot: '/path' })"
+    2: "CLI flag: --project-root /path"
+    3: "Environment: AIOS_PROJECT_ROOT=/path"
+    4: "Config: engine.config.yaml → project.root"
+    5: "Auto-detect: walk up directories looking for .aios-core/"
+    6: "Fallback: 3 levels up from engine directory"
+
+# ── API Endpoints ──────────────────────────────────────────
+
+api:
+  base: "http://localhost:{port}"
+
+  registry:
+    - "GET /registry/project"
+    - "GET /registry/squads"
+    - "GET /registry/agents?squad={squadId}"
+    - "GET /registry/agents/{squadId}/{agentId}"
+    - "GET /registry/workflows"
+    - "GET /registry/tasks"
+
+  execution:
+    - "POST /execute/agent"
+    - "POST /execute/orchestrate"
+    - "GET  /execute/workflows"
+
+  system:
+    - "GET  /health"
+    - "GET  /pool"
+    - "POST /authority/check"
+
+  realtime:
+    - "WS   /live"
+    - "GET  /stream/agent (SSE)"
+
+# ── Minimum Example ────────────────────────────────────────
+
+example:
+  description: "Smallest valid AIOS project"
+  tree: |
+    my-project/
+    ├── .aios-core/
+    │   ├── constitution.md
+    │   ├── SQUAD-REGISTRY.yaml
+    │   └── development/
+    │       └── agents/
+    │           └── dev.md
+    └── squads/
+        └── engineering/
+            ├── squad.yaml
+            └── agents/
+                └── backend-dev.md

@@ -14,6 +14,7 @@ import { ContextPanel } from '@/components/context';
 import { MonitorPanel } from '@/components/monitor';
 import { BobOrchestrationView } from '@/components/bob';
 import { SquadsPanel } from '@/components/squads';
+import { SalesRoomPanel } from '@/components/sales-room';
 import { FAB, HelpFAB } from '@/components/ui/fab';
 import { useStories } from '@/hooks/use-stories';
 import type { Story, SidebarView } from '@/types';
@@ -114,6 +115,9 @@ function ViewContent({ view, onStoryClick, onRefresh, isLoading }: ViewContentPr
 
     case 'squads':
       return <SquadsPanel />;
+
+    case 'sales-room':
+      return <SalesRoomPanel className="h-full" />;
 
     default:
       return <PlaceholderView title={view} description="Coming soon" />;

@@ -17,10 +17,9 @@ export function StatusBar({ className }: StatusBarProps) {
   return (
     <footer
       className={cn(
-        'flex h-7 items-center justify-between border-t px-4 text-label',
+        'flex h-7 items-center justify-between border-t px-4 text-label border-[var(--border-subtle)] bg-[var(--bg-elevated)]',
         className
       )}
-      style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
     >
       {/* Left section */}
       <div className="flex items-center gap-4">

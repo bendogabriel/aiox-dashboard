@@ -103,8 +103,7 @@ export function SquadConnections({ connections, containerRef }: SquadConnections
   return (
     <svg
       ref={svgRef}
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ overflow: 'visible', zIndex: 5 }}
+      className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-5"
     >
       <defs>
         <marker

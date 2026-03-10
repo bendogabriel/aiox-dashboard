@@ -1,0 +1,3 @@
+[submodule "packages/aiox-brandbook"]
+	path = packages/aiox-brandbook
+	url = https://github.com/oalanicolas/aiox-brandbook

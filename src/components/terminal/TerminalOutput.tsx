@@ -118,7 +118,7 @@ export function TerminalOutput({
             size="sm"
             onClick={toggleSearch}
             className={cn(
-              'h-7 w-7 p-0 text-[#cccccc] hover:text-white hover:bg-[#3c3c3c]',
+              'h-7 w-7 p-0 text-[#cccccc] hover:text-foreground-primary hover:bg-[#3c3c3c]',
               searchVisible && 'bg-[#3c3c3c]'
             )}
           >
@@ -130,7 +130,7 @@ export function TerminalOutput({
             variant="ghost"
             size="sm"
             onClick={copyToClipboard}
-            className="h-7 w-7 p-0 text-[#cccccc] hover:text-white hover:bg-[#3c3c3c]"
+            className="h-7 w-7 p-0 text-[#cccccc] hover:text-foreground-primary hover:bg-[#3c3c3c]"
           >
             <Copy className="h-4 w-4" />
           </Button>
@@ -141,7 +141,7 @@ export function TerminalOutput({
             size="sm"
             onClick={() => setAutoScroll(!autoScroll)}
             className={cn(
-              'h-7 w-7 p-0 text-[#cccccc] hover:text-white hover:bg-[#3c3c3c]',
+              'h-7 w-7 p-0 text-[#cccccc] hover:text-foreground-primary hover:bg-[#3c3c3c]',
               autoScroll && 'text-green-400'
             )}
           >
@@ -153,7 +153,7 @@ export function TerminalOutput({
             variant="ghost"
             size="sm"
             onClick={scrollToBottom}
-            className="h-7 w-7 p-0 text-[#cccccc] hover:text-white hover:bg-[#3c3c3c]"
+            className="h-7 w-7 p-0 text-[#cccccc] hover:text-foreground-primary hover:bg-[#3c3c3c]"
           >
             <ArrowDown className="h-4 w-4" />
           </Button>
@@ -191,7 +191,7 @@ export function TerminalOutput({
       </div>
 
       {/* Status bar */}
-      <div className="flex items-center justify-between px-3 py-1 bg-[#007acc] text-white text-xs">
+      <div className="flex items-center justify-between px-3 py-1 bg-[#007acc] text-foreground-primary text-xs">
         <span>{content.split('\n').length} lines</span>
         <div className="flex items-center gap-3">
           {copied && <span className="text-green-300">Copied!</span>}

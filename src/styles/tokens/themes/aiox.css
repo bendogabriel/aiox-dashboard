@@ -1,0 +1,453 @@
+/* ============================================
+   AIOX DARK COCKPIT THEME
+   Lima neon (#D1FF00) on near-black — sharp, focused cockpit aesthetic
+   Applied via data-theme="aiox" on <html>
+   Also adds .dark class so Tailwind dark: utilities work
+   Specificity: html[data-theme="aiox"] (0-1-1) beats .dark (0-1-0)
+   ============================================ */
+
+html[data-theme="aiox"] {
+  /* ─────────────────────────────────────────────────────────────────────────
+     TIER 1 — SEMANTIC OVERRIDES
+     ───────────────────────────────────────────────────────────────────────── */
+
+  /* ----- Background ----- */
+  --color-background-primary: rgba(15, 15, 17, 0.65);
+  --color-background-secondary: rgba(12, 12, 14, 0.55);
+  --color-background-tertiary: rgba(18, 18, 20, 0.45);
+  --color-background-base: var(--palette-aiox-dark-base);
+  --color-background-hover: rgba(209, 255, 0, 0.06);
+  --color-background-active: rgba(209, 255, 0, 0.10);
+  --color-background-disabled: rgba(255, 255, 255, 0.03);
+
+  /* ----- Text ----- */
+  --color-text-primary: #ffffed;
+  --color-text-secondary: #9c9c9c;
+  --color-text-tertiary: #858585;
+  --color-text-disabled: #4a4a4a;
+  --color-text-inverse: var(--palette-aiox-dark-base);
+
+  /* ----- Borders ----- */
+  --color-border-default: rgba(156, 156, 156, 0.15);
+  --color-border-subtle: rgba(156, 156, 156, 0.08);
+  --color-border-strong: rgba(156, 156, 156, 0.25);
+  --color-border-focus: rgba(209, 255, 0, 0.6);
+
+  /* ----- Glass (lime-tinted, sharp cockpit) ----- */
+  --glass-blur-default: 10px;
+  --glass-blur-strong: 16px;
+  --glass-blur-maximum: 24px;
+  --glass-blur-subtle: 6px;
+  --glass-saturate-default: 120%;
+
+  --glass-border-color: rgba(156, 156, 156, 0.12);
+  --glass-border-color-subtle: rgba(156, 156, 156, 0.06);
+  --glass-background-panel: rgba(15, 15, 17, 0.88);
+  --glass-background-panel-hover: rgba(24, 22, 53, 0.92);
+  --glass-background-card: rgba(15, 15, 17, 0.80);
+  --glass-background-card-active: linear-gradient(135deg, rgba(209, 255, 0, 0.10) 0%, rgba(0, 153, 255, 0.06) 100%);
+  --glass-background-input: rgba(5, 5, 5, 0.90);
+  --glass-background-button: rgba(28, 30, 25, 0.60);
+  --glass-background-button-primary: linear-gradient(135deg, #D1FF00, #a8cc00);
+  --glass-background-button-primary-hover: linear-gradient(135deg, #e0ff33, #b8dd11);
+
+  /* ----- Shadows (lime glow on hover) ----- */
+  --glass-shadow-default: 0 0 0 1px rgba(156, 156, 156, 0.06) inset, 0 4px 16px rgba(0, 0, 0, 0.35);
+  --glass-shadow-large: 0 0 0 1px rgba(156, 156, 156, 0.06) inset, 0 8px 32px rgba(0, 0, 0, 0.45);
+  --glass-shadow-hover: 0 0 0 1px rgba(209, 255, 0, 0.10) inset, 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(209, 255, 0, 0.04);
+
+  /* ----- Status ----- */
+  --status-success: #4ADE80;
+  --status-success-bg: rgba(74, 222, 128, 0.10);
+  --status-success-border: rgba(74, 222, 128, 0.20);
+  --status-success-glow: rgba(74, 222, 128, 0.50);
+
+  --status-warning: #f59e0b;
+  --status-warning-bg: rgba(245, 158, 11, 0.10);
+  --status-warning-border: rgba(245, 158, 11, 0.20);
+  --status-warning-glow: rgba(245, 158, 11, 0.50);
+
+  --status-error: #EF4444;
+  --status-error-bg: rgba(239, 68, 68, 0.10);
+  --status-error-border: rgba(239, 68, 68, 0.20);
+  --status-error-glow: rgba(239, 68, 68, 0.50);
+
+  --status-info: #0099FF;
+  --status-info-bg: rgba(0, 153, 255, 0.10);
+  --status-info-border: rgba(0, 153, 255, 0.20);
+  --status-info-glow: rgba(0, 153, 255, 0.50);
+
+  --status-idle: #4a4a4a;
+  --status-idle-bg: rgba(74, 74, 74, 0.10);
+  --status-idle-border: rgba(74, 74, 74, 0.20);
+
+  /* ----- Agent colors (AIOX palette aligned) ----- */
+  --agent-dev: #4ADE80;
+  --agent-dev-bg: rgba(74, 222, 128, 0.12);
+  --agent-dev-border: rgba(74, 222, 128, 0.25);
+
+  --agent-qa: #f59e0b;
+  --agent-qa-bg: rgba(245, 158, 11, 0.12);
+  --agent-qa-border: rgba(245, 158, 11, 0.25);
+
+  --agent-architect: #0099FF;
+  --agent-architect-bg: rgba(0, 153, 255, 0.12);
+  --agent-architect-border: rgba(0, 153, 255, 0.25);
+
+  --agent-pm: #D1FF00;
+  --agent-pm-bg: rgba(209, 255, 0, 0.12);
+  --agent-pm-border: rgba(209, 255, 0, 0.25);
+
+  --agent-po: #ED4609;
+  --agent-po-bg: rgba(237, 70, 9, 0.12);
+  --agent-po-border: rgba(237, 70, 9, 0.25);
+
+  --agent-analyst: #0099FF;
+  --agent-analyst-bg: rgba(0, 153, 255, 0.12);
+  --agent-analyst-border: rgba(0, 153, 255, 0.25);
+
+  --agent-devops: #D1FF00;
+  --agent-devops-bg: rgba(209, 255, 0, 0.12);
+  --agent-devops-border: rgba(209, 255, 0, 0.25);
+
+  --agent-sm: #BDBDBD;
+  --agent-sm-bg: rgba(189, 189, 189, 0.12);
+  --agent-sm-border: rgba(189, 189, 189, 0.25);
+
+  scrollbar-color: rgba(156, 156, 156, 0.20) transparent;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   TIER 2 — BACKGROUND / BODY
+   ───────────────────────────────────────────────────────────────────────── */
+
+html[data-theme="aiox"] .app-background {
+  background: var(--palette-aiox-dark-base) !important;
+}
+
+html[data-theme="aiox"] .app-background::before {
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(209, 255, 0, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 20%, rgba(0, 153, 255, 0.03) 0%, transparent 55%),
+    linear-gradient(170deg, #050505 0%, #0a0a0c 40%, #080810 60%, #050505 100%) !important;
+  animation: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   TIER 3 — COMPONENT OVERRIDES
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Sidebar */
+html[data-theme="aiox"] aside {
+  background: rgba(5, 5, 5, 0.95) !important;
+  backdrop-filter: blur(10px) saturate(120%);
+  border-color: rgba(156, 156, 156, 0.08) !important;
+}
+
+/* Header */
+html[data-theme="aiox"] header {
+  background: rgba(15, 15, 17, 0.90) !important;
+  backdrop-filter: blur(10px) saturate(120%);
+  border-color: rgba(156, 156, 156, 0.08) !important;
+}
+
+/* Glass cards — lime glow on hover */
+html[data-theme="aiox"] .glass,
+html[data-theme="aiox"] .glass-lg,
+html[data-theme="aiox"] .glass-subtle {
+  border-color: rgba(156, 156, 156, 0.10);
+  background: rgba(15, 15, 17, 0.75);
+}
+
+html[data-theme="aiox"] .glass:hover,
+html[data-theme="aiox"] .glass-lg:hover {
+  border-color: rgba(209, 255, 0, 0.15);
+  box-shadow: 0 0 0 1px rgba(209, 255, 0, 0.06) inset,
+              0 8px 24px rgba(0, 0, 0, 0.4),
+              0 0 20px rgba(209, 255, 0, 0.03);
+}
+
+/* Focus visible — lime outline */
+html[data-theme="aiox"] button:focus-visible,
+html[data-theme="aiox"] a:focus-visible,
+html[data-theme="aiox"] input:focus-visible,
+html[data-theme="aiox"] select:focus-visible,
+html[data-theme="aiox"] textarea:focus-visible,
+html[data-theme="aiox"] [role="button"]:focus-visible,
+html[data-theme="aiox"] [tabindex]:focus-visible {
+  outline: 2px solid #D1FF00;
+  outline-offset: 2px;
+}
+
+/* Text selection */
+html[data-theme="aiox"] ::selection {
+  background: rgba(209, 255, 0, 0.25);
+  color: #ffffed;
+}
+
+/* Scrollbar */
+html[data-theme="aiox"] ::-webkit-scrollbar-thumb {
+  background: rgba(156, 156, 156, 0.18);
+}
+
+html[data-theme="aiox"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 156, 156, 0.30);
+}
+
+html[data-theme="aiox"] ::-webkit-scrollbar-track {
+  background: var(--palette-aiox-dark-base);
+}
+
+/* Display headings — TASAOrbiterDisplay */
+html[data-theme="aiox"] h1,
+html[data-theme="aiox"] h2 {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+/* Gold utilities → lime alias */
+html[data-theme="aiox"] .hover-gold:hover {
+  border-color: rgba(209, 255, 0, 0.25) !important;
+}
+
+html[data-theme="aiox"] .hover-gold-strong:hover {
+  border-color: rgba(209, 255, 0, 0.50) !important;
+  box-shadow: 0 0 20px rgba(209, 255, 0, 0.08) !important;
+}
+
+html[data-theme="aiox"] .active-gold {
+  border-color: rgba(209, 255, 0, 0.25) !important;
+  background: rgba(209, 255, 0, 0.06) !important;
+}
+
+html[data-theme="aiox"] .gold-line {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(209, 255, 0, 0.15) 20%,
+    rgba(209, 255, 0, 0.40) 50%,
+    rgba(209, 255, 0, 0.15) 80%,
+    transparent 100%
+  ) !important;
+}
+
+html[data-theme="aiox"] .text-gold-gradient {
+  background: linear-gradient(135deg, #D1FF00 0%, #e8ff66 50%, #D1FF00 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+html[data-theme="aiox"] .section-label {
+  color: #D1FF00 !important;
+}
+
+html[data-theme="aiox"] .bg-glow-gold {
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 0%,
+    rgba(209, 255, 0, 0.03),
+    transparent
+  ) !important;
+}
+
+/* ============================================
+   TIER 6 — BRANDBOOK MOTION & PATTERNS
+   Source: brand.aioxsquad.ai
+   ============================================ */
+
+/* ─── Accent Line hover on nav items ─── */
+html[data-theme="aiox"] .aiox-nav-item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: #D1FF00;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--bb-dur-fast, 0.2s) var(--bb-ease-decel, cubic-bezier(0, 0, 0.2, 1));
+}
+html[data-theme="aiox"] .aiox-nav-item:hover::after {
+  transform: scaleX(1);
+}
+
+/* ─── Grid Patterns ─── */
+html[data-theme="aiox"] .pattern-dot-grid {
+  background-image: radial-gradient(circle, rgba(209, 255, 0, 0.15) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+html[data-theme="aiox"] .pattern-dot-grid--dense {
+  background-image: radial-gradient(circle, rgba(209, 255, 0, 0.15) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+html[data-theme="aiox"] .pattern-dot-grid--sparse {
+  background-image: radial-gradient(circle, rgba(209, 255, 0, 0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+html[data-theme="aiox"] .pattern-crosshair-grid {
+  background-image:
+    linear-gradient(rgba(209, 255, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(209, 255, 0, 0.06) 1px, transparent 1px),
+    radial-gradient(circle, rgba(209, 255, 0, 0.20) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 80px 80px;
+}
+html[data-theme="aiox"] .pattern-crosshair-grid--tight {
+  background-image:
+    linear-gradient(rgba(209, 255, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(209, 255, 0, 0.06) 1px, transparent 1px),
+    radial-gradient(circle, rgba(209, 255, 0, 0.20) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 40px 40px;
+}
+html[data-theme="aiox"] .pattern-wireframe-perspective {
+  background-image:
+    linear-gradient(rgba(209, 255, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(209, 255, 0, 0.05) 1px, transparent 1px),
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(209, 255, 0, 0.08), transparent 70%);
+  background-size: 60px 60px, 60px 60px, 100% 100%;
+}
+
+/* ─── HUD Frames ─── */
+html[data-theme="aiox"] .frame-bracket { position: relative; }
+html[data-theme="aiox"] .frame-bracket::before,
+html[data-theme="aiox"] .frame-bracket::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: #D1FF00;
+  border-style: solid;
+}
+html[data-theme="aiox"] .frame-bracket::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
+html[data-theme="aiox"] .frame-bracket::after { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+html[data-theme="aiox"] .frame-tech {
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
+  border: 1px solid rgba(209, 255, 0, 0.30);
+}
+html[data-theme="aiox"] .frame-tech--sm {
+  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+  border: 1px solid rgba(209, 255, 0, 0.30);
+}
+html[data-theme="aiox"] .frame-tech--lg {
+  clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 20px), 0 20px);
+  border: 1px solid rgba(209, 255, 0, 0.30);
+}
+html[data-theme="aiox"] .frame-notch-tr { clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%); }
+html[data-theme="aiox"] .frame-notch-bl { clip-path: polygon(0 0, 100% 0, 100% 100%, 20px 100%, 0 calc(100% - 20px)); }
+html[data-theme="aiox"] .frame-notch-both { clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px)); }
+
+/* ─── Hazard / Warning ─── */
+html[data-theme="aiox"] .pattern-hazard { background: repeating-linear-gradient(-45deg, #D1FF00 0, #D1FF00 10px, #050505 10px, #050505 20px); }
+html[data-theme="aiox"] .pattern-hazard--thin { background: repeating-linear-gradient(-45deg, #D1FF00 0, #D1FF00 5px, #050505 5px, #050505 10px); }
+html[data-theme="aiox"] .pattern-hazard--subtle { background: repeating-linear-gradient(-45deg, rgba(209, 255, 0, 0.15) 0, rgba(209, 255, 0, 0.15) 10px, transparent 10px, transparent 20px); }
+html[data-theme="aiox"] .bar-warning { background: #D1FF00; height: 4px; width: 100%; }
+
+/* ─── Circuit Traces ─── */
+html[data-theme="aiox"] .pattern-circuit-h {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='20'%3E%3Cpath d='M0 10h30l5-5h20l5 5h60' stroke='%23D1FF00' stroke-opacity='0.15' fill='none' stroke-width='1'/%3E%3Ccircle cx='30' cy='10' r='2' fill='%23D1FF00' fill-opacity='0.20'/%3E%3Ccircle cx='60' cy='10' r='2' fill='%23D1FF00' fill-opacity='0.20'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 120px 20px;
+}
+html[data-theme="aiox"] .pattern-circuit-board {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M0 40h20l5-5h10l5 5h40M40 0v20l-5 5v10l5 5v40' stroke='%23D1FF00' stroke-opacity='0.10' fill='none' stroke-width='1'/%3E%3Ccircle cx='20' cy='40' r='2' fill='%23D1FF00' fill-opacity='0.15'/%3E%3Ccircle cx='40' cy='20' r='2' fill='%23D1FF00' fill-opacity='0.15'/%3E%3Ccircle cx='60' cy='40' r='2' fill='%23D1FF00' fill-opacity='0.15'/%3E%3Ccircle cx='40' cy='60' r='2' fill='%23D1FF00' fill-opacity='0.15'/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+/* ─── Textures ─── */
+html[data-theme="aiox"] .pattern-scanlines {
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(209, 255, 0, 0.03) 1px, rgba(209, 255, 0, 0.03) 2px);
+  background-size: 100% 2px;
+  pointer-events: none;
+}
+html[data-theme="aiox"] .pattern-scanlines--heavy {
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 0px, rgba(209, 255, 0, 0.06) 0px, rgba(209, 255, 0, 0.06) 1px);
+  background-size: 100% 1px;
+  pointer-events: none;
+}
+html[data-theme="aiox"] .pattern-noise { position: relative; }
+html[data-theme="aiox"] .pattern-noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+}
+html[data-theme="aiox"] .pattern-data-rain {
+  background-image:
+    repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(209, 255, 0, 0.04) 3px, rgba(209, 255, 0, 0.04) 4px),
+    linear-gradient(180deg, rgba(209, 255, 0, 0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+html[data-theme="aiox"] .pattern-industrial {
+  background: linear-gradient(135deg, rgba(156, 156, 156, 0.04) 0%, rgba(156, 156, 156, 0.08) 25%, rgba(156, 156, 156, 0.04) 50%, rgba(156, 156, 156, 0.08) 75%, rgba(156, 156, 156, 0.04) 100%);
+}
+
+/* ─── Dividers ─── */
+html[data-theme="aiox"] .divider-tech { height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(209, 255, 0, 0.30) 40%, rgba(209, 255, 0, 0.30) 60%, transparent 100%); }
+html[data-theme="aiox"] .divider-arrow { height: 1px; position: relative; background: linear-gradient(90deg, transparent 0%, rgba(209, 255, 0, 0.25) 50%, transparent 100%); }
+html[data-theme="aiox"] .divider-arrow::after { content: ''; position: absolute; right: 50%; top: -3px; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 4px solid rgba(209, 255, 0, 0.40); transform: translateX(50%); }
+html[data-theme="aiox"] .divider-dashed { height: 1px; background: repeating-linear-gradient(90deg, rgba(209, 255, 0, 0.25) 0, rgba(209, 255, 0, 0.25) 8px, transparent 8px, transparent 16px); }
+html[data-theme="aiox"] .divider-double { height: 5px; background: linear-gradient(90deg, transparent 0%, rgba(209, 255, 0, 0.20) 30%, rgba(209, 255, 0, 0.20) 70%, transparent 100%) top / 100% 1px no-repeat, linear-gradient(90deg, transparent 0%, rgba(209, 255, 0, 0.20) 30%, rgba(209, 255, 0, 0.20) 70%, transparent 100%) bottom / 100% 1px no-repeat; }
+
+/* ─── Glitch Reveal ─── */
+@keyframes aioxGlitchReveal {
+  0% { clip-path: inset(0 100% 0 0); filter: hue-rotate(0deg); transform: skewX(0deg); }
+  10% { clip-path: inset(0 80% 0 0); filter: hue-rotate(90deg); transform: skewX(-2deg); }
+  20% { clip-path: inset(0 60% 0 0); filter: hue-rotate(0deg); transform: skewX(1deg); }
+  30% { clip-path: inset(0 40% 0 0); filter: hue-rotate(180deg); transform: skewX(-1deg); }
+  50% { clip-path: inset(0 20% 0 0); filter: hue-rotate(0deg); transform: skewX(0.5deg); }
+  70% { clip-path: inset(0 5% 0 0); filter: hue-rotate(0deg); transform: skewX(-0.3deg); }
+  100% { clip-path: inset(0 0 0 0); filter: hue-rotate(0deg); transform: skewX(0deg); }
+}
+html[data-theme="aiox"] .aiox-glitch-reveal { animation: aioxGlitchReveal 2s var(--bb-ease-smooth, cubic-bezier(0.25, 0.1, 0.25, 1)) forwards; }
+
+/* ─── Logo Dissolve ─── */
+@keyframes aioxLogoDissolve {
+  0% { opacity: 1; filter: brightness(1); }
+  20% { opacity: 0.9; filter: brightness(1.2); }
+  40% { opacity: 0.7; filter: brightness(1.3); }
+  70% { opacity: 0.3; filter: brightness(1.5); }
+  100% { opacity: 0; filter: brightness(0); }
+}
+html[data-theme="aiox"] .aiox-logo-dissolve { animation: aioxLogoDissolve 3s var(--bb-ease-smooth) forwards; }
+
+/* ─── Speed Lines ─── */
+@keyframes aioxSpeedLinesDraw {
+  0% { clip-path: inset(0 100% 0 0); opacity: 0; }
+  20% { opacity: 1; }
+  100% { clip-path: inset(0 0 0 0); opacity: 1; }
+}
+html[data-theme="aiox"] .aiox-speed-lines { position: relative; }
+html[data-theme="aiox"] .aiox-speed-lines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(209, 255, 0, 0.20) 30%, rgba(209, 255, 0, 0.40) 50%, transparent 100%) 0 30% / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 10%, rgba(209, 255, 0, 0.15) 40%, rgba(209, 255, 0, 0.30) 60%, transparent 90%) 0 50% / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 5%, rgba(209, 255, 0, 0.25) 35%, rgba(209, 255, 0, 0.45) 55%, transparent 95%) 0 70% / 100% 1px no-repeat;
+  animation: aioxSpeedLinesDraw 2s var(--bb-ease-decel) forwards;
+  pointer-events: none;
+}
+
+/* ─── Morphing Square ─── */
+@keyframes aioxMorphSquare {
+  0%, 100% { border-radius: 0; transform: rotate(0deg); }
+  25% { border-radius: 25%; transform: rotate(45deg); }
+  50% { border-radius: 50%; transform: rotate(90deg); }
+  75% { border-radius: 25%; transform: rotate(135deg); }
+}
+html[data-theme="aiox"] .aiox-morph-square { animation: aioxMorphSquare 3.5s var(--bb-ease-smooth) infinite; }
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="aiox"] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

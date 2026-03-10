@@ -50,7 +50,9 @@ export function SortableStoryCard({ story, onClick }: SortableStoryCardProps) {
       className={cn(
         'touch-none outline-none',
         'focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-surface',
-        isDragging && 'opacity-50 scale-105 z-50'
+        isDragging
+          ? 'opacity-30 border-dashed border-2 border-border z-50'
+          : 'cursor-grab active:cursor-grabbing'
       )}
     >
       <StoryCard

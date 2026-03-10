@@ -18,14 +18,13 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'flex flex-col border-r bg-sidebar transition-luxury',
+        'flex flex-col border-r bg-sidebar transition-luxury border-[var(--border-subtle)]',
         sidebarCollapsed ? 'w-16' : 'w-60',
         className
       )}
-      style={{ borderColor: 'var(--border-subtle)' }}
     >
       {/* Logo/Brand */}
-      <div className="flex h-14 items-center border-b px-4" style={{ borderColor: 'var(--border-subtle)' }}>
+      <div className="flex h-14 items-center border-b px-4 border-[var(--border-subtle)]">
         {sidebarCollapsed ? (
           <span className="text-xl font-light text-gold">A</span>
         ) : (
@@ -120,8 +119,7 @@ function SidebarNavItem({ item, isActive, isCollapsed, onClick, badge }: Sidebar
         )}
         {isCollapsed && badge === 'active' && (
           <span
-            className="absolute top-1 right-1 h-2 w-2 rounded-full"
-            style={{ backgroundColor: '#22c55e' }}
+            className="absolute top-1 right-1 h-2 w-2 rounded-full bg-green-500"
           />
         )}
 
@@ -143,10 +141,9 @@ function SidebarNavItem({ item, isActive, isCollapsed, onClick, badge }: Sidebar
         {isActive && (
           <span
             className={cn(
-              'absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2',
+              'absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 bg-[var(--accent-gold)]',
               isCollapsed && 'left-0'
             )}
-            style={{ backgroundColor: 'var(--accent-gold)' }}
           />
         )}
       </button>

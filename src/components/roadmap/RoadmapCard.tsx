@@ -47,7 +47,7 @@ export const RoadmapCard = memo(function RoadmapCard({
 
       {/* Category & custom tags */}
       {(item.category || (item.tags && item.tags.length > 0)) && (
-        <div className="flex flex-wrap gap-1 mt-2.5 pt-2.5 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
+        <div className="flex flex-wrap gap-1 mt-2.5 pt-2.5 border-t border-[var(--border-subtle)]">
           {item.category && <Tag label={item.category} variant="category" size="sm" />}
           {item.tags?.slice(0, 2).map((tag) => (
             <Tag key={tag} label={tag} size="sm" />
@@ -57,7 +57,7 @@ export const RoadmapCard = memo(function RoadmapCard({
 
       {/* Linked Story */}
       {item.linkedStoryId && (
-        <div className="mt-2.5 pt-2.5 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
+        <div className="mt-2.5 pt-2.5 border-t border-[var(--border-subtle)]">
           <span className="text-detail uppercase tracking-wider text-text-muted">
             Linked: <span className="normal-case text-text-tertiary">{item.linkedStoryId}</span>
           </span>

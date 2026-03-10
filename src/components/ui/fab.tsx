@@ -14,8 +14,8 @@ interface FABProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles = {
   primary: 'bg-yellow-400 hover:bg-yellow-300 text-black shadow-lg shadow-yellow-900/20',
-  secondary: 'bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 shadow-lg',
-  ghost: 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700 backdrop-blur-sm',
+  secondary: 'bg-zinc-800 hover:bg-zinc-700 text-foreground-primary border border-zinc-700 shadow-lg',
+  ghost: 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-400 hover:text-foreground-primary border border-zinc-700 backdrop-blur-sm',
 };
 
 const sizeStyles = {
@@ -131,7 +131,7 @@ export function HelpFAB({ className, ...props }: Omit<FABIconProps, 'icon'>) {
         'fixed bottom-6 right-6 z-50 h-8 w-8 rounded-full',
         'bg-zinc-900 border border-zinc-700 text-zinc-500',
         'flex items-center justify-center',
-        'hover:text-white hover:border-white transition-colors cursor-help',
+        'hover:text-foreground-primary hover:border-white transition-colors cursor-help',
         className
       )}
       title="Help"

@@ -69,8 +69,7 @@ export const MonitorStatus = memo(function MonitorStatus({
       <div className="relative">
         <WifiIcon className="h-3 w-3 text-status-success" />
         <span
-          className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full animate-pulse"
-          style={{ backgroundColor: 'var(--status-success)' }}
+          className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full animate-pulse bg-[var(--status-success)]"
         />
       </div>
       {showLabel && (
@@ -80,10 +79,7 @@ export const MonitorStatus = memo(function MonitorStatus({
       )}
       {events.length > 0 && (
         <span
-          className="text-caption px-1 rounded text-text-muted"
-          style={{
-            backgroundColor: 'var(--bg-hover)',
-          }}
+          className="text-caption px-1 rounded text-text-muted bg-[var(--bg-hover)]"
         >
           {events.length}
         </span>

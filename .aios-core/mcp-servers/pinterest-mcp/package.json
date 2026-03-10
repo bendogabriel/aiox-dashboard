@@ -1,0 +1,18 @@
+{
+  "name": "pinterest-mcp",
+  "version": "1.0.0",
+  "description": "MCP Server for Pinterest API v5 - Pins, Boards, Analytics, Audience Insights",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  }
+}

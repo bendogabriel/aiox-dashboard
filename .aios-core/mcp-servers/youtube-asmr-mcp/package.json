@@ -1,0 +1,20 @@
+{
+  "name": "youtube-asmr-mcp",
+  "version": "1.0.0",
+  "description": "MCP Server for YouTube ASMR Channel - Upload Shorts, Set Thumbnails, Manage Metadata, Analytics",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "auth": "node dist/auth.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "googleapis": "^144.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  }
+}

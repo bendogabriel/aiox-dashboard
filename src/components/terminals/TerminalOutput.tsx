@@ -186,7 +186,7 @@ export function TerminalOutput() {
 
       {/* Terminal Grid */}
       <div className="flex-1 overflow-auto p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 auto-rows-fr" style={{ minHeight: '400px' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 auto-rows-fr min-h-[400px]">
           {terminals.map(terminal => (
             <div key={terminal.id} className="min-h-[250px]">
               <TerminalCard

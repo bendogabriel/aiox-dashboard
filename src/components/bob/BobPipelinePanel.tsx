@@ -44,8 +44,7 @@ export const BobPipelinePanel = memo(function BobPipelinePanel() {
 
   return (
     <div
-      className="rounded-lg border p-4"
-      style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
+      className="rounded-lg border p-4 border-[var(--border-subtle)] bg-[var(--bg-elevated)]"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
@@ -57,10 +56,7 @@ export const BobPipelinePanel = memo(function BobPipelinePanel() {
         </div>
         <div className="flex items-center gap-3">
           {pipeline.story_progress && (
-            <span className="text-xs px-2 py-0.5 rounded-full" style={{
-              backgroundColor: 'var(--accent-gold-bg)',
-              color: 'var(--accent-gold)',
-            }}>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--accent-gold-bg)] text-[var(--accent-gold)]">
               Story {pipeline.story_progress}
             </span>
           )}
@@ -129,8 +125,7 @@ export const BobPipelinePanel = memo(function BobPipelinePanel() {
       {/* Current agent info */}
       {currentAgent && (
         <div
-          className="flex items-center gap-2 px-3 py-2 rounded-md text-xs"
-          style={{ backgroundColor: 'var(--bg-hover)' }}
+          className="flex items-center gap-2 px-3 py-2 rounded-md text-xs bg-[var(--bg-hover)]"
         >
           {(() => {
             const agentConfig = AGENT_CONFIG[currentAgent.id as AgentId];

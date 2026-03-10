@@ -74,7 +74,7 @@ export const StoryCard = memo(function StoryCard({
       </div>
 
       {/* Title */}
-      <h3 className="text-sm font-normal text-text-primary line-clamp-2 mb-1 leading-snug group-hover:text-white transition-colors">
+      <h3 className="text-sm font-normal text-text-primary line-clamp-2 mb-1 leading-snug group-hover:text-foreground-primary transition-colors">
         {title}
       </h3>
 
@@ -88,8 +88,7 @@ export const StoryCard = memo(function StoryCard({
       {/* Bob badge */}
       {isBobOrchestrated && (
         <div
-          className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-detail font-medium mt-1 w-fit"
-          style={{ backgroundColor: 'var(--agent-pm-bg)', color: 'var(--agent-pm)' }}
+          className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-detail font-medium mt-1 w-fit bg-[var(--agent-pm-bg)] text-[var(--agent-pm)]"
         >
           <Bot className="h-2.5 w-2.5" />
           Bot Bob

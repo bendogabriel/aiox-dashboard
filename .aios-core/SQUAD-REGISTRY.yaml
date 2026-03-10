@@ -1,0 +1,428 @@
+# AIOS Global Squad Registry
+# Master index for cross-squad routing and discovery
+# Synced with AIOS 2.1 migration (2026-02-11)
+
+version: 2.0.0
+updated: 2026-02-11
+total_squads: 31
+
+# ================================================
+# Infrastructure Squads (4)
+# ================================================
+infrastructure:
+  orquestrador-global:
+    domain: orchestration
+    type: system
+    entry_agent: roteador
+    activation: "@orquestrador-global"
+    aliases: ["@aios", "@central", "@help"]
+    slash_prefix: aios
+    expertise: [routing, intent-classification, orchestration, team-execution]
+    keywords: [rotear, classificar, orquestrar, executar]
+    agents: 5
+
+  squad-creator:
+    domain: meta
+    type: infrastructure
+    entry_agent: squad-creator
+    activation: "@squad-creator"
+    aliases: ["@craft"]
+    slash_prefix: squad
+    expertise: [squad-creation, agent-design, workflow-design, validation]
+    keywords: [criar-squad, novo-agente, novo-workflow, validar]
+    agents: 2
+
+  aios-core-dev:
+    domain: aios-core-development
+    type: platform
+    entry_agent: aios-core-chief
+    activation: "@aios-core-dev"
+    aliases: ["@aios-dev", "@platform"]
+    slash_prefix: aiosdev
+    expertise: [aios-development, platform-features, integrations]
+    keywords: [aios, plataforma, desenvolvimento]
+    agents: 5
+
+  skill-tester:
+    domain: quality-assurance
+    type: specialist
+    entry_agent: eval-chief
+    activation: "@skill-tester"
+    aliases: ["@eval", "@compare"]
+    slash_prefix: eval
+    expertise: [skill-comparison, prompt-evaluation, benchmarking, scoring]
+    keywords: [comparar, avaliar, testar, skill, prompt, benchmark]
+    agents: 3
+
+# ================================================
+# Development Squads (2)
+# ================================================
+development:
+  full-stack-dev:
+    domain: software-engineering
+    type: specialist
+    entry_agent: dev-chief
+    activation: "@full-stack-dev"
+    aliases: ["@dev", "@codigo"]
+    slash_prefix: dev
+    expertise: [clean-code, architecture, testing, patterns, microservices]
+    keywords: [codigo, desenvolvimento, arquitetura, testes]
+    agents: 11
+
+  design-system:
+    domain: design-engineering
+    type: specialist
+    entry_agent: design-system-chief
+    activation: "@design-system"
+    aliases: ["@ds", "@components"]
+    slash_prefix: ds
+    expertise: [atomic-design, tokens, accessibility, components, css]
+    keywords: [componentes, tokens, a11y, design-system]
+    agents: 9
+
+# ================================================
+# Content & Creative Squads (6)
+# ================================================
+content:
+  content-ecosystem:
+    domain: content-production
+    type: pipeline
+    entry_agent: youtube-chief
+    activation: "@content-ecosystem"
+    aliases: ["@content", "@youtube", "@conteudo"]
+    slash_prefix: content
+    expertise: [scripts, briefings, thumbnails, titles, editorial, distribution]
+    keywords: [youtube, video, roteiro, thumbnail, conteudo, editorial]
+    agents: 16
+
+  copywriting:
+    domain: copywriting
+    type: specialist
+    entry_agent: copywriting-chief
+    activation: "@copywriting"
+    aliases: ["@copy", "@headlines"]
+    slash_prefix: copy
+    expertise: [sales-copy, vsl, emails, headlines, direct-response]
+    keywords: [copy, vsl, email, headline, vendas]
+    agents: 17
+
+  creative-studio:
+    domain: visual-creative
+    type: specialist
+    entry_agent: creative-director
+    activation: "@creative-studio"
+    aliases: ["@creative", "@ads-creative", "@visual"]
+    slash_prefix: creative
+    expertise: [ad-creation, meta-ads, google-ads, social-media, imagen-3]
+    keywords: [criativo, ads, design, social-media, visual]
+    agents: 8
+
+  youtube-lives:
+    domain: youtube-livestream
+    type: pipeline
+    entry_agent: youtube-lives-chief
+    activation: "@youtube-lives"
+    aliases: ["@lives", "@live", "@streaming"]
+    slash_prefix: live
+    expertise: [live-production, streaming, notifications, streamyard]
+    keywords: [live, ao-vivo, streaming]
+    agents: 10
+
+  media-production:
+    domain: media-production
+    type: specialist
+    entry_agent: media-chief
+    activation: "@media-production"
+    aliases: ["@media", "@voiceover", "@vsl-video"]
+    slash_prefix: media
+    expertise: [voiceover, vsl-video, elevenlabs, audio-production]
+    keywords: [voiceover, video, audio, elevenlabs, narracao]
+    agents: 3
+
+  erico-rocha:
+    domain: product-launch-strategy
+    type: specialist
+    entry_agent: erico-chief
+    activation: "@erico-rocha"
+    aliases: ["@erico", "@formula-lancamento", "@fl"]
+    slash_prefix: fl
+    expertise: [formula-lancamento, cpl, launch-strategy, offers]
+    keywords: [lancamento, erico, cpl, formula, semente]
+    agents: 6
+
+# ================================================
+# Marketing & Analytics Squads (6)
+# ================================================
+marketing:
+  media-buy:
+    domain: advertising
+    type: specialist
+    entry_agent: media-buy-chief
+    activation: "@media-buy"
+    aliases: ["@mediabuy", "@anuncios"]
+    slash_prefix: mediabuy
+    expertise: [facebook-ads, google-ads, campaigns, creative-testing]
+    keywords: [ads, anuncios, trafego, campanha]
+    agents: 8
+
+  traffic-squad:
+    domain: paid-traffic
+    type: pipeline
+    entry_agent: ad-midas
+    activation: "@traffic-squad"
+    aliases: ["@traffic", "@trafego", "@ads", "@midas"]
+    slash_prefix: traffic
+    expertise: [paid-traffic, kill-scale-rules, dsl-revolution, capi, unit-economics]
+    keywords: [trafego-pago, ads, campanha, escala, roas, pixel]
+    agents: 4
+
+  data-analytics:
+    domain: analytics
+    type: specialist
+    entry_agent: data-chief
+    activation: "@data-analytics"
+    aliases: ["@analytics", "@metricas"]
+    slash_prefix: analytics
+    expertise: [metrics, funnels, growth, dashboards, launch-analysis]
+    keywords: [metricas, analytics, dashboard, crescimento]
+    agents: 11
+
+  marketing-automation:
+    domain: marketing
+    type: specialist
+    entry_agent: automation-chief
+    activation: "@marketing-automation"
+    aliases: ["@automation", "@automacao", "@email-marketing"]
+    slash_prefix: automation
+    expertise: [n8n-workflows, email-automation, lead-nurturing, crm]
+    keywords: [automacao, marketing, leads, nurturing, n8n]
+    agents: 5
+
+  seo:
+    domain: seo
+    type: pipeline
+    entry_agent: seo-chief
+    activation: "@seo"
+    aliases: ["@search", "@keywords"]
+    slash_prefix: seo
+    expertise: [keyword-research, technical-seo, on-page, content-strategy]
+    keywords: [seo, keywords, tecnico, on-page, conteudo]
+    agents: 6
+
+  agora-direct-response:
+    domain: direct-response-marketing
+    type: specialist
+    entry_agent: agora-chief
+    activation: "@agora-direct-response"
+    aliases: ["@agora", "@direct-response"]
+    slash_prefix: agora
+    expertise: [copy-platform, big-idea, headlines, offers, launch]
+    keywords: [agora, direct-response, copy-platform, big-idea, headline]
+    agents: 7
+
+# ================================================
+# Research Squads (3)
+# ================================================
+research:
+  deep-scraper:
+    domain: research
+    type: specialist
+    entry_agent: scraper-chief
+    activation: "@deep-scraper"
+    aliases: ["@scraper", "@research"]
+    slash_prefix: scrape
+    expertise: [web-scraping, research, extraction, analysis, sentiment]
+    keywords: [pesquisa, scraping, dados, extracao]
+    agents: 17
+
+  market-research:
+    domain: business-intelligence
+    type: specialist
+    entry_agent: research-chief
+    activation: "@market-research"
+    aliases: ["@market", "@mercado"]
+    slash_prefix: market
+    expertise: [market-sizing, competitive-analysis, consumer-research, positioning]
+    keywords: [mercado, pesquisa, competitivo, consumidor, segmentacao]
+    agents: 5
+
+  academic-research:
+    domain: academic-research
+    type: specialist
+    entry_agent: research-chief
+    activation: "@academic-research"
+    aliases: ["@research", "@academia", "@paper"]
+    slash_prefix: research
+    expertise: [research-design, systematic-review, academic-writing, peer-review]
+    keywords: [academico, pesquisa, publicacao, artigo, prisma, imrad]
+    agents: 6
+
+# ================================================
+# Operations & Business Squads (6)
+# ================================================
+operations:
+  project-management-clickup:
+    domain: project-management
+    type: specialist
+    entry_agent: pm-orchestrator
+    activation: "@project-management-clickup"
+    aliases: ["@pm", "@clickup", "@projetos"]
+    slash_prefix: pm
+    expertise: [clickup, workflows, automation, processes]
+    keywords: [clickup, projeto, processo, automacao]
+    agents: 9
+
+  sales:
+    domain: sales
+    type: domain
+    entry_agent: sales-chief
+    activation: "@sales"
+    aliases: ["@vendas", "@comercial"]
+    slash_prefix: sales
+    expertise: [sales-strategy, closing, objections, whatsapp-sales]
+    keywords: [vendas, leads, fechamento, objecoes]
+    agents: 7
+
+  support:
+    domain: support
+    type: domain
+    entry_agent: support-chief
+    activation: "@support"
+    aliases: ["@suporte", "@atendimento"]
+    slash_prefix: support
+    expertise: [triage, tech-support, billing, content-support, whatsapp]
+    keywords: [suporte, atendimento, ticket, aluno]
+    agents: 5
+
+  funnel-creator:
+    domain: funnels
+    type: specialist
+    entry_agent: funnel-chief
+    activation: "@funnel-creator"
+    aliases: ["@funnel", "@funnels"]
+    slash_prefix: funnel
+    expertise: [vsl-funnels, webinar-funnels, launch-funnels, email-sequences]
+    keywords: [funil, vsl, webinar, lancamento, email]
+    agents: 9
+
+  infoproduct-creation:
+    domain: education
+    type: specialist
+    entry_agent: infoproduct-chief
+    activation: "@infoproduct-creation"
+    aliases: ["@infoproduct", "@curso", "@course"]
+    slash_prefix: infoproduct
+    expertise: [course-design, curriculum, lms, student-engagement]
+    keywords: [curso, infoproduto, educacao, lms, hotmart]
+    agents: 12
+
+  technical-documentation:
+    domain: documentation
+    type: specialist
+    entry_agent: doc-chief
+    activation: "@technical-documentation"
+    aliases: ["@tech-docs", "@docs", "@documentacao"]
+    slash_prefix: docs
+    expertise: [technical-writing, api-docs, tutorials, diataxis]
+    keywords: [documentacao, tecnica, api, tutorial, openapi]
+    agents: 6
+
+# ================================================
+# Strategy & Advisory Squads (4)
+# ================================================
+advisory:
+  conselho:
+    domain: strategy
+    type: advisory
+    entry_agent: council-chief
+    activation: "@conselho"
+    aliases: ["@council", "@advisory", "@conselho-mentes"]
+    slash_prefix: conselho
+    expertise: [strategy, growth, marketing, product, mental-models]
+    keywords: [estrategia, conselho, advisor, decisao]
+    agents: 12
+
+  strategy-natalia-tanaka:
+    domain: strategy
+    type: expert
+    entry_agent: strategy-chief
+    activation: "@strategy-natalia-tanaka"
+    aliases: ["@strategy", "@estrategia"]
+    slash_prefix: strategy
+    expertise: [business-strategy, planning, positioning, authority]
+    keywords: [estrategia, planejamento, posicionamento, autoridade]
+    agents: 8
+
+  communication-natalia-tanaka:
+    domain: communication
+    type: domain
+    entry_agent: communication-chief
+    activation: "@communication-natalia-tanaka"
+    aliases: ["@comunicacao", "@feedback"]
+    slash_prefix: comunicacao
+    expertise: [feedback, conflict-resolution, negotiation]
+    keywords: [comunicacao, feedback, conflito, negociacao]
+    agents: 4
+
+  community-natalia-tanaka:
+    domain: community
+    type: domain
+    entry_agent: community-chief
+    activation: "@community-natalia-tanaka"
+    aliases: ["@community", "@comunidade"]
+    slash_prefix: community
+    expertise: [community-management, engagement, retention]
+    keywords: [comunidade, engajamento, retencao, membros]
+    agents: 4
+
+# ================================================
+# Global Routing Rules
+# ================================================
+routing:
+  by_domain:
+    vendas: [sales, copywriting, funnel-creator]
+    conteudo: [content-ecosystem, copywriting, erico-rocha]
+    codigo: [full-stack-dev, aios-core-dev]
+    marketing: [media-buy, traffic-squad, data-analytics, marketing-automation]
+    trafego: [traffic-squad, media-buy]
+    pesquisa: [deep-scraper, market-research, academic-research]
+    estrategia: [conselho, strategy-natalia-tanaka]
+    design: [design-system, creative-studio]
+    projeto: [project-management-clickup]
+    live: [youtube-lives]
+    automacao: [marketing-automation, project-management-clickup]
+    documentacao: [technical-documentation]
+    validacao: [market-research, data-analytics, skill-tester]
+    suporte: [support]
+    lancamento: [erico-rocha, funnel-creator, copywriting]
+    funil: [funnel-creator, copywriting, agora-direct-response]
+    curso: [infoproduct-creation]
+    seo: [seo, content-ecosystem]
+    criativo: [creative-studio, media-buy]
+    video: [content-ecosystem, media-production, youtube-lives]
+
+  by_task:
+    criar: [copywriting, content-ecosystem, creative-studio, funnel-creator, technical-documentation]
+    analisar: [data-analytics, deep-scraper, conselho, market-research, traffic-squad]
+    escalar: [traffic-squad, media-buy, data-analytics]
+    otimizar: [traffic-squad, media-buy, data-analytics, seo]
+    executar: [project-management-clickup, sales]
+    automatizar: [marketing-automation, project-management-clickup, aios-core-dev]
+    pesquisar: [deep-scraper, market-research, academic-research]
+    validar: [market-research, data-analytics, skill-tester]
+    comparar: [skill-tester]
+    documentar: [technical-documentation]
+    publicar: [academic-research, content-ecosystem]
+    lancar: [erico-rocha, funnel-creator]
+    vender: [sales, copywriting, funnel-creator]
+
+# ================================================
+# Statistics
+# ================================================
+stats:
+  total_squads: 31
+  total_agents: 270+
+  total_tasks: 200+
+  total_workflows: 50+
+  squads_with_registries: 31
+  aios_version: "2.1.0"

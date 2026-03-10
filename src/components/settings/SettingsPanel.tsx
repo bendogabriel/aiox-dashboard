@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Sun, Moon, Monitor, RotateCcw } from 'lucide-react';
+import { Sun, Moon, Monitor, RotateCcw, Layers, Terminal, Crosshair } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { iconMap } from '@/lib/icons';
 import { useSettingsStore, type Theme } from '@/stores/settings-store';
@@ -10,6 +10,9 @@ import { AGENT_CONFIG, type AgentId } from '@/types';
 const THEME_OPTIONS: { value: Theme; label: string; icon: typeof Sun }[] = [
   { value: 'light', label: 'Light', icon: Sun },
   { value: 'dark', label: 'Dark', icon: Moon },
+  { value: 'glass', label: 'Glass', icon: Layers },
+  { value: 'matrix', label: 'Matrix', icon: Terminal },
+  { value: 'aiox', label: 'AIOX', icon: Crosshair },
   { value: 'system', label: 'System', icon: Monitor },
 ];
 
@@ -36,26 +39,38 @@ export function SettingsPanel() {
   useEffect(() => {
     const root = document.documentElement;
 
+    // Clean up
+    root.classList.remove('dark');
+    root.removeAttribute('data-theme');
+
     if (settings.theme === 'system') {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       root.classList.toggle('dark', prefersDark);
+    } else if (settings.theme === 'glass') {
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'glass');
+    } else if (settings.theme === 'matrix') {
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'matrix');
+    } else if (settings.theme === 'aiox') {
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'aiox');
     } else {
       root.classList.toggle('dark', settings.theme === 'dark');
     }
   }, [settings.theme]);
 
   return (
-    <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--bg-base)' }}>
+    <div className="h-full flex flex-col bg-[var(--bg-base)]">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+      <div className="flex items-center justify-between p-4 border-b border-[var(--border-subtle)]">
         <div>
           <span className="text-detail uppercase tracking-[0.2em] block mb-1 text-gold">Configuration</span>
           <h2 className="text-sm font-light text-text-primary">Settings</h2>
         </div>
         <button
           onClick={resetToDefaults}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-label border transition-luxury hover:opacity-80 text-text-secondary"
-          style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-hover)' }}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-label border transition-luxury hover:opacity-80 text-text-secondary border-[var(--border)] bg-[var(--bg-hover)]"
         >
           <RotateCcw className="h-3 w-3" />
           Reset
@@ -110,8 +125,7 @@ export function SettingsPanel() {
           <div className="space-y-4">
             {/* Mock Data Toggle */}
             <div
-              className="flex items-center justify-between p-4 border"
-              style={{ backgroundColor: 'var(--status-warning-bg)', borderColor: 'var(--status-warning-border)' }}
+              className="flex items-center justify-between p-4 border bg-[var(--status-warning-bg)] border-[var(--status-warning-border)]"
             >
               <div>
                 <label className="text-label font-medium text-status-warning">Demo Mode</label>
@@ -144,13 +158,9 @@ export function SettingsPanel() {
                 onChange={(e) => setStoriesPath(e.target.value)}
                 disabled={settings.useMockData}
                 className={cn(
-                  'w-full px-3 py-2 border text-label focus:outline-none transition-colors text-text-secondary',
+                  'w-full px-3 py-2 border text-label focus:outline-none transition-colors text-text-secondary border-[var(--border)] bg-[var(--bg-hover)]',
                   settings.useMockData && 'opacity-40 cursor-not-allowed'
                 )}
-                style={{
-                  borderColor: 'var(--border)',
-                  backgroundColor: 'var(--bg-hover)',
-                }}
                 placeholder="docs/stories"
               />
               <p className="text-detail mt-1.5 text-border">
@@ -160,8 +170,7 @@ export function SettingsPanel() {
 
             {/* Auto Refresh */}
             <div
-              className="flex items-center justify-between p-4 border"
-              style={{ backgroundColor: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}
+              className="flex items-center justify-between p-4 border bg-[var(--bg-hover)] border-[var(--border-subtle)]"
             >
               <div>
                 <label className="text-label font-medium text-text-secondary">Auto Refresh</label>
@@ -192,11 +201,7 @@ export function SettingsPanel() {
                 <select
                   value={settings.refreshInterval}
                   onChange={(e) => setRefreshInterval(Number(e.target.value))}
-                  className="w-full px-3 py-2 border text-label focus:outline-none transition-colors cursor-pointer text-text-secondary"
-                  style={{
-                    borderColor: 'var(--border)',
-                    backgroundColor: 'var(--bg-surface)',
-                  }}
+                  className="w-full px-3 py-2 border text-label focus:outline-none transition-colors cursor-pointer text-text-secondary border-[var(--border)] bg-[var(--bg-surface)]"
                 >
                   {REFRESH_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -222,8 +227,7 @@ export function SettingsPanel() {
               return (
                 <div
                   key={agentId}
-                  className="flex items-center gap-3 p-3 border transition-colors hover:border-[rgba(255,255,255,0.08)]"
-                  style={{ backgroundColor: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}
+                  className="flex items-center gap-3 p-3 border transition-colors hover:border-[rgba(255,255,255,0.08)] bg-[var(--bg-hover)] border-[var(--border-subtle)]"
                 >
                   {(() => {
                     const IconComponent = iconMap[config.icon];
@@ -245,8 +249,7 @@ export function SettingsPanel() {
 
       {/* Footer */}
       <div
-        className="px-4 py-2 border-t"
-        style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
+        className="px-4 py-2 border-t border-[var(--border-subtle)] bg-[var(--bg-elevated)]"
       >
         <p className="text-detail text-center text-border">
           Settings are automatically saved to localStorage

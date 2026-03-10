@@ -183,7 +183,7 @@ function MiniBarChart({ data }: { data: Array<{ date: string; passed: number; fa
 
         return (
           <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
-            <div className="w-full flex flex-col-reverse" style={{ height: '60px' }}>
+            <div className="w-full flex flex-col-reverse h-[60px]">
               <div
                 className="w-full bg-green-500 rounded-t"
                 style={{ height: `${passedHeight}%` }}

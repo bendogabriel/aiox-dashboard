@@ -1,0 +1,177 @@
+/* ============================================
+   LIQUID GLASS THEME
+   Vibrant dark theme with frosted glass panels
+   over colorful gradient blobs.
+   Applied via data-theme="glass" on <html>
+   Also adds .dark class so Tailwind dark: utilities work.
+
+   SPECIFICITY NOTE:
+   We use `html[data-theme="glass"]` (0-1-1) to beat
+   `.dark` (0-1-0) from dark.css regardless of import order.
+   ============================================ */
+
+/* ============================================
+   TIER 1 — Token overrides
+   ============================================ */
+
+html[data-theme="glass"] {
+  /* ----- Glass Backgrounds (translucent — blobs show through) ----- */
+  --glass-background-panel: rgba(12, 12, 28, 0.35);
+  --glass-background-panel-hover: rgba(18, 18, 38, 0.42);
+  --glass-background-card: rgba(14, 14, 30, 0.30);
+  --glass-background-card-active: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.15) 0%,
+    rgba(139, 92, 246, 0.10) 100%
+  );
+  --glass-background-input: rgba(8, 8, 22, 0.50);
+  --glass-background-button: rgba(18, 18, 40, 0.32);
+  --glass-background-button-primary: linear-gradient(135deg, #3b82f6, #6366f1);
+  --glass-background-button-primary-hover: linear-gradient(135deg, #60a5fa, #818cf8);
+
+  /* ----- Background layers (semantic) ----- */
+  --color-background-primary: rgba(12, 12, 28, 0.32);
+  --color-background-secondary: rgba(10, 10, 24, 0.28);
+  --color-background-tertiary: rgba(16, 16, 34, 0.24);
+  --color-background-base: #070714;
+  --color-background-hover: rgba(255, 255, 255, 0.08);
+  --color-background-active: rgba(255, 255, 255, 0.10);
+
+  /* ----- Blur for frosted effect ----- */
+  --glass-blur-default: 28px;
+  --glass-blur-strong: 44px;
+  --glass-blur-maximum: 56px;
+  --glass-blur-subtle: 18px;
+  --glass-saturate-default: 190%;
+
+  /* ----- Glass borders (luminous) ----- */
+  --glass-border-color: rgba(255, 255, 255, 0.14);
+  --glass-border-color-subtle: rgba(255, 255, 255, 0.08);
+
+  /* ----- Glass Shadows (with subtle color-glow) ----- */
+  --glass-shadow-default:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 4px 20px rgba(0, 0, 0, 0.35),
+    0 0 40px rgba(100, 80, 200, 0.05);
+  --glass-shadow-large:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 8px 36px rgba(0, 0, 0, 0.45),
+    0 0 60px rgba(100, 80, 200, 0.07);
+  --glass-shadow-hover:
+    0 0 0 1px rgba(255, 255, 255, 0.10) inset,
+    0 12px 48px rgba(0, 0, 0, 0.5),
+    0 0 80px rgba(100, 80, 200, 0.09);
+
+  /* ----- Scrollbar ----- */
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+
+/* ============================================
+   TIER 2 — Enhanced colorful background
+   Very vivid blobs visible through glass panels.
+   ============================================ */
+
+html[data-theme="glass"] .app-background {
+  background: #070714 !important;
+}
+
+html[data-theme="glass"] .app-background::before {
+  background:
+    /* Warm orange-red — bottom-left */
+    radial-gradient(ellipse 80% 60% at 0% 100%, rgba(255, 80, 40, 0.60) 0%, transparent 55%),
+    /* Teal — top-right */
+    radial-gradient(ellipse 70% 80% at 100% 0%, rgba(40, 200, 180, 0.50) 0%, transparent 55%),
+    /* Purple/magenta — center */
+    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(150, 50, 200, 0.45) 0%, transparent 50%),
+    /* Warm amber — left-center */
+    radial-gradient(ellipse 80% 60% at 10% 30%, rgba(255, 170, 50, 0.50) 0%, transparent 50%),
+    /* Blue — right-center */
+    radial-gradient(ellipse 60% 80% at 90% 70%, rgba(50, 130, 240, 0.50) 0%, transparent 50%),
+    /* Pink — top-right quadrant */
+    radial-gradient(ellipse 70% 50% at 75% 25%, rgba(240, 70, 160, 0.40) 0%, transparent 45%),
+    /* Deep dark base */
+    linear-gradient(160deg, #1a1520 0%, #15181f 30%, #121420 50%, #181215 70%, #0d1015 100%) !important;
+  animation: backgroundShift 40s ease-in-out infinite alternate !important;
+  opacity: 1 !important;
+}
+
+/* Subtle noise texture */
+html[data-theme="glass"] .app-background::after {
+  opacity: 0.025 !important;
+}
+
+/* ============================================
+   TIER 3 — Component overrides
+   Force translucency on structural elements.
+   ============================================ */
+
+/* --- Sidebar --- */
+html[data-theme="glass"] aside {
+  background: rgba(10, 10, 26, 0.35) !important;
+  backdrop-filter: blur(36px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(180%) !important;
+}
+
+/* --- Header --- */
+html[data-theme="glass"] header {
+  background: rgba(10, 10, 26, 0.32) !important;
+  backdrop-filter: blur(32px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
+}
+
+/* --- Status bar (footer) --- */
+html[data-theme="glass"] footer[role="status"] {
+  background: rgba(10, 10, 26, 0.40) !important;
+  backdrop-filter: blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+}
+
+/* --- Glass card hover glow --- */
+html[data-theme="glass"] .glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.20) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.10) inset,
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(120, 80, 200, 0.10) !important;
+}
+
+/* --- Scrollbar --- */
+html[data-theme="glass"] .glass-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+}
+html[data-theme="glass"] .glass-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* --- Modal/overlay backdrop --- */
+html[data-theme="glass"] .bg-black\/80 {
+  background-color: rgba(0, 0, 0, 0.60) !important;
+  backdrop-filter: blur(10px) !important;
+}
+html[data-theme="glass"] .bg-black\/50 {
+  background-color: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* --- Selection --- */
+html[data-theme="glass"] ::selection {
+  background: rgba(120, 80, 220, 0.38);
+  color: #f0f0ff;
+}
+
+/* --- Select/dropdown elements --- */
+html[data-theme="glass"] select,
+html[data-theme="glass"] select option {
+  background-color: rgba(10, 10, 24, 0.92);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ============================================
+   GLASS — Performance: reduced motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="glass"] .app-background::before {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "@aios/engine",
+  "version": "0.5.0",
+  "description": "AIOS Agent Execution Engine — orchestrates AI agent squads via REST + WebSocket",
+  "type": "module",
+  "bin": {
+    "aios-engine": "./bin/aios-engine.ts"
+  },
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./config": "./src/lib/config.ts",
+    "./project-resolver": "./src/lib/project-resolver.ts"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "engine.config.yaml",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "start:project": "bun bin/aios-engine.ts",
+    "test": "bun test",
+    "db:reset": "rm -f data/engine.db && bun src/index.ts"
+  },
+  "keywords": ["aios", "ai-agents", "orchestration", "execution-engine", "hono", "bun"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/synkra/aios-platform.git",
+    "directory": "engine"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "dependencies": {
+    "hono": "^4.7.0",
+    "ulid": "^2.3.0",
+    "croner": "^9.0.0",
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "typescript": "^5.8.0"
+  }
+}

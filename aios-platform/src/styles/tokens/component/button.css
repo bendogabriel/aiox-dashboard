@@ -1,0 +1,13 @@
+/* GlassButton Component Tokens */
+:root {
+  --button-danger-bg: rgba(239, 68, 68, 0.1);
+  --button-danger-text: #ef4444;
+  --button-danger-bg-hover: rgba(239, 68, 68, 0.2);
+  --button-danger-border: rgba(239, 68, 68, 0.2);
+  --button-ghost-hover: rgba(0, 0, 0, 0.05);
+  --button-focus-ring: rgba(59, 130, 246, 0.4);
+}
+
+.dark {
+  --button-ghost-hover: rgba(255, 255, 255, 0.05);
+}

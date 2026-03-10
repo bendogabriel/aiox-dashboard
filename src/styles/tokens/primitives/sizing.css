@@ -1,0 +1,6 @@
+/* Sizing Tokens — avatar, icon, touch targets */
+:root {
+  --size-avatar-sm: 32px;
+  --size-icon-lg: 28px;
+  --size-touch-target: 44px;
+}

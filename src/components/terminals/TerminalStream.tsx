@@ -17,7 +17,7 @@ const ANSI_COLORS: Record<string, string> = {
   '34': 'text-blue-500',
   '35': 'text-purple-500',
   '36': 'text-cyan-500',
-  '37': 'text-white',
+  '37': 'text-foreground-primary',
   '90': 'text-gray-500',
   '91': 'text-red-400',
   '92': 'text-green-400',
