@@ -29,22 +29,45 @@ export async function GET(request: Request) {
   ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
    .slice(0, limit);
 
+  // Map internal task statuses to WorkflowExecution statuses expected by frontend:
+  //   'pending' | 'running' | 'completed' | 'failed' | 'cancelled' | 'waiting'
+  const statusMap: Record<string, string> = {
+    pending: 'pending',
+    analyzing: 'running',
+    planning: 'running',
+    awaiting_approval: 'waiting',
+    executing: 'running',
+    completed: 'completed',
+    failed: 'failed',
+  };
+
   const executions = allTasks.map(t => {
     const durationMs = t.startedAt && t.completedAt
       ? new Date(t.completedAt).getTime() - new Date(t.startedAt).getTime()
       : 0;
+
+    // Build stepResults from outputs
+    const stepResults: Record<string, unknown> = {};
+    if (t.outputs && t.outputs.length > 0) {
+      for (const out of t.outputs) {
+        stepResults[out.stepId] = out.output;
+      }
+    }
+
     return {
       id: t.id,
       workflowId: t.id,
       workflowName: t.demand.slice(0, 60),
-      status: t.status,
+      status: statusMap[t.status] || t.status,
+      currentStepId: undefined as string | undefined,
+      triggeredBy: undefined as string | undefined,
+      correlationId: t.id,
+      input: undefined as Record<string, unknown> | undefined,
+      output: undefined as Record<string, unknown> | undefined,
       startedAt: t.startedAt || t.createdAt,
       completedAt: t.completedAt,
-      durationMs,
-      stepsCompleted: t.outputs?.length || 0,
-      stepsTotal: t.plan?.steps?.length || t.outputs?.length || 1,
-      squads: t.squads?.map(s => s.squadId) || [],
       error: t.error,
+      stepResults: Object.keys(stepResults).length > 0 ? stepResults : undefined,
     };
   });
 

@@ -5,6 +5,7 @@ import { fetchPersistedTasks } from '@/lib/task-persistence';
 /**
  * GET /api/events/history?limit=20
  * Returns system events derived from task execution history (in-memory + Supabase).
+ * Includes agent, description, duration, success fields for useAgentActivity hook.
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -16,9 +17,10 @@ export async function GET(request: Request) {
   const dbTasks = await fetchPersistedTasks({ limit: 100, excludeIds: memoryIds });
 
   const tasks = [
-    ...memoryTasks.map(t => ({ id: t.id, demand: t.demand, status: t.status, createdAt: t.createdAt, startedAt: t.startedAt, completedAt: t.completedAt, error: t.error })),
-    ...dbTasks.map(t => ({ id: t.id, demand: t.demand, status: t.status, createdAt: t.createdAt, startedAt: t.startedAt, completedAt: t.completedAt, error: t.error })),
+    ...memoryTasks.map(t => ({ id: t.id, demand: t.demand, status: t.status, squads: t.squads, createdAt: t.createdAt, startedAt: t.startedAt, completedAt: t.completedAt, error: t.error })),
+    ...dbTasks.map(t => ({ id: t.id, demand: t.demand, status: t.status, squads: t.squads, createdAt: t.createdAt, startedAt: t.startedAt, completedAt: t.completedAt, error: t.error })),
   ];
+
   const events: Array<{
     id: string;
     timestamp: string;
@@ -26,10 +28,22 @@ export async function GET(request: Request) {
     message: string;
     severity: 'info' | 'warning' | 'error';
     source: string;
+    agent?: string;
+    description?: string;
+    duration?: number;
+    success?: boolean;
   }> = [];
 
   // Generate events from task lifecycle
   for (const task of tasks) {
+    // Derive agent name from the first squad's first agent, or fallback to source
+    const firstAgent = task.squads?.[0]?.agents?.[0]?.name || undefined;
+
+    // Calculate duration if both timestamps exist
+    const durationMs = task.startedAt && task.completedAt
+      ? new Date(task.completedAt).getTime() - new Date(task.startedAt).getTime()
+      : undefined;
+
     events.push({
       id: `${task.id}-created`,
       timestamp: task.createdAt,
@@ -37,6 +51,8 @@ export async function GET(request: Request) {
       message: `Task created: ${task.demand.slice(0, 80)}`,
       severity: 'info',
       source: 'orchestrator',
+      agent: firstAgent,
+      description: task.demand.slice(0, 120),
     });
 
     if (task.startedAt) {
@@ -47,6 +63,8 @@ export async function GET(request: Request) {
         message: `Execution started for task ${task.id.slice(0, 8)}`,
         severity: 'info',
         source: 'executor',
+        agent: firstAgent,
+        description: `Started: ${task.demand.slice(0, 100)}`,
       });
     }
 
@@ -58,6 +76,10 @@ export async function GET(request: Request) {
         message: `Task completed: ${task.demand.slice(0, 60)}`,
         severity: 'info',
         source: 'executor',
+        agent: firstAgent,
+        description: `Completed: ${task.demand.slice(0, 100)}`,
+        duration: durationMs,
+        success: true,
       });
     }
 
@@ -69,6 +91,10 @@ export async function GET(request: Request) {
         message: `Task failed: ${task.error || 'Unknown error'}`,
         severity: 'error',
         source: 'executor',
+        agent: firstAgent,
+        description: task.error || 'Unknown error',
+        duration: durationMs,
+        success: false,
       });
     }
   }

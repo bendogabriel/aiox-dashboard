@@ -9,6 +9,7 @@ import {
   type TimePeriod,
 } from '../services/api';
 import { executeApi } from '../services/api/execute';
+import { useLLMHealth } from './useExecute';
 import type {
   CostSummary,
   SystemMetrics,
@@ -102,6 +103,24 @@ export function useAgentAnalytics() {
     const agentExecs = executions.filter(e => e.agentId === agent.agentId);
     const totalDuration = agentExecs.reduce((sum, e) => sum + (e.duration || 0), 0);
 
+    // Estimate avg tokens from execution data (1500 tokens per exec estimate)
+    const estimatedTokensPerExec = 1500;
+    const avgTokens = agentExecs.length > 0
+      ? Math.round(agentExecs.reduce((sum, e) => sum + (e.tokensUsed || estimatedTokensPerExec), 0) / agentExecs.length)
+      : estimatedTokensPerExec;
+
+    // Extract top commands from execution input messages
+    const commandCounts: Record<string, number> = {};
+    agentExecs.forEach(e => {
+      const msg = e.input?.message || '';
+      const cmd = msg.startsWith('*') ? msg.split(/\s+/)[0] : msg.slice(0, 30) || 'execute';
+      commandCounts[cmd] = (commandCounts[cmd] || 0) + 1;
+    });
+    const topCommands = Object.entries(commandCounts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3)
+      .map(([command, count]) => ({ command, count }));
+
     return {
       agentId: agent.agentId,
       agentName: agent.name,
@@ -109,8 +128,8 @@ export function useAgentAnalytics() {
       totalExecutions: agent.executions,
       successRate: agent.successRate,
       avgResponseTime: agentExecs.length > 0 ? totalDuration / agentExecs.length : 0,
-      avgTokens: 0,
-      topCommands: [],
+      avgTokens,
+      topCommands,
       lastActive: agentExecs[0]?.createdAt || '',
     };
   });
@@ -261,6 +280,9 @@ export function useSystemHealth() {
     refetchInterval: 30 * 1000,
   });
 
+  const { data: mcpStats } = useMCPStats();
+  const { data: llmHealth } = useLLMHealth();
+
   const healthStatus: HealthStatus | null = healthDashboard ? {
     api: {
       healthy: healthDashboard.status === 'healthy',
@@ -271,12 +293,17 @@ export function useSystemHealth() {
       latency: 10, // Not directly available
     },
     llm: {
-      healthy: healthDashboard.performance.executionSuccessRate > 50,
-      providers: { claude: true, openai: true },
+      healthy: llmHealth
+        ? (llmHealth.claude.available || llmHealth.openai.available)
+        : healthDashboard.performance.executionSuccessRate > 50,
+      providers: {
+        claude: llmHealth?.claude.available ?? false,
+        openai: llmHealth?.openai.available ?? false,
+      },
     },
     mcp: {
-      healthy: true,
-      connectedServers: 2,
+      healthy: mcpStats ? mcpStats.connectedServers > 0 : false,
+      connectedServers: mcpStats?.connectedServers ?? 0,
     },
   } : null;
 

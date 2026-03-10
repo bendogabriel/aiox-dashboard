@@ -3,7 +3,6 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import type {
-  Story,
   StoryStatus,
   StoryComplexity,
   StoryPriority,
@@ -209,12 +208,33 @@ function extractPriorityFromTable(value: string): StoryPriority | undefined {
   return undefined;
 }
 
+// Shape matching the storyStore's Story interface (assignedAgent, required progress, etc.)
+interface StoreStory {
+  id: string;
+  title: string;
+  description: string;
+  status: StoryStatus;
+  type?: StoryType;
+  epicId?: string;
+  complexity: StoryComplexity;
+  priority: StoryPriority;
+  category: StoryCategory;
+  assignedAgent?: string;
+  progress: number;
+  acceptanceCriteria?: string[];
+  technicalNotes?: string;
+  bobOrchestrated?: boolean;
+  filePath: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Parse frontmatter to Story object
 function parseStoryFromMarkdown(
   content: string,
   filePath: string,
   fileStats: { mtime: Date; birthtime: Date }
-): Story | null {
+): StoreStory | null {
   try {
     const { data, content: markdownContent } = matter(content);
 
@@ -370,13 +390,14 @@ function parseStoryFromMarkdown(
       status,
       type: storyType,
       epicId,
-      complexity,
-      priority,
-      category,
-      agentId,
-      progress,
+      complexity: complexity || 'standard',
+      priority: priority || 'medium',
+      category: category || 'feature',
+      assignedAgent: agentId,
+      progress: progress ?? 0,
       acceptanceCriteria,
       technicalNotes,
+      bobOrchestrated: data.bobOrchestrated || undefined,
       filePath,
       createdAt: data.createdAt || fileStats.birthtime.toISOString(),
       updatedAt: data.updatedAt || fileStats.mtime.toISOString(),
@@ -418,19 +439,19 @@ async function findMarkdownFiles(dir: string): Promise<string[]> {
 }
 
 // Mock stories for development
-function getMockStories(): Story[] {
+// Shape matches the storyStore's Story interface (assignedAgent, required progress, etc.)
+function getMockStories() {
   const now = new Date().toISOString();
   return [
     {
       id: 'mock-1',
       title: 'Implement User Authentication',
       description: 'Add JWT-based authentication with login/register flows',
-      status: 'in_progress',
-      type: 'story',
-      complexity: 'standard',
-      priority: 'high',
-      category: 'feature',
-      agentId: 'dev',
+      status: 'in_progress' as const,
+      complexity: 'standard' as const,
+      priority: 'high' as const,
+      category: 'feature' as const,
+      assignedAgent: 'aios-dev',
       progress: 45,
       acceptanceCriteria: ['User can register', 'User can login', 'JWT tokens work'],
       filePath: 'mock/auth.md',
@@ -441,12 +462,12 @@ function getMockStories(): Story[] {
       id: 'mock-2',
       title: 'Fix Navigation Bug',
       description: "Sidebar doesn't collapse properly on mobile",
-      status: 'ai_review',
-      type: 'story',
-      complexity: 'simple',
-      priority: 'medium',
-      category: 'fix',
-      agentId: 'qa',
+      status: 'ai_review' as const,
+      complexity: 'simple' as const,
+      priority: 'medium' as const,
+      category: 'fix' as const,
+      assignedAgent: 'aios-qa',
+      progress: 0,
       filePath: 'mock/nav-bug.md',
       createdAt: now,
       updatedAt: now,
@@ -455,11 +476,11 @@ function getMockStories(): Story[] {
       id: 'mock-3',
       title: 'Add Dark Mode Support',
       description: 'Implement system-aware dark mode toggle',
-      status: 'backlog',
-      type: 'story',
-      complexity: 'standard',
-      priority: 'low',
-      category: 'feature',
+      status: 'backlog' as const,
+      complexity: 'standard' as const,
+      priority: 'low' as const,
+      category: 'feature' as const,
+      progress: 0,
       filePath: 'mock/dark-mode.md',
       createdAt: now,
       updatedAt: now,
@@ -468,11 +489,11 @@ function getMockStories(): Story[] {
       id: 'mock-4',
       title: 'Refactor API Routes',
       description: 'Consolidate duplicate API logic into shared utilities',
-      status: 'human_review',
-      type: 'story',
-      complexity: 'complex',
-      priority: 'medium',
-      category: 'refactor',
+      status: 'human_review' as const,
+      complexity: 'complex' as const,
+      priority: 'medium' as const,
+      category: 'refactor' as const,
+      progress: 0,
       filePath: 'mock/api-refactor.md',
       createdAt: now,
       updatedAt: now,
@@ -481,11 +502,11 @@ function getMockStories(): Story[] {
       id: 'mock-5',
       title: 'Update Documentation',
       description: 'Add API reference documentation for new endpoints',
-      status: 'done',
-      type: 'story',
-      complexity: 'simple',
-      priority: 'low',
-      category: 'docs',
+      status: 'done' as const,
+      complexity: 'simple' as const,
+      priority: 'low' as const,
+      category: 'docs' as const,
+      progress: 100,
       filePath: 'mock/docs.md',
       createdAt: now,
       updatedAt: now,
@@ -574,21 +595,13 @@ export async function GET() {
     // If no stories found, return mock data in development
     if (markdownFiles.length === 0) {
       if (process.env.NODE_ENV === 'development') {
-        return NextResponse.json({
-          stories: getMockStories(),
-          source: 'mock',
-          message: 'No stories found, using mock data',
-        });
+        return NextResponse.json(getMockStories());
       }
-      return NextResponse.json({
-        stories: [],
-        source: 'empty',
-        message: 'No stories found in docs/stories/',
-      });
+      return NextResponse.json([]);
     }
 
     // Parse all story files
-    const stories: Story[] = [];
+    const stories: StoreStory[] = [];
 
     for (const filePath of markdownFiles) {
       try {
@@ -609,31 +622,16 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({
-      stories,
-      source: 'filesystem',
-      count: stories.length,
-    });
+    return NextResponse.json(stories);
   } catch (error) {
     console.error('Error in /api/stories:', error);
 
     // Return mock data on error in development
     if (process.env.NODE_ENV === 'development') {
-      return NextResponse.json({
-        stories: getMockStories(),
-        source: 'mock',
-        error: 'Failed to read stories, using mock data',
-      });
+      return NextResponse.json(getMockStories());
     }
 
-    return NextResponse.json(
-      {
-        stories: [],
-        source: 'error',
-        error: 'Failed to load stories',
-      },
-      { status: 500 }
-    );
+    return NextResponse.json([], { status: 500 });
   }
 }
 

@@ -153,7 +153,7 @@ export const workflowsApi = {
     input?: Record<string, unknown>,
     callbacks?: {
       onConnected?: (data: { workflowId: string }) => void;
-      onExecutionCreated?: (data: { executionId: string; workflowName: string; steps: Array<{ id: string; type: string; status: string }> }) => void;
+      onExecutionCreated?: (data: { executionId: string; workflowName: string; input?: unknown; steps: Array<{ id: string; type: string; status: string; name?: string; config?: unknown }> }) => void;
       onExecutionStarted?: (data: { executionId: string; status: string; startedAt: string }) => void;
       onStepStarted?: (data: { executionId: string; stepId: string; stepType: string; status: string; startedAt: string }) => void;
       onStepCompleted?: (data: { executionId: string; stepId: string; status: string; output: unknown; completedAt: string }) => void;

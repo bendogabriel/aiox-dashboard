@@ -355,7 +355,7 @@ function WorkflowsTab({ onSelectWorkflow }: { onSelectWorkflow: (wf: WorkflowDef
             <GlassCard key={wf.id} padding="md" variant="default" className="ring-1 ring-blue-500/20">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <div className="text-sm font-medium text-primary">{wf.definition}</div>
+                  <div className="text-sm font-medium text-primary">{wf.definitionId}</div>
                   <div className="text-[10px] text-tertiary font-mono">{wf.id}</div>
                 </div>
                 <Badge variant="default" className="text-xs">
@@ -367,7 +367,7 @@ function WorkflowsTab({ onSelectWorkflow }: { onSelectWorkflow: (wf: WorkflowDef
                 {Array.from({ length: 4 }, (_, i) => {
                   const phaseNum = i + 1;
                   const phaseName = `phase-${phaseNum}`;
-                  const currentPhaseNum = parseInt(wf.current_phase.replace(/\D/g, '')) || 1;
+                  const currentPhaseNum = parseInt(wf.currentPhase.replace(/\D/g, '')) || 1;
                   let phaseStatus: string;
                   if (phaseNum < currentPhaseNum) phaseStatus = 'completed';
                   else if (phaseNum === currentPhaseNum) phaseStatus = wf.status === 'failed' ? 'failed' : 'running';
@@ -394,8 +394,8 @@ function WorkflowsTab({ onSelectWorkflow }: { onSelectWorkflow: (wf: WorkflowDef
                 })}
               </div>
               <div className="text-[10px] text-tertiary mt-2">
-                Fase atual: <span className="text-primary">{wf.current_phase}</span>
-                {' | '}Iniciado: {formatDate(wf.started_at)}
+                Fase atual: <span className="text-primary">{wf.currentPhase}</span>
+                {' | '}Iniciado: {formatDate(wf.createdAt)}
               </div>
             </GlassCard>
           ))}
@@ -476,11 +476,11 @@ function CronsTab({ onCreateCron }: { onCreateCron: () => void }) {
             <GlassCard key={cron.id} padding="sm" variant="subtle" className="group">
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-primary">{cron.name}</div>
+                  <div className="text-sm font-medium text-primary">{cron.description || cron.name || cron.id}</div>
                   <div className="text-xs text-tertiary">
                     <code className="bg-white/5 px-1 rounded">{cron.schedule}</code>
                     {' '}{cron.squad_id}/{cron.agent_id}
-                    {cron.last_run && ` | Last: ${formatDate(cron.last_run)}`}
+                    {cron.last_run_at && ` | Last: ${formatDate(cron.last_run_at)}`}
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">

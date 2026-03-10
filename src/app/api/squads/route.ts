@@ -278,8 +278,7 @@ export async function GET() {
         );
 
         squads.push({
-          id: name,
-          name: (meta?.display_name as string) || formatName(name),
+          name,
           displayName:
             (meta?.display_name as string) ||
             formatName(name),
@@ -352,8 +351,7 @@ export async function GET() {
           );
 
           squads.push({
-            id: entry.name,
-            name: (meta?.display_name as string) || formatName(entry.name),
+            name: entry.name,
             displayName:
               (meta?.display_name as string) ||
               formatName(entry.name),

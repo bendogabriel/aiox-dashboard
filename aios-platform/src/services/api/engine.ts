@@ -58,7 +58,7 @@ export interface PoolSlot {
   pid: number | null;
   squadId: string | null;
   agentId: string | null;
-  startedAt: string | null;
+  startedAt: number | null;
   status: 'idle' | 'running';
 }
 
@@ -92,27 +92,35 @@ export interface EngineJob {
 
 export interface CronJobDef {
   id: string;
-  name: string;
+  name?: string;
+  description?: string;
   schedule: string;
   squad_id: string;
   agent_id: string;
   enabled: boolean;
-  last_run?: string;
+  last_run_at?: string;
   last_job_id?: string;
+  next_run_at?: string;
+  created_at?: string;
 }
 
 export interface WorkflowDef {
   id: string;
   name: string;
   phases: number;
+  description?: string;
+  type?: string;
 }
 
 export interface WorkflowState {
   id: string;
-  definition: string;
+  workflowId: string;
+  definitionId: string;
+  currentPhase: string;
   status: string;
-  current_phase: string;
-  started_at: string;
+  iterationCount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AuthorityCheckResult {
@@ -124,7 +132,9 @@ export interface AuthorityCheckResult {
 export interface BundleInfo {
   id: string;
   name: string;
-  agents: string[];
+  icon?: string;
+  description?: string;
+  agentCount: number;
 }
 
 // -- API --
@@ -211,7 +221,13 @@ export const engineApi = {
     message: string;
   }) => engineFetch<{ cron: CronJobDef }>('/cron', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      squadId: data.squad_id,
+      agentId: data.agent_id,
+      schedule: data.schedule,
+      description: data.name,
+      input: data.message ? { message: data.message } : undefined,
+    }),
   }),
   toggleCron: (id: string, enabled: boolean) =>
     engineFetch<{ cron: CronJobDef }>(`/cron/${id}/toggle`, {
@@ -227,10 +243,16 @@ export const engineApi = {
       body: JSON.stringify(data),
     }),
   recallMemory: (scope: string, query: string, limit?: number) => {
-    const qs = new URLSearchParams({ query });
-    if (limit) qs.set('limit', String(limit));
     return engineFetch<{ memories: Array<{ id: string; content: string; score?: number }> }>(
-      `/memory/recall?scope=${scope}&${qs.toString()}`,
+      '/memory/recall',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          query,
+          scopes: [scope],
+          limit: limit || 10,
+        }),
+      },
     );
   },
 

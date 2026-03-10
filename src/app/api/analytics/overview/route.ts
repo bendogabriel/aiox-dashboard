@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
-import { listTasks } from '@/lib/task-store';
-import { fetchPersistedTasks, type PersistedTask } from '@/lib/task-persistence';
+import { listTasks, updateTask, getTask } from '@/lib/task-store';
+import { persistTask, fetchPersistedTasks } from '@/lib/task-persistence';
+
+// Stale task threshold: tasks in running/executing status longer than this are marked failed
+const STALE_TASK_THRESHOLD_MS = 60 * 60 * 1000; // 1 hour
 
 /**
  * GET /api/analytics/overview?period=day|week|month
@@ -8,6 +11,25 @@ import { fetchPersistedTasks, type PersistedTask } from '@/lib/task-persistence'
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const period = (searchParams.get('period') || 'day') as string;
+
+  // Clean up stale in-memory tasks before computing analytics
+  const nowMs = Date.now();
+  const runningStatuses = ['executing', 'analyzing', 'planning'];
+  const rawMemoryTasks = listTasks(500);
+  for (const task of rawMemoryTasks) {
+    if (!runningStatuses.includes(task.status)) continue;
+    if (task.completedAt) continue;
+    const ref = task.startedAt ? new Date(task.startedAt).getTime() : new Date(task.createdAt).getTime();
+    if (nowMs - ref > STALE_TASK_THRESHOLD_MS) {
+      updateTask(task.id, {
+        status: 'failed',
+        completedAt: new Date().toISOString(),
+        error: `Task timed out: stuck in "${task.status}" status for over 1 hour without completion.`,
+      });
+      const updated = getTask(task.id);
+      if (updated) persistTask(updated);
+    }
+  }
 
   // Merge in-memory + Supabase historical tasks
   const memoryTasks = listTasks(500);
@@ -22,7 +44,20 @@ export async function GET(request: Request) {
   };
   const tasks: AnalyticsTask[] = [
     ...memoryTasks.map(t => ({ id: t.id, status: t.status, createdAt: t.createdAt, startedAt: t.startedAt, completedAt: t.completedAt, squads: t.squads })),
-    ...dbTasks.map(t => ({ id: t.id, status: t.status, createdAt: t.createdAt, startedAt: t.startedAt, completedAt: t.completedAt, squads: t.squads })),
+    ...dbTasks.map(t => {
+      // Also mark stale DB tasks as failed for accurate analytics
+      const isStale = runningStatuses.includes(t.status)
+        && !t.completedAt
+        && (nowMs - new Date(t.startedAt || t.createdAt).getTime() > STALE_TASK_THRESHOLD_MS);
+      return {
+        id: t.id,
+        status: isStale ? 'failed' : t.status,
+        createdAt: t.createdAt,
+        startedAt: t.startedAt,
+        completedAt: isStale ? new Date().toISOString() : t.completedAt,
+        squads: t.squads,
+      };
+    }),
   ];
   const now = new Date();
 
