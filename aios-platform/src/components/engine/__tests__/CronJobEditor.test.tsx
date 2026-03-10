@@ -74,10 +74,11 @@ describe('CronJobEditor', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled());
     expect(global.fetch).toHaveBeenCalled();
     const body = JSON.parse((global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1]?.body as string);
-    expect(body.name).toBe('daily-review');
-    expect(body.squad_id).toBe('development');
-    expect(body.agent_id).toBe('dev');
-    expect(body.message).toBe('Executar review diário');
+    // createCron transforms to camelCase for the engine API
+    expect(body.description).toBe('daily-review');
+    expect(body.squadId).toBe('development');
+    expect(body.agentId).toBe('dev');
+    expect(body.input.message).toBe('Executar review diário');
   });
 
   it('chama onClose ao clicar Cancelar', async () => {

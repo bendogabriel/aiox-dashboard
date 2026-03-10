@@ -85,6 +85,15 @@ vi.mock('../../../hooks/useAgents', () => ({
   useAgents: vi.fn(() => agentsState),
 }));
 
+// Mock useRealtimeMetrics hook (used by MetricsPanel)
+let realtimeMetricsState: {
+  data: { activeExecutions?: number; errorsPerMinute?: number; avgLatencyMs?: number; requestsPerMinute?: number } | undefined;
+} = { data: undefined };
+
+vi.mock('../../../hooks/useDashboard', () => ({
+  useRealtimeMetrics: vi.fn(() => realtimeMetricsState),
+}));
+
 // Mock useExecutionHistory hook
 let executionHistoryState: {
   data: { executions: Array<{ id: string; agentId: string; status: string; createdAt: string }> } | undefined;
@@ -117,6 +126,7 @@ beforeEach(() => {
   monitorState = createMonitorStoreState();
   agentsState = { data: undefined, isLoading: false };
   executionHistoryState = { data: undefined };
+  realtimeMetricsState = { data: undefined };
 });
 
 // ===========================================================================
@@ -207,8 +217,8 @@ describe('MetricsPanel', () => {
       metrics: { cpu: 10, memory: 20, latency: 30, throughput: 40 },
     });
     render(<MetricsPanel />);
-    expect(screen.getByText('CPU')).toBeInTheDocument();
-    expect(screen.getByText('Memory')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
+    expect(screen.getByText('Errors/min')).toBeInTheDocument();
     expect(screen.getByText('Latency')).toBeInTheDocument();
     expect(screen.getByText('Throughput')).toBeInTheDocument();
   });
@@ -218,46 +228,41 @@ describe('MetricsPanel', () => {
       metrics: { cpu: 72, memory: 55, latency: 200, throughput: 18 },
     });
     render(<MetricsPanel />);
+    // Active shows cpu (fallback), Errors/min shows memory (fallback)
     expect(screen.getByText('72')).toBeInTheDocument();
     expect(screen.getByText('55')).toBeInTheDocument();
     expect(screen.getByText('200')).toBeInTheDocument();
     expect(screen.getByText('18')).toBeInTheDocument();
     // Units
-    expect(screen.getAllByText('%')).toHaveLength(2);
+    expect(screen.getByText('exec')).toBeInTheDocument();
     expect(screen.getByText('ms')).toBeInTheDocument();
-    expect(screen.getByText('req/s')).toBeInTheDocument();
+    expect(screen.getByText('req/min')).toBeInTheDocument();
   });
 
-  it('renders progress bars for CPU and Memory', () => {
+  it('uses realtime data when available', () => {
     monitorState = createMonitorStoreState({
-      metrics: { cpu: 85, memory: 40, latency: 100, throughput: 50 },
+      metrics: { cpu: 10, memory: 5, latency: 50, throughput: 20 },
     });
+    realtimeMetricsState = {
+      data: { activeExecutions: 3, errorsPerMinute: 1, avgLatencyMs: 150, requestsPerMinute: 42 },
+    };
     render(<MetricsPanel />);
-    const bars = screen.getAllByTestId('progress-bar');
-    // Only CPU and Memory have showProgress
-    expect(bars).toHaveLength(2);
+    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(screen.getByText('150')).toBeInTheDocument();
+    expect(screen.getByText('42')).toBeInTheDocument();
   });
 
-  it('applies error variant when value exceeds 80', () => {
+  it('falls back to store metrics when realtime is unavailable', () => {
     monitorState = createMonitorStoreState({
-      metrics: { cpu: 95, memory: 30, latency: 50, throughput: 10 },
+      metrics: { cpu: 45, memory: 12, latency: 100, throughput: 30 },
     });
+    realtimeMetricsState = { data: undefined };
     render(<MetricsPanel />);
-    const bars = screen.getAllByTestId('progress-bar');
-    const cpuBar = bars.find((b) => b.getAttribute('data-value') === '95');
-    expect(cpuBar).toBeDefined();
-    expect(cpuBar!.getAttribute('data-variant')).toBe('error');
-  });
-
-  it('applies warning variant when value is between 61 and 80', () => {
-    monitorState = createMonitorStoreState({
-      metrics: { cpu: 70, memory: 20, latency: 50, throughput: 10 },
-    });
-    render(<MetricsPanel />);
-    const bars = screen.getAllByTestId('progress-bar');
-    const cpuBar = bars.find((b) => b.getAttribute('data-value') === '70');
-    expect(cpuBar).toBeDefined();
-    expect(cpuBar!.getAttribute('data-variant')).toBe('warning');
+    expect(screen.getByText('45')).toBeInTheDocument();
+    expect(screen.getByText('12')).toBeInTheDocument();
+    expect(screen.getByText('100')).toBeInTheDocument();
+    expect(screen.getByText('30')).toBeInTheDocument();
   });
 });
 
