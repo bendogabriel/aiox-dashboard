@@ -4,7 +4,7 @@
 // Usage: aios <command> [options]
 // ============================================================
 
-import { existsSync, mkdirSync, writeFileSync, cpSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { spawn } from 'child_process';
 

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
+import { existsSync, readFileSync, readdirSync } from 'fs';
 import { resolve, basename, extname } from 'path';
 import { parse as parseYaml } from 'yaml';
 import { getProjectPaths, aiosCorePath, squadsPath } from '../lib/config';
