@@ -1,13 +1,8 @@
 import useSWR from 'swr';
 import { useEffect } from 'react';
 import { useSquadStore } from '@/stores/squad-store';
+import { apiFetcher } from '@/services/api/client';
 import type { Squad, SquadConnection, SquadTier } from '@/types';
-
-const fetcher = (url: string) =>
-  fetch(url).then((res) => {
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
-  });
 
 interface SquadsResponse {
   squads: Squad[];
@@ -34,7 +29,7 @@ interface SquadDetailResponse {
 export function useSquads() {
   const { data, error, isLoading, mutate } = useSWR<SquadsResponse>(
     '/api/squads',
-    fetcher,
+    apiFetcher,
     { revalidateOnFocus: false }
   );
 
@@ -64,7 +59,7 @@ export function useSquads() {
 export function useSquadDetail(name: string | null) {
   const { data, error, isLoading } = useSWR<SquadDetailResponse>(
     name ? `/api/squads/${name}` : null,
-    fetcher,
+    apiFetcher,
     { revalidateOnFocus: false }
   );
 
@@ -125,7 +120,7 @@ interface SectionItemsResponse {
 export function useSquadSectionItems(squadName: string | null, section: string | null) {
   const { data, error, isLoading } = useSWR<SectionItemsResponse>(
     squadName && section ? `/api/squads/${squadName}/sections/${section}` : null,
-    fetcher,
+    apiFetcher,
     { revalidateOnFocus: false }
   );
 
@@ -146,7 +141,7 @@ export interface ItemContent {
 export function useSquadItemContent(squadName: string | null, section: string | null, slug: string | null) {
   const { data, error, isLoading } = useSWR<ItemContent>(
     squadName && section && slug ? `/api/squads/${squadName}/sections/${section}/${slug}` : null,
-    fetcher,
+    apiFetcher,
     { revalidateOnFocus: false }
   );
 
@@ -160,7 +155,7 @@ export function useSquadItemContent(squadName: string | null, section: string | 
 export function useSquadAgentDetail(squadName: string | null, agentId: string | null) {
   const { data, error, isLoading } = useSWR<AgentDetailResponse>(
     squadName && agentId ? `/api/squads/${squadName}/agents/${agentId}` : null,
-    fetcher,
+    apiFetcher,
     { revalidateOnFocus: false }
   );
 

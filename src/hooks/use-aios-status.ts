@@ -1,18 +1,11 @@
 import useSWR from 'swr';
+import { apiFetcher } from '@/services/api/client';
 import type { AiosStatus } from '@/types';
 
 // Extended response type that includes optional error field
 interface AiosStatusResponse extends AiosStatus {
   error?: string;
 }
-
-const fetcher = async (url: string): Promise<AiosStatusResponse> => {
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`HTTP error ${res.status}`);
-  }
-  return res.json();
-};
 
 interface UseAiosStatusOptions {
   /** Polling interval in ms (default: 5000) */
@@ -47,7 +40,7 @@ export function useAiosStatus(
 
   const { data, error, isLoading, mutate } = useSWR<AiosStatusResponse>(
     paused ? null : '/api/status',
-    fetcher,
+    apiFetcher,
     {
       refreshInterval: interval,
       revalidateOnFocus: true,

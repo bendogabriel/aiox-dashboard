@@ -547,3 +547,12 @@ apiClient.addErrorInterceptor((error) => {
   }
   return error;
 });
+
+/**
+ * SWR-compatible fetcher that uses apiClient instead of raw fetch.
+ * Provides retry, timeout, interceptors, and error classification.
+ *
+ * Usage: useSWR('/api/stories', apiFetcher)
+ */
+export const apiFetcher = <T = unknown>(url: string): Promise<T> =>
+  apiClient.get<T>(url.replace(/^\/api/, ''));

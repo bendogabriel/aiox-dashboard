@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import { useStoryStore } from '@/stores/story-store';
 import { useSettingsStore } from '@/stores/settings-store';
 import { MOCK_STORIES } from '@/lib/mock-data';
+import { apiFetcher } from '@/services/api/client';
 import type { Story } from '@/types';
 
 interface StoriesResponse {
@@ -12,14 +13,6 @@ interface StoriesResponse {
   message?: string;
   error?: string;
 }
-
-const fetcher = async (url: string): Promise<StoriesResponse> => {
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`HTTP error ${res.status}`);
-  }
-  return res.json();
-};
 
 interface UseStoriesOptions {
   /** Auto-refresh interval in ms (0 to disable) */
@@ -50,7 +43,7 @@ export function useStories(options: UseStoriesOptions = {}): UseStoriesReturn {
   // SWR for API fetch (disabled when using mock data)
   const { data, error, isLoading, mutate } = useSWR<StoriesResponse>(
     useMockData ? null : '/api/stories', // null key disables fetching
-    fetcher,
+    apiFetcher,
     {
       refreshInterval: refreshInterval > 0 ? refreshInterval : undefined,
       revalidateOnFocus: false,

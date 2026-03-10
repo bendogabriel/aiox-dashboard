@@ -5,10 +5,9 @@ import { useAgentStore } from '@/stores/agent-store';
 import { useSettingsStore } from '@/stores/settings-store';
 import { MOCK_AGENTS } from '@/lib/mock-data';
 import { agentsApi } from '@/services/api';
+import { apiFetcher } from '@/services/api/client';
 import type { AiosStatus, AgentId, AgentSummary, AgentCommand, PlatformAgent, SearchFilters } from '@/types';
 import { getSquadType } from '@/types';
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export function useAgents() {
   const {
@@ -31,7 +30,7 @@ export function useAgents() {
   // Poll the status endpoint (disabled when using mock data)
   const { data, error, isLoading, mutate } = useSWR<AiosStatus>(
     useMockData ? null : '/api/status',
-    fetcher,
+    apiFetcher,
     {
       refreshInterval: pollingInterval,
       revalidateOnFocus: true,
