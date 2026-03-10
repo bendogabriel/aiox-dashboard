@@ -118,6 +118,10 @@ const IntegrationHub = lazy(() =>
   import('./components/integrations/IntegrationHub')
 );
 
+const GoogleOAuthCallback = lazy(() =>
+  import('./components/integrations/GoogleOAuthCallback')
+);
+
 // CockpitDashboard removed — consolidated into DashboardWorkspace
 
 // View map — maps ViewType to lazy component
@@ -150,6 +154,7 @@ const viewMap: Record<string, ComponentType> = {
   'handoff-flows': HandoffVisualization,
   'sales-room': SalesRoomPanel,
   integrations: IntegrationHub,
+  'google-oauth-callback': GoogleOAuthCallback,
 };
 
 // Loading messages per view

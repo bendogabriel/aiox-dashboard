@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Server, MessageSquare, Database, Copy, Check, ExternalLink, QrCode, KeyRound, Mic, Plus, Trash2, Send as SendIcon, HardDrive, CalendarDays } from 'lucide-react';
 import { useIntegrationStore } from '../../stores/integrationStore';
 import { getEngineUrl } from '../../lib/connection';
+import { startGoogleOAuth, disconnectGoogle, getGoogleAuthStatus } from '../../lib/integration-sync';
 
 // ── Shared Modal Shell ────────────────────────────────────
 
@@ -681,7 +682,7 @@ function TelegramSetup({ onClose }: { onClose: () => void }) {
     if (!engineUrl) return;
     setStatusMsg('Setting webhook...');
     try {
-      const res = await fetch(`${engineUrl}/telegram/webhook`, { method: 'POST' });
+      const res = await fetch(`${engineUrl}/telegram/webhook/setup`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
       const data = await res.json() as { success?: boolean; message?: string; error?: string };
       setStatusMsg(data.success ? 'Webhook set successfully' : `Failed: ${data.error || data.message}`);
     } catch {
@@ -730,34 +731,56 @@ function TelegramSetup({ onClose }: { onClose: () => void }) {
 
 // ── Google Drive Setup ───────────────────────────────────
 
-const GOOGLE_DRIVE_KEY = 'aios-google-drive';
-
 function GoogleDriveSetup({ onClose }: { onClose: () => void }) {
-  const [clientId, setClientId] = useState<string>(() => {
-    try {
-      const raw = localStorage.getItem(GOOGLE_DRIVE_KEY);
-      return raw ? JSON.parse(raw)?.clientId || '' : '';
-    } catch { return ''; }
-  });
-  const [saved, setSaved] = useState(false);
+  const [statusMsg, setStatusMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [engineConfigured, setEngineConfigured] = useState<boolean | null>(null);
+  const [connected, setConnected] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
 
-  const hasAuth = (() => {
-    try {
-      const raw = localStorage.getItem(GOOGLE_DRIVE_KEY);
-      return raw ? !!(JSON.parse(raw)?.accessToken || JSON.parse(raw)?.refreshToken) : false;
-    } catch { return false; }
-  })();
+  useEffect(() => {
+    getGoogleAuthStatus().then((data) => {
+      if (data) {
+        setEngineConfigured(data.configured);
+        const svc = data.services['google-drive'];
+        if (svc?.connected) {
+          setConnected(true);
+          setEmail(svc.email || null);
+        }
+      } else {
+        // Fallback to localStorage
+        try {
+          const raw = localStorage.getItem('aios-google-drive');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            setConnected(!!(parsed?.accessToken || parsed?.refreshToken));
+            setEmail(parsed?.email || null);
+          }
+        } catch { /* empty */ }
+      }
+    });
+  }, []);
 
-  const saveConfig = () => {
-    const existing = (() => {
-      try {
-        const raw = localStorage.getItem(GOOGLE_DRIVE_KEY);
-        return raw ? JSON.parse(raw) : {};
-      } catch { return {}; }
-    })();
-    localStorage.setItem(GOOGLE_DRIVE_KEY, JSON.stringify({ ...existing, clientId: clientId.trim() }));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const handleConnect = async () => {
+    setLoading(true);
+    setStatusMsg(null);
+    const result = await startGoogleOAuth('google-drive');
+    if ('error' in result) {
+      setStatusMsg(result.error);
+      setLoading(false);
+    } else {
+      // Redirect to Google
+      window.location.href = result.url;
+    }
+  };
+
+  const handleDisconnect = async () => {
+    setLoading(true);
+    await disconnectGoogle('google-drive');
+    setConnected(false);
+    setEmail(null);
+    setStatusMsg('Disconnected');
+    setLoading(false);
   };
 
   return (
@@ -768,26 +791,34 @@ function GoogleDriveSetup({ onClose }: { onClose: () => void }) {
           <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>Google Drive API</span>
         </div>
 
-        {hasAuth && (
-          <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', background: 'rgba(66,133,244,0.06)', border: '1px solid rgba(66,133,244,0.2)', color: '#4285F4' }}>
-            <Check size={14} style={{ display: 'inline', marginRight: 6 }} />
-            Authenticated
+        {connected && (
+          <div style={{ padding: '10px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', background: 'rgba(66,133,244,0.06)', border: '1px solid rgba(66,133,244,0.2)', color: '#4285F4', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>
+              <Check size={14} style={{ display: 'inline', marginRight: 6 }} />
+              {email || 'Authenticated'}
+            </span>
+            <button
+              onClick={handleDisconnect}
+              disabled={loading}
+              style={{ background: 'none', border: 'none', color: 'var(--color-status-error)', cursor: 'pointer', fontSize: '11px', fontFamily: 'var(--font-family-mono)', textDecoration: 'underline' }}
+            >
+              Disconnect
+            </button>
           </div>
         )}
 
-        <div>
-          <label style={labelStyle}>OAuth Client ID</label>
-          <input
-            value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
-            placeholder="xxxx.apps.googleusercontent.com"
-            style={inputStyle}
-          />
-        </div>
+        {!connected && (
+          <button onClick={handleConnect} disabled={loading || engineConfigured === false} style={primaryBtnStyle}>
+            {loading ? 'Redirecting...' : 'Connect with Google'}
+          </button>
+        )}
 
-        <button onClick={saveConfig} disabled={!clientId.trim()} style={primaryBtnStyle}>
-          {saved ? 'Saved!' : 'Save Client ID'}
-        </button>
+        {engineConfigured === false && (
+          <div style={{ ...hintStyle, color: 'var(--color-status-error)' }}>
+            Engine not configured. Set <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_ID</code> and{' '}
+            <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_SECRET</code> in <code>engine/.env</code>.
+          </div>
+        )}
 
         <div style={hintStyle}>
           <strong style={{ color: 'var(--aiox-cream)' }}>Setup:</strong><br />
@@ -796,15 +827,16 @@ function GoogleDriveSetup({ onClose }: { onClose: () => void }) {
             Google Cloud Console <ExternalLink size={11} style={{ display: 'inline' }} />
           </a><br />
           2. Create OAuth 2.0 Client ID (Web application)<br />
-          3. Add <code style={{ color: 'var(--aiox-lime)' }}>{window.location.origin}</code> to authorized redirect URIs<br />
-          4. Enable Google Drive API in the project<br />
-          5. Paste the Client ID above
+          3. Add <code style={{ color: 'var(--aiox-lime)' }}>{window.location.origin}/auth/google/callback</code> to authorized redirect URIs<br />
+          4. Enable Google Drive API<br />
+          5. Set <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_ID</code> and <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_SECRET</code> in <code>engine/.env</code>
         </div>
 
-        <p style={{ ...hintStyle, fontSize: '10px' }}>
-          For engine-side access, set <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_ID</code> and{' '}
-          <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_SECRET</code> in <code>engine/.env</code>.
-        </p>
+        {statusMsg && (
+          <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', color: 'var(--aiox-gray-muted)', background: 'rgba(255,255,255,0.02)', borderLeft: '2px solid rgba(66, 133, 244, 0.3)' }}>
+            {statusMsg}
+          </div>
+        )}
       </div>
     </ModalShell>
   );
@@ -812,34 +844,54 @@ function GoogleDriveSetup({ onClose }: { onClose: () => void }) {
 
 // ── Google Calendar Setup ────────────────────────────────
 
-const GOOGLE_CALENDAR_KEY = 'aios-google-calendar';
-
 function GoogleCalendarSetup({ onClose }: { onClose: () => void }) {
-  const [clientId, setClientId] = useState<string>(() => {
-    try {
-      const raw = localStorage.getItem(GOOGLE_CALENDAR_KEY);
-      return raw ? JSON.parse(raw)?.clientId || '' : '';
-    } catch { return ''; }
-  });
-  const [saved, setSaved] = useState(false);
+  const [statusMsg, setStatusMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [engineConfigured, setEngineConfigured] = useState<boolean | null>(null);
+  const [connected, setConnected] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
 
-  const hasAuth = (() => {
-    try {
-      const raw = localStorage.getItem(GOOGLE_CALENDAR_KEY);
-      return raw ? !!(JSON.parse(raw)?.accessToken || JSON.parse(raw)?.refreshToken) : false;
-    } catch { return false; }
-  })();
+  useEffect(() => {
+    getGoogleAuthStatus().then((data) => {
+      if (data) {
+        setEngineConfigured(data.configured);
+        const svc = data.services['google-calendar'];
+        if (svc?.connected) {
+          setConnected(true);
+          setEmail(svc.email || null);
+        }
+      } else {
+        try {
+          const raw = localStorage.getItem('aios-google-calendar');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            setConnected(!!(parsed?.accessToken || parsed?.refreshToken));
+            setEmail(parsed?.email || null);
+          }
+        } catch { /* empty */ }
+      }
+    });
+  }, []);
 
-  const saveConfig = () => {
-    const existing = (() => {
-      try {
-        const raw = localStorage.getItem(GOOGLE_CALENDAR_KEY);
-        return raw ? JSON.parse(raw) : {};
-      } catch { return {}; }
-    })();
-    localStorage.setItem(GOOGLE_CALENDAR_KEY, JSON.stringify({ ...existing, clientId: clientId.trim() }));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const handleConnect = async () => {
+    setLoading(true);
+    setStatusMsg(null);
+    const result = await startGoogleOAuth('google-calendar');
+    if ('error' in result) {
+      setStatusMsg(result.error);
+      setLoading(false);
+    } else {
+      window.location.href = result.url;
+    }
+  };
+
+  const handleDisconnect = async () => {
+    setLoading(true);
+    await disconnectGoogle('google-calendar');
+    setConnected(false);
+    setEmail(null);
+    setStatusMsg('Disconnected');
+    setLoading(false);
   };
 
   return (
@@ -850,29 +902,34 @@ function GoogleCalendarSetup({ onClose }: { onClose: () => void }) {
           <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>Google Calendar API</span>
         </div>
 
-        {hasAuth && (
-          <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', background: 'rgba(66,133,244,0.06)', border: '1px solid rgba(66,133,244,0.2)', color: '#4285F4' }}>
-            <Check size={14} style={{ display: 'inline', marginRight: 6 }} />
-            Authenticated
+        {connected && (
+          <div style={{ padding: '10px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', background: 'rgba(66,133,244,0.06)', border: '1px solid rgba(66,133,244,0.2)', color: '#4285F4', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>
+              <Check size={14} style={{ display: 'inline', marginRight: 6 }} />
+              {email || 'Authenticated'}
+            </span>
+            <button
+              onClick={handleDisconnect}
+              disabled={loading}
+              style={{ background: 'none', border: 'none', color: 'var(--color-status-error)', cursor: 'pointer', fontSize: '11px', fontFamily: 'var(--font-family-mono)', textDecoration: 'underline' }}
+            >
+              Disconnect
+            </button>
           </div>
         )}
 
-        <div>
-          <label style={labelStyle}>OAuth Client ID</label>
-          <input
-            value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
-            placeholder="xxxx.apps.googleusercontent.com"
-            style={inputStyle}
-          />
-          <p style={hintStyle}>
-            Uses the same Google Cloud project as Drive. You can share the Client ID.
-          </p>
-        </div>
+        {!connected && (
+          <button onClick={handleConnect} disabled={loading || engineConfigured === false} style={primaryBtnStyle}>
+            {loading ? 'Redirecting...' : 'Connect with Google'}
+          </button>
+        )}
 
-        <button onClick={saveConfig} disabled={!clientId.trim()} style={primaryBtnStyle}>
-          {saved ? 'Saved!' : 'Save Client ID'}
-        </button>
+        {engineConfigured === false && (
+          <div style={{ ...hintStyle, color: 'var(--color-status-error)' }}>
+            Engine not configured. Set <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_ID</code> and{' '}
+            <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_SECRET</code> in <code>engine/.env</code>.
+          </div>
+        )}
 
         <div style={hintStyle}>
           <strong style={{ color: 'var(--aiox-cream)' }}>Setup:</strong><br />
@@ -880,9 +937,15 @@ function GoogleCalendarSetup({ onClose }: { onClose: () => void }) {
           <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com" target="_blank" rel="noreferrer" style={{ color: '#4285F4' }}>
             Google Cloud Console <ExternalLink size={11} style={{ display: 'inline' }} />
           </a><br />
-          2. Use the same OAuth Client ID from Google Drive setup<br />
-          3. Calendar scopes: <code style={{ color: 'var(--aiox-lime)' }}>calendar.readonly</code>, <code style={{ color: 'var(--aiox-lime)' }}>calendar.events</code>
+          2. Uses the same Google Cloud project credentials as Drive<br />
+          3. Scopes: <code style={{ color: 'var(--aiox-lime)' }}>calendar.readonly</code>, <code style={{ color: 'var(--aiox-lime)' }}>calendar.events</code>
         </div>
+
+        {statusMsg && (
+          <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', color: 'var(--aiox-gray-muted)', background: 'rgba(255,255,255,0.02)', borderLeft: '2px solid rgba(66, 133, 244, 0.3)' }}>
+            {statusMsg}
+          </div>
+        )}
       </div>
     </ModalShell>
   );

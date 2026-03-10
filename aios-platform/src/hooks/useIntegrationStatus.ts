@@ -2,6 +2,7 @@ import { useEffect, useCallback } from 'react';
 import { useIntegrationStore } from '../stores/integrationStore';
 import { engineApi } from '../services/api/engine';
 import { getEngineUrl } from '../lib/connection';
+import { getGoogleAuthStatus } from '../lib/integration-sync';
 import type { IntegrationId } from '../stores/integrationStore';
 
 /**
@@ -142,43 +143,42 @@ export function useIntegrationStatus() {
     }
   }, [setStatus]);
 
-  const checkGoogleDrive = useCallback(() => {
-    try {
-      const raw = localStorage.getItem('aios-google-drive');
-      if (raw) {
-        const data = JSON.parse(raw);
-        if (data?.accessToken || data?.refreshToken) {
-          setStatus('google-drive', 'connected', data.email || 'Authenticated');
-        } else if (data?.clientId) {
-          setStatus('google-drive', 'partial', 'Client ID set, not authenticated');
+  const checkGoogleServices = useCallback(async () => {
+    // Try engine first for authoritative status
+    const engineStatus = await getGoogleAuthStatus();
+    if (engineStatus) {
+      for (const [svc, info] of Object.entries(engineStatus.services)) {
+        const id = svc as IntegrationId;
+        if (info.connected) {
+          setStatus(id, 'connected', info.email || 'Authenticated');
+        } else if (engineStatus.configured) {
+          setStatus(id, 'partial', 'OAuth configured, not authenticated');
         } else {
-          setStatus('google-drive', 'disconnected', 'Not configured');
+          setStatus(id, 'disconnected', 'Not configured on engine');
         }
-      } else {
-        setStatus('google-drive', 'disconnected', 'Not configured');
       }
-    } catch {
-      setStatus('google-drive', 'disconnected', 'Not configured');
+      return;
     }
-  }, [setStatus]);
 
-  const checkGoogleCalendar = useCallback(() => {
-    try {
-      const raw = localStorage.getItem('aios-google-calendar');
-      if (raw) {
-        const data = JSON.parse(raw);
-        if (data?.accessToken || data?.refreshToken) {
-          setStatus('google-calendar', 'connected', data.email || 'Authenticated');
-        } else if (data?.clientId) {
-          setStatus('google-calendar', 'partial', 'Client ID set, not authenticated');
+    // Fallback: check localStorage
+    for (const svc of ['google-drive', 'google-calendar'] as const) {
+      try {
+        const raw = localStorage.getItem(`aios-${svc}`);
+        if (raw) {
+          const data = JSON.parse(raw);
+          if (data?.accessToken || data?.refreshToken) {
+            setStatus(svc, 'connected', data.email || 'Authenticated');
+          } else if (data?.clientId) {
+            setStatus(svc, 'partial', 'Client ID set, not authenticated');
+          } else {
+            setStatus(svc, 'disconnected', 'Not configured');
+          }
         } else {
-          setStatus('google-calendar', 'disconnected', 'Not configured');
+          setStatus(svc, 'disconnected', 'Not configured');
         }
-      } else {
-        setStatus('google-calendar', 'disconnected', 'Not configured');
+      } catch {
+        setStatus(svc, 'disconnected', 'Not configured');
       }
-    } catch {
-      setStatus('google-calendar', 'disconnected', 'Not configured');
     }
   }, [setStatus]);
 
@@ -186,11 +186,9 @@ export function useIntegrationStatus() {
     // Run local checks sync
     checkApiKeys();
     checkVoice();
-    checkGoogleDrive();
-    checkGoogleCalendar();
     // Run network checks in parallel
-    await Promise.allSettled([checkEngine(), checkWhatsApp(), checkSupabase(), checkTelegram()]);
-  }, [checkEngine, checkWhatsApp, checkSupabase, checkApiKeys, checkVoice, checkTelegram, checkGoogleDrive, checkGoogleCalendar]);
+    await Promise.allSettled([checkEngine(), checkWhatsApp(), checkSupabase(), checkTelegram(), checkGoogleServices()]);
+  }, [checkEngine, checkWhatsApp, checkSupabase, checkApiKeys, checkVoice, checkTelegram, checkGoogleServices]);
 
   const checkOne = useCallback(async (id: IntegrationId) => {
     switch (id) {
@@ -200,10 +198,10 @@ export function useIntegrationStatus() {
       case 'api-keys': return checkApiKeys();
       case 'voice': return checkVoice();
       case 'telegram': return checkTelegram();
-      case 'google-drive': return checkGoogleDrive();
-      case 'google-calendar': return checkGoogleCalendar();
+      case 'google-drive':
+      case 'google-calendar': return checkGoogleServices();
     }
-  }, [checkEngine, checkWhatsApp, checkSupabase, checkApiKeys, checkVoice, checkTelegram, checkGoogleDrive, checkGoogleCalendar]);
+  }, [checkEngine, checkWhatsApp, checkSupabase, checkApiKeys, checkVoice, checkTelegram, checkGoogleServices]);
 
   // Check all on mount
   useEffect(() => {

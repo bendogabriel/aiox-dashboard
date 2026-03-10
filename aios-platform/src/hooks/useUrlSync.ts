@@ -34,6 +34,7 @@ const VIEW_PATHS: Record<string, string> = {
   '/workflow-catalog': 'workflow-catalog',
   '/authority-matrix': 'authority-matrix',
   '/handoff-flows': 'handoff-flows',
+  '/integrations': 'integrations',
   // Consolidated aliases (redirect to canonical view)
   '/cockpit': 'dashboard',
   '/insights': 'dashboard',
@@ -64,6 +65,11 @@ interface ParsedUrl {
 }
 
 function parseUrl(pathname: string): ParsedUrl {
+  // /auth/google/callback — OAuth redirect
+  if (pathname.startsWith('/auth/google/callback')) {
+    return { view: 'google-oauth-callback' };
+  }
+
   // /share/{taskId}
   const shareMatch = pathname.match(/^\/share\/([^/]+)/);
   if (shareMatch) {

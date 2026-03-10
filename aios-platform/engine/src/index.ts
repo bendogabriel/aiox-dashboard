@@ -22,6 +22,8 @@ import { stream } from './routes/stream';
 import { whatsapp } from './routes/whatsapp';
 import { registry } from './routes/registry';
 import { integrations as integrationsRoute } from './routes/integrations';
+import { telegram } from './routes/telegram';
+import { googleAuth } from './routes/google-auth';
 
 // ============================================================
 // AIOS Agent Execution Engine — v0.4.0
@@ -87,6 +89,8 @@ app.route('/cron', cron);
 app.route('/whatsapp', whatsapp);
 app.route('/registry', registry);
 app.route('/integrations', integrationsRoute);
+app.route('/telegram', telegram);
+app.route('/auth/google', googleAuth);
 
 // Serve dashboard static files if configured (AIOS_DASHBOARD_DIR env or ../dist/)
 const dashboardDir = process.env.AIOS_DASHBOARD_DIR
@@ -157,6 +161,8 @@ log.info('Endpoints:', {
   whatsapp: '/whatsapp/webhook, /whatsapp/events (SSE), /whatsapp/send, /whatsapp/status',
   registry: '/registry/project, /registry/squads, /registry/agents, /registry/workflows, /registry/tasks',
   integrations: '/integrations (CRUD), /integrations/secrets (vault)',
+  telegram: '/telegram/status, /telegram/webhook, /telegram/send, /telegram/events (SSE)',
+  googleAuth: '/auth/google/status, /auth/google/url, /auth/google/callback, /auth/google/refresh, /auth/google/disconnect',
   memory: '/memory/:scope, /memory/recall, /memory/store',
   cron: '/cron (CRUD)',
   ws: 'ws://*/live',
