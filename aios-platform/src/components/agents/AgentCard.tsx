@@ -111,6 +111,7 @@ export const AgentCard = memo(function AgentCard({ agent, selected, compact = fa
                 : 'text-tertiary opacity-0 group-hover:opacity-100 hover:text-yellow-500'
             )}
             title={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+            aria-label={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
           >
             <StarIcon filled={favorited} />
           </button>
@@ -168,6 +169,7 @@ export const AgentCard = memo(function AgentCard({ agent, selected, compact = fa
                     : 'text-tertiary opacity-0 group-hover:opacity-100 hover:text-yellow-500'
                 )}
                 title={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                aria-label={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
               >
                 <StarIcon filled={favorited} />
               </button>
@@ -317,6 +319,7 @@ export const AgentExplorerCard = memo(function AgentExplorerCard({ agent, select
                     : 'text-white/30 opacity-0 group-hover:opacity-100 hover:text-yellow-500'
                 )}
                 title={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                aria-label={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
               >
                 <StarIcon filled={favorited} />
               </button>

@@ -13,12 +13,11 @@ import { SquadOrgChart } from '../squads/SquadOrgChart';
 import { AgentDetailPanel } from '../squads/AgentDetailPanel';
 import { ConnectionsMap } from '../squads/ConnectionsMap';
 import { SquadStatsPanel } from '../squads/SquadStatsPanel';
-import { useSquads, useSquadStats } from '../../hooks/useSquads';
+import { useSquads, useSquadStats, useSquadConnections } from '../../hooks/useSquads';
 import { useAgents, useAgent } from '../../hooks/useAgents';
 import { cn } from '../../lib/utils';
 import { hasAgentAvatar, getSquadImageUrl } from '../../lib/agent-avatars';
 import { getSquadType } from '../../types';
-import { mockConnections } from '../../mocks/squads'; // TODO: Replace with API when backend supports GET /api/squads/:id/connections
 import type { Squad, AgentSummary, Agent } from '../../types';
 
 // --- Domain Groups ---
@@ -103,6 +102,7 @@ export default function SquadsView() {
   const { data: agentsData } = useAgents(selectedSquadId);
   const { data: squadStats } = useSquadStats(selectedSquadId);
   const { data: fullAgent } = useAgent(selectedSquadId, selectedAgentId);
+  const { data: connections = [] } = useSquadConnections(selectedSquadId);
 
   const squads = squadsData && squadsData.length > 0 ? squadsData : placeholderSquads;
   const agents = agentsData && agentsData.length > 0 ? agentsData : placeholderAgents.map((a) => ({ ...a, squad: selectedSquadId || '' }));
@@ -378,7 +378,7 @@ export default function SquadsView() {
         )}
 
         {activeTab === 'connections' && (
-          <ConnectionsMap agents={agents} connections={mockConnections} />
+          <ConnectionsMap agents={agents} connections={connections} />
         )}
       </div>
     );

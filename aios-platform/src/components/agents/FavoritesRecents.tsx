@@ -131,6 +131,7 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
                           }}
                           className="opacity-0 group-hover:opacity-100 p-1 text-tertiary hover:text-yellow-500 transition-all"
                           title="Remover dos favoritos"
+                          aria-label="Remover dos favoritos"
                         >
                           <StarIcon filled />
                         </button>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useVoiceStore } from '../stores/voiceStore';
 import { buildEffectsChain, type EffectsChain } from '../lib/audio-effects';
+import { AIOS_TOOL_DECLARATIONS, executeToolCall } from '../services/voice-task-router';
 
 // Gemini Live API WebSocket endpoint
 const GEMINI_WS_URL =
@@ -346,6 +347,10 @@ export function useGeminiLive(): UseGeminiLiveResult {
             },
             inputAudioTranscription: {},
             outputAudioTranscription: {},
+            // AIOS tool declarations — task execution via Claude Code
+            tools: [{
+              functionDeclarations: AIOS_TOOL_DECLARATIONS,
+            }],
             systemInstruction: {
               parts: [{
                 text: [
@@ -357,7 +362,31 @@ export function useGeminiLive(): UseGeminiLiveResult {
                   'Evite exclamacoes exageradas, emojis verbais ou informalidade excessiva.',
                   'Quando cumprimentar, seja breve: "Ola, senhor. Como posso ajudar?" ou "Estou a disposicao."',
                   'Sempre responda com audio, mesmo que o usuario fale pouco.',
-                ].join(' '),
+                  '',
+                  'REGRA CRITICA DE EXECUCAO DE TAREFAS:',
+                  'Voce e APENAS a interface de voz. Voce NAO executa codigo, NAO cria arquivos, NAO modifica sistemas.',
+                  'Quando o usuario solicitar qualquer tarefa de desenvolvimento, engenharia, criacao de codigo, correcao de bugs,',
+                  'deploy, testes, criacao de stories, workflows, ou qualquer operacao no sistema AIOS:',
+                  '1. Use as ferramentas (function calls) disponiveis para delegar a execucao ao Claude Code via Engine API.',
+                  '2. NUNCA tente responder com codigo ou implementacao diretamente — sempre delegue via tool call.',
+                  '3. Apos receber o resultado da tool, resuma o resultado verbalmente para o usuario.',
+                  '4. TODAS as tarefas vao para execute_task — o orquestrador AIOS decide qual agente e squad executam.',
+                  '5. NUNCA escolha o agente — o orquestrador respeita a matrix de autoridade e delega automaticamente.',
+                  '6. Para perguntas sobre status, use check_engine_health, list_jobs ou check_job_status.',
+                  '7. Para verificar permissoes, use check_authority.',
+                  '',
+                  'Exemplos de roteamento:',
+                  '- "Crie um componente de login" → execute_task("criar componente de login")',
+                  '- "Faca uma revisao de codigo" → execute_task("revisar codigo do modulo X")',
+                  '- "Inicie o ciclo de desenvolvimento da story" → start_workflow(story-development-cycle, ...)',
+                  '- "O que esta rodando?" → list_jobs(status=running)',
+                  '- "Como esta o sistema?" → check_engine_health()',
+                  '- "Pare aquele job" → cancel_job(job_id)',
+                  '- "Agende uma revisao diaria" → create_cron(daily-review, "0 9 * * *", ...)',
+                  '- "O dev pode fazer push?" → check_authority(dev, git-push, development)',
+                  '',
+                  'Para dialogos conversacionais (cumprimentos, perguntas genericas, explicacoes conceituais), responda normalmente sem tool calls.',
+                ].join('\n'),
               }],
             },
           },
@@ -409,6 +438,42 @@ export function useGeminiLive(): UseGeminiLiveResult {
           };
 
           rafRef.current = requestAnimationFrame(monitorLevels);
+        }
+
+        // Tool calls — route to Claude Code via Engine API
+        if (msg.toolCall) {
+          console.log('[GeminiLive] Tool call received:', msg.toolCall);
+          useVoiceStore.getState().setState('executing');
+          useVoiceStore.getState().setAgentTranscript('Executando tarefa via Claude Code...');
+
+          const functionCalls = msg.toolCall.functionCalls || [];
+          const toolResponses = await Promise.all(
+            functionCalls.map(async (fc: { id: string; name: string; args: Record<string, unknown> }) => {
+              console.log(`[GeminiLive] Executing tool: ${fc.name}`, fc.args);
+              const result = await executeToolCall(fc.name, fc.args || {});
+              console.log(`[GeminiLive] Tool result:`, result.summary);
+              return {
+                id: fc.id,
+                response: {
+                  output: {
+                    success: result.success,
+                    summary: result.summary,
+                    data: result.data ? JSON.stringify(result.data).slice(0, 2000) : undefined,
+                  },
+                },
+              };
+            }),
+          );
+
+          // Send tool responses back to Gemini so it can summarize vocally
+          if (wsRef.current?.readyState === WebSocket.OPEN) {
+            wsRef.current.send(JSON.stringify({
+              toolResponse: {
+                functionResponses: toolResponses,
+              },
+            }));
+            console.log('[GeminiLive] Tool responses sent back to Gemini');
+          }
         }
 
         // Server content
@@ -472,7 +537,7 @@ export function useGeminiLive(): UseGeminiLiveResult {
     } finally {
       connectingRef.current = false;
     }
-  }, [apiKey, voiceName, store, cleanup, monitorLevels, playAudioChunk]);
+  }, [apiKey, voiceName, effectsEnabled, store, cleanup, monitorLevels, playAudioChunk]);
 
   // ---------------------------------------------------------------------------
   // Disconnect

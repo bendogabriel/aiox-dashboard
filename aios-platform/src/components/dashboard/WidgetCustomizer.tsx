@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Eye, EyeOff, ChevronUp, ChevronDown, RotateCcw, X } from 'lucide-react';
 import { GlassButton } from '../ui';
-import { useDashboardWidgetStore, type WidgetId } from '../../stores/dashboardWidgetStore';
+import { useDashboardWidgetStore } from '../../stores/dashboardWidgetStore';
 import { cn } from '../../lib/utils';
 
 export function WidgetCustomizer() {

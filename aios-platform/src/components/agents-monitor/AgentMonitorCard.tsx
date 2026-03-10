@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Bot, Clock, AlertTriangle } from 'lucide-react';
-import { GlassCard, Badge, StatusDot, ProgressBar, Avatar } from '../ui';
+import { GlassCard, Badge, ProgressBar, Avatar } from '../ui';
 import type { StatusType } from '../ui/StatusDot';
 import { cn, formatRelativeTime } from '../../lib/utils';
 
@@ -68,7 +68,7 @@ export const AgentMonitorCard = memo(function AgentMonitorCard({
   const isActive = agent.status === 'working';
   const isError = agent.status === 'error';
   const stale = isStale(agent.lastActivity);
-  const statusType = mapStatus(agent.status);
+  const _statusType = mapStatus(agent.status);
   const relativeTime =
     agent.lastActivity && agent.lastActivity !== '-'
       ? formatRelativeTime(agent.lastActivity)

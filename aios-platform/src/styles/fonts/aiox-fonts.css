@@ -4,15 +4,7 @@
    Fonts: TASAOrbiterDisplay (display), Geist (sans), Roboto Mono (mono)
    ============================================ */
 
-/* TASAOrbiterDisplay — Display/Headlines font */
-@font-face {
-  font-family: 'TASAOrbiterDisplay';
-  src: url('https://fonts.cdnfonts.com/css/tasa-orbiter-display') format('woff2');
-  font-weight: 300 900;
-  font-display: swap;
-}
-
-/* Import from CDN as backup / actual working import */
+/* TASAOrbiterDisplay — loaded via CDN @import (cdnfonts hosts the actual font files) */
 @import url('https://fonts.cdnfonts.com/css/tasa-orbiter-display');
 
 /* Roboto Mono — Technical labels, code, HUD */

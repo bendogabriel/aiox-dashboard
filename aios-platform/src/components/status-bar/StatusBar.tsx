@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StatusDot } from '../ui';
 import { cn } from '../../lib/utils';
 import { Wifi, WifiOff, Bell } from 'lucide-react';
 import { useLLMHealth, useTokenUsage } from '../../hooks/useExecute';
 import { useBobStore } from '../../stores/bobStore';
+import { useToastStore } from '../../stores/toastStore';
+import { useEngineJobs } from '../../hooks/useEngine';
 
 export function StatusBar() {
   // Network connectivity
@@ -33,11 +35,18 @@ export function StatusBar() {
   // Bob status
   const bobActive = useBobStore((s) => s.isActive);
 
-  // TODO: activeAgent requires a sessions API
-  const activeAgent: string | null = null;
+  // Active agent from running engine jobs
+  const { data: runningJobs } = useEngineJobs({ status: 'running', limit: 1 });
+  const activeJob = runningJobs?.jobs?.[0] ?? null;
+  const activeAgent = activeJob ? `@${activeJob.agent_id}` : null;
 
-  // TODO: notificationCount requires a notifications system
-  const notificationCount = 0;
+  // Notification count from toast store
+  const unreadCount = useToastStore((s) => s.unreadCount);
+  const markAllRead = useToastStore((s) => s.markAllRead);
+
+  const handleBellClick = useCallback(() => {
+    if (unreadCount > 0) markAllRead();
+  }, [unreadCount, markAllRead]);
 
   return (
     <footer
@@ -126,14 +135,18 @@ export function StatusBar() {
         <span className="h-3 w-px bg-glass-border" aria-hidden="true" />
 
         {/* Notification count */}
-        <div className="flex items-center gap-1">
+        <button
+          className="flex items-center gap-1 hover:opacity-80 transition-opacity"
+          onClick={handleBellClick}
+          aria-label={unreadCount > 0 ? `${unreadCount} notificações não lidas` : 'Sem notificações'}
+        >
           <Bell className="h-3 w-3 text-tertiary" aria-hidden="true" />
-          {notificationCount > 0 && (
+          {unreadCount > 0 && (
             <span className="min-w-[14px] h-[14px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold leading-none">
-              {notificationCount}
+              {unreadCount}
             </span>
           )}
-        </div>
+        </button>
       </div>
     </footer>
   );

@@ -309,11 +309,20 @@ export class WebSocketManager {
   }
 }
 
-// Singleton instance for the app
-const WS_URL = import.meta.env.VITE_WS_URL || `ws://${window.location.host}/ws`;
+// Singleton instance — uses connection config to pick the right WS URL
+import { getConnectionConfig } from '../../lib/connection';
+
+function resolveWsUrl(): string {
+  try {
+    return getConnectionConfig().wsUrl;
+  } catch {
+    // Fallback if called before DOM is ready
+    return import.meta.env.VITE_WS_URL || `ws://${window.location.host}/ws`;
+  }
+}
 
 export const wsManager = new WebSocketManager({
-  url: WS_URL,
+  url: resolveWsUrl(),
   reconnect: true,
   reconnectInterval: 3000,
   maxReconnectAttempts: 10,

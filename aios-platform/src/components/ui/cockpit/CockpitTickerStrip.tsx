@@ -4,9 +4,10 @@ export interface CockpitTickerStripProps {
   items: string[]
   speed?: number
   className?: string
+  style?: React.CSSProperties
 }
 
-export function CockpitTickerStrip({ items, speed = 30, className }: CockpitTickerStripProps) {
+export function CockpitTickerStrip({ items, speed = 30, className, style: containerStyle }: CockpitTickerStripProps) {
   const text = items.join(' \u2014 ')
   const doubled = `${text} \u2014 ${text} \u2014 `
 
@@ -24,6 +25,7 @@ export function CockpitTickerStrip({ items, speed = 30, className }: CockpitTick
         letterSpacing: '0.1em',
         color: 'var(--aiox-gray-dim)',
         padding: '0.5rem 0',
+        ...containerStyle,
       }}
     >
       <div

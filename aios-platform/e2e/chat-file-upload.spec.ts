@@ -1,6 +1,5 @@
 import { test, expect, waitForApp } from './fixtures/base.fixture';
 import { mockApiRoutes } from './fixtures/api-mocks.fixture';
-import path from 'node:path';
 
 // ==========================================================================
 // E2E #1: Chat File Upload & Attachments

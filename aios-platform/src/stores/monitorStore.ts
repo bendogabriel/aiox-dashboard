@@ -170,15 +170,56 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
       // Cloud mode: connect to relay
       const relayUrl = import.meta.env.VITE_RELAY_URL;
       wsUrl = `${relayUrl}/dashboard?room=${encodeURIComponent(roomId)}&token=${encodeURIComponent(token)}`;
+    } else if (config.mode === 'engine') {
+      // Engine mode: WS at /live
+      wsUrl = config.wsUrl;
     } else {
       // Local mode: connect to monitor server
       const monitorWsUrl = MONITOR_URL.replace(/^http/, 'ws');
       wsUrl = `${monitorWsUrl}/stream`;
     }
 
-    // In local mode, probe the server before opening connections
-    // to avoid noisy ERR_CONNECTION_REFUSED errors in the console.
-    if (config.mode === 'local') {
+    // Engine mode: probe /health, WS at /live (events come via init message)
+    if (config.mode === 'engine') {
+      const engineUrl = config.httpUrl;
+      fetch(`${engineUrl}/health`, { signal: AbortSignal.timeout(3000) })
+        .then((r) => {
+          if (!r.ok) throw new Error('Engine not available');
+          return r.json();
+        })
+        .then((health) => {
+          if (health) {
+            set((state) => ({
+              stats: {
+                ...state.stats,
+                activeSessions: health.ws_clients ?? state.stats.activeSessions,
+              },
+            }));
+          }
+          // Fetch pool stats for richer data
+          fetch(`${engineUrl}/pool`, { signal: AbortSignal.timeout(3000) })
+            .then((r) => r.ok ? r.json() : null)
+            .then((pool) => {
+              if (pool) {
+                set((state) => ({
+                  stats: {
+                    ...state.stats,
+                    activeSessions: pool.occupied ?? state.stats.activeSessions,
+                    total: pool.queue_length ?? state.stats.total,
+                  },
+                }));
+              }
+            })
+            .catch(() => { /* non-critical */ });
+          openWebSocket();
+        })
+        .catch(() => {
+          console.debug('[MonitorStore] Engine unavailable at', engineUrl, '— falling back to monitor');
+          // Fallback: try monitor server
+          fallbackToMonitor();
+        });
+    } else if (config.mode === 'local') {
+      // Local mode: probe /stats on monitor server
       fetch(`${MONITOR_URL}/stats`, { signal: AbortSignal.timeout(3000) })
         .then((r) => {
           if (!r.ok) throw new Error('Monitor not available');
@@ -195,7 +236,6 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
               },
             }));
           }
-          // Server is reachable — fetch events and open WebSocket
           fetch(`${MONITOR_URL}/events/recent?limit=50`)
             .then((r) => r.ok ? r.json() : [])
             .then((recentEvents) => {
@@ -204,16 +244,26 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
                 set({ events: mapped.slice(-50) });
               }
             })
-            .catch(() => { /* already connected, non-critical */ });
+            .catch(() => { /* non-critical */ });
           openWebSocket();
         })
         .catch(() => {
-          // Monitor service is not running — skip WebSocket to avoid console noise
           console.debug('[MonitorStore] Monitor service unavailable at', MONITOR_URL);
         });
     } else {
       // Cloud mode — connect immediately
       openWebSocket();
+    }
+
+    // Fallback to monitor server when engine is unavailable
+    function fallbackToMonitor() {
+      wsUrl = `${MONITOR_URL.replace(/^http/, 'ws')}/stream`;
+      set({ connectionMode: 'local' });
+      fetch(`${MONITOR_URL}/stats`, { signal: AbortSignal.timeout(3000) })
+        .then((r) => r.ok ? openWebSocket() : undefined)
+        .catch(() => {
+          console.debug('[MonitorStore] Monitor also unavailable');
+        });
     }
 
     // Open WebSocket

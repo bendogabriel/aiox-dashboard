@@ -1,5 +1,6 @@
 import { apiClient } from './client';
 import type { Squad, SquadDetail, SquadStats, EcosystemOverview } from '../../types';
+import type { AgentConnection } from '../../mocks/squads';
 
 export interface SquadsParams {
   domain?: string;
@@ -33,4 +34,12 @@ export const squadsApi = {
     return apiClient.get<EcosystemOverview>('/squads/ecosystem/overview');
   },
 
+  // Get agent connections for a squad
+  // GET /api/squads/:squadId/connections
+  getSquadConnections: async (squadId: string): Promise<AgentConnection[]> => {
+    const response = await apiClient.get<{ connections: AgentConnection[] }>(
+      `/squads/${squadId}/connections`,
+    );
+    return response.connections || [];
+  },
 };

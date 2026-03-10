@@ -13,6 +13,7 @@ test.describe('Toast System', () => {
     // Trigger a toast via the store
     await page.evaluate(() => {
       // Access the zustand store directly
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const stores = (window as any).__zustand_stores__;
       if (stores?.toastStore) {
         stores.toastStore.getState().addToast({

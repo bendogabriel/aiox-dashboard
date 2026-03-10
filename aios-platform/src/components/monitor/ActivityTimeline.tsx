@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Activity,
   Terminal,
@@ -8,9 +8,8 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Filter,
 } from 'lucide-react';
-import { GlassCard, SectionLabel, GlassButton } from '../ui';
+import { GlassCard } from '../ui';
 import { useMonitorStore, type MonitorEvent } from '../../stores/monitorStore';
 import { useExecutionHistory } from '../../hooks/useExecute';
 import { cn } from '../../lib/utils';
@@ -98,14 +97,14 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
 
     // Add execution history
     if (historyData?.executions) {
-      historyData.executions.slice(0, 30).forEach((e: any) => {
+      historyData.executions.slice(0, 30).forEach((e) => {
         timeline.push({
           id: `exec-${e.id}`,
           timestamp: e.createdAt || new Date().toISOString(),
           type: e.status === 'failed' ? 'error' : 'execution',
-          title: `${e.command || e.type || 'Execution'} — ${e.status}`,
-          description: e.agentName ? `Agent: ${e.agentName}` : undefined,
-          agent: e.agentName,
+          title: `${e.agentId || 'Execution'} — ${e.status}`,
+          description: e.agentId ? `Agent: ${e.agentId}` : undefined,
+          agent: e.agentId || undefined,
           status: e.status === 'completed' ? 'success' : e.status === 'failed' ? 'error' : 'pending',
         });
       });

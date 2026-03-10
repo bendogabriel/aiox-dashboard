@@ -537,6 +537,7 @@ export function clearDemoChat(): void {
  */
 export function seedDemoChat(): void {
   // Dynamic import to avoid circular deps
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { useChatStore } = require('../stores/chatStore');
   const store = useChatStore.getState();
 
@@ -553,6 +554,7 @@ export function seedDemoChat(): void {
   });
 
   // Also set UI store
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { useUIStore } = require('../stores/uiStore');
   useUIStore.setState({
     selectedAgentId: DEMO_AGENT_ID,

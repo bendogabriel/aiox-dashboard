@@ -71,8 +71,11 @@ export function useVoiceMode({ sendMessage }: UseVoiceModeOptions): UseVoiceMode
   const visualization = useVoiceVisualization(audioCapture.analyserNode);
 
   // Sync audio input level to store
+  // Use getState() to avoid depending on the full store object —
+  // including `store` in deps causes an infinite render loop because
+  // setInputLevel updates the store → new reference → effect re-fires.
   useEffect(() => {
-    store.setInputLevel(audioCapture.inputLevel);
+    useVoiceStore.getState().setInputLevel(audioCapture.inputLevel);
   }, [audioCapture.inputLevel]);
 
   // Track isSupported across all required APIs
@@ -287,6 +290,7 @@ export function useVoiceMode({ sendMessage }: UseVoiceModeOptions): UseVoiceMode
       tts.stop();
       audioCapture.stopCapture();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- cleanup only on unmount
   }, []);
 
   return {

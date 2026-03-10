@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
+import { useMemo, useRef, useEffect, useState } from 'react';
 import type { VoiceState } from '../../stores/voiceStore';
 
 interface VoiceOrbProps {
@@ -12,7 +12,9 @@ const BLUE = '#0099FF';
 const BG = '#050505';
 
 const PARTICLE_COUNT = 14;
-const RING_COUNT = 3;
+
+/* Pre-computed burst distances (avoids Math.random in render) */
+const BURST_DISTANCES = [93, 112, 85, 107, 98, 116, 88, 104, 95, 110];
 
 /* ---------- helper: generate particle initial angles ---------- */
 function buildParticles(count: number) {
@@ -62,6 +64,7 @@ export function VoiceOrb({ state, inputLevel, outputLevel }: VoiceOrbProps) {
     prevStateRef.current = state;
 
     if (prev === 'listening' && state === 'thinking') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: reacting to prop transition
       setShowBurst(true);
       if (burstTimeoutRef.current) clearTimeout(burstTimeoutRef.current);
       burstTimeoutRef.current = setTimeout(() => setShowBurst(false), 700);
@@ -74,11 +77,12 @@ export function VoiceOrb({ state, inputLevel, outputLevel }: VoiceOrbProps) {
 
   /* ---------- computed values ---------- */
   const isIdle = state === 'idle';
-  const isThinking = state === 'thinking';
+  const isThinking = state === 'thinking' || state === 'executing';
   const isListening = state === 'listening';
   const isSpeaking = state === 'speaking';
-  const primary = isThinking ? BLUE : LIME;
-  const primaryRGB = isThinking ? '0,153,255' : '209,255,0';
+  const isExecuting = state === 'executing';
+  const primary = isExecuting ? '#ED4609' : isThinking ? BLUE : LIME;
+  const primaryRGB = isExecuting ? '237,70,9' : isThinking ? '0,153,255' : '209,255,0';
 
   /* --- Outer multi-layer glow --- */
   const glowStyle = useMemo(() => {
@@ -106,7 +110,7 @@ export function VoiceOrb({ state, inputLevel, outputLevel }: VoiceOrbProps) {
       opacity: isIdle ? 0.45 : 1,
       transition: 'box-shadow 0.12s ease-out, opacity 0.5s ease',
     };
-  }, [state, level, primaryRGB, isIdle]);
+  }, [level, primaryRGB, isIdle]);
 
   /* --- Inner orb styles --- */
   const innerOrbStyle = useMemo(() => {
@@ -143,7 +147,7 @@ export function VoiceOrb({ state, inputLevel, outputLevel }: VoiceOrbProps) {
         : 'transform 0.06s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.12s ease-out, background 0.25s ease, border-radius 0.8s cubic-bezier(0.22, 1, 0.36, 1)',
       backdropFilter: 'blur(2px)',
     };
-  }, [state, inputLevel, outputLevel, level, primaryRGB, isIdle, isThinking, isListening, isSpeaking]);
+  }, [inputLevel, outputLevel, level, primaryRGB, isIdle, isThinking, isListening, isSpeaking]);
 
   /* --- Particle orbit speed and color --- */
   const particleOrbitDuration = isThinking ? 3 : isIdle ? 12 : 8 - level * 3;
@@ -298,7 +302,6 @@ export function VoiceOrb({ state, inputLevel, outputLevel }: VoiceOrbProps) {
           const r = diameter / 2 - 1;
           const cx = diameter / 2;
           const cy = diameter / 2;
-          const circumference = 2 * Math.PI * r;
           const adjustedOpacity = Math.min(1, ring.baseOpacity + ringOpacityBoost);
           const duration = 360 / ring.speedDeg;
 
@@ -467,7 +470,7 @@ export function VoiceOrb({ state, inputLevel, outputLevel }: VoiceOrbProps) {
             {Array.from({ length: 10 }).map((_, i) => {
               const angle = (360 / 10) * i;
               const rad = (angle * Math.PI) / 180;
-              const dist = 80 + Math.random() * 40;
+              const dist = BURST_DISTANCES[i];
               return (
                 <div
                   key={`burst-${i}`}

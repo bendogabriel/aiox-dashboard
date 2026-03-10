@@ -5,9 +5,10 @@ export interface CockpitFooterBarProps {
   center?: string
   right?: string
   className?: string
+  style?: React.CSSProperties
 }
 
-export function CockpitFooterBar({ left, center, right, className }: CockpitFooterBarProps) {
+export function CockpitFooterBar({ left, center, right, className, style }: CockpitFooterBarProps) {
   return (
     <div
       className={cn(className)}
@@ -23,6 +24,7 @@ export function CockpitFooterBar({ left, center, right, className }: CockpitFoot
         textTransform: 'uppercase',
         color: 'var(--aiox-gray-dim)',
         letterSpacing: '0.08em',
+        ...style,
       }}
     >
       <span>{left}</span>

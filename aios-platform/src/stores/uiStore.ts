@@ -9,7 +9,8 @@ type ThemeType = 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox';
 type ViewType =
   | 'chat' | 'dashboard' | 'cockpit' | 'settings' | 'orchestrator' | 'world'
   | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor' | 'timeline'
-  | 'insights' | 'context' | 'knowledge' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories';
+  | 'insights' | 'context' | 'knowledge' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories'
+  | 'share' | 'engine' | 'agent-directory' | 'task-catalog' | 'workflow-catalog' | 'authority-matrix' | 'handoff-flows';
 export type SettingsSection = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
 interface UIActions {
@@ -35,6 +36,14 @@ interface UIActions {
   exitRoom: () => void;
   setFocusMode: (enabled: boolean) => void;
   toggleFocusMode: () => void;
+  setCommandPaletteOpen: (open: boolean) => void;
+  toggleCommandPalette: () => void;
+  /** Navigate to a registry view with a pre-selected entity */
+  navigateToRegistryAgent: (agentId: string) => void;
+  navigateToRegistryWorkflow: (workflowId: string) => void;
+  registryTargetAgentId: string | null;
+  registryTargetWorkflowId: string | null;
+  clearRegistryTarget: () => void;
 }
 
 const getSystemTheme = (): 'light' | 'dark' => {
@@ -83,10 +92,13 @@ export const useUIStore = create<UIState & UIActions>()(
       workflowViewOpen: false,
       agentExplorerOpen: false,
       mobileMenuOpen: false,
-      theme: 'system' as ThemeType,
+      commandPaletteOpen: false,
+      registryTargetAgentId: null,
+      registryTargetWorkflowId: null,
+      theme: 'aiox' as ThemeType,
       selectedSquadId: null,
       selectedAgentId: null,
-      currentView: 'chat' as ViewType,
+      currentView: 'cockpit' as ViewType,
       settingsSection: 'dashboard' as SettingsSection,
       selectedRoomId: null,
       worldZoom: 'map' as const,
@@ -184,6 +196,22 @@ export const useUIStore = create<UIState & UIActions>()(
           set({ focusMode: false });
         }
       },
+
+      setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
+
+      toggleCommandPalette: () => set((state) => ({ commandPaletteOpen: !state.commandPaletteOpen })),
+
+      navigateToRegistryAgent: (agentId) => {
+        playSound('navigate');
+        set({ currentView: 'agent-directory' as ViewType, registryTargetAgentId: agentId, registryTargetWorkflowId: null });
+      },
+
+      navigateToRegistryWorkflow: (workflowId) => {
+        playSound('navigate');
+        set({ currentView: 'workflow-catalog' as ViewType, registryTargetWorkflowId: workflowId, registryTargetAgentId: null });
+      },
+
+      clearRegistryTarget: () => set({ registryTargetAgentId: null, registryTargetWorkflowId: null }),
     }),
     {
       name: 'aios-ui-store',

@@ -74,7 +74,7 @@ test.describe('Focus Mode', () => {
 
     // Focus mode indicator should appear
     const indicator = appPage.locator('[class*="focus"], [data-testid="focus-indicator"]');
-    const count = await indicator.count();
+    const _count = await indicator.count();
 
     // Exit focus mode
     await appPage.keyboard.press(`${mod}+Shift+f`);

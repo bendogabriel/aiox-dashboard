@@ -5,9 +5,10 @@ export interface CockpitSectionDividerProps {
   concept?: string
   num?: string
   className?: string
+  style?: React.CSSProperties
 }
 
-export function CockpitSectionDivider({ label, concept, num, className }: CockpitSectionDividerProps) {
+export function CockpitSectionDivider({ label, concept, num, className, style }: CockpitSectionDividerProps) {
   return (
     <div
       className={cn(className)}
@@ -23,6 +24,7 @@ export function CockpitSectionDivider({ label, concept, num, className }: Cockpi
         fontWeight: 500,
         textTransform: 'uppercase',
         background: 'var(--aiox-dark)',
+        ...style,
       }}
     >
       {num && (

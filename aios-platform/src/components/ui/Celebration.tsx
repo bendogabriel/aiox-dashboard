@@ -116,6 +116,7 @@ export function Celebration({
 }
 
 // Hook for easy celebration triggering
+// eslint-disable-next-line react-refresh/only-export-components
 export function useCelebration() {
   const [celebrating, setCelebrating] = useState(false);
 

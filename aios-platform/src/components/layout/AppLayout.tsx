@@ -35,8 +35,9 @@ export function AppLayout({ children }: AppLayoutProps) {
     onShowShortcuts: () => setShowShortcuts(true),
   });
 
-  // Hide activity panel on settings view
-  const showActivityPanel = activityPanelOpen && currentView !== 'settings';
+  // Show activity panel on views where it's useful (chat, bob/orchestrator, dashboard, agents)
+  const VIEWS_WITH_ACTIVITY = new Set(['chat', 'bob', 'orchestrator', 'dashboard', 'agents', 'cockpit']);
+  const showActivityPanel = activityPanelOpen && VIEWS_WITH_ACTIVITY.has(currentView);
 
   return (
     <div className="min-h-screen relative isolate">

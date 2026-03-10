@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type VoiceState = 'idle' | 'listening' | 'thinking' | 'speaking';
+export type VoiceState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'executing';
 export type TTSProvider = 'browser' | 'elevenlabs' | 'openai' | 'fal' | 'edge';
 export type VoiceBackend = 'multi-service' | 'gemini-live';
 

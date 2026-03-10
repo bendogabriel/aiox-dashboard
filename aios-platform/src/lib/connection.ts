@@ -5,7 +5,7 @@
  * or cloud mode (connected to relay server via room).
  */
 
-export type ConnectionMode = 'local' | 'cloud';
+export type ConnectionMode = 'local' | 'cloud' | 'engine';
 
 export interface ConnectionConfig {
   mode: ConnectionMode;
@@ -20,6 +20,7 @@ export interface ConnectionConfig {
 }
 
 const MONITOR_URL = import.meta.env.VITE_MONITOR_URL || 'http://localhost:4001';
+const ENGINE_URL = import.meta.env.VITE_ENGINE_URL as string | undefined;
 const RELAY_URL = import.meta.env.VITE_RELAY_URL as string | undefined;
 const RELAY_HTTP_URL = import.meta.env.VITE_RELAY_HTTP_URL as string | undefined;
 
@@ -48,6 +49,15 @@ export function getConnectionConfig(): ConnectionConfig {
     };
   }
 
+  // Engine mode: direct to execution engine (port 4002, WS at /live)
+  if (ENGINE_URL) {
+    return {
+      mode: 'engine',
+      wsUrl: `${ENGINE_URL.replace(/^http/, 'ws')}/live`,
+      httpUrl: ENGINE_URL,
+    };
+  }
+
   // Local mode: direct to monitor server
   return {
     mode: 'local',
@@ -56,9 +66,9 @@ export function getConnectionConfig(): ConnectionConfig {
   };
 }
 
-/** Get the relay HTTP URL (for REST API calls in cloud mode) */
-export function getRelayHttpUrl(): string | undefined {
-  return RELAY_HTTP_URL;
+/** Get the engine HTTP URL (for direct engine API calls) */
+export function getEngineUrl(): string | undefined {
+  return ENGINE_URL;
 }
 
 /** Store auth token */

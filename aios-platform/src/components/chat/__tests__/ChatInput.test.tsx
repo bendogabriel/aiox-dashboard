@@ -37,7 +37,7 @@ describe('ChatInput', () => {
     await user.type(textarea, 'Hello world');
     await user.keyboard('{Enter}');
 
-    expect(handleSend).toHaveBeenCalledWith('Hello world');
+    expect(handleSend).toHaveBeenCalledWith('Hello world', undefined);
   });
 
   it('should not send empty messages', async () => {

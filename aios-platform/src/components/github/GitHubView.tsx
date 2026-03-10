@@ -238,7 +238,7 @@ export default function GitHubView() {
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto glass-scrollbar">
+      <div className="flex-1 overflow-y-auto glass-scrollbar" tabIndex={0} role="region" aria-label="GitHub content">
         <AnimatePresence mode="wait">
           {activeTab === 'commits' && (
             <CommitsTab

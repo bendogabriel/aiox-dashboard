@@ -27,6 +27,13 @@ const VIEW_PATHS: Record<string, string> = {
   '/settings': 'settings',
   '/orchestrator': 'orchestrator',
   '/world': 'world',
+  '/sales-room': 'sales-room',
+  '/engine': 'engine',
+  '/agent-directory': 'agent-directory',
+  '/task-catalog': 'task-catalog',
+  '/workflow-catalog': 'workflow-catalog',
+  '/authority-matrix': 'authority-matrix',
+  '/handoff-flows': 'handoff-flows',
   // Consolidated aliases (redirect to canonical view)
   '/cockpit': 'dashboard',
   '/insights': 'dashboard',
@@ -53,9 +60,16 @@ interface ParsedUrl {
   settingsSection?: string;
   squadId?: string;
   agentId?: string;
+  sharedTaskId?: string;
 }
 
 function parseUrl(pathname: string): ParsedUrl {
+  // /share/{taskId}
+  const shareMatch = pathname.match(/^\/share\/([^/]+)/);
+  if (shareMatch) {
+    return { view: 'share', sharedTaskId: shareMatch[1] };
+  }
+
   // /world/room/{roomId}
   const worldRoomMatch = pathname.match(/^\/world\/room\/([^/]+)/);
   if (worldRoomMatch) {
@@ -95,9 +109,14 @@ interface BuildUrlState {
   worldZoom?: string;
   selectedSquadId?: string | null;
   selectedAgentId?: string | null;
+  sharedTaskId?: string | null;
 }
 
 function buildUrl(state: BuildUrlState): string {
+  if (state.currentView === 'share' && state.sharedTaskId) {
+    return `/share/${state.sharedTaskId}`;
+  }
+
   if (state.currentView === 'world' && state.worldZoom === 'room' && state.selectedRoomId) {
     return `/world/room/${state.selectedRoomId}`;
   }
@@ -123,11 +142,15 @@ export function useUrlSync() {
   // 1. On mount: URL is source of truth — sync store to URL, set initial history state
   useEffect(() => {
     isNavigating.current = true;
-    const { view, roomId, settingsSection, squadId, agentId } = parseUrl(window.location.pathname);
+    const { view, roomId, settingsSection, squadId, agentId, sharedTaskId } = parseUrl(window.location.pathname);
     const store = useUIStore.getState();
 
     if (view !== store.currentView) {
       store.setCurrentView(view as never);
+    }
+    // Store sharedTaskId for the SharedTaskView component to read
+    if (sharedTaskId) {
+      sessionStorage.setItem('shared-task-id', sharedTaskId);
     }
     if (roomId) {
       store.enterRoom(roomId);
@@ -159,6 +182,7 @@ export function useUrlSync() {
       worldZoom: roomId ? 'room' : undefined,
       selectedSquadId: squadId,
       selectedAgentId: agentId,
+      sharedTaskId,
     });
     window.history.replaceState({ view }, '', canonicalUrl);
 
@@ -201,10 +225,13 @@ export function useUrlSync() {
   useEffect(() => {
     const handlePopState = () => {
       isNavigating.current = true;
-      const { view, roomId, settingsSection, squadId, agentId } = parseUrl(window.location.pathname);
+      const { view, roomId, settingsSection, squadId, agentId, sharedTaskId } = parseUrl(window.location.pathname);
       const store = useUIStore.getState();
 
       store.setCurrentView(view as never);
+      if (sharedTaskId) {
+        sessionStorage.setItem('shared-task-id', sharedTaskId);
+      }
       if (roomId) {
         store.enterRoom(roomId);
       } else if (view === 'world') {

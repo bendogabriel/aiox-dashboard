@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Helper: read a CSS custom property value at runtime

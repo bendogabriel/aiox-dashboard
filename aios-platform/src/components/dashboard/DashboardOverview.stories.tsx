@@ -16,7 +16,7 @@ function Wrapper() {
   );
 }
 
-const meta: Meta<typeof DashboardOverview> = {
+const meta = {
   title: 'Dashboard/DashboardOverview',
   component: DashboardOverview,
   parameters: {
@@ -31,14 +31,16 @@ const meta: Meta<typeof DashboardOverview> = {
   tags: ['autodocs'],
 };
 
-export default meta;
+export default meta satisfies Meta<typeof DashboardOverview>;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: {},
   render: () => <Wrapper />,
 };
 
 export const InNarrowContainer: Story = {
+  args: {},
   render: () => (
     <QueryClientProvider client={queryClient}>
       <div style={{ height: '100vh', maxWidth: 600, padding: 16, background: '#0f0f14' }}>

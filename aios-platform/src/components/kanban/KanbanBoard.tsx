@@ -15,7 +15,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus,
   BookOpen,
-  Loader2,
   ClipboardList,
   RefreshCw,
   Bot,
@@ -374,6 +373,7 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
               <button
                 onClick={() => setSearchQuery('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-tertiary hover:text-primary"
+                aria-label="Limpar busca"
               >
                 <X size={12} />
               </button>
@@ -386,6 +386,7 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
             size="sm"
             className={cn(hasActiveFilters && 'text-blue-400 bg-blue-500/10')}
             onClick={() => setShowFilters(!showFilters)}
+            aria-label="Filtros"
           >
             <Filter size={14} />
             {hasActiveFilters && (

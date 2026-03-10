@@ -50,21 +50,6 @@ export {
 } from './theme';
 export type { SquadTheme, TierTheme, StatusTheme } from './theme';
 
-// Legacy exports for backward compatibility - prefer using theme.ts directly
-export const squadColors = {
-  copywriting: 'var(--squad-copywriting)',
-  design: 'var(--squad-design)',
-  creator: 'var(--squad-creator)',
-  orchestrator: 'var(--squad-orchestrator)',
-  content: 'var(--squad-content)',
-  development: 'var(--squad-development)',
-  engineering: 'var(--squad-engineering)',
-  analytics: 'var(--squad-analytics)',
-  marketing: 'var(--squad-marketing)',
-  advisory: 'var(--squad-advisory)',
-  default: 'var(--squad-default)',
-} as const;
-
 export const squadLabels = {
   copywriting: 'Copywriting',
   design: 'Design',

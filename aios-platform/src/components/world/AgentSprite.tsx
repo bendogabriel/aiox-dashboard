@@ -146,7 +146,7 @@ export const AgentSprite = memo(function AgentSprite({
         transition={
           isWalking
             ? { duration: 0.3, repeat: Infinity, ease: 'easeInOut' }
-            : { duration: 2.5 + (identity.hatStyle % 3) * 0.4, repeat: Infinity, ease: 'easeInOut' }
+            : { duration: 2.5 + (identity.bodyHue % 3) * 0.4, repeat: Infinity, ease: 'easeInOut' }
         }
       >
         {rects.map((r, i) => (

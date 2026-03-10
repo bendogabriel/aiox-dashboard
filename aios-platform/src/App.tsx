@@ -1,4 +1,4 @@
-import { lazy, Suspense, ComponentType } from 'react';
+import { lazy, Suspense, ComponentType, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AppLayout } from './components/layout';
@@ -6,6 +6,10 @@ import { ChatContainer } from './components/chat';
 import { PageLoader, ErrorBoundary, CompactErrorFallback, FocusModeIndicator } from './components/ui';
 import { useUIStore } from './stores/uiStore';
 import { useUrlSync } from './hooks/useUrlSync';
+
+const CommandPalette = lazy(() =>
+  import('./components/command-palette/CommandPalette').then((m) => ({ default: m.CommandPalette }))
+);
 
 // Register demo seed helpers on window for console access
 // Usage: __seedDemoChat() then reload page
@@ -40,10 +44,6 @@ const StoryWorkspace = lazy(() =>
 
 const AgentsMonitor = lazy(() =>
   import('./components/agents-monitor/AgentsMonitor')
-);
-
-const BobOrchestration = lazy(() =>
-  import('./components/bob/BobOrchestration')
 );
 
 const TerminalsView = lazy(() =>
@@ -82,6 +82,38 @@ const KnowledgeView = lazy(() =>
   import('./components/knowledge/KnowledgeView')
 );
 
+const SharedTaskView = lazy(() =>
+  import('./components/share/SharedTaskView')
+);
+
+const EngineWorkspace = lazy(() =>
+  import('./components/engine/EngineWorkspace')
+);
+
+const AgentDirectory = lazy(() =>
+  import('./components/registry/AgentDirectory')
+);
+
+const TaskCatalog = lazy(() =>
+  import('./components/registry/TaskCatalog')
+);
+
+const WorkflowCatalog = lazy(() =>
+  import('./components/registry/WorkflowCatalog')
+);
+
+const AuthorityMatrix = lazy(() =>
+  import('./components/registry/AuthorityMatrix')
+);
+
+const HandoffVisualization = lazy(() =>
+  import('./components/registry/HandoffVisualization')
+);
+
+const SalesRoomPanel = lazy(() =>
+  import('./components/sales-room/SalesRoomPanel')
+);
+
 // CockpitDashboard removed — consolidated into DashboardWorkspace
 
 // View map — maps ViewType to lazy component
@@ -89,7 +121,7 @@ const viewMap: Record<string, ComponentType> = {
   dashboard: DashboardWorkspace,
   kanban: StoryWorkspace, // backward compat — redirects to stories
   agents: AgentsMonitor,
-  bob: BobOrchestration,
+  bob: TaskOrchestrator,
   terminals: TerminalsView,
   monitor: MonitorWorkspace,
   insights: DashboardWorkspace, // backward compat — redirects to dashboard
@@ -105,6 +137,14 @@ const viewMap: Record<string, ComponentType> = {
   knowledge: KnowledgeView,
   cockpit: DashboardWorkspace, // backward compat — redirects to dashboard
   timeline: MonitorWorkspace, // backward compat — redirects to monitor
+  share: SharedTaskView,
+  engine: EngineWorkspace,
+  'agent-directory': AgentDirectory,
+  'task-catalog': TaskCatalog,
+  'workflow-catalog': WorkflowCatalog,
+  'authority-matrix': AuthorityMatrix,
+  'handoff-flows': HandoffVisualization,
+  'sales-room': SalesRoomPanel,
 };
 
 // Loading messages per view
@@ -127,6 +167,14 @@ const viewLoaderMessages: Record<string, string> = {
   qa: 'Carregando QA...',
   stories: 'Carregando stories...',
   knowledge: 'Carregando base de conhecimento...',
+  share: 'Carregando task compartilhada...',
+  engine: 'Carregando engine...',
+  'agent-directory': 'Carregando diretório de agentes...',
+  'task-catalog': 'Carregando catálogo de tasks...',
+  'workflow-catalog': 'Carregando catálogo de workflows...',
+  'authority-matrix': 'Carregando matriz de autoridade...',
+  'handoff-flows': 'Carregando fluxos de handoff...',
+  'sales-room': 'Carregando sala de observacao...',
   cockpit: 'Carregando dashboard...', // backward compat
   timeline: 'Carregando monitor...', // backward compat
 };
@@ -221,12 +269,35 @@ function AppContent() {
   );
 }
 
+/** Global ⌘K listener — lightweight, always mounted */
+function useCommandPaletteShortcut() {
+  const toggleCommandPalette = useUIStore((s) => s.toggleCommandPalette);
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        toggleCommandPalette();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [toggleCommandPalette]);
+}
+
 function App() {
+  useCommandPaletteShortcut();
+  const commandPaletteOpen = useUIStore((s) => s.commandPaletteOpen);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
         <AppContent />
         <FocusModeIndicator />
+        {commandPaletteOpen && (
+          <Suspense fallback={null}>
+            <CommandPalette />
+          </Suspense>
+        )}
       </ErrorBoundary>
     </QueryClientProvider>
   );

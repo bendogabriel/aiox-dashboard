@@ -35,7 +35,7 @@ export function GlobalVoiceProvider() {
   // Sync Gemini Live voice history → chat store
   // ---------------------------------------------------------------------------
   useEffect(() => {
-    const unsubscribe = useVoiceStore.subscribe((state, prevState) => {
+    const unsubscribe = useVoiceStore.subscribe((state, _prevState) => {
       // Only sync for gemini-live backend
       if (state.voiceBackend !== 'gemini-live') return;
 

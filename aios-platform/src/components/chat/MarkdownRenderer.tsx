@@ -7,6 +7,7 @@ import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { cn } from '../../lib/utils';
+import { useUIStore } from '../../stores/uiStore';
 
 // Lazy load mermaid diagram renderer (heavy dependency)
 const MermaidDiagram = lazy(() => import('./MermaidDiagram'));
@@ -96,22 +97,25 @@ const INLINE_REGEX = new RegExp(
 
 function AgentMention({ name }: { name: string }) {
   const color = AGENT_COLORS[name] || '#D1FF00';
+  const navigateToAgent = useUIStore((s) => s.navigateToRegistryAgent);
   return (
-    <span
-      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono font-semibold align-baseline cursor-default"
+    <button
+      type="button"
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono font-semibold align-baseline cursor-pointer hover:brightness-125 transition-all"
       style={{
         backgroundColor: `${color}15`,
         border: `1px solid ${color}30`,
         color: color,
       }}
-      title={`Agent: @${name}`}
+      title={`Ver agente @${name}`}
+      onClick={() => navigateToAgent(name)}
     >
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
         <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
         <circle cx="12" cy="7" r="4" />
       </svg>
       @{name}
-    </span>
+    </button>
   );
 }
 
@@ -820,7 +824,7 @@ const components = {
         </span>
       );
     }
-    return <input type={type} checked={checked} {...props} />;
+    return <input type={type} checked={checked} aria-label={checked ? 'Item concluído' : 'Item pendente'} {...props} />;
   },
 
   // Collapsible sections (requires rehype-raw)
@@ -869,7 +873,7 @@ function getTextContent(children: React.ReactNode): string {
   if (typeof children === 'string') return children;
   if (Array.isArray(children)) return children.map(getTextContent).join('');
   if (children && typeof children === 'object' && 'props' in children) {
-    return getTextContent((children as React.ReactElement).props.children);
+    return getTextContent((children as React.ReactElement<{ children?: React.ReactNode }>).props.children);
   }
   return '';
 }

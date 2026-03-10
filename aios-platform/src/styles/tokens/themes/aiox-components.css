@@ -833,6 +833,205 @@ html[data-theme="aiox"] [class*="text-pink-5"] {
 }
 
 /* ============================================
+   CODE BLOCKS & TERMINAL — Cockpit Console
+   ============================================ */
+
+html[data-theme="aiox"] pre,
+html[data-theme="aiox"] code {
+  font-family: var(--font-family-mono);
+}
+
+html[data-theme="aiox"] pre {
+  background: var(--aiox-surface-deep) !important;
+  border: 1px solid rgba(156, 156, 156, 0.12) !important;
+  font-size: 0.7rem;
+}
+
+html[data-theme="aiox"] code:not(pre code) {
+  background: rgba(209, 255, 0, 0.06);
+  color: var(--aiox-lime);
+  padding: 0.1em 0.35em;
+  font-size: 0.85em;
+}
+
+html[data-theme="aiox"] pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+/* ============================================
+   CHARTS & SVG — AIOX Palette
+   Map common chart colors to AIOX palette.
+   ============================================ */
+
+html[data-theme="aiox"] svg text {
+  font-family: var(--font-family-mono);
+  fill: var(--aiox-gray-dim);
+}
+
+html[data-theme="aiox"] svg [class*="chart"] text,
+html[data-theme="aiox"] svg [class*="axis"] text {
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   SKELETON LOADERS — Cockpit Pulse
+   ============================================ */
+
+html[data-theme="aiox"] [class*="skeleton"],
+html[data-theme="aiox"] [class*="animate-pulse"] > div {
+  background: rgba(209, 255, 0, 0.04) !important;
+}
+
+@keyframes aiox-skeleton {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+html[data-theme="aiox"] [class*="skeleton"] {
+  animation: aiox-skeleton 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   COMMAND PALETTE — Cockpit Search Overlay
+   ============================================ */
+
+html[data-theme="aiox"] [class*="command-palette"],
+html[data-theme="aiox"] [cmdk-root] {
+  background: var(--aiox-dark) !important;
+  border: 1px solid rgba(209, 255, 0, 0.15) !important;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), 0 0 8px var(--aiox-lime-glow-soft) !important;
+}
+
+html[data-theme="aiox"] [cmdk-input] {
+  font-family: var(--font-family-mono);
+  background: var(--aiox-surface) !important;
+  border-bottom: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [cmdk-item][aria-selected="true"],
+html[data-theme="aiox"] [cmdk-item]:hover {
+  background: rgba(209, 255, 0, 0.06) !important;
+}
+
+html[data-theme="aiox"] [cmdk-group-heading] {
+  font-family: var(--font-family-mono);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--aiox-gray-dim);
+}
+
+/* ============================================
+   AGENT CARDS — Cockpit Style Override
+   Map agent border colors to AIOX palette.
+   ============================================ */
+
+html[data-theme="aiox"] [class*="agent-card"],
+html[data-theme="aiox"] [class*="agent"] > [class*="card"] {
+  border-color: rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [class*="agent-card"]:hover,
+html[data-theme="aiox"] [class*="agent"] > [class*="card"]:hover {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+  box-shadow: 0 0 12px var(--aiox-lime-glow-soft) !important;
+}
+
+/* ============================================
+   KANBAN COLUMNS — Cockpit Board
+   ============================================ */
+
+html[data-theme="aiox"] [class*="kanban"] [class*="column"],
+html[data-theme="aiox"] [class*="kanban"] [class*="lane"] {
+  background: var(--aiox-surface) !important;
+  border: 1px solid rgba(156, 156, 156, 0.12) !important;
+}
+
+html[data-theme="aiox"] [class*="kanban"] [class*="column-header"],
+html[data-theme="aiox"] [class*="kanban"] [class*="lane-header"] {
+  font-family: var(--font-family-mono);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid rgba(156, 156, 156, 0.12);
+}
+
+/* Drag-over state */
+html[data-theme="aiox"] [class*="kanban"] [class*="drag-over"],
+html[data-theme="aiox"] [class*="kanban"] [class*="drop-target"] {
+  background: rgba(209, 255, 0, 0.04) !important;
+  border-color: rgba(209, 255, 0, 0.2) !important;
+}
+
+/* ============================================
+   EMPTY STATES — Cockpit Placeholder
+   ============================================ */
+
+html[data-theme="aiox"] [class*="empty-state"],
+html[data-theme="aiox"] [class*="no-data"],
+html[data-theme="aiox"] [class*="placeholder"] {
+  font-family: var(--font-family-mono);
+  color: var(--aiox-gray-dim);
+}
+
+html[data-theme="aiox"] [class*="empty-state"] svg,
+html[data-theme="aiox"] [class*="no-data"] svg {
+  opacity: 0.3;
+  color: var(--aiox-gray-dim);
+}
+
+/* ============================================
+   TOGGLE SWITCHES — Cockpit Style
+   ============================================ */
+
+html[data-theme="aiox"] [role="switch"] {
+  background: var(--aiox-surface) !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [role="switch"][aria-checked="true"],
+html[data-theme="aiox"] [role="switch"][data-state="checked"] {
+  background: rgba(209, 255, 0, 0.15) !important;
+  border-color: rgba(209, 255, 0, 0.3) !important;
+}
+
+html[data-theme="aiox"] [role="switch"][aria-checked="true"] span,
+html[data-theme="aiox"] [role="switch"][data-state="checked"] span {
+  background: var(--aiox-lime) !important;
+}
+
+/* ============================================
+   KBD / KEYBOARD SHORTCUTS — Cockpit Keys
+   ============================================ */
+
+html[data-theme="aiox"] kbd {
+  background: var(--aiox-surface) !important;
+  border: 1px solid rgba(156, 156, 156, 0.2) !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--aiox-gray-muted);
+}
+
+/* ============================================
+   NOTIFICATION BADGES — Cockpit Counters
+   ============================================ */
+
+html[data-theme="aiox"] [class*="notification-badge"],
+html[data-theme="aiox"] [class*="badge-count"] {
+  background: var(--aiox-lime) !important;
+  color: var(--aiox-dark) !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.5rem;
+  font-weight: 700;
+}
+
+/* ============================================
    REDUCED MOTION — Accessibility
    ============================================ */
 

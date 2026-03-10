@@ -29,6 +29,7 @@ const STATE_LABELS: Record<VoiceState, string> = {
   listening: 'ESCUTANDO',
   thinking: 'PROCESSANDO',
   speaking: 'RESPONDENDO',
+  executing: 'EXECUTANDO VIA CLAUDE CODE',
 };
 
 /**

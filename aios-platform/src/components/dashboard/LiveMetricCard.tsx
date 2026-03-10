@@ -89,7 +89,7 @@ function AnimatedNumber({ value, format, prefix, suffix }: { value: number; form
 export const LiveMetricCard = memo(function LiveMetricCard({
   label,
   value,
-  previousValue,
+  previousValue: _previousValue,
   icon,
   color,
   trend,

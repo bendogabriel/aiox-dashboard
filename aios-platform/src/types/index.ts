@@ -580,9 +580,12 @@ export interface ChatState {
 }
 
 export type ViewType =
-  | 'chat' | 'dashboard' | 'settings' | 'orchestrator' | 'world'  // existing
-  | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor' | 'timeline' // new
-  | 'insights' | 'context' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories'; // new
+  | 'chat' | 'dashboard' | 'settings' | 'orchestrator' | 'world'
+  | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor' | 'timeline'
+  | 'insights' | 'context' | 'knowledge' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories'
+  | 'share' | 'engine' | 'cockpit'
+  | 'agent-directory' | 'task-catalog' | 'workflow-catalog' | 'authority-matrix' | 'handoff-flows'
+  | 'sales-room';
 export type SettingsSectionType = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
 export interface UIState {
@@ -591,6 +594,7 @@ export interface UIState {
   workflowViewOpen: boolean;
   agentExplorerOpen: boolean;
   mobileMenuOpen: boolean;
+  commandPaletteOpen: boolean;
   theme: 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox';
   selectedSquadId: string | null;
   selectedAgentId: string | null;

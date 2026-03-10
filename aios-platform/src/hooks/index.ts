@@ -62,3 +62,15 @@ export { useTTS } from './useTTS';
 export { useAudioCapture } from './useAudioCapture';
 export { useVoiceVisualization } from './useVoiceVisualization';
 export { useVoiceMode } from './useVoiceMode';
+export {
+  useEngineHealth,
+  useEnginePool,
+  useEngineJobs,
+  useWorkflowDefs,
+  useCronJobs,
+  useTeamBundles,
+  useExecuteOnEngine,
+  useTriggerOrchestrator,
+  useToggleCron,
+  useActivateBundle,
+} from './useEngine';

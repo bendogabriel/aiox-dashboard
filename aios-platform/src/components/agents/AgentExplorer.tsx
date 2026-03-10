@@ -5,7 +5,6 @@ import { AgentExplorerCard } from './AgentCard';
 import { useAgents, useSquads, useAgent, useAgentCommands } from '../../hooks';
 import { useChat } from '../../hooks/useChat';
 import { cn, getTierTheme } from '../../lib/utils';
-import { getIconComponent } from '../../lib/icons';
 import type { AgentSummary, AgentTier } from '../../types';
 import { getSquadType } from '../../types';
 import { useUIStore } from '../../stores/uiStore';
@@ -186,6 +185,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                 <input
                   type="text"
                   placeholder="Buscar agents por nome, função ou squad..."
+                  aria-label="Buscar agents por nome, função ou squad"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className={cn(
@@ -194,7 +194,6 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                       ? 'bg-[#111] border border-[rgba(156,156,156,0.15)] focus:border-[#D1FF00] focus:ring-1 focus:ring-[#D1FF00]'
                       : 'rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50'
                   )}
-                  aria-label="Buscar agents"
                 />
               </div>
 

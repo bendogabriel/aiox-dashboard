@@ -7,8 +7,8 @@ import { test as base, expect, Page } from '@playwright/test';
 /** Seed demo chat data via the exposed window helper */
 async function seedDemoChat(page: Page) {
   await page.evaluate(() => {
-    if (typeof (window as any).__seedDemoChat === 'function') {
-      (window as any).__seedDemoChat();
+    if (typeof (window as Record<string, unknown>).__seedDemoChat === 'function') {
+      (window as Record<string, unknown>).__seedDemoChat();
     }
   });
 }
@@ -86,6 +86,7 @@ export const test = base.extend<AiosFixtures>({
   appPage: async ({ page }, use) => {
     await page.goto('/');
     await waitForApp(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(page);
   },
 });

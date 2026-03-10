@@ -34,6 +34,13 @@ const BUILT_IN_COMMANDS: SlashCommand[] = [
     category: 'system',
   },
   {
+    command: '/orquestrar',
+    label: 'Orquestrar',
+    description: 'Executar orquestração multi-squad com Bob',
+    icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
+    category: 'workflow',
+  },
+  {
     command: '/task',
     label: 'Nova Task',
     description: 'Criar uma nova task para o agente',

@@ -3,7 +3,7 @@ import type { SquadType } from '../../types';
 
 export interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'squad' | 'status' | 'count';
+  variant?: 'default' | 'squad' | 'status' | 'count' | 'subtle' | 'primary';
   squadType?: SquadType;
   status?: 'online' | 'busy' | 'offline' | 'success' | 'error' | 'warning';
   size?: 'sm' | 'md';
@@ -54,6 +54,8 @@ export function Badge({
     squad: cn('glass-badge', squadStyles[squadType]),
     status: cn('glass-badge', status ? statusStyles[status] : ''),
     count: 'bg-[var(--badge-count-bg)] text-[var(--badge-count-text)] min-w-[20px] px-1.5 py-0.5 rounded-full text-[10px]',
+    subtle: 'bg-white/5 text-white/60 border border-white/10',
+    primary: 'bg-[rgba(209,255,0,0.1)] text-[#D1FF00] border border-[rgba(209,255,0,0.2)]',
   };
 
   return (

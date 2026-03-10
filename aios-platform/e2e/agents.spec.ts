@@ -1,4 +1,4 @@
-import { test, expect, navigateToView, waitForApp } from './fixtures/base.fixture';
+import { test, expect, waitForApp } from './fixtures/base.fixture';
 import { mockApiRoutes } from './fixtures/api-mocks.fixture';
 
 // ==========================================================================

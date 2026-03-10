@@ -62,7 +62,7 @@ export function useExport() {
       try {
         await navigator.share({ title: title || 'AIOS Platform', url });
         return;
-      } catch {}
+      } catch { /* noop */ }
     }
     await navigator.clipboard.writeText(url);
     addToast({ type: 'success', title: 'Link copiado!', message: url });

@@ -109,7 +109,7 @@ function EmptyStoryList() {
   return <StoryList />;
 }
 
-const meta: Meta<typeof StoryList> = {
+const meta = {
   title: 'Stories/StoryList',
   component: StoryList,
   parameters: {
@@ -124,10 +124,11 @@ const meta: Meta<typeof StoryList> = {
   tags: ['autodocs'],
 };
 
-export default meta;
+export default meta satisfies Meta<typeof StoryList>;
 type Story = StoryObj<typeof meta>;
 
 export const WithStories: Story = {
+  args: {},
   render: () => (
     <div style={{ padding: 24, height: '100vh' }}>
       <StoryListWithData />
@@ -136,6 +137,7 @@ export const WithStories: Story = {
 };
 
 export const Empty: Story = {
+  args: {},
   render: () => (
     <div style={{ padding: 24, height: '100vh' }}>
       <EmptyStoryList />

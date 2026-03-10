@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Avatar } from '../ui';
 import { cn, getSquadTheme } from '../../lib/utils';
@@ -233,9 +233,9 @@ export function WorkflowCanvas({
       </div>
 
       {/* Legend */}
-      <div className="absolute bottom-4 left-4 backdrop-blur-xl rounded-xl p-3" style={{ background: 'var(--glass-background-panel, rgba(0,0,0,0.4))', border: '1px solid var(--color-border-default, rgba(255,255,255,0.1))' }}>
-        <p className="text-xs mb-2" style={{ color: 'var(--color-text-tertiary, rgba(255,255,255,0.5))' }}>Legenda</p>
-        <div className="flex items-center gap-4 text-xs">
+      <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 backdrop-blur-xl rounded-xl p-2 md:p-3" style={{ background: 'var(--glass-background-panel, rgba(0,0,0,0.4))', border: '1px solid var(--color-border-default, rgba(255,255,255,0.1))' }}>
+        <p className="text-[10px] md:text-xs mb-1.5 md:mb-2" style={{ color: 'var(--color-text-tertiary, rgba(255,255,255,0.5))' }}>Legenda</p>
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 text-[10px] md:text-xs">
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: 'var(--color-accent, #D1FF00)', opacity: 0.7 }} />
             <span style={{ color: 'var(--color-text-secondary, rgba(255,255,255,0.7))' }}>Concluído</span>
@@ -256,7 +256,7 @@ export function WorkflowCanvas({
       </div>
 
       {/* Zoom hint */}
-      <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg px-3 py-2">
+      <div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg px-2 md:px-3 py-1.5 md:py-2 hidden sm:block">
         <p className="text-[10px] text-white/50">
           <kbd className="px-1 py-0.5 rounded bg-white/10 text-white/70">⌘/Ctrl</kbd>
           {' + scroll para zoom · arraste para mover'}
@@ -267,7 +267,7 @@ export function WorkflowCanvas({
 }
 
 // Edge Path Component
-function EdgePath({
+const EdgePath = memo(function EdgePath({
   edge,
   sourcePos,
   targetPos,
@@ -341,10 +341,10 @@ function EdgePath({
       )}
     </g>
   );
-}
+});
 
 // Node Component
-function WorkflowNodeComponent({
+const WorkflowNodeComponent = memo(function WorkflowNodeComponent({
   node,
   isSelected,
   onClick,
@@ -499,4 +499,4 @@ function WorkflowNodeComponent({
       )}
     </motion.div>
   );
-}
+});

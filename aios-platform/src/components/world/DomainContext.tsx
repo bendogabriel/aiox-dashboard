@@ -16,6 +16,7 @@ export function DomainProvider({ children }: { children: React.ReactNode }) {
 }
 
 /** Use theme-aware domain colors. Falls back to static defaults outside the provider. */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useDomains(): Record<DomainId, DomainConfig> {
   return useContext(DomainContext);
 }

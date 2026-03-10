@@ -194,7 +194,7 @@ export function useKnowledgeFileContent(filePath: string | null) {
 }
 
 export function useAgentKnowledge(enabled = true) {
-  const { squads: rawSquads } = useSquads();
+  const { data: rawSquads } = useSquads();
   const squads = rawSquads as unknown as Array<{ id: string; name: string; agentCount: number }> | undefined;
 
   const query = useQuery<AgentKnowledge[]>({

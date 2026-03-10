@@ -20,6 +20,8 @@ import { useExecutionHistory } from '../../hooks/useExecute';
 import { useStories } from '../../hooks/useStories';
 import { useExport } from '../../hooks/useExport';
 import { cn } from '../../lib/utils';
+import type { AgentAnalytics } from '../../types';
+import type { Story } from '../../stores/storyStore';
 
 // --- Fallback Mock Data (used when APIs unavailable) ---
 
@@ -126,11 +128,11 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
   // Compute real agent performance
   const realAgentPerf = useMemo(() => {
     if (!agentAnalytics) return null;
-    return agentAnalytics.slice(0, 7).map((a: any) => ({
-      name: a.name || a.agentId,
-      stories: a.executions || 0,
-      hours: Math.round((a.totalDuration || 0) / 3600),
-      successRate: a.executions > 0 ? Math.round(((a.completed || 0) / a.executions) * 100) : 100,
+    return agentAnalytics.slice(0, 7).map((a: AgentAnalytics) => ({
+      name: a.agentName || a.agentId,
+      stories: a.totalExecutions || 0,
+      hours: Math.round((a.avgResponseTime || 0) / 3600),
+      successRate: a.totalExecutions > 0 ? Math.round((a.successRate || 0)) : 100,
     }));
   }, [agentAnalytics]);
 
@@ -143,7 +145,7 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
       const d = new Date(now);
       d.setDate(d.getDate() - (6 - i));
       const key = d.toISOString().split('T')[0];
-      const count = historyData.executions.filter((e: any) => (e.createdAt || '').startsWith(key)).length;
+      const count = historyData.executions.filter(e => (e.createdAt || '').startsWith(key)).length;
       return { day: dayNames[d.getDay()], count };
     });
   }, [historyData]);
@@ -152,7 +154,7 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
   const realBottlenecks = useMemo(() => {
     if (!stories?.length) return null;
     const statusCounts: Record<string, number> = {};
-    stories.forEach((s: any) => {
+    stories.forEach((s: Story) => {
       if (s.status !== 'done' && s.status !== 'backlog') {
         statusCounts[s.status] = (statusCounts[s.status] || 0) + 1;
       }
@@ -166,10 +168,10 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
   // Use real data when available, fallback to mock
   const metrics = realMetrics
     ? [
-        { label: 'Velocity', value: String(realMetrics.velocity), unit: 'stories/week', trend: 'up' as const, trendValue: 'Live', icon: Zap, color: 'text-blue-400' },
-        { label: 'Cycle Time', value: realMetrics.cycleTime, unit: 'hours avg', trend: 'down' as const, trendValue: 'Live', icon: Timer, color: 'text-green-400' },
-        { label: 'Error Rate', value: realMetrics.errorRate, unit: '%', trend: Number(realMetrics.errorRate) > 5 ? 'up' as const : 'down' as const, trendValue: `${realMetrics.total} total`, icon: AlertTriangle, color: 'text-yellow-400' },
-        { label: 'Completed', value: String(realMetrics.completed), unit: `of ${realMetrics.total}`, trend: 'up' as const, trendValue: 'Live', icon: CheckCircle, color: 'text-emerald-400' },
+        { label: 'Velocity', value: String(realMetrics.velocity), unit: 'stories/week', trend: 'up' as const, trendValue: 'Live', icon: Zap, color: 'text-blue-400', sparkline: undefined as number[] | undefined },
+        { label: 'Cycle Time', value: realMetrics.cycleTime, unit: 'hours avg', trend: 'down' as const, trendValue: 'Live', icon: Timer, color: 'text-green-400', sparkline: undefined as number[] | undefined },
+        { label: 'Error Rate', value: realMetrics.errorRate, unit: '%', trend: Number(realMetrics.errorRate) > 5 ? 'up' as const : 'down' as const, trendValue: `${realMetrics.total} total`, icon: AlertTriangle, color: 'text-yellow-400', sparkline: undefined as number[] | undefined },
+        { label: 'Completed', value: String(realMetrics.completed), unit: `of ${realMetrics.total}`, trend: 'up' as const, trendValue: 'Live', icon: CheckCircle, color: 'text-emerald-400', sparkline: undefined as number[] | undefined },
       ]
     : keyMetrics;
   const agents = realAgentPerf || agentPerformance;
@@ -280,7 +282,7 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
               </span>
               {metric.sparkline && (
                 <div className="flex items-end gap-px ml-auto h-4">
-                  {metric.sparkline.map((v, j) => (
+                  {metric.sparkline.map((v: number, j: number) => (
                     <div
                       key={j}
                       className="w-1 bg-yellow-400/60 rounded-full"

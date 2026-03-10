@@ -433,6 +433,7 @@ export interface SquadInlineStyle {
   text: string;
   border: string;
   glow: string;
+  color: string;
 }
 
 export function getSquadInlineStyle(squadId: string): SquadInlineStyle {
@@ -444,6 +445,7 @@ export function getSquadInlineStyle(squadId: string): SquadInlineStyle {
     text: mutedVar,
     border: `color-mix(in srgb, ${cssVar} 30%, transparent)`,
     glow: `color-mix(in srgb, ${cssVar} 40%, transparent)`,
+    color: cssVar,
   };
 }
 

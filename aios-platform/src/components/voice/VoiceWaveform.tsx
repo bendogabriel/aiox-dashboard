@@ -9,7 +9,7 @@ interface VoiceWaveformProps {
   isActive: boolean;
   color?: string;
   thinkingColor?: string;
-  state?: 'idle' | 'listening' | 'thinking' | 'speaking';
+  state?: 'idle' | 'listening' | 'thinking' | 'speaking' | 'executing';
 }
 
 // ---------------------------------------------------------------------------
@@ -36,12 +36,6 @@ function hexToRGB(hex: string): [number, number, number] {
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
   return [r, g, b];
-}
-
-/** Convert hex color + alpha to an rgba() string. */
-function hexToRGBA(hex: string, alpha: number): string {
-  const [r, g, b] = hexToRGB(hex);
-  return `rgba(${r},${g},${b},${alpha})`;
 }
 
 /** Linear interpolation between two values. */

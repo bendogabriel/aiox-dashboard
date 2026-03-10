@@ -10,7 +10,7 @@ import {
   MessageSquare,
   LogOut,
 } from 'lucide-react';
-import { GlassButton, Avatar, ThemeToggle, ShortcutHint } from '../ui';
+import { GlassButton, ThemeToggle, ShortcutHint } from '../ui';
 import { NotificationCenter } from '../ui/NotificationCenter';
 import { FocusToggle } from '../ui/FocusModeIndicator';
 import { PresenceAvatars } from '../ui/PresenceAvatars';
@@ -18,8 +18,7 @@ import { LanguageToggle } from '../ui/LanguageToggle';
 import { MobileMenuButton } from './Sidebar';
 import { useGlobalSearch } from '../search';
 import { useUIStore } from '../../stores/uiStore';
-import { cn, formatRelativeTime } from '../../lib/utils';
-import type { SquadType } from '../../types';
+import { cn } from '../../lib/utils';
 import { ICON_SIZES } from '../../lib/icons';
 
 // Icons
@@ -51,20 +50,6 @@ const CompassIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <circle cx="12" cy="12" r="10" />
     <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-  </svg>
-);
-
-const BellIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-    <path d="M13.73 21a2 2 0 01-3.46 0" />
-  </svg>
-);
-
-const CloseIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
 
@@ -221,7 +206,7 @@ function UserMenu() {
     <div className="relative ml-2" ref={menuRef}>
       <button
         onClick={() => setShowMenu(!showMenu)}
-        aria-label="Menu do usuário"
+        aria-label="RC — Menu do usuário"
         className="h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-gradient-to-br from-[#D1FF00] to-[#a8cc00] flex items-center justify-center text-[#0a0a0a] text-sm font-medium hover:scale-105 transition-transform touch-manipulation"
       >
         RC

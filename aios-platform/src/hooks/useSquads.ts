@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { squadsApi } from '../services/api';
 import type { Squad, SquadDetail, SquadStats, EcosystemOverview, SquadType } from '../types';
+import type { AgentConnection } from '../mocks/squads';
+import { mockConnections } from '../mocks/squads';
 
 // Map squad ID or domain to UI SquadType (updated 2026-02-06)
 function inferSquadType(squad: Squad): SquadType {
@@ -73,5 +75,21 @@ export function useEcosystemOverview() {
       return squadsApi.getEcosystemOverview();
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+}
+
+export function useSquadConnections(squadId: string | null) {
+  return useQuery<AgentConnection[]>({
+    queryKey: ['squadConnections', squadId],
+    queryFn: async () => {
+      if (!squadId) return mockConnections;
+      try {
+        return await squadsApi.getSquadConnections(squadId);
+      } catch {
+        // Fallback to mock data when backend doesn't support this endpoint yet
+        return mockConnections;
+      }
+    },
+    staleTime: 5 * 60 * 1000,
   });
 }

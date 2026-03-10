@@ -92,14 +92,3 @@ export function getDomainInfo(squadType: SquadType): DomainInfo {
   return domainTaxonomy[squadType] || domainTaxonomy.default;
 }
 
-export const tierLabels: Record<number, string> = {
-  0: 'Orchestrator',
-  1: 'Master',
-  2: 'Specialist',
-};
-
-export const tierColors: Record<number, { text: string; bg: string }> = {
-  0: { text: 'text-purple-400', bg: 'bg-purple-500/15' },
-  1: { text: 'text-blue-400', bg: 'bg-blue-500/15' },
-  2: { text: 'text-green-400', bg: 'bg-green-500/15' },
-};

@@ -59,7 +59,7 @@ function sendDesktopNotification(title: string, body?: string, type?: ToastType)
       icon: '/favicon.ico',
       tag: 'aios-notification',
     });
-  } catch {}
+  } catch { /* noop */ }
 }
 
 export const useToastStore = create<ToastState>((set, get) => ({

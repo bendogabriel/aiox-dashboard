@@ -54,16 +54,21 @@ export function CockpitButton({
       {...props}
     >
       {loading ? (
-        <span
-          style={{
-            width: 14,
-            height: 14,
-            border: '2px solid currentColor',
-            borderRightColor: 'transparent',
-            borderRadius: '50%',
-            animation: 'aiox-spin 0.6s linear infinite',
-          }}
-        />
+        <>
+          <span
+            style={{
+              width: 14,
+              height: 14,
+              border: '2px solid currentColor',
+              borderRightColor: 'transparent',
+              borderRadius: '50%',
+              animation: 'aiox-spin 0.6s linear infinite',
+            }}
+          />
+          <span style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', borderWidth: 0 }}>
+            Carregando
+          </span>
+        </>
       ) : (
         children
       )}

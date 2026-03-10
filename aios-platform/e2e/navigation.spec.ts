@@ -33,6 +33,12 @@ test.describe('Navigation & URL Sync', () => {
       'github',
       'qa',
       'settings',
+      'engine',
+      'agent-directory',
+      'task-catalog',
+      'workflow-catalog',
+      'authority-matrix',
+      'handoff-flows',
     ];
 
     for (const view of views) {

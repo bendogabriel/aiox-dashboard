@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { Avatar, Badge } from '../ui';
 import { cn, formatRelativeTime } from '../../lib/utils';
-import { getAgentAvatarUrl } from '../../lib/agent-avatars';
 import type { Message, MessageAttachment, SquadType } from '../../types';
 
 // Lazy load heavy markdown renderer

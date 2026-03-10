@@ -7,7 +7,6 @@ import {
   Megaphone,
   Rocket,
   Wrench,
-  Activity,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { ICON_SIZES } from '../../lib/icons';
@@ -37,6 +36,7 @@ export interface WorkflowStep {
 
 // ── Mock Business Workflows ──
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const businessWorkflows: WorkflowPipeline[] = [
   {
     id: 'live-semanal',

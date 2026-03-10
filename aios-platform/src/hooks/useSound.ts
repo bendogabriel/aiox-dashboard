@@ -2,10 +2,11 @@
 // Sounds are synthesized procedurally (no audio files needed)
 
 const audioCtx = () => {
-  if (!(window as any).__aiosSoundCtx) {
-    (window as any).__aiosSoundCtx = new AudioContext();
+  const win = window as unknown as Record<string, unknown>;
+  if (!win.__aiosSoundCtx) {
+    win.__aiosSoundCtx = new AudioContext();
   }
-  return (window as any).__aiosSoundCtx as AudioContext;
+  return win.__aiosSoundCtx as AudioContext;
 };
 
 type SoundName =

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import InsightsView from './InsightsView';
 
-const meta: Meta<typeof InsightsView> = {
+const meta = {
   title: 'Views/InsightsView',
   component: InsightsView,
   parameters: {
@@ -15,7 +15,7 @@ const meta: Meta<typeof InsightsView> = {
   },
   tags: ['autodocs'],
   decorators: [
-    (Story) => (
+    (Story: React.ComponentType) => (
       <div style={{ height: '100vh', background: '#0f0f14' }}>
         <Story />
       </div>
@@ -23,12 +23,15 @@ const meta: Meta<typeof InsightsView> = {
   ],
 };
 
-export default meta;
+export default meta satisfies Meta<typeof InsightsView>;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  args: {},
+};
 
 export const InNarrowViewport: Story = {
+  args: {},
   decorators: [
     (Story) => (
       <div style={{ height: '100vh', maxWidth: 480, background: '#0f0f14' }}>
@@ -39,6 +42,7 @@ export const InNarrowViewport: Story = {
 };
 
 export const InWideViewport: Story = {
+  args: {},
   decorators: [
     (Story) => (
       <div style={{ height: '100vh', maxWidth: 1400, background: '#0f0f14' }}>

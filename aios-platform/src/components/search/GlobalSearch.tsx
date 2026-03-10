@@ -136,7 +136,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
     ...results.map((a): FlatItem => ({ kind: 'agent', data: a })),
   ], [filteredActions, results]);
   // Keep old flatResults for agent-only backward compat
-  const flatResults = results;
+  const _flatResults = results;
 
   // Focus input when opened
   useEffect(() => {

@@ -316,10 +316,10 @@ export function AgentInteractionPanel({
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={`Mensagem para ${agent?.name || 'agent'}...`}
+                    aria-label={`Mensagem para ${agent?.name || 'agent'}`}
                     disabled={isStreaming}
                     className="flex-1 h-8 px-2.5 rounded-lg text-[11px] text-primary placeholder:text-tertiary glass-subtle focus:outline-none focus:ring-1 transition-all bg-transparent"
                     style={{ focusRingColor: domainCfg.tileColor } as React.CSSProperties}
-                    aria-label={`Mensagem para ${agent?.name || 'agent'}`}
                   />
                   <button
                     onClick={handleSend}
@@ -541,7 +541,7 @@ export function AgentInteractionPanel({
 }
 
 // Timeline row for an individual monitor event
-function ActivityEventRow({ event, domainColor }: { event: MonitorEvent; domainColor: string }) {
+function ActivityEventRow({ event, domainColor: _domainColor }: { event: MonitorEvent; domainColor: string }) {
   const typeColors: Record<MonitorEvent['type'], string> = {
     tool_call: '#10B981',
     message: '#8B5CF6',

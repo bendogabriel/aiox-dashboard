@@ -12,15 +12,23 @@ import {
   Map,
   Network,
   Github,
+  Server,
   Settings,
   ChevronLeft,
   Menu,
   X,
   BookOpen,
   Database,
+  UsersRound,
+  ListTodo,
+  Workflow,
+  Shield,
+  ArrowRightLeft,
+  Eye,
 } from 'lucide-react';
 import { GlassCard, GlassButton, AioxLogo } from '../ui';
 import { useUIStore } from '../../stores/uiStore';
+import { useOrchestrationStore } from '../../stores/orchestrationStore';
 import { cn } from '../../lib/utils';
 
 // Logo components
@@ -49,6 +57,14 @@ const navItems = [
   { id: 'squads' as const, icon: Network, label: 'Squads', shortcut: 'Q', separator: false },
   { id: 'stories' as const, icon: BookOpen, label: 'Stories', shortcut: 'Y', separator: false },
   { id: 'github' as const, icon: Github, label: 'GitHub', shortcut: 'G', separator: false },
+  { id: 'sales-room' as const, icon: Eye, label: 'Sales Room', shortcut: 'L', separator: false },
+  { id: 'engine' as const, icon: Server, label: 'Engine', shortcut: 'E', separator: true },
+  // Registry views
+  { id: 'agent-directory' as const, icon: UsersRound, label: 'Agent Dir', shortcut: '', separator: false },
+  { id: 'task-catalog' as const, icon: ListTodo, label: 'Tasks', shortcut: '', separator: false },
+  { id: 'workflow-catalog' as const, icon: Workflow, label: 'Workflows', shortcut: '', separator: false },
+  { id: 'authority-matrix' as const, icon: Shield, label: 'Authority', shortcut: '', separator: false },
+  { id: 'handoff-flows' as const, icon: ArrowRightLeft, label: 'Handoffs', shortcut: '', separator: false },
   { id: 'settings' as const, icon: Settings, label: 'Settings', shortcut: 'S', separator: false },
 ] as const;
 
@@ -77,9 +93,17 @@ const navItemVariants = {
 // Navigation component — vertical list with stagger animation
 function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
   const { currentView, setCurrentView } = useUIStore();
+  const { badgeCount, isRunning, clearPending } = useOrchestrationStore();
+
+  const handleNavClick = (viewId: string) => {
+    setCurrentView(viewId as Parameters<typeof setCurrentView>[0]);
+    if (viewId === 'bob' && badgeCount > 0) {
+      clearPending();
+    }
+  };
 
   return (
-    <nav className="flex-1 p-2 overflow-y-auto glass-scrollbar" aria-label="Navegacao principal">
+    <nav id="navigation" className="flex-1 p-2 overflow-y-auto glass-scrollbar" aria-label="Navegacao principal">
       <motion.div
         className="space-y-0.5"
         variants={navContainerVariants}
@@ -89,6 +113,8 @@ function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentView === item.id;
+          const showBadge = item.id === 'bob' && badgeCount > 0 && !isActive;
+          const showPulse = item.id === 'bob' && isRunning && !isActive;
 
           return (
             <motion.div key={item.id} variants={navItemVariants}>
@@ -96,7 +122,7 @@ function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
               <div className={cn('my-2', collapsed ? 'mx-2' : 'mx-3', 'border-t border-white/10')} />
             )}
             <button
-              onClick={() => setCurrentView(item.id)}
+              onClick={() => handleNavClick(item.id)}
               title={collapsed ? `${item.label} (${item.shortcut})` : undefined}
               className={cn(
                 'aiox-nav-item w-full flex items-center gap-3 rounded-xl transition-all text-left group relative',
@@ -110,17 +136,35 @@ function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
                 borderColor: 'var(--sidebar-active-border)',
               } : undefined}
             >
-              <Icon
-                size={18}
-                className={cn(
-                  'flex-shrink-0 transition-colors',
-                  !isActive && 'text-tertiary group-hover:text-secondary'
+              <span className="relative flex-shrink-0">
+                <Icon
+                  size={18}
+                  className={cn(
+                    'transition-colors',
+                    !isActive && 'text-tertiary group-hover:text-secondary'
+                  )}
+                  style={isActive ? { color: 'var(--sidebar-active-text)' } : undefined}
+                />
+                {showPulse && (
+                  <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse" />
                 )}
-                style={isActive ? { color: 'var(--sidebar-active-text)' } : undefined}
-              />
+                {showBadge && !showPulse && collapsed && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-primary text-[10px] font-bold text-black flex items-center justify-center">
+                    {badgeCount > 9 ? '9+' : badgeCount}
+                  </span>
+                )}
+              </span>
               {!collapsed && (
                 <>
                   <span className="flex-1 text-sm font-medium truncate">{item.label}</span>
+                  {showBadge && !showPulse && (
+                    <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-bold text-black flex items-center justify-center">
+                      {badgeCount > 9 ? '9+' : badgeCount}
+                    </span>
+                  )}
+                  {showPulse && (
+                    <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+                  )}
                   <kbd
                     className={cn(
                       'hidden lg:inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded text-[10px] font-mono',

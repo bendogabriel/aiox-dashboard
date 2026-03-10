@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { DomainId } from './world-layout';
 import { useDomains } from './DomainContext';
@@ -99,6 +99,7 @@ export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) 
     } else if (monitorEvents.length < lastEventCountRef.current) {
       lastEventCountRef.current = monitorEvents.length;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- trigger on .length only; full array ref would over-fire
   }, [monitorEvents.length, monitorConnected, maxVisible]);
 
   // Auto-generate demo notifications for ambience (only when not connected)
