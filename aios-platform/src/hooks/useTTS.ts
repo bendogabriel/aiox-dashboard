@@ -177,7 +177,7 @@ export function useTTS({
     provider === 'browser' ? browserSynthesis.isSupported : true;
 
   // Pump analyser data → voiceStore.outputLevel
-  const monitorOutput = useCallback(() => {
+  const monitorOutput = useCallback(function loop() {
     const analyser = chainRef.current?.analyser;
     if (!analyser) return;
 
@@ -192,7 +192,7 @@ export function useTTS({
     const rms = Math.sqrt(sum / buf.length);
     useVoiceStore.getState().setOutputLevel(Math.min(1, rms * 4));
 
-    rafRef.current = requestAnimationFrame(monitorOutput);
+    rafRef.current = requestAnimationFrame(loop);
   }, []);
 
   const stopCloud = useCallback(() => {

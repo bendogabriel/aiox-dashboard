@@ -29,7 +29,7 @@ interface PlanApprovalCardProps {
   isSubmitting?: boolean;
 }
 
-export function PlanApprovalCard({ plan, demand, onApprove, onRevise, isSubmitting }: PlanApprovalCardProps) {
+export function PlanApprovalCard({ plan, onApprove, onRevise, isSubmitting }: PlanApprovalCardProps) {
   const [showReviseInput, setShowReviseInput] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [showReasoning, setShowReasoning] = useState(false);

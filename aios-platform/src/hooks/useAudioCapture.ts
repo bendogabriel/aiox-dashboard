@@ -20,7 +20,7 @@ export function useAudioCapture(deviceId?: string | null): AudioCaptureResult {
   const rafRef = useRef<number>(0);
   const dataArrayRef = useRef<Uint8Array<ArrayBuffer> | null>(null);
 
-  const computeLevel = useCallback(() => {
+  const computeLevel = useCallback(function loop() {
     const analyser = analyserRef.current;
     if (!analyser || !dataArrayRef.current) return;
 
@@ -37,7 +37,7 @@ export function useAudioCapture(deviceId?: string | null): AudioCaptureResult {
     const level = Math.min(1, rms * 4);
 
     setInputLevel(level);
-    rafRef.current = requestAnimationFrame(computeLevel);
+    rafRef.current = requestAnimationFrame(loop);
   }, []);
 
   const startCapture = useCallback(async () => {

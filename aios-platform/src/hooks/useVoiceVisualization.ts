@@ -23,7 +23,7 @@ export function useVoiceVisualization(
   const timeBufferRef = useRef<Uint8Array<ArrayBuffer> | null>(null);
   const rafRef = useRef<number>(0);
 
-  const tick = useCallback(() => {
+  const tick = useCallback(function loop() {
     if (!analyserNode) return;
 
     // Lazily allocate buffers when analyser changes
@@ -56,7 +56,7 @@ export function useVoiceVisualization(
     setFrequencyData(new Uint8Array(freqBuf));
     setTimeDomainData(new Uint8Array(timeBuf));
 
-    rafRef.current = requestAnimationFrame(tick);
+    rafRef.current = requestAnimationFrame(loop);
   }, [analyserNode]);
 
   useEffect(() => {

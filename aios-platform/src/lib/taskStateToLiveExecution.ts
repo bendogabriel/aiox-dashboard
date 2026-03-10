@@ -77,7 +77,7 @@ export function taskStateToLiveExecution(state: TaskState): LiveExecutionState |
   });
 
   // Collect finished/streaming step IDs
-  const finishedStepIds = new Set(state.agentOutputs.map(o => o.stepId));
+  const _finishedStepIds = new Set(state.agentOutputs.map(o => o.stepId));
   const streamingMap = new Map<string, StreamingOutput>();
   for (const [, s] of state.streamingOutputs) {
     streamingMap.set(s.stepId, s);

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '../../test/test-utils';
+import { render, screen } from '../../test/test-utils';
 import type { Story, StoryStatus } from '../../stores/storyStore';
 import type { Squad, SquadStats, AgentSummary, Agent, AgentTier } from '../../types';
 
@@ -485,7 +485,7 @@ describe('SquadCard', () => {
     const { container } = render(<SquadCard squad={squad} />);
 
     // No badges should be present besides the status badge
-    const badges = container.querySelectorAll('[class*="glass-badge"]');
+    const _badges = container.querySelectorAll('[class*="glass-badge"]');
     // Only the "Ativo" status badge
     expect(screen.queryByText('React')).not.toBeInTheDocument();
   });

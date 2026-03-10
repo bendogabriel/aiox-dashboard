@@ -83,7 +83,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: aios-platform/package-lock.json
       - run: npm ci
-      - run: npx vitest run --reporter=verbose
+      - run: npx vitest run --project unit --reporter=verbose
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4

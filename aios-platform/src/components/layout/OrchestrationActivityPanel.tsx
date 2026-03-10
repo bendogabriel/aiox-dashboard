@@ -156,7 +156,7 @@ function OrchStatusTab({
   const statusInfo = getStatusInfo(task.status);
   const totalAgents = task.squadSelections.reduce((s, sq) => s + sq.agentCount, 0);
   const completedOutputs = task.agentOutputs.length;
-  const streamingCount = task.streamingAgents.length;
+  const _streamingCount = task.streamingAgents.length;
 
   return (
     <>
