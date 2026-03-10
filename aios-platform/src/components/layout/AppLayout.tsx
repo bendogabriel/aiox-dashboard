@@ -13,6 +13,7 @@ import { ProjectTabs } from '../project-tabs/ProjectTabs';
 import { GlobalVoiceProvider } from '../voice';
 import { useUIStore } from '../../stores/uiStore';
 import { useGlobalKeyboardShortcuts } from '../../hooks/useGlobalKeyboardShortcuts';
+import { useIntegrationOnboarding } from '../../hooks/useIntegrationOnboarding';
 import { cn } from '../../lib/utils';
 
 // Lazy-load matrix effects — only loaded when matrix theme is active
@@ -34,6 +35,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   useGlobalKeyboardShortcuts({
     onShowShortcuts: () => setShowShortcuts(true),
   });
+
+  // Auto-redirect to Integrations if nothing is connected (first run)
+  useIntegrationOnboarding();
 
   // Show activity panel on views where it's useful (chat, bob/orchestrator, dashboard, agents)
   const VIEWS_WITH_ACTIVITY = new Set(['chat', 'bob', 'orchestrator', 'dashboard', 'agents', 'cockpit']);

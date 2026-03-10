@@ -30,6 +30,7 @@ import {
 import { GlassCard, GlassButton, AioxLogo } from '../ui';
 import { useUIStore } from '../../stores/uiStore';
 import { useOrchestrationStore } from '../../stores/orchestrationStore';
+import { useIntegrationStore } from '../../stores/integrationStore';
 import { cn } from '../../lib/utils';
 
 // Logo components
@@ -96,6 +97,13 @@ const navItemVariants = {
 function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
   const { currentView, setCurrentView } = useUIStore();
   const { badgeCount, isRunning, clearPending } = useOrchestrationStore();
+  const integrations = useIntegrationStore((s) => s.integrations);
+
+  // Integration health summary for sidebar dot
+  const integrationStatuses = Object.values(integrations);
+  const hasError = integrationStatuses.some((i) => i.status === 'error');
+  const hasPartial = integrationStatuses.some((i) => i.status === 'partial' || i.status === 'disconnected');
+  const allConnected = integrationStatuses.every((i) => i.status === 'connected');
 
   const handleNavClick = (viewId: string) => {
     setCurrentView(viewId as Parameters<typeof setCurrentView>[0]);
@@ -117,6 +125,8 @@ function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
           const isActive = currentView === item.id;
           const showBadge = item.id === 'bob' && badgeCount > 0 && !isActive;
           const showPulse = item.id === 'bob' && isRunning && !isActive;
+          const showIntegrationDot = item.id === 'integrations' && !allConnected && !isActive;
+          const integrationDotColor = hasError ? 'bg-red-500' : hasPartial ? 'bg-yellow-500' : 'bg-lime-400';
 
           return (
             <motion.div key={item.id} variants={navItemVariants}>
@@ -154,6 +164,9 @@ function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
                   <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-primary text-[10px] font-bold text-black flex items-center justify-center">
                     {badgeCount > 9 ? '9+' : badgeCount}
                   </span>
+                )}
+                {showIntegrationDot && (
+                  <span className={cn('absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full', integrationDotColor)} />
                 )}
               </span>
               {!collapsed && (

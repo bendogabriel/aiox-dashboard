@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Server, MessageSquare, Database, Copy, Check, ExternalLink, QrCode, KeyRound, Mic, Plus, Trash2 } from 'lucide-react';
+import { X, Server, MessageSquare, Database, Copy, Check, ExternalLink, QrCode, KeyRound, Mic, Plus, Trash2, Send } from 'lucide-react';
 import { useIntegrationStore } from '../../stores/integrationStore';
 import { getEngineUrl } from '../../lib/connection';
 
@@ -335,9 +335,28 @@ function WhatsAppSetup({ onClose }: { onClose: () => void }) {
           </div>
         )}
 
-        <button onClick={checkStatus} style={{ ...primaryBtnStyle, background: 'transparent', color: 'var(--aiox-cream)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          Check Status
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={checkStatus} style={{ ...primaryBtnStyle, flex: 1, background: 'transparent', color: 'var(--aiox-cream)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            Check Status
+          </button>
+          <button
+            onClick={async () => {
+              if (!engineUrl) { setStatusMsg('Engine not configured'); return; }
+              setStatusMsg('Sending test message...');
+              try {
+                const res = await fetch(`${engineUrl}/whatsapp/test`, { method: 'POST' });
+                const data = await res.json() as { success?: boolean; message?: string; error?: string };
+                setStatusMsg(data.success ? `Test sent: ${data.message || 'OK'}` : `Failed: ${data.error || data.message || 'Unknown error'}`);
+              } catch {
+                setStatusMsg('Cannot reach engine');
+              }
+            }}
+            style={{ ...primaryBtnStyle, flex: 1, background: 'rgba(37, 211, 102, 0.15)', color: '#25D366', border: '1px solid rgba(37, 211, 102, 0.3)' }}
+          >
+            <Send size={14} style={{ display: 'inline', marginRight: 6 }} />
+            Send Test
+          </button>
+        </div>
 
         {statusMsg && (
           <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', color: 'var(--aiox-gray-muted)', background: 'rgba(255,255,255,0.02)', borderLeft: '2px solid rgba(37, 211, 102, 0.3)' }}>

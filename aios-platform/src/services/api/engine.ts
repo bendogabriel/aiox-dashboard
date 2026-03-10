@@ -342,4 +342,48 @@ export const engineApi = {
       tasks: Array<{ id: string; name: string; file: string }>;
       count: number;
     }>('/registry/tasks'),
+
+  // Integrations
+  listIntegrations: () =>
+    engineFetch<Array<{
+      id: string;
+      status: string;
+      config: Record<string, string>;
+      message: string | null;
+      last_checked: number | null;
+    }>>('/integrations'),
+
+  getIntegration: (id: string) =>
+    engineFetch<{
+      id: string;
+      status: string;
+      config: Record<string, string>;
+      message: string | null;
+    }>(`/integrations/${id}`),
+
+  upsertIntegration: (id: string, data: { status?: string; config?: Record<string, string>; message?: string }) =>
+    engineFetch<{ ok: boolean; id: string }>(`/integrations/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  // Secrets vault
+  listSecrets: (integrationId?: string) => {
+    const qs = integrationId ? `?integration=${encodeURIComponent(integrationId)}` : '';
+    return engineFetch<Array<{ key: string; integration_id: string | null; updated_at: string }>>(
+      `/integrations/secrets/list${qs}`,
+    );
+  },
+
+  storeSecret: (key: string, value: string, integration?: string) =>
+    engineFetch<{ ok: boolean; key: string }>('/integrations/secrets', {
+      method: 'POST',
+      body: JSON.stringify({ key, value, integration }),
+    }),
+
+  getSecretPreview: (key: string) =>
+    engineFetch<{ key: string; exists: boolean; preview: string }>(`/integrations/secrets/${key}`),
+
+  deleteSecretKey: (key: string) =>
+    engineFetch<{ ok: boolean }>(`/integrations/secrets/${key}`, { method: 'DELETE' }),
 };
