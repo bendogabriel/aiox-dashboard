@@ -202,39 +202,3 @@ export function useGlobalKeyboardShortcuts(options: KeyboardShortcutsOptions = {
     navigateConversation,
   };
 }
-
-// Shortcut definitions for the modal
-export const shortcutDefinitions = [
-  // Navigation -- Single Key
-  { keys: ['H'], description: 'Chat', category: 'Views' },
-  { keys: ['D'], description: 'Dashboard', category: 'Views' },
-  { keys: ['W'], description: 'World', category: 'Views' },
-  { keys: ['K'], description: 'Kanban Board', category: 'Views' },
-  { keys: ['A'], description: 'Agent Monitor', category: 'Views' },
-  { keys: ['B'], description: 'Bob Orchestration', category: 'Views' },
-  { keys: ['T'], description: 'Terminals', category: 'Views' },
-  { keys: ['M'], description: 'Live Monitor', category: 'Views' },
-  { keys: ['I'], description: 'Insights', category: 'Views' },
-  { keys: ['C'], description: 'Context', category: 'Views' },
-  { keys: ['R'], description: 'Roadmap', category: 'Views' },
-  { keys: ['Q'], description: 'Squads', category: 'Views' },
-  { keys: ['G'], description: 'GitHub', category: 'Views' },
-  { keys: ['S'], description: 'Settings', category: 'Views' },
-  { keys: ['['], description: 'Toggle sidebar', category: 'Views' },
-
-  // Commands
-  { keys: ['\u2318', 'K'], description: 'Abrir busca global', category: 'Comandos' },
-  { keys: ['\u2318', 'B'], description: 'Toggle sidebar', category: 'Comandos' },
-  { keys: ['\u2318', '.'], description: 'Toggle tema dark/light', category: 'Comandos' },
-  { keys: ['\u2318', 'E'], description: 'Abrir Agent Explorer', category: 'Comandos' },
-  { keys: ['\u2318', '\\'], description: 'Toggle painel de atividades', category: 'Comandos' },
-  { keys: ['\u2318', '/'], description: 'Mostrar atalhos', category: 'Comandos' },
-  { keys: ['Esc'], description: 'Fechar modal/painel', category: 'Comandos' },
-
-  // Chat
-  { keys: ['\u2318', 'N'], description: 'Nova conversa', category: 'Chat' },
-  { keys: ['\u2318', '['], description: 'Conversa anterior', category: 'Chat' },
-  { keys: ['\u2318', ']'], description: 'Próxima conversa', category: 'Chat' },
-  { keys: ['\u2318', 'Enter'], description: 'Enviar mensagem', category: 'Chat' },
-  { keys: ['Shift', 'Enter'], description: 'Nova linha', category: 'Chat' },
-];

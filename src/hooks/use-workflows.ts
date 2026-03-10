@@ -7,20 +7,7 @@ import {
   type WorkflowSummary,
   type Workflow,
   type WorkflowExecution,
-  type WorkflowStats,
-  type WorkflowSchema,
 } from '@/services/api';
-
-// Get workflow schema
-export function useWorkflowSchema() {
-  return useQuery<WorkflowSchema>({
-    queryKey: ['workflowSchema'],
-    queryFn: async () => {
-      return workflowsApi.getSchema();
-    },
-    staleTime: 60 * 60 * 1000, // 1 hour
-  });
-}
 
 // List workflows
 export function useWorkflows(params?: { status?: string; name?: string }) {
@@ -45,19 +32,6 @@ export function useWorkflow(id: string | null) {
     },
     enabled: !!id,
     staleTime: 30 * 1000,
-  });
-}
-
-// Get workflow stats
-export function useWorkflowStats(id: string | null) {
-  return useQuery<WorkflowStats | null>({
-    queryKey: ['workflowStats', id],
-    queryFn: async () => {
-      if (!id) return null;
-      return workflowsApi.getWorkflowStats(id);
-    },
-    enabled: !!id,
-    staleTime: 60 * 1000,
   });
 }
 

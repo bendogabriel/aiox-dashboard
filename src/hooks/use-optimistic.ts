@@ -298,7 +298,7 @@ export function createQueryKey(
 }
 
 // Predefined query key factories
-export const queryKeys = {
+const queryKeys = {
   // Squads
   squads: {
     all: () => ['squads'] as const,

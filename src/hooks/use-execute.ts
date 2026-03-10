@@ -13,7 +13,6 @@ import type {
   LLMHealth,
   SquadType,
   MessageAttachment,
-  getSquadType,
   StreamToolsEvent,
 } from '@/types';
 
