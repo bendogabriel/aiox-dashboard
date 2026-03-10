@@ -38,8 +38,20 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const { sidebarCollapsed, activityPanelOpen, agentExplorerOpen, setAgentExplorerOpen, currentView, theme } = useUIStore();
-  const { projects, activeProjectId, setActiveProject, removeProject, addProject, reorderProjects, closeOtherProjects, closeAllProjects } = useProjectsStore();
+  const sidebarCollapsed = useUIStore(s => s.sidebarCollapsed);
+  const activityPanelOpen = useUIStore(s => s.activityPanelOpen);
+  const agentExplorerOpen = useUIStore(s => s.agentExplorerOpen);
+  const setAgentExplorerOpen = useUIStore(s => s.setAgentExplorerOpen);
+  const currentView = useUIStore(s => s.currentView);
+  const theme = useUIStore(s => s.theme);
+  const projects = useProjectsStore(s => s.projects);
+  const activeProjectId = useProjectsStore(s => s.activeProjectId);
+  const setActiveProject = useProjectsStore(s => s.setActiveProject);
+  const removeProject = useProjectsStore(s => s.removeProject);
+  const addProject = useProjectsStore(s => s.addProject);
+  const reorderProjects = useProjectsStore(s => s.reorderProjects);
+  const closeOtherProjects = useProjectsStore(s => s.closeOtherProjects);
+  const closeAllProjects = useProjectsStore(s => s.closeAllProjects);
   const globalSearch = useGlobalSearch();
   const [showShortcuts, setShowShortcuts] = useState(false);
 

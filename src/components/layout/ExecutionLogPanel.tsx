@@ -75,7 +75,10 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
   const [expanded, setExpanded] = useState(false);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
-  const { logs, isExecuting, currentExecution, clearLogs } = useExecutionLogStore();
+  const logs = useExecutionLogStore((s) => s.logs);
+  const isExecuting = useExecutionLogStore((s) => s.isExecuting);
+  const currentExecution = useExecutionLogStore((s) => s.currentExecution);
+  const clearLogs = useExecutionLogStore((s) => s.clearLogs);
 
   // Auto-expand when execution starts
   useEffect(() => {

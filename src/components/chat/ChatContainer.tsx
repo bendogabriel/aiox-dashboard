@@ -66,7 +66,10 @@ export function ChatContainer() {
     stopStreaming,
     selectAgent,
   } = useChat();
-  const { sessions, activeSessionId, setActiveSession, deleteSession } = useChatStore();
+  const sessions = useChatStore((s) => s.sessions);
+  const activeSessionId = useChatStore((s) => s.activeSessionId);
+  const setActiveSession = useChatStore((s) => s.setActiveSession);
+  const deleteSession = useChatStore((s) => s.deleteSession);
   const { selectedAgentId } = useUIStore();
   const [chatSidebarOpen, setChatSidebarOpen] = useState(true);
 

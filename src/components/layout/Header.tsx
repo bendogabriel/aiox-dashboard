@@ -110,7 +110,12 @@ type Notification = {
 };
 
 export function Header() {
-  const { activityPanelOpen, toggleActivityPanel, workflowViewOpen, toggleWorkflowView, agentExplorerOpen, toggleAgentExplorer } = useUIStore();
+  const activityPanelOpen = useUIStore(s => s.activityPanelOpen);
+  const toggleActivityPanel = useUIStore(s => s.toggleActivityPanel);
+  const workflowViewOpen = useUIStore(s => s.workflowViewOpen);
+  const toggleWorkflowView = useUIStore(s => s.toggleWorkflowView);
+  const agentExplorerOpen = useUIStore(s => s.agentExplorerOpen);
+  const toggleAgentExplorer = useUIStore(s => s.toggleAgentExplorer);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const globalSearch = useGlobalSearch();

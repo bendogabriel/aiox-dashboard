@@ -11,7 +11,9 @@ interface SidebarProps {
 }
 
 export function Sidebar({ className }: SidebarProps) {
-  const { sidebarCollapsed, activeView, setActiveView } = useUIStore();
+  const sidebarCollapsed = useUIStore((s) => s.sidebarCollapsed);
+  const activeView = useUIStore((s) => s.activeView);
+  const setActiveView = useUIStore((s) => s.setActiveView);
   const bobActive = useBobStore((s) => s.active);
   const bobInactive = useBobStore((s) => s.isInactive);
 

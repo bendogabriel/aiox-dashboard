@@ -292,7 +292,10 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
 
 // Hook for global keyboard shortcut - uses shared Zustand store
 export function useGlobalSearch() {
-  const { isOpen, open, close, toggle } = useSearchStore();
+  const isOpen = useSearchStore((s) => s.isOpen);
+  const open = useSearchStore((s) => s.open);
+  const close = useSearchStore((s) => s.close);
+  const toggle = useSearchStore((s) => s.toggle);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

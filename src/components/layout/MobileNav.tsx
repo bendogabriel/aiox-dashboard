@@ -67,7 +67,9 @@ const navItems: NavItem[] = [
 ];
 
 export function MobileNav() {
-  const { currentView, setCurrentView, setMobileMenuOpen } = useUIStore();
+  const currentView = useUIStore((s) => s.currentView);
+  const setCurrentView = useUIStore((s) => s.setCurrentView);
+  const setMobileMenuOpen = useUIStore((s) => s.setMobileMenuOpen);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">

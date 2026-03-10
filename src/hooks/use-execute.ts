@@ -74,8 +74,16 @@ interface ExecuteParams {
 
 export function useExecuteAgent() {
   const queryClient = useQueryClient();
-  const { addMessage, setStreaming, updateMessage, setAbortController } = useChatStore();
-  const { startExecution, endExecution, addAgentStart, addAgentComplete, addToolUse, addError } = useExecutionLogStore();
+  const addMessage = useChatStore(s => s.addMessage);
+  const setStreaming = useChatStore(s => s.setStreaming);
+  const updateMessage = useChatStore(s => s.updateMessage);
+  const setAbortController = useChatStore(s => s.setAbortController);
+  const startExecution = useExecutionLogStore(s => s.startExecution);
+  const endExecution = useExecutionLogStore(s => s.endExecution);
+  const addAgentStart = useExecutionLogStore(s => s.addAgentStart);
+  const addAgentComplete = useExecutionLogStore(s => s.addAgentComplete);
+  const addToolUse = useExecutionLogStore(s => s.addToolUse);
+  const addError = useExecutionLogStore(s => s.addError);
 
   return useMutation<ExecuteResponse, Error, ExecuteParams>({
     mutationFn: async ({ sessionId, squadId, agentId, agentName, squadType, message, attachments, context, stream = true }) => {
