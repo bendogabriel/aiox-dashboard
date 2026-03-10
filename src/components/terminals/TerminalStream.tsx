@@ -92,6 +92,10 @@ export function TerminalStream({ terminalId, onClose, className }: TerminalStrea
   const scrollRef = useRef<HTMLDivElement>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
 
+  // Store agentId in a ref to avoid re-creating connect/disconnect on terminal state changes
+  const agentIdRef = useRef(terminal?.agentId);
+  agentIdRef.current = terminal?.agentId;
+
   // Auto-scroll to bottom
   useEffect(() => {
     if (autoScroll && scrollRef.current) {
@@ -107,9 +111,10 @@ export function TerminalStream({ terminalId, onClose, className }: TerminalStrea
     setAutoScroll(isAtBottom);
   }, []);
 
-  // Connect to SSE
+  // Connect to SSE — uses ref for agentId to keep callback identity stable
   const connect = useCallback(() => {
-    if (!terminal) return;
+    const agentId = agentIdRef.current;
+    if (!agentId) return;
 
     // Close existing connection
     if (eventSourceRef.current) {
@@ -118,7 +123,7 @@ export function TerminalStream({ terminalId, onClose, className }: TerminalStrea
 
     setTerminalStatus(terminalId, 'connecting');
 
-    const url = `/api/logs?agent=${terminal.agentId}`;
+    const url = `/api/logs?agent=${agentId}`;
     const eventSource = new EventSource(url);
     eventSourceRef.current = eventSource;
 
@@ -168,7 +173,7 @@ export function TerminalStream({ terminalId, onClose, className }: TerminalStrea
     eventSource.addEventListener('heartbeat', () => {
       // Connection is alive
     });
-  }, [terminal, terminalId, setTerminalStatus, appendLine, clearTerminal]);
+  }, [terminalId, setTerminalStatus, appendLine, clearTerminal]);
 
   // Disconnect
   const disconnect = useCallback(() => {
@@ -179,11 +184,12 @@ export function TerminalStream({ terminalId, onClose, className }: TerminalStrea
     setTerminalStatus(terminalId, 'disconnected');
   }, [terminalId, setTerminalStatus]);
 
-  // Connect on mount
+  // Connect on mount, disconnect on unmount
   useEffect(() => {
     connect();
     return disconnect;
-  }, [connect, disconnect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [terminalId]);
 
   // Reconnect handler
   const handleReconnect = useCallback(() => {

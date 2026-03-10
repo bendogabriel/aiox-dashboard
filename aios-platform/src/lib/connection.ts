@@ -1,8 +1,12 @@
 /**
- * Connection Mode Detection
+ * Connection Mode Detection + Engine Auto-Discovery
  *
- * Detects whether the dashboard is running in local mode (direct to monitor server)
- * or cloud mode (connected to relay server via room).
+ * Priority:
+ * 1. Cloud mode (relay URL + room + token)
+ * 2. Engine mode (VITE_ENGINE_URL or auto-discovered URL)
+ * 3. Local mode (monitor server fallback)
+ *
+ * Auto-discovery probes multiple candidate URLs when VITE_ENGINE_URL is not set.
  */
 
 export type ConnectionMode = 'local' | 'cloud' | 'engine';
@@ -23,6 +27,102 @@ const MONITOR_URL = import.meta.env.VITE_MONITOR_URL || 'http://localhost:4001';
 const ENGINE_URL = import.meta.env.VITE_ENGINE_URL as string | undefined;
 const RELAY_URL = import.meta.env.VITE_RELAY_URL as string | undefined;
 const RELAY_HTTP_URL = import.meta.env.VITE_RELAY_HTTP_URL as string | undefined;
+
+// ── Auto-Discovery ─────────────────────────────────────────
+
+const DISCOVERY_CACHE_KEY = 'aios-engine-discovered-url';
+const DISCOVERY_TIMEOUT_MS = 2000;
+
+/** Candidate URLs to probe when VITE_ENGINE_URL is not set */
+function getDiscoveryCandidates(): string[] {
+  const candidates: string[] = [];
+  const { origin, hostname } = window.location;
+
+  // Same origin (co-located: engine serves the dashboard)
+  candidates.push(origin);
+
+  // Common local dev ports
+  const localPorts = [4002, 4001, 8002];
+  for (const port of localPorts) {
+    candidates.push(`http://${hostname}:${port}`);
+    if (hostname !== 'localhost') {
+      candidates.push(`http://localhost:${port}`);
+    }
+  }
+
+  return [...new Set(candidates)]; // deduplicate
+}
+
+/** Probe a URL for a valid engine /health response */
+async function probeEngine(url: string): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), DISCOVERY_TIMEOUT_MS);
+    const res = await fetch(`${url}/health`, { signal: controller.signal });
+    clearTimeout(timer);
+    if (!res.ok) return false;
+    const data = await res.json() as { status?: string };
+    return data?.status === 'ok';
+  } catch {
+    return false;
+  }
+}
+
+let discoveryPromise: Promise<string | null> | null = null;
+let discoveredUrl: string | null = null;
+
+/**
+ * Auto-discover engine URL by probing candidates.
+ * Returns the first responsive URL, or null if none found.
+ * Result is cached in sessionStorage for the browser tab lifetime.
+ */
+export async function discoverEngineUrl(): Promise<string | null> {
+  // Return cached result
+  if (discoveredUrl) return discoveredUrl;
+
+  // Check sessionStorage cache
+  try {
+    const cached = sessionStorage.getItem(DISCOVERY_CACHE_KEY);
+    if (cached) {
+      discoveredUrl = cached;
+      return cached;
+    }
+  } catch { /* storage unavailable */ }
+
+  // Deduplicate concurrent discovery calls
+  if (discoveryPromise) return discoveryPromise;
+
+  discoveryPromise = (async () => {
+    const candidates = getDiscoveryCandidates();
+
+    // Race all candidates — first to respond wins
+    const result = await Promise.any(
+      candidates.map(async (url) => {
+        const ok = await probeEngine(url);
+        if (ok) return url;
+        throw new Error('not reachable');
+      }),
+    ).catch(() => null);
+
+    if (result) {
+      discoveredUrl = result;
+      try { sessionStorage.setItem(DISCOVERY_CACHE_KEY, result); } catch { /* */ }
+    }
+
+    discoveryPromise = null;
+    return result;
+  })();
+
+  return discoveryPromise;
+}
+
+/** Clear the discovery cache (forces re-probe on next call) */
+export function clearDiscoveryCache(): void {
+  discoveredUrl = null;
+  try { sessionStorage.removeItem(DISCOVERY_CACHE_KEY); } catch { /* */ }
+}
+
+// ── Public API ─────────────────────────────────────────────
 
 /** Check if we're in cloud mode */
 export function isCloudMode(): boolean {
@@ -49,12 +149,14 @@ export function getConnectionConfig(): ConnectionConfig {
     };
   }
 
+  const engineUrl = getEngineUrl();
+
   // Engine mode: direct to execution engine (port 4002, WS at /live)
-  if (ENGINE_URL) {
+  if (engineUrl) {
     return {
       mode: 'engine',
-      wsUrl: `${ENGINE_URL.replace(/^http/, 'ws')}/live`,
-      httpUrl: ENGINE_URL,
+      wsUrl: `${engineUrl.replace(/^http/, 'ws')}/live`,
+      httpUrl: engineUrl,
     };
   }
 
@@ -66,9 +168,20 @@ export function getConnectionConfig(): ConnectionConfig {
   };
 }
 
-/** Get the engine HTTP URL (for direct engine API calls) */
+/**
+ * Get the engine HTTP URL.
+ * Returns configured URL, discovered URL (from cache), or undefined.
+ */
 export function getEngineUrl(): string | undefined {
-  return ENGINE_URL;
+  return ENGINE_URL || discoveredUrl || undefined;
+}
+
+/**
+ * Check if an engine URL is available (configured or discovered).
+ * For async discovery, use discoverEngineUrl() first.
+ */
+export function engineAvailable(): boolean {
+  return !!getEngineUrl();
 }
 
 /** Store auth token */

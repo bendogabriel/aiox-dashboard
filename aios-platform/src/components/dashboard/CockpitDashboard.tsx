@@ -1,5 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import { AlertTriangle } from 'lucide-react'
+import { HealthCard } from './HealthCard'
+import { DependencyGraph } from './DependencyGraph'
 import {
   CockpitKpiCard,
   CockpitAlert,
@@ -157,8 +159,20 @@ export default function CockpitDashboard({ viewToggle }: { viewToggle?: React.Re
         </div>
       </div>
 
+      {/* Integration Health */}
+      <CockpitSectionDivider label="Integration Health" num="03" concept="Observability" style={{ marginBottom: '1rem' }} />
+      <div style={{ marginBottom: '1.5rem' }}>
+        <HealthCard />
+      </div>
+
+      {/* Dependency Map */}
+      <CockpitSectionDivider label="Dependency Map" num="04" concept="Dependencies" style={{ marginBottom: '1rem' }} />
+      <div style={{ marginBottom: '1.5rem' }}>
+        <DependencyGraph />
+      </div>
+
       {/* Tokens Summary */}
-      <CockpitSectionDivider label="Token Usage" num="03" style={{ marginBottom: '1rem' }} />
+      <CockpitSectionDivider label="Token Usage" num="05" style={{ marginBottom: '1rem' }} />
       <div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
           <CockpitKpiCard

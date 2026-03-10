@@ -30,7 +30,10 @@
     "test:e2e:chromium": "playwright test --project=chromium",
     "test:e2e:report": "playwright show-report",
     "generate:registry": "npx tsx scripts/generate-aios-registry.ts",
-    "check:registry": "bash scripts/check-registry-sync.sh"
+    "check:registry": "bash scripts/check-registry-sync.sh",
+    "doctor": "npx tsx scripts/doctor.ts",
+    "deploy": "bash scripts/deploy.sh",
+    "setup": "cp -n .env.example .env.development 2>/dev/null; cp -n engine/.env.example engine/.env 2>/dev/null; npm install; cd engine && bun install; echo '\\n✓ Setup complete. Run: npm run doctor'"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

@@ -10,61 +10,12 @@ import {
   Server,
   FileText,
   File,
+  Loader2,
+  AlertTriangle,
 } from 'lucide-react';
 import { GlassCard, Badge, StatusDot } from '../ui';
-
-// --- Mock Data ---
-
-const activeRules = [
-  { name: 'vault-lookup', type: 'mandatory' as const, path: '.claude/rules/vault-lookup.md' },
-  { name: 'memory-system', type: 'mandatory' as const, path: '.claude/rules/memory-system.md' },
-  { name: 'portuguese-accents', type: 'mandatory' as const, path: '.claude/rules/portuguese-accents.md' },
-  { name: 'clickup-tracking', type: 'mandatory' as const, path: '.claude/rules/clickup-tracking.md' },
-  { name: 'design-system-usage', type: 'optional' as const, path: '.claude/rules/design-system-usage.md' },
-  { name: 'naming-convention', type: 'mandatory' as const, path: '.claude/rules/naming-convention.md' },
-];
-
-const agentDefinitions = [
-  { name: 'Dex', role: 'Full Stack Developer', model: 'sonnet', icon: 'dev' },
-  { name: 'Quinn', role: 'Quality Assurance', model: 'sonnet', icon: 'qa' },
-  { name: 'Atlas', role: 'System Architect', model: 'opus', icon: 'architect' },
-  { name: 'River', role: 'Scrum Master', model: 'haiku', icon: 'sm' },
-  { name: 'Sage', role: 'Product Owner', model: 'sonnet', icon: 'po' },
-  { name: 'Gage', role: 'DevOps Engineer', model: 'sonnet', icon: 'devops' },
-  { name: 'Aria', role: 'Business Analyst', model: 'sonnet', icon: 'analyst' },
-];
-
-const configFiles = [
-  { path: '.aios-core/core-config.yaml', modified: '2h ago' },
-  { path: '.claude/CLAUDE.md', modified: '1d ago' },
-  { path: '.synapse/manifest', modified: '3h ago' },
-  { path: '.aios-core/constitution.md', modified: '5d ago' },
-  { path: 'tsconfig.json', modified: '1d ago' },
-];
-
-const mcpServers = [
-  { name: 'clickup', status: 'success' as const, tools: 12 },
-  { name: 'supabase', status: 'success' as const, tools: 8 },
-  { name: 'meta-ads', status: 'success' as const, tools: 12 },
-  { name: 'google-drive', status: 'success' as const, tools: 31 },
-  { name: 'qdrant', status: 'error' as const, tools: 2 },
-  { name: 'supermemory', status: 'success' as const, tools: 4 },
-  { name: 'waha', status: 'success' as const, tools: 63 },
-  { name: 'hotmart', status: 'offline' as const, tools: 9 },
-];
-
-const recentFiles = [
-  { path: 'src/components/insights/InsightsView.tsx', time: '5m ago' },
-  { path: 'src/components/qa/QAMetrics.tsx', time: '8m ago' },
-  { path: 'src/stores/roadmapStore.ts', time: '12m ago' },
-  { path: 'src/components/context/ContextView.tsx', time: '15m ago' },
-  { path: 'src/components/github/GitHubView.tsx', time: '18m ago' },
-  { path: 'src/App.tsx', time: '25m ago' },
-  { path: 'src/components/layout/Sidebar.tsx', time: '30m ago' },
-  { path: 'src/types/index.ts', time: '45m ago' },
-  { path: 'src/index.css', time: '1h ago' },
-  { path: 'package.json', time: '2h ago' },
-];
+import { useSystemContext } from '../../hooks/useSystemContext';
+import { cn } from '../../lib/utils';
 
 // --- Collapsible Section ---
 
@@ -118,9 +69,77 @@ function CollapsibleSection({ title, icon, count, defaultOpen = true, children }
   );
 }
 
+// --- Loading Skeleton ---
+
+function SectionSkeleton() {
+  return (
+    <GlassCard padding="none" className="overflow-hidden">
+      <div className="p-4 flex items-center gap-2.5">
+        <div className="w-4 h-4 rounded bg-white/10 animate-pulse" />
+        <div className="w-24 h-4 rounded bg-white/10 animate-pulse" />
+        <div className="w-5 h-5 rounded-full bg-white/10 animate-pulse" />
+      </div>
+      <div className="px-4 pb-4 space-y-2">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-10 rounded-lg bg-white/5 animate-pulse" />
+        ))}
+      </div>
+    </GlassCard>
+  );
+}
+
 // --- Main Component ---
 
 export default function ContextView() {
+  const { data, isLoading, isError, error } = useSystemContext();
+
+  const rules = data?.rules ?? [];
+  const agents = data?.agents ?? [];
+  const configs = data?.configs ?? [];
+  const mcpServers = data?.mcpServers ?? [];
+  const recentFiles = data?.recentFiles ?? [];
+
+  if (isLoading) {
+    return (
+      <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <Brain size={22} className="text-purple-400" />
+          <h1 className="text-xl font-semibold text-primary">Context</h1>
+          <Loader2 size={16} className="text-tertiary animate-spin" />
+        </div>
+        <SectionSkeleton />
+        <SectionSkeleton />
+        <SectionSkeleton />
+        <SectionSkeleton />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <Brain size={22} className="text-purple-400" />
+          <h1 className="text-xl font-semibold text-primary">Context</h1>
+        </div>
+        <GlassCard padding="md">
+          <div className="flex items-center gap-3 text-red-400">
+            <AlertTriangle size={18} />
+            <div>
+              <p className="text-sm font-medium">Failed to load context</p>
+              <p className="text-xs text-tertiary mt-1">
+                {error instanceof Error ? error.message : 'Unknown error'}
+              </p>
+            </div>
+          </div>
+        </GlassCard>
+      </div>
+    );
+  }
+
+  const isEmpty = rules.length === 0 && agents.length === 0 && configs.length === 0
+    && mcpServers.length === 0 && recentFiles.length === 0;
+
   return (
     <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-4">
       {/* Header */}
@@ -130,87 +149,112 @@ export default function ContextView() {
         <Badge variant="default" size="sm">aios-platform</Badge>
       </div>
 
-      {/* Active Rules */}
-      <CollapsibleSection title="Active Rules" icon={<Shield size={16} />} count={activeRules.length}>
-        {activeRules.map((rule) => (
-          <div key={rule.name} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
-            <div className="flex items-center gap-2">
-              <Shield size={12} className="text-tertiary" />
-              <span className="text-sm text-primary">{rule.name}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge
-                variant="status"
-                status={rule.type === 'mandatory' ? 'error' : 'warning'}
-                size="sm"
-              >
-                {rule.type}
-              </Badge>
-              <span className="text-[10px] text-tertiary hidden sm:inline">{rule.path}</span>
-            </div>
+      {isEmpty && (
+        <GlassCard padding="md">
+          <div className="text-center py-8 text-tertiary">
+            <Brain size={32} className="mx-auto mb-3 opacity-40" />
+            <p className="text-sm">No context data available</p>
+            <p className="text-xs mt-1">Ensure .claude/rules/, .aios-core/agents/, and log files exist</p>
           </div>
-        ))}
-      </CollapsibleSection>
+        </GlassCard>
+      )}
+
+      {/* Active Rules */}
+      {rules.length > 0 && (
+        <CollapsibleSection title="Active Rules" icon={<Shield size={16} />} count={rules.length}>
+          {rules.map((rule) => (
+            <div key={rule.name} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2">
+                <Shield size={12} className="text-tertiary" />
+                <span className="text-sm text-primary">{rule.name}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant="status"
+                  status={rule.type === 'mandatory' ? 'error' : 'warning'}
+                  size="sm"
+                >
+                  {rule.type}
+                </Badge>
+                <span className="text-[10px] text-tertiary hidden sm:inline">{rule.path}</span>
+              </div>
+            </div>
+          ))}
+        </CollapsibleSection>
+      )}
 
       {/* Agent Definitions */}
-      <CollapsibleSection title="Agent Definitions" icon={<Bot size={16} />} count={agentDefinitions.length}>
-        {agentDefinitions.map((agent) => (
-          <div key={agent.name} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
-            <div className="flex items-center gap-2.5">
-              <div className="w-6 h-6 rounded-md bg-blue-500/20 flex items-center justify-center">
-                <Bot size={12} className="text-blue-400" />
+      {agents.length > 0 && (
+        <CollapsibleSection title="Agent Definitions" icon={<Bot size={16} />} count={agents.length}>
+          {agents.map((agent) => (
+            <div key={agent.name} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2.5">
+                <div className={cn(
+                  'w-6 h-6 rounded-md flex items-center justify-center',
+                  agent.model === 'opus' ? 'bg-purple-500/20' : agent.model === 'haiku' ? 'bg-green-500/20' : 'bg-blue-500/20',
+                )}>
+                  <Bot size={12} className={cn(
+                    agent.model === 'opus' ? 'text-purple-400' : agent.model === 'haiku' ? 'text-green-400' : 'text-blue-400',
+                  )} />
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-primary">{agent.name}</span>
+                  <span className="text-xs text-secondary ml-2">{agent.role}</span>
+                </div>
               </div>
-              <div>
-                <span className="text-sm font-medium text-primary">{agent.name}</span>
-                <span className="text-xs text-secondary ml-2">{agent.role}</span>
-              </div>
+              <Badge variant="default" size="sm">{agent.model}</Badge>
             </div>
-            <Badge variant="default" size="sm">{agent.model}</Badge>
-          </div>
-        ))}
-      </CollapsibleSection>
+          ))}
+        </CollapsibleSection>
+      )}
 
       {/* Config Files */}
-      <CollapsibleSection title="Config Files" icon={<Settings size={16} />} count={configFiles.length}>
-        {configFiles.map((file) => (
-          <div key={file.path} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
-            <div className="flex items-center gap-2">
-              <File size={12} className="text-tertiary" />
-              <span className="text-xs text-primary font-mono">{file.path}</span>
+      {configs.length > 0 && (
+        <CollapsibleSection title="Config Files" icon={<Settings size={16} />} count={configs.length}>
+          {configs.map((file) => (
+            <div key={file.path} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2">
+                <File size={12} className="text-tertiary" />
+                <span className="text-xs text-primary font-mono">{file.path}</span>
+              </div>
+              <span className="text-[10px] text-tertiary">{file.modified}</span>
             </div>
-            <span className="text-[10px] text-tertiary">{file.modified}</span>
-          </div>
-        ))}
-      </CollapsibleSection>
+          ))}
+        </CollapsibleSection>
+      )}
 
       {/* MCP Servers */}
-      <CollapsibleSection title="MCP Servers" icon={<Server size={16} />} count={mcpServers.length}>
-        {mcpServers.map((server) => (
-          <div key={server.name} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
-            <div className="flex items-center gap-2.5">
-              <StatusDot
-                status={server.status === 'success' ? 'success' : server.status === 'error' ? 'error' : 'offline'}
-                size="sm"
-              />
-              <span className="text-sm text-primary">{server.name}</span>
+      {mcpServers.length > 0 && (
+        <CollapsibleSection title="MCP Servers" icon={<Server size={16} />} count={mcpServers.length}>
+          {mcpServers.map((server) => (
+            <div key={server.name} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2.5">
+                <StatusDot
+                  status={server.status === 'success' ? 'success' : server.status === 'error' ? 'error' : 'offline'}
+                  size="sm"
+                />
+                <span className="text-sm text-primary">{server.name}</span>
+              </div>
+              <Badge variant="default" size="sm">{server.tools} tools</Badge>
             </div>
-            <Badge variant="default" size="sm">{server.tools} tools</Badge>
-          </div>
-        ))}
-      </CollapsibleSection>
+          ))}
+        </CollapsibleSection>
+      )}
 
       {/* Recent Files */}
-      <CollapsibleSection title="Recent Files" icon={<FileText size={16} />} count={recentFiles.length} defaultOpen={false}>
-        {recentFiles.map((file) => (
-          <div key={file.path} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
-            <div className="flex items-center gap-2">
-              <FileText size={12} className="text-tertiary" />
-              <span className="text-xs text-primary font-mono truncate max-w-[300px]">{file.path}</span>
+      {recentFiles.length > 0 && (
+        <CollapsibleSection title="Recent Files" icon={<FileText size={16} />} count={recentFiles.length} defaultOpen={false}>
+          {recentFiles.map((file) => (
+            <div key={file.path} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2">
+                <FileText size={12} className="text-tertiary" />
+                <span className="text-xs text-primary font-mono truncate max-w-[300px]">{file.path}</span>
+              </div>
+              <span className="text-[10px] text-tertiary flex-shrink-0">{file.time}</span>
             </div>
-            <span className="text-[10px] text-tertiary flex-shrink-0">{file.time}</span>
-          </div>
-        ))}
-      </CollapsibleSection>
+          ))}
+        </CollapsibleSection>
+      )}
     </div>
   );
 }

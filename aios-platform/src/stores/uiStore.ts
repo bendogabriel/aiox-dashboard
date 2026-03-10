@@ -11,7 +11,11 @@ type ViewType =
   | 'kanban' | 'agents' | 'bob' | 'terminals' | 'monitor' | 'timeline'
   | 'insights' | 'context' | 'knowledge' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories'
   | 'share' | 'engine' | 'agent-directory' | 'task-catalog' | 'workflow-catalog' | 'authority-matrix' | 'handoff-flows'
-  | 'integrations';
+  | 'sales-room'
+  | 'integrations' | 'google-oauth-callback'
+  | 'brainstorm'
+  | 'vault'
+  | 'marketplace' | 'marketplace-listing' | 'marketplace-purchases' | 'marketplace-seller' | 'marketplace-submit' | 'marketplace-review' | 'marketplace-admin';
 export type SettingsSection = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
 interface UIActions {

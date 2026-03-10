@@ -1,20 +1,25 @@
 import { useEffect } from 'react';
 import { useIntegrationStore } from '../stores/integrationStore';
+import { useSetupWizardStore } from '../stores/setupWizardStore';
 import { useUIStore } from '../stores/uiStore';
 
 const ONBOARDING_KEY = 'aios-integration-onboarding-seen';
 
 /**
- * Auto-redirects to the Integrations page if no integrations are connected
- * and the user hasn't dismissed the onboarding before.
- * Runs once after integration status checks complete (first non-checking state).
+ * Auto-redirects to Integrations page if no integrations are connected
+ * and the Setup Wizard isn't handling the first-run experience.
+ * Defers to the Setup Wizard when it's active.
  */
 export function useIntegrationOnboarding() {
   const integrations = useIntegrationStore((s) => s.integrations);
   const setCurrentView = useUIStore((s) => s.setCurrentView);
   const currentView = useUIStore((s) => s.currentView);
+  const wizardOpen = useSetupWizardStore((s) => s.isOpen);
 
   useEffect(() => {
+    // Don't redirect if wizard is handling first-run
+    if (wizardOpen) return;
+
     // Don't redirect if already on integrations page
     if (currentView === 'integrations') return;
 
@@ -25,7 +30,7 @@ export function useIntegrationOnboarding() {
 
     const entries = Object.values(integrations);
 
-    // Wait until at least one check has completed (not all in initial 'disconnected' with no lastChecked)
+    // Wait until at least one check has completed
     const anyChecked = entries.some((e) => e.lastChecked != null);
     if (!anyChecked) return;
 
@@ -43,5 +48,5 @@ export function useIntegrationOnboarding() {
     try {
       localStorage.setItem(ONBOARDING_KEY, 'true');
     } catch { /* empty */ }
-  }, [integrations, currentView, setCurrentView]);
+  }, [integrations, currentView, setCurrentView, wizardOpen]);
 }

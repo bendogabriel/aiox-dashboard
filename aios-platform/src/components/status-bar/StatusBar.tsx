@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { StatusDot } from '../ui';
 import { cn } from '../../lib/utils';
-import { Wifi, WifiOff, Bell } from 'lucide-react';
+import { Wifi, WifiOff, Bell, AlertTriangle } from 'lucide-react';
 import { useLLMHealth, useTokenUsage } from '../../hooks/useExecute';
 import { useBobStore } from '../../stores/bobStore';
 import { useToastStore } from '../../stores/toastStore';
 import { useEngineJobs } from '../../hooks/useEngine';
+import { useCapabilities } from '../../hooks/useCapabilities';
 
 export function StatusBar() {
   // Network connectivity
@@ -43,6 +44,9 @@ export function StatusBar() {
   // Notification count from toast store
   const unreadCount = useToastStore((s) => s.unreadCount);
   const markAllRead = useToastStore((s) => s.markAllRead);
+
+  // Capability summary
+  const { summary: capSummary } = useCapabilities();
 
   const handleBellClick = useCallback(() => {
     if (unreadCount > 0) markAllRead();
@@ -105,6 +109,19 @@ export function StatusBar() {
             {claudeReady ? 'Claude Ready' : 'Claude Busy'}
           </span>
         </div>
+
+        {/* Capability indicator */}
+        {(capSummary.unavailable > 0 || capSummary.degraded > 0) && (
+          <>
+            <span className="h-3 w-px bg-glass-border" aria-hidden="true" />
+            <div className="flex items-center gap-1.5" title={`${capSummary.full} full, ${capSummary.degraded} degraded, ${capSummary.unavailable} unavailable`}>
+              <AlertTriangle className={cn('h-3 w-3', capSummary.unavailable > 0 ? 'text-red-500' : 'text-yellow-500')} aria-hidden="true" />
+              <span className={cn('font-mono', capSummary.unavailable > 0 ? 'text-red-500' : 'text-yellow-500')}>
+                {capSummary.full}/{capSummary.total}
+              </span>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Right side */}

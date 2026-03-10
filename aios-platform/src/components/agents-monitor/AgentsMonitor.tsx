@@ -1,10 +1,11 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Play, Pause, RefreshCw, Moon, FlaskConical } from 'lucide-react';
+import { Bot, Play, Pause, RefreshCw, Moon, FlaskConical, Radio } from 'lucide-react';
 import { GlassButton, Badge, StatusDot, SectionLabel } from '../ui';
 import { AgentMonitorCard, type AgentMonitorData } from './AgentMonitorCard';
 import { AgentActivityTimeline } from './AgentActivityTimeline';
 import { AgentPerformanceStats } from './AgentPerformanceStats';
+import { useAgentStatus } from '../../hooks/useAgentStatus';
 import { useAgents } from '../../hooks/useAgents';
 import { useAgentPerformance, useAgentActivity } from '../../hooks/useAnalytics';
 import type { AgentPerformance } from '../../services/api/analytics';
@@ -12,13 +13,12 @@ import type { AgentActivityEntry } from '../../types';
 import { cn } from '../../lib/utils';
 import { aiosRegistry } from '../../data/aios-registry.generated';
 
-const POLLING_INTERVAL = 5000;
+const POLLING_INTERVAL = 10_000;
 
 // ---------------------------------------------------------------------------
-// Demo fallback data – derived from AIOS registry
+// Demo fallback data – only used when ALL data sources fail
 // ---------------------------------------------------------------------------
 
-// Demo runtime states for fallback display
 const DEMO_STATES: Array<{ status: AgentMonitorData['status']; phase: string; progress: number; story: string }> = [
   { status: 'working', phase: 'Implementing Story 3.2', progress: 65, story: 'STORY-3.2' },
   { status: 'working', phase: 'Writing tests', progress: 40, story: 'STORY-3.2' },
@@ -30,25 +30,26 @@ const DEMO_STATES: Array<{ status: AgentMonitorData['status']; phase: string; pr
   { status: 'idle', phase: '', progress: 0, story: '' },
 ];
 
-const demoAgents: AgentMonitorData[] = aiosRegistry.agents.map((agent, i) => {
-  const state = DEMO_STATES[i % DEMO_STATES.length];
-  return {
-    id: agent.id,
-    name: `${agent.name} (${agent.title.split(' ')[0]})`,
-    status: state.status,
-    phase: state.phase,
-    progress: state.progress,
-    story: state.story,
-    lastActivity: new Date(Date.now() - (i + 1) * 120_000).toISOString(),
-    model: i % 3 === 0 ? 'opus' : i % 3 === 1 ? 'sonnet' : 'haiku',
-    squad: 'aios-core',
-    totalExecutions: Math.floor(Math.random() * 150) + 20,
-    successRate: Math.floor(Math.random() * 10) + 90,
-    avgResponseTime: Math.floor(Math.random() * 2000) + 800,
-  };
-});
+function buildDemoAgents(): AgentMonitorData[] {
+  return aiosRegistry.agents.map((agent, i) => {
+    const state = DEMO_STATES[i % DEMO_STATES.length];
+    return {
+      id: agent.id,
+      name: `${agent.name} (${agent.title.split(' ')[0]})`,
+      status: state.status,
+      phase: state.phase,
+      progress: state.progress,
+      story: state.story,
+      lastActivity: new Date(Date.now() - (i + 1) * 120_000).toISOString(),
+      model: i % 3 === 0 ? 'opus' : i % 3 === 1 ? 'sonnet' : 'haiku',
+      squad: 'aios-core',
+      totalExecutions: Math.floor(Math.random() * 150) + 20,
+      successRate: Math.floor(Math.random() * 10) + 90,
+      avgResponseTime: Math.floor(Math.random() * 2000) + 800,
+    };
+  });
+}
 
-// Demo activity actions keyed by agent index for variety
 const DEMO_ACTIONS: Array<{ action: string; status: 'success' | 'error'; duration: number }> = [
   { action: 'Committed feat: implement agent monitor cards [Story 3.2]', status: 'success', duration: 4500 },
   { action: 'Running unit tests for AgentMonitorCard', status: 'success', duration: 12300 },
@@ -62,19 +63,23 @@ const DEMO_ACTIONS: Array<{ action: string; status: 'success' | 'error'; duratio
   { action: 'Deployed staging build v0.4.2 via CI/CD pipeline', status: 'success', duration: 22400 },
 ];
 
-// Use at least 6 different agents, cycling through the first 8 from the registry
 const DEMO_ACTIVITY_AGENT_INDICES = [4, 8, 8, 10, 4, 11, 2, 8, 6, 5];
 
-const demoActivity: AgentActivityEntry[] = DEMO_ACTIONS.map((entry, i) => ({
-  id: `demo-act-${i + 1}`,
-  agentId: aiosRegistry.agents[DEMO_ACTIVITY_AGENT_INDICES[i] % aiosRegistry.agents.length]?.id || 'dev',
-  timestamp: new Date(Date.now() - (i + 1) * 60_000 * (i + 1)).toISOString(),
-  action: entry.action,
-  status: entry.status,
-  duration: entry.duration,
-}));
+function buildDemoActivity(): AgentActivityEntry[] {
+  return DEMO_ACTIONS.map((entry, i) => ({
+    id: `demo-act-${i + 1}`,
+    agentId: aiosRegistry.agents[DEMO_ACTIVITY_AGENT_INDICES[i] % aiosRegistry.agents.length]?.id || 'dev',
+    timestamp: new Date(Date.now() - (i + 1) * 60_000 * (i + 1)).toISOString(),
+    action: entry.action,
+    status: entry.status,
+    duration: entry.duration,
+  }));
+}
 
-// Map API data to monitor format, using analytics for performance enrichment
+// ---------------------------------------------------------------------------
+// Map legacy API data to monitor format (used as secondary enrichment)
+// ---------------------------------------------------------------------------
+
 function mapToMonitorData(
   agent: { id: string; name: string; squad: string; tier: number },
   perfLookup: Map<string, AgentPerformance>
@@ -98,48 +103,97 @@ function mapToMonitorData(
   };
 }
 
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export default function AgentsMonitor() {
   const [isLive, setIsLive] = useState(true);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
-  const { data: apiAgents, refetch, isLoading } = useAgents(undefined, {
-    refetchInterval: isLive ? POLLING_INTERVAL : false,
+  // ---- Primary data source: log-based agent status ----
+  const {
+    agents: statusAgents,
+    activity: statusActivity,
+    loading: statusLoading,
+    isDemo: statusIsDemo,
+    refetch: statusRefetch,
+  } = useAgentStatus({
+    pollInterval: POLLING_INTERVAL,
+    enabled: isLive,
   });
 
+  // ---- Secondary data sources: legacy API + analytics (enrichment) ----
+  const { data: apiAgents } = useAgents(undefined, {
+    refetchInterval: isLive ? POLLING_INTERVAL : false,
+  });
   const { data: perfData } = useAgentPerformance();
   const { data: activityData } = useAgentActivity();
 
-  // Build analytics performance lookup
+  // Build performance lookup from analytics API
   const perfLookup = useMemo(
     () => new Map((perfData || []).map((p) => [p.agentId, p])),
     [perfData]
   );
 
-  // Map API agents with analytics enrichment; fall back to demo data
-  const isDemo = !apiAgents || apiAgents.length === 0;
+  // ---- Determine data source priority ----
+  // Priority 1: Live log-based status (useAgentStatus)
+  // Priority 2: Legacy API agents + analytics enrichment
+  // Priority 3: Demo fallback
+
+  const hasLiveData = !statusIsDemo && statusAgents.length > 0;
+  const hasApiData = apiAgents && apiAgents.length > 0;
+  const isDemo = !hasLiveData && !hasApiData;
+  const isLoading = statusLoading;
 
   const agents: AgentMonitorData[] = useMemo(() => {
-    if (apiAgents && apiAgents.length > 0) {
+    if (hasLiveData) {
+      // Enrich live status with analytics performance data if available
+      return statusAgents.map((agent) => {
+        const perf = perfLookup.get(agent.id);
+        if (perf) {
+          return {
+            ...agent,
+            totalExecutions: perf.totalExecutions ?? agent.totalExecutions,
+            successRate: perf.successRate ?? agent.successRate,
+            avgResponseTime: perf.avgDuration ?? agent.avgResponseTime,
+          };
+        }
+        return agent;
+      });
+    }
+
+    if (hasApiData) {
       return apiAgents.map((a) => mapToMonitorData(a, perfLookup));
     }
-    // Fallback to demo data when API is unavailable
-    return demoAgents;
-  }, [apiAgents, perfLookup]);
+
+    // Fallback to demo data
+    return buildDemoAgents();
+  }, [hasLiveData, hasApiData, statusAgents, apiAgents, perfLookup]);
 
   const activeAgents = agents.filter(
     (a) => a.status === 'working' || a.status === 'waiting' || a.status === 'error'
   );
   const standbyAgents = agents.filter((a) => a.status === 'idle');
 
-  const activity = activityData && activityData.length > 0 ? activityData : isDemo ? demoActivity : [];
+  // Activity: prefer live, then API, then demo
+  const activity = useMemo(() => {
+    if (hasLiveData && statusActivity.length > 0) return statusActivity;
+    if (activityData && activityData.length > 0) return activityData;
+    if (isDemo) return buildDemoActivity();
+    return [];
+  }, [hasLiveData, statusActivity, activityData, isDemo]);
 
   const handleRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+    statusRefetch();
+  }, [statusRefetch]);
 
   const handleCardClick = useCallback((agentId: string) => {
     setSelectedAgentId((prev) => (prev === agentId ? null : agentId));
   }, []);
+
+  // Source label for footer
+  const sourceLabel = hasLiveData ? 'LIVE' : hasApiData ? 'API' : 'DEMO';
 
   return (
     <div className="h-full flex flex-col overflow-y-auto p-4 md:p-6 gap-6">
@@ -150,8 +204,22 @@ export default function AgentsMonitor() {
           <Badge variant="status" status="online" size="sm">
             {activeAgents.length}/{agents.length} active
           </Badge>
+          {hasLiveData && (
+            <Badge
+              variant="default"
+              size="sm"
+              className="flex items-center gap-1 text-green-400 bg-green-500/10"
+            >
+              <Radio className="h-3 w-3" />
+              Live
+            </Badge>
+          )}
           {isDemo && (
-            <Badge variant="default" size="sm" className="flex items-center gap-1 text-yellow-400 bg-yellow-500/10">
+            <Badge
+              variant="default"
+              size="sm"
+              className="flex items-center gap-1 text-yellow-400 bg-yellow-500/10"
+            >
               <FlaskConical className="h-3 w-3" />
               Demo
             </Badge>
@@ -289,19 +357,27 @@ export default function AgentsMonitor() {
         />
       </section>
 
-      {/* Footer: polling indicator */}
+      {/* Footer: polling indicator + source */}
       <div className="mt-auto pt-2 text-center">
         <span className="text-[11px] text-tertiary">
           {isLoading ? 'Carregando...' : 'Atualizado'}
           {isLive && (
             <span className="ml-2 inline-flex items-center gap-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span
+                className={cn(
+                  'h-1.5 w-1.5 rounded-full animate-pulse',
+                  hasLiveData ? 'bg-green-500' : 'bg-yellow-500',
+                )}
+              />
               polling a cada {POLLING_INTERVAL / 1000}s
             </span>
           )}
           {!isLive && (
             <span className="ml-2 text-yellow-500">pausado</span>
           )}
+          <span className="ml-2 text-tertiary/60">
+            [{sourceLabel}]
+          </span>
         </span>
       </div>
     </div>

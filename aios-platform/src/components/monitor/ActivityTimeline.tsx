@@ -8,10 +8,12 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  Loader2,
 } from 'lucide-react';
 import { GlassCard } from '../ui';
 import { useMonitorStore, type MonitorEvent } from '../../stores/monitorStore';
 import { useExecutionHistory } from '../../hooks/useExecute';
+import { useActivityFeed } from '../../hooks/useActivityFeed';
 import { cn } from '../../lib/utils';
 
 type ActivityType = 'execution' | 'tool_call' | 'message' | 'error' | 'system';
@@ -44,49 +46,24 @@ function formatTimeAgo(dateString: string): string {
   return `${Math.floor(hours / 24)}d`;
 }
 
-// Demo data shown when no real data is available
-function generateDemoData(): TimelineItem[] {
-  const now = Date.now();
-  const min = 60_000;
-  const hour = 3_600_000;
-
-  return [
-    { id: 'demo-1', timestamp: new Date(now - 2 * min).toISOString(), type: 'execution', title: 'Story 3.2 — Build completed', agent: '@dev', status: 'success' },
-    { id: 'demo-2', timestamp: new Date(now - 5 * min).toISOString(), type: 'tool_call', title: 'Read src/components/kanban/KanbanBoard.tsx', agent: '@dev', status: 'success' },
-    { id: 'demo-3', timestamp: new Date(now - 8 * min).toISOString(), type: 'tool_call', title: 'Edit src/stores/storyStore.ts', agent: '@dev', status: 'success' },
-    { id: 'demo-4', timestamp: new Date(now - 12 * min).toISOString(), type: 'message', title: 'Story 3.2 assigned to @dev', agent: '@sm' },
-    { id: 'demo-5', timestamp: new Date(now - 18 * min).toISOString(), type: 'system', title: 'QA Gate passed — Story 3.1', agent: '@qa', status: 'success' },
-    { id: 'demo-6', timestamp: new Date(now - 25 * min).toISOString(), type: 'error', title: 'TypeScript error in Charts.tsx:176', agent: '@dev', status: 'error', description: 'Expected ")" but found "{"' },
-    { id: 'demo-7', timestamp: new Date(now - 30 * min).toISOString(), type: 'tool_call', title: 'Grep "useMonitorStore" in src/', agent: '@dev', status: 'success' },
-    { id: 'demo-8', timestamp: new Date(now - 45 * min).toISOString(), type: 'execution', title: 'npm run test — 42 passed, 0 failed', agent: '@qa', status: 'success' },
-    { id: 'demo-9', timestamp: new Date(now - 1 * hour).toISOString(), type: 'message', title: 'Story 3.1 validated — GO (score 9/10)', agent: '@po' },
-    { id: 'demo-10', timestamp: new Date(now - 1.5 * hour).toISOString(), type: 'tool_call', title: 'Write src/components/roadmap/RoadmapView.tsx', agent: '@dev', status: 'success' },
-    { id: 'demo-11', timestamp: new Date(now - 2 * hour).toISOString(), type: 'system', title: 'Agent @architect activated', agent: '@aios-master' },
-    { id: 'demo-12', timestamp: new Date(now - 2.5 * hour).toISOString(), type: 'execution', title: 'npm run lint — 0 warnings', agent: '@dev', status: 'success' },
-    { id: 'demo-13', timestamp: new Date(now - 3 * hour).toISOString(), type: 'error', title: 'Connection timeout to monitor service', agent: 'System', status: 'error', description: 'Retrying in 5s...' },
-    { id: 'demo-14', timestamp: new Date(now - 4 * hour).toISOString(), type: 'message', title: 'Epic 3 — Sprint planning completed', agent: '@pm' },
-    { id: 'demo-15', timestamp: new Date(now - 5 * hour).toISOString(), type: 'tool_call', title: 'Bash: git commit -m "feat: add kanban filters"', agent: '@dev', status: 'success' },
-    // Yesterday
-    { id: 'demo-16', timestamp: new Date(now - 26 * hour).toISOString(), type: 'execution', title: 'Full build — production bundle', agent: '@devops', status: 'success' },
-    { id: 'demo-17', timestamp: new Date(now - 27 * hour).toISOString(), type: 'system', title: 'Deploy to staging — v0.4.2', agent: '@devops', status: 'success' },
-    { id: 'demo-18', timestamp: new Date(now - 28 * hour).toISOString(), type: 'tool_call', title: 'Read docs/stories/2.3.story.md', agent: '@sm', status: 'success' },
-    { id: 'demo-19', timestamp: new Date(now - 30 * hour).toISOString(), type: 'message', title: 'Code review approved — PR #47', agent: '@qa' },
-    { id: 'demo-20', timestamp: new Date(now - 32 * hour).toISOString(), type: 'error', title: 'Test failure: notificationPrefsStore.test.ts', agent: '@qa', status: 'error', description: 'Expected true, received false' },
-  ];
-}
-
 export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.ReactNode }) {
   const monitorEvents = useMonitorStore((s) => s.events);
   const { data: historyData } = useExecutionHistory(50);
+  const { data: activityData, isLoading: isActivityLoading } = useActivityFeed(50);
   const [filterType, setFilterType] = useState<ActivityType | 'all'>('all');
 
   const items = useMemo(() => {
     const timeline: TimelineItem[] = [];
+    const seenIds = new Set<string>();
 
-    // Add monitor events
+    // Add monitor events (live WebSocket)
     monitorEvents.forEach((e: MonitorEvent) => {
+      const id = e.id;
+      if (seenIds.has(id)) return;
+      seenIds.add(id);
+
       timeline.push({
-        id: e.id,
+        id,
         timestamp: e.timestamp,
         type: e.type === 'tool_call' ? 'tool_call' : e.type === 'message' ? 'message' : e.type === 'error' ? 'error' : 'system',
         title: e.description,
@@ -95,11 +72,15 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
       });
     });
 
-    // Add execution history
+    // Add execution history from API
     if (historyData?.executions) {
       historyData.executions.slice(0, 30).forEach((e) => {
+        const id = `exec-${e.id}`;
+        if (seenIds.has(id)) return;
+        seenIds.add(id);
+
         timeline.push({
-          id: `exec-${e.id}`,
+          id,
           timestamp: e.createdAt || new Date().toISOString(),
           type: e.status === 'failed' ? 'error' : 'execution',
           title: `${e.agentId || 'Execution'} — ${e.status}`,
@@ -110,18 +91,31 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
       });
     }
 
-    // Fallback to demo data when no real data is available
-    if (timeline.length === 0) {
-      return generateDemoData();
+    // Add activity feed events from AIOS logs
+    if (activityData?.events) {
+      for (const e of activityData.events) {
+        if (seenIds.has(e.id)) continue;
+        seenIds.add(e.id);
+
+        timeline.push({
+          id: e.id,
+          timestamp: e.timestamp,
+          type: e.type as ActivityType,
+          title: e.title,
+          description: e.description,
+          agent: e.agent,
+          status: e.status as TimelineItem['status'],
+        });
+      }
     }
 
     // Sort by timestamp descending
     timeline.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     return timeline;
-  }, [monitorEvents, historyData]);
+  }, [monitorEvents, historyData, activityData]);
 
-  const isDemo = monitorEvents.length === 0 && !historyData?.executions?.length;
+  const hasRealData = items.length > 0;
   const filtered = filterType === 'all' ? items : items.filter((i) => i.type === filterType);
 
   // Group by date
@@ -155,9 +149,12 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
           <h1 className="text-xl font-semibold text-primary">Monitor</h1>
           {viewToggle}
           <span className="text-xs text-tertiary">({items.length} eventos)</span>
-          {isDemo && (
+          {isActivityLoading && (
+            <Loader2 size={14} className="text-tertiary animate-spin" />
+          )}
+          {!hasRealData && !isActivityLoading && (
             <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">
-              Demo
+              No data
             </span>
           )}
         </div>

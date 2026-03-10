@@ -74,3 +74,14 @@ export {
   useToggleCron,
   useActivateBundle,
 } from './useEngine';
+export { useBrainstormOrganize } from './useBrainstormOrganize';
+export { useQAMetrics } from './useQAMetrics';
+export type { QAMetricsData, QAOverview, DailyTrendEntry, ValidationModule, PatternFeedback, GotchasRegistry } from './useQAMetrics';
+export { useGitHubData } from './useGitHubData';
+export type { GitCommit, GitHubPR, GitHubIssue, RepoInfo, GitHubData } from './useGitHubData';
+export { useSystemContext } from './useSystemContext';
+export type { RuleEntry, AgentEntry, ConfigEntry, MCPServerEntry, RecentFileEntry, SystemContextData } from './useSystemContext';
+export { useActivityFeed } from './useActivityFeed';
+export type { ActivityEvent, ActivityFeedData, ActivityType as ActivityEventType } from './useActivityFeed';
+export { useAgentStatus } from './useAgentStatus';
+export { useActiveAgents } from './useActiveAgents';

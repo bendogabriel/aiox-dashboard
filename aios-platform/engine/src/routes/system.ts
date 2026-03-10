@@ -3,6 +3,7 @@ import { getPoolStatus } from '../core/process-pool';
 import { getAuditLog, canExecute, reloadRules } from '../core/authority-enforcer';
 import { getAvailableBundles, getActiveBundle, setActiveBundle, validateAgentForBundle } from '../core/team-bundle';
 import { getWSClientCount } from '../lib/ws';
+import { getMigrationStatus } from '../lib/db';
 
 const startedAt = Date.now();
 
@@ -10,12 +11,15 @@ const system = new Hono();
 
 // GET /health
 system.get('/health', (c) => {
+  const migrations = getMigrationStatus();
   return c.json({
     status: 'ok',
-    version: '0.4.0',
+    version: '0.5.0',
     uptime_ms: Date.now() - startedAt,
     pid: process.pid,
     ws_clients: getWSClientCount(),
+    migrations: migrations.applied,
+    latest_migration: migrations.latest,
   });
 });
 

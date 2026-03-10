@@ -1,7 +1,13 @@
 import { X } from 'lucide-react';
 import { StatusDot } from '../ui';
+import type { StatusType } from '../ui/StatusDot';
 import type { TerminalSession } from './TerminalCard';
 import { cn } from '../../lib/utils';
+
+function toStatusDot(status: TerminalSession['status']): StatusType {
+  if (status === 'connecting') return 'waiting';
+  return status;
+}
 
 interface TerminalTabsProps {
   sessions: TerminalSession[];
@@ -44,9 +50,9 @@ export function TerminalTabs({ sessions, activeId, onSelect, onClose }: Terminal
               className="flex items-center gap-2 px-3 py-1.5 cursor-pointer truncate"
             >
               <StatusDot
-                status={session.status}
+                status={toStatusDot(session.status)}
                 size="sm"
-                pulse={session.status === 'working'}
+                pulse={session.status === 'working' || session.status === 'connecting'}
               />
               <span className="truncate max-w-[120px]">{session.agent}</span>
             </span>

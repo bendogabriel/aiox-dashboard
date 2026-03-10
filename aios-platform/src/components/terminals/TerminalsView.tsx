@@ -1,39 +1,115 @@
-import { useState, useEffect } from 'react';
-import { Terminal, LayoutGrid, List, Plus, ArrowLeft } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Terminal, LayoutGrid, List, Plus, ArrowLeft, Radio, RefreshCw } from 'lucide-react';
 import { GlassCard, GlassButton, Badge, ProgressBar, SectionLabel } from '../ui';
-import { TerminalCard } from './TerminalCard';
+import { LiveTerminalCard } from './LiveTerminalCard';
+import { LiveTerminalOutput } from './LiveTerminalOutput';
 import { TerminalTabs } from './TerminalTabs';
-import { TerminalOutput } from './TerminalOutput';
 import { useTerminalStore } from '../../stores/terminalStore';
-import { mockTerminalSessions } from '../../mocks/terminals';
+import { useActiveAgents } from '../../hooks/useActiveAgents';
+import type { TerminalSession } from './TerminalCard';
 import { cn } from '../../lib/utils';
 
-const agentNames = ['Dex', 'Aria', 'Pax', 'River', 'Morgan', 'Gage', 'Orion', 'Nova'];
-const directories = ['~/projects/api', '~/projects/ui', '~/projects/core', '~/projects/docs'];
+// Map known agent IDs to display names
+const AGENT_DISPLAY: Record<string, string> = {
+  main: 'Main',
+  dev: '@dev (Dex)',
+  qa: '@qa (Quinn)',
+  architect: '@architect (Aria)',
+  pm: '@pm (Morgan)',
+  po: '@po (Pax)',
+  sm: '@sm (River)',
+  devops: '@devops (Gage)',
+  analyst: '@analyst (Orion)',
+  'data-engineer': '@data-engineer (Dara)',
+};
+
+const AVAILABLE_AGENTS = ['main', 'dev', 'qa', 'architect', 'pm', 'po', 'devops', 'sm'];
 
 const MAX_SESSIONS = 12;
+
+function createSessionForAgent(agentId: string): TerminalSession {
+  return {
+    id: `live-${agentId}-${Date.now()}`,
+    agent: AGENT_DISPLAY[agentId] || `@${agentId}`,
+    agentId,
+    status: 'idle',
+    dir: '~/.aios/logs',
+    story: '',
+    output: [],
+  };
+}
 
 export default function TerminalsView() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const {
     sessions,
     activeSessionId,
-    setSessions,
-    setActiveSession,
     addSession,
     removeSession,
+    setActiveSession,
+    getSessionByAgentId,
+    setSessions,
   } = useTerminalStore();
 
-  // Load mock sessions on mount if store is empty
+  const { agents, activeCount, refetch } = useActiveAgents({
+    pollInterval: 10_000,
+    activeOnly: false,
+  });
+
+  const syncedRef = useRef<Set<string>>(new Set());
+  const initializedRef = useRef(false);
+
+  // Auto-create sessions for active agents
   useEffect(() => {
-    if (sessions.length === 0) {
-      setSessions(mockTerminalSessions);
+    // On first load, clear stale mock sessions
+    if (!initializedRef.current) {
+      const hasMockSessions = sessions.some(s => !s.agentId);
+      if (hasMockSessions) {
+        setSessions([]);
+      }
+      initializedRef.current = true;
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const activeAgents = agents.filter(a => a.active);
+    for (const agent of activeAgents) {
+      if (syncedRef.current.has(agent.agentId)) continue;
+
+      const existing = getSessionByAgentId(agent.agentId);
+      if (!existing) {
+        addSession(createSessionForAgent(agent.agentId));
+      }
+      syncedRef.current.add(agent.agentId);
+    }
+  }, [agents, sessions, addSession, getSessionByAgentId, setSessions]);
+
+  const handleRemoveSession = (id: string) => {
+    const session = sessions.find(s => s.id === id);
+    if (session?.agentId) {
+      syncedRef.current.delete(session.agentId);
+    }
+    removeSession(id);
+  };
+
+  const handleAddAgent = (agentId: string) => {
+    const existing = getSessionByAgentId(agentId);
+    if (existing) {
+      setActiveSession(existing.id);
+      return;
+    }
+    const session = createSessionForAgent(agentId);
+    addSession(session);
+    setActiveSession(session.id);
+    syncedRef.current.add(agentId);
+  };
 
   const sessionCount = sessions.length;
   const capacityPercent = Math.round((sessionCount / MAX_SESSIONS) * 100);
   const activeSession = sessions.find((s) => s.id === activeSessionId) ?? null;
+
+  // Agents not yet in a session
+  const agentsWithoutSession = agents.filter(
+    a => !getSessionByAgentId(a.agentId)
+  );
 
   return (
     <div className="h-full flex flex-col gap-4 p-4 overflow-hidden">
@@ -45,9 +121,24 @@ export default function TerminalsView() {
           <Badge variant="default" size="sm">
             {sessionCount} sessions
           </Badge>
+          {activeCount > 0 && (
+            <Badge variant="default" size="sm" className="terminal-status-active">
+              <Radio className="h-3 w-3 mr-1 animate-pulse" />
+              {activeCount} active
+            </Badge>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Refresh */}
+          <button
+            onClick={refetch}
+            className="p-2 rounded-xl text-tertiary hover:text-secondary hover:bg-white/5 transition-colors"
+            title="Refresh agent list"
+          >
+            <RefreshCw className="h-4 w-4" />
+          </button>
+
           {/* Grid/List toggle */}
           <div className="flex items-center glass rounded-xl overflow-hidden">
             <button
@@ -59,7 +150,6 @@ export default function TerminalsView() {
                   : 'text-tertiary hover:text-secondary',
               )}
               aria-label="Grid view"
-              aria-pressed={viewMode === 'grid'}
             >
               <LayoutGrid className="h-4 w-4" />
             </button>
@@ -72,34 +162,61 @@ export default function TerminalsView() {
                   : 'text-tertiary hover:text-secondary',
               )}
               aria-label="List view"
-              aria-pressed={viewMode === 'list'}
             >
               <List className="h-4 w-4" />
             </button>
           </div>
 
-          <GlassButton
-            size="sm"
-            variant="primary"
-            leftIcon={<Plus className="h-4 w-4" />}
-            disabled={sessionCount >= MAX_SESSIONS}
-            onClick={() => {
-              const usedNames = new Set(sessions.map((s) => s.agent));
-              const name = agentNames.find((n) => !usedNames.has(n)) ?? `Terminal ${sessionCount + 1}`;
-              const newSession = {
-                id: crypto.randomUUID(),
-                agent: name,
-                status: 'idle' as const,
-                dir: directories[sessionCount % directories.length],
-                story: '',
-                output: [`$ # New terminal session — ${name}`, '$ '],
-              };
-              addSession(newSession);
-              setActiveSession(newSession.id);
-            }}
-          >
-            New Terminal
-          </GlassButton>
+          {/* New Terminal Dropdown */}
+          <div className="relative group">
+            <GlassButton
+              size="sm"
+              variant="primary"
+              leftIcon={<Plus className="h-4 w-4" />}
+              disabled={sessionCount >= MAX_SESSIONS}
+            >
+              New Terminal
+            </GlassButton>
+            <div className="absolute right-0 top-full mt-1 hidden group-hover:block z-20">
+              <div className="glass rounded-xl py-1 min-w-[200px] shadow-lg border border-white/10">
+                {/* Agents with logs but no session */}
+                {agentsWithoutSession.length > 0 && (
+                  <>
+                    <div className="px-3 py-1 text-[10px] text-tertiary uppercase tracking-wider">
+                      With logs
+                    </div>
+                    {agentsWithoutSession.map((agent) => (
+                      <button
+                        key={agent.agentId}
+                        onClick={() => handleAddAgent(agent.agentId)}
+                        className="w-full px-3 py-2 text-left text-xs hover:bg-white/10 flex items-center gap-2 text-secondary hover:text-primary transition-colors"
+                      >
+                        <span className="h-2 w-2 rounded-full bg-green-500" />
+                        {AGENT_DISPLAY[agent.agentId] || `@${agent.agentId}`}
+                        {agent.active && (
+                          <span className="ml-auto text-[10px] terminal-status-active">live</span>
+                        )}
+                      </button>
+                    ))}
+                    <div className="border-t border-white/5 my-1" />
+                  </>
+                )}
+                <div className="px-3 py-1 text-[10px] text-tertiary uppercase tracking-wider">
+                  All agents
+                </div>
+                {AVAILABLE_AGENTS.map((agentId) => (
+                  <button
+                    key={agentId}
+                    onClick={() => handleAddAgent(agentId)}
+                    className="w-full px-3 py-2 text-left text-xs hover:bg-white/10 flex items-center gap-2 text-secondary hover:text-primary transition-colors"
+                  >
+                    <span className="h-2 w-2 rounded-full bg-white/20" />
+                    {AGENT_DISPLAY[agentId] || `@${agentId}`}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -110,7 +227,7 @@ export default function TerminalsView() {
         onSelect={(id) =>
           setActiveSession(id === activeSessionId ? null : id)
         }
-        onClose={(id) => removeSession(id)}
+        onClose={(id) => handleRemoveSession(id)}
       />
 
       {/* Main area */}
@@ -130,22 +247,30 @@ export default function TerminalsView() {
                 <span className="text-sm font-semibold text-primary">
                   {activeSession.agent}
                 </span>
+                <span className={cn(
+                  'text-[10px] font-medium capitalize',
+                  activeSession.status === 'working' && 'terminal-status-active',
+                  activeSession.status === 'connecting' && 'text-yellow-400',
+                  activeSession.status === 'error' && 'text-red-400',
+                  activeSession.status === 'idle' && 'text-tertiary',
+                )}>
+                  {activeSession.status}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 {activeSession.story && (
                   <Badge variant="default" size="sm">{activeSession.story}</Badge>
                 )}
-                <span className="text-[10px] text-tertiary">{activeSession.dir}</span>
+                <span className="text-[10px] text-tertiary">
+                  {activeSession.output.length} lines
+                </span>
               </div>
             </div>
-            <TerminalOutput
-              lines={activeSession.output}
-              isActive={activeSession.status === 'working'}
-            />
+            <LiveTerminalOutput session={activeSession} />
           </GlassCard>
         ) : (
           /* Session cards grid/list */
-          <div className="flex-1 overflow-y-auto" tabIndex={0} role="region" aria-label="Sessoes de terminal ativas">
+          <div className="flex-1 overflow-y-auto" tabIndex={0} role="region" aria-label="Terminal sessions">
             <SectionLabel count={sessionCount}>Active Sessions</SectionLabel>
 
             {sessions.length > 0 ? (
@@ -163,7 +288,7 @@ export default function TerminalsView() {
                     className="cursor-pointer"
                     onClick={() => setActiveSession(session.id)}
                   >
-                    <TerminalCard
+                    <LiveTerminalCard
                       session={session}
                       listMode={viewMode === 'list'}
                     />
@@ -173,11 +298,21 @@ export default function TerminalsView() {
             ) : (
               <div className="flex-1 flex items-center justify-center mt-12">
                 <GlassCard padding="lg" className="text-center max-w-sm">
-                  <Terminal className="h-10 w-10 text-tertiary mx-auto mb-3" />
-                  <h2 className="text-sm font-semibold text-primary mb-1">No active terminals</h2>
-                  <p className="text-xs text-secondary">
-                    Terminal sessions will appear here when agents start executing tasks.
+                  <Radio className="h-10 w-10 text-tertiary mx-auto mb-3" />
+                  <h2 className="text-sm font-semibold text-primary mb-1">Waiting for agents</h2>
+                  <p className="text-xs text-secondary mb-3">
+                    Terminals auto-open when agents start writing to <code className="text-[10px] bg-white/5 px-1 py-0.5 rounded">.aios/logs/</code>
                   </p>
+                  <div className="flex items-center justify-center gap-2">
+                    <GlassButton size="sm" onClick={() => handleAddAgent('dev')}>
+                      <Plus className="h-3 w-3 mr-1" />
+                      @dev
+                    </GlassButton>
+                    <GlassButton size="sm" onClick={() => handleAddAgent('main')}>
+                      <Plus className="h-3 w-3 mr-1" />
+                      Main
+                    </GlassButton>
+                  </div>
                 </GlassCard>
               </div>
             )}
@@ -189,7 +324,9 @@ export default function TerminalsView() {
       <GlassCard padding="sm" variant="subtle" className="flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-tertiary">Capacity</span>
+            <span className="text-xs text-tertiary">
+              {activeCount > 0 ? `${activeCount} agents streaming` : 'No active agents'}
+            </span>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs text-tertiary">

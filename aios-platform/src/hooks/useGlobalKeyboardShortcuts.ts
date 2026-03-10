@@ -29,6 +29,7 @@ const viewShortcuts: Record<string, string> = {
   y: 'stories',
   g: 'github',
   s: 'settings',
+  f: 'brainstorm',
 };
 
 export function useGlobalKeyboardShortcuts(options: KeyboardShortcutsOptions = {}) {
@@ -246,6 +247,7 @@ export const shortcutDefinitions = [
   { keys: ['Q'], description: 'Squads', category: 'Views' },
   { keys: ['Y'], description: 'Stories', category: 'Views' },
   { keys: ['G'], description: 'GitHub', category: 'Views' },
+  { keys: ['F'], description: 'Brainstorm', category: 'Views' },
   { keys: ['S'], description: 'Settings', category: 'Views' },
   { keys: ['['], description: 'Toggle sidebar', category: 'Views' },
 

@@ -1,17 +1,27 @@
 import { NextResponse } from 'next/server';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import path from 'path';
 
 const execFileAsync = promisify(execFile);
 
-interface GitHubIssue {
-  number: number;
-  title: string;
-  state: string;
-  labels: { name: string }[];
+// ─── Cache ───────────────────────────────────────────────────
+interface CacheEntry {
+  data: GitHubResponse;
+  timestamp: number;
+}
+
+let cache: CacheEntry | null = null;
+const CACHE_TTL_MS = 60_000; // 60 seconds
+
+// ─── Types ───────────────────────────────────────────────────
+interface GitCommit {
+  sha: string;
+  message: string;
+  author: string;
+  date: string;
   url: string;
-  createdAt: string;
-  author: { login: string };
+  refs: string[];
 }
 
 interface GitHubPR {
@@ -25,69 +35,224 @@ interface GitHubPR {
   isDraft: boolean;
 }
 
-export async function GET() {
+interface GitHubIssue {
+  number: number;
+  title: string;
+  state: string;
+  labels: { name: string; color: string }[];
+  url: string;
+  createdAt: string;
+  author: { login: string };
+}
+
+interface RepoInfo {
+  name: string;
+  owner: { login: string };
+  url: string;
+}
+
+interface GitHubResponse {
+  commits: GitCommit[];
+  pullRequests: GitHubPR[];
+  issues: GitHubIssue[];
+  repoInfo: RepoInfo | null;
+  source: 'live' | 'partial' | 'git-only';
+  ghAvailable: boolean;
+  updatedAt: string;
+}
+
+// ─── Git repo root (navigate up from dashboard/src/app/api/github/) ──
+const GIT_REPO_ROOT = path.resolve(process.cwd(), '..');
+
+// ─── Helpers ─────────────────────────────────────────────────
+async function getGitCommits(): Promise<GitCommit[]> {
   try {
-    // Check if gh CLI is authenticated
+    // Get commits with decoration info
+    const { stdout } = await execFileAsync(
+      'git',
+      [
+        'log',
+        '--oneline',
+        '-20',
+        '--format=%H|%h|%s|%an|%aI|%D',
+      ],
+      { cwd: GIT_REPO_ROOT, timeout: 10_000 }
+    );
+
+    if (!stdout.trim()) return [];
+
+    // Try to get remote URL for building commit links
+    let remoteUrl = '';
     try {
-      await execFileAsync('gh', ['auth', 'status']);
-    } catch {
-      return NextResponse.json(
-        {
-          error: 'GitHub CLI not authenticated',
-          message: 'Run "gh auth login" to authenticate',
-        },
-        { status: 401 }
+      const { stdout: remote } = await execFileAsync(
+        'git',
+        ['config', '--get', 'remote.origin.url'],
+        { cwd: GIT_REPO_ROOT, timeout: 5_000 }
       );
+      remoteUrl = remote.trim()
+        .replace(/\.git$/, '')
+        .replace(/^git@github\.com:/, 'https://github.com/')
+        .replace(/^ssh:\/\/git@github\.com\//, 'https://github.com/');
+    } catch {
+      // No remote configured
     }
 
-    // Fetch issues and PRs in parallel
-    const [issuesResult, prsResult] = await Promise.allSettled([
-      execFileAsync('gh', [
-        'issue',
-        'list',
-        '--json',
-        'number,title,state,labels,url,createdAt,author',
-        '--limit',
-        '15',
-      ]),
-      execFileAsync('gh', [
+    return stdout
+      .trim()
+      .split('\n')
+      .filter(Boolean)
+      .map((line) => {
+        const [fullHash, shortHash, message, author, date, decorations] = line.split('|');
+        const refs = decorations
+          ? decorations
+              .split(', ')
+              .map((r) => r.trim())
+              .filter(Boolean)
+          : [];
+        const url = remoteUrl ? `${remoteUrl}/commit/${fullHash}` : '#';
+        return {
+          sha: shortHash,
+          message,
+          author,
+          date,
+          url,
+          refs,
+        };
+      });
+  } catch {
+    return [];
+  }
+}
+
+async function checkGhAvailable(): Promise<boolean> {
+  try {
+    await execFileAsync('gh', ['auth', 'status'], { timeout: 5_000 });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function getGhPullRequests(): Promise<GitHubPR[]> {
+  try {
+    const { stdout } = await execFileAsync(
+      'gh',
+      [
         'pr',
         'list',
+        '--state',
+        'all',
         '--json',
         'number,title,state,url,createdAt,author,headRefName,isDraft',
         '--limit',
-        '15',
-      ]),
-    ]);
+        '10',
+      ],
+      { cwd: GIT_REPO_ROOT, timeout: 15_000 }
+    );
+    return JSON.parse(stdout || '[]');
+  } catch {
+    return [];
+  }
+}
 
-    const issues: GitHubIssue[] =
-      issuesResult.status === 'fulfilled' ? JSON.parse(issuesResult.value.stdout || '[]') : [];
-
-    const prs: GitHubPR[] =
-      prsResult.status === 'fulfilled' ? JSON.parse(prsResult.value.stdout || '[]') : [];
-
-    // Get repo info
-    let repoInfo = null;
-    try {
-      const { stdout: repoJson } = await execFileAsync('gh', [
-        'repo',
-        'view',
+async function getGhIssues(): Promise<GitHubIssue[]> {
+  try {
+    const { stdout } = await execFileAsync(
+      'gh',
+      [
+        'issue',
+        'list',
+        '--state',
+        'all',
         '--json',
-        'name,owner,url',
-      ]);
-      repoInfo = JSON.parse(repoJson);
-    } catch {
-      // Ignore repo info errors
+        'number,title,state,labels,url,createdAt,author',
+        '--limit',
+        '10',
+      ],
+      { cwd: GIT_REPO_ROOT, timeout: 15_000 }
+    );
+    const raw = JSON.parse(stdout || '[]');
+    // Normalize labels to include color field
+    return raw.map((issue: GitHubIssue & { labels?: { name: string; color?: string }[] }) => ({
+      ...issue,
+      labels: (issue.labels || []).map((l) => ({
+        name: l.name,
+        color: l.color || '6B7280',
+      })),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+async function getRepoInfo(): Promise<RepoInfo | null> {
+  try {
+    const { stdout } = await execFileAsync(
+      'gh',
+      ['repo', 'view', '--json', 'name,owner,url'],
+      { cwd: GIT_REPO_ROOT, timeout: 10_000 }
+    );
+    return JSON.parse(stdout);
+  } catch {
+    return null;
+  }
+}
+
+// ─── GET handler ─────────────────────────────────────────────
+export async function GET() {
+  try {
+    // Return cached data if fresh
+    if (cache && Date.now() - cache.timestamp < CACHE_TTL_MS) {
+      return NextResponse.json(cache.data, {
+        headers: { 'X-Cache': 'HIT' },
+      });
     }
 
-    return NextResponse.json({
+    // Always fetch git commits (works without gh CLI)
+    const commits = await getGitCommits();
+
+    // Check if gh CLI is available and authenticated
+    const ghAvailable = await checkGhAvailable();
+
+    let pullRequests: GitHubPR[] = [];
+    let issues: GitHubIssue[] = [];
+    let repoInfo: RepoInfo | null = null;
+
+    if (ghAvailable) {
+      // Fetch PRs, issues, and repo info in parallel
+      const [prs, iss, repo] = await Promise.all([
+        getGhPullRequests(),
+        getGhIssues(),
+        getRepoInfo(),
+      ]);
+      pullRequests = prs;
+      issues = iss;
+      repoInfo = repo;
+    }
+
+    const source: GitHubResponse['source'] = ghAvailable
+      ? 'live'
+      : commits.length > 0
+        ? 'git-only'
+        : 'partial';
+
+    const data: GitHubResponse = {
+      commits,
+      pullRequests,
       issues,
-      prs,
-      repo: repoInfo,
+      repoInfo,
+      source,
+      ghAvailable,
       updatedAt: new Date().toISOString(),
+    };
+
+    // Update cache
+    cache = { data, timestamp: Date.now() };
+
+    return NextResponse.json(data, {
+      headers: { 'X-Cache': 'MISS' },
     });
   } catch (error) {
-    // eslint-disable-next-line no-undef
     console.error('GitHub API error:', error);
     return NextResponse.json(
       {

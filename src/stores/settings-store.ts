@@ -19,7 +19,7 @@ export interface DashboardSettings {
 
 const DEFAULT_SETTINGS: DashboardSettings = {
   theme: 'dark',
-  useMockData: true, // Demo mode: Use mock data for visualization
+  useMockData: false, // Real mode: Use live SSE streaming from .aios/logs/
   autoRefresh: true,
   refreshInterval: 30,
   storiesPath: 'docs/stories',
@@ -97,7 +97,7 @@ export const useSettingsStore = create<SettingsState>()(
       resetToDefaults: () => set({ settings: DEFAULT_SETTINGS }),
     }),
     {
-      name: 'aios-dashboard-settings-v2', // v2: Demo mode enabled by default
+      name: 'aios-dashboard-settings-v3', // v3: Real mode — live SSE streaming from .aios/logs/
     }
   )
 );

@@ -5,6 +5,7 @@ import { X, Server, MessageSquare, Database, Copy, Check, ExternalLink, QrCode, 
 import { useIntegrationStore } from '../../stores/integrationStore';
 import { getEngineUrl } from '../../lib/connection';
 import { startGoogleOAuth, disconnectGoogle, getGoogleAuthStatus } from '../../lib/integration-sync';
+import { supabaseBrainstormService } from '../../services/supabase/brainstorm';
 
 // ── Shared Modal Shell ────────────────────────────────────
 
@@ -369,6 +370,100 @@ function WhatsAppSetup({ onClose }: { onClose: () => void }) {
   );
 }
 
+// ── Supabase Required Tables ─────────────────────────────
+
+interface RequiredTable {
+  name: string;
+  label: string;
+  migrationSql: string;
+}
+
+const BRAINSTORM_ROOMS_SQL = `-- Brainstorm Rooms table
+CREATE TABLE IF NOT EXISTS brainstorm_rooms (
+  id          text        PRIMARY KEY,
+  name        text        NOT NULL,
+  description text,
+  phase       text        NOT NULL DEFAULT 'collecting',
+  ideas       jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  groups      jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  outputs     jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  tags        jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  updated_at  timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_brainstorm_rooms_created_at
+  ON brainstorm_rooms (created_at DESC);
+
+ALTER TABLE brainstorm_rooms ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow anonymous read access on brainstorm_rooms"
+  ON brainstorm_rooms FOR SELECT USING (true);
+CREATE POLICY "Allow anonymous insert access on brainstorm_rooms"
+  ON brainstorm_rooms FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anonymous update access on brainstorm_rooms"
+  ON brainstorm_rooms FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Allow anonymous delete access on brainstorm_rooms"
+  ON brainstorm_rooms FOR DELETE USING (true);`;
+
+const ORCHESTRATION_TASKS_SQL = `-- Orchestration Tasks table
+CREATE TABLE IF NOT EXISTS orchestration_tasks (
+  task_id     text        PRIMARY KEY,
+  title       text,
+  description text,
+  status      text        NOT NULL DEFAULT 'pending',
+  squads      jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  outputs     jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  metadata    jsonb       NOT NULL DEFAULT '{}'::jsonb,
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  updated_at  timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_orchestration_tasks_created_at
+  ON orchestration_tasks (created_at DESC);
+
+ALTER TABLE orchestration_tasks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow anonymous read access on orchestration_tasks"
+  ON orchestration_tasks FOR SELECT USING (true);
+CREATE POLICY "Allow anonymous insert access on orchestration_tasks"
+  ON orchestration_tasks FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anonymous update access on orchestration_tasks"
+  ON orchestration_tasks FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Allow anonymous delete access on orchestration_tasks"
+  ON orchestration_tasks FOR DELETE USING (true);`;
+
+const REQUIRED_TABLES: RequiredTable[] = [
+  { name: 'orchestration_tasks', label: 'Orchestration Tasks', migrationSql: ORCHESTRATION_TASKS_SQL },
+  { name: 'brainstorm_rooms', label: 'Brainstorm Rooms', migrationSql: BRAINSTORM_ROOMS_SQL },
+];
+
+type TableStatus = 'unknown' | 'checking' | 'exists' | 'missing';
+
+/** Check if a table exists by attempting a SELECT with limit 0 */
+async function checkTableExists(supabaseUrl: string, apiKey: string, tableName: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/${tableName}?select=*&limit=0`, {
+      headers: { apikey: apiKey, Authorization: `Bearer ${apiKey}` },
+    });
+    // 200 = exists, 404/PGRST = not found
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** Extract project ref from Supabase URL (e.g. "abc123" from "https://abc123.supabase.co") */
+function getProjectRef(url: string): string | null {
+  try {
+    const hostname = new URL(url).hostname;
+    const ref = hostname.split('.')[0];
+    return ref || null;
+  } catch {
+    return null;
+  }
+}
+
 // ── Supabase Setup ────────────────────────────────────────
 
 function SupabaseSetup({ onClose }: { onClose: () => void }) {
@@ -376,6 +471,29 @@ function SupabaseSetup({ onClose }: { onClose: () => void }) {
   const hasKey = !!import.meta.env.VITE_SUPABASE_ANON_KEY;
   const [testing, setTesting] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [tableStatuses, setTableStatuses] = useState<Record<string, TableStatus>>({});
+  const [copiedTable, setCopiedTable] = useState<string | null>(null);
+
+  const checkTables = async () => {
+    if (!currentUrl || !hasKey) return;
+    const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const statuses: Record<string, TableStatus> = {};
+    for (const t of REQUIRED_TABLES) {
+      statuses[t.name] = 'checking';
+    }
+    setTableStatuses({ ...statuses });
+
+    for (const t of REQUIRED_TABLES) {
+      const exists = await checkTableExists(currentUrl, key, t.name);
+      statuses[t.name] = exists ? 'exists' : 'missing';
+      setTableStatuses({ ...statuses });
+
+      // Reset the service flag when table is detected as existing
+      if (exists && t.name === 'brainstorm_rooms') {
+        supabaseBrainstormService.resetTableFlag();
+      }
+    }
+  };
 
   const testConnection = async () => {
     if (!currentUrl || !hasKey) {
@@ -384,6 +502,7 @@ function SupabaseSetup({ onClose }: { onClose: () => void }) {
     }
     setTesting(true);
     setResult(null);
+    setTableStatuses({});
     try {
       const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
       const res = await fetch(`${currentUrl}/rest/v1/`, {
@@ -391,6 +510,8 @@ function SupabaseSetup({ onClose }: { onClose: () => void }) {
       });
       if (res.ok || res.status === 200) {
         setResult({ ok: true, msg: `Connected to ${new URL(currentUrl).hostname}` });
+        // Auto-check tables after successful connection
+        setTimeout(() => checkTables(), 300);
       } else {
         setResult({ ok: false, msg: `HTTP ${res.status}` });
       }
@@ -400,6 +521,34 @@ function SupabaseSetup({ onClose }: { onClose: () => void }) {
       setTesting(false);
     }
   };
+
+  const handleCopyAndOpen = (table: RequiredTable) => {
+    navigator.clipboard.writeText(table.migrationSql);
+    setCopiedTable(table.name);
+    setTimeout(() => setCopiedTable(null), 3000);
+
+    // Open Supabase SQL Editor
+    const ref = getProjectRef(currentUrl);
+    if (ref) {
+      window.open(`https://supabase.com/dashboard/project/${ref}/sql/new`, '_blank');
+    }
+  };
+
+  const handleCopyAll = () => {
+    const missingTables = REQUIRED_TABLES.filter((t) => tableStatuses[t.name] === 'missing');
+    const allSql = missingTables.map((t) => t.migrationSql).join('\n\n');
+    navigator.clipboard.writeText(allSql);
+    setCopiedTable('__all__');
+    setTimeout(() => setCopiedTable(null), 3000);
+
+    const ref = getProjectRef(currentUrl);
+    if (ref) {
+      window.open(`https://supabase.com/dashboard/project/${ref}/sql/new`, '_blank');
+    }
+  };
+
+  const hasMissing = Object.values(tableStatuses).some((s) => s === 'missing');
+  const hasChecked = Object.keys(tableStatuses).length > 0;
 
   return (
     <ModalShell title="Supabase Connection" onClose={onClose}>
@@ -449,6 +598,129 @@ function SupabaseSetup({ onClose }: { onClose: () => void }) {
           >
             {result.ok ? <Check size={14} style={{ display: 'inline', marginRight: 6 }} /> : <X size={14} style={{ display: 'inline', marginRight: 6 }} />}
             {result.msg}
+          </div>
+        )}
+
+        {/* Database Tables Section */}
+        {hasChecked && (
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
+            <label style={{ ...labelStyle, marginBottom: '10px' }}>Database Tables</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {REQUIRED_TABLES.map((table) => {
+                const status = tableStatuses[table.name] || 'unknown';
+                return (
+                  <div
+                    key={table.name}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px 10px',
+                      fontSize: '12px',
+                      fontFamily: 'var(--font-family-mono)',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: `1px solid ${
+                        status === 'exists' ? 'rgba(62,207,142,0.15)'
+                        : status === 'missing' ? 'rgba(239,68,68,0.15)'
+                        : 'rgba(255,255,255,0.06)'
+                      }`,
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {status === 'checking' && (
+                        <span style={{ color: 'var(--aiox-gray-muted)', fontSize: '11px' }}>...</span>
+                      )}
+                      {status === 'exists' && (
+                        <Check size={13} style={{ color: '#3ECF8E' }} />
+                      )}
+                      {status === 'missing' && (
+                        <X size={13} style={{ color: 'var(--color-status-error, #EF4444)' }} />
+                      )}
+                      <span style={{ color: status === 'exists' ? '#3ECF8E' : status === 'missing' ? 'var(--color-status-error, #EF4444)' : 'var(--aiox-gray-muted)' }}>
+                        {table.name}
+                      </span>
+                    </div>
+                    {status === 'missing' && (
+                      <button
+                        onClick={() => handleCopyAndOpen(table)}
+                        style={{
+                          background: 'none',
+                          border: '1px solid rgba(209, 255, 0, 0.3)',
+                          color: 'var(--aiox-lime, #D1FF00)',
+                          fontSize: '10px',
+                          fontFamily: 'var(--font-family-mono)',
+                          textTransform: 'uppercase',
+                          padding: '3px 8px',
+                          cursor: 'pointer',
+                          letterSpacing: '0.04em',
+                        }}
+                      >
+                        {copiedTable === table.name ? 'SQL copiado!' : 'Copy SQL'}
+                      </button>
+                    )}
+                    {status === 'exists' && (
+                      <span style={{ color: 'rgba(62,207,142,0.5)', fontSize: '10px', textTransform: 'uppercase' }}>OK</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {hasMissing && (
+              <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <button
+                  onClick={handleCopyAll}
+                  style={{
+                    ...primaryBtnStyle,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  {copiedTable === '__all__' ? (
+                    <>
+                      <Check size={14} />
+                      SQL copiado — cole no SQL Editor
+                    </>
+                  ) : (
+                    <>
+                      <ExternalLink size={14} />
+                      Copy All SQL & Open SQL Editor
+                    </>
+                  )}
+                </button>
+                <p style={{ ...hintStyle, marginTop: 0 }}>
+                  O SQL sera copiado para o clipboard e o SQL Editor do Supabase sera aberto.
+                  Cole e execute o SQL para criar as tabelas.
+                </p>
+              </div>
+            )}
+
+            {hasChecked && !hasMissing && Object.values(tableStatuses).every((s) => s === 'exists') && (
+              <p style={{ ...hintStyle, color: '#3ECF8E', marginTop: '10px' }}>
+                Todas as tabelas estao configuradas corretamente.
+              </p>
+            )}
+
+            <button
+              onClick={checkTables}
+              style={{
+                marginTop: '10px',
+                background: 'none',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: 'var(--aiox-gray-muted)',
+                fontSize: '11px',
+                fontFamily: 'var(--font-family-mono)',
+                textTransform: 'uppercase',
+                padding: '6px 12px',
+                cursor: 'pointer',
+                letterSpacing: '0.04em',
+                width: '100%',
+              }}
+            >
+              Re-check Tables
+            </button>
           </div>
         )}
       </div>

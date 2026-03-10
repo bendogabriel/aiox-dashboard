@@ -57,3 +57,8 @@ server/node_modules/
 .aios-core/mcp-servers/*/node_modules/
 .aios-core/mcp-servers/*/dist/
 .aios-core/mcp-servers/*/.DS_Store
+
+.aios/auto-experiment/
+
+# claude worktrees
+.claude/worktrees/

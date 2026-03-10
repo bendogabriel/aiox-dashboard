@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { supabaseRoadmapService } from '../services/supabase/roadmap';
 
 export type Quarter = 'Q1' | 'Q2' | 'Q3' | 'Q4';
 
@@ -21,13 +22,16 @@ interface RoadmapState {
   features: RoadmapFeature[];
   filter: 'all' | 'must' | 'should' | 'could' | 'wont';
   viewMode: RoadmapViewMode;
+  _initialized: boolean;
   setFilter: (filter: RoadmapState['filter']) => void;
   setViewMode: (mode: RoadmapViewMode) => void;
   addFeature: (feature: RoadmapFeature) => void;
+  updateFeature: (id: string, updates: Partial<RoadmapFeature>) => void;
   removeFeature: (id: string) => void;
+  _initFromSupabase: () => Promise<void>;
 }
 
-// Sample data for timeline visualization
+// Sample data for timeline visualization (used as fallback)
 const sampleFeatures: RoadmapFeature[] = [
   { id: '1', title: 'Agent Memory System', description: 'Persistent agent memory across sessions', priority: 'must', impact: 'high', effort: 'high', tags: ['core', 'ai'], status: 'done', quarter: 'Q1', squad: 'development' },
   { id: '2', title: 'Multi-Agent Chat', description: 'Group conversations with multiple agents', priority: 'must', impact: 'high', effort: 'medium', tags: ['chat', 'ux'], status: 'done', quarter: 'Q1', squad: 'development' },
@@ -43,12 +47,67 @@ const sampleFeatures: RoadmapFeature[] = [
   { id: '12', title: 'Voice Commands', description: 'Voice input for agent interactions', priority: 'wont', impact: 'low', effort: 'high', tags: ['voice', 'a11y'], status: 'planned', quarter: 'Q4', squad: 'design' },
 ];
 
-export const useRoadmapStore = create<RoadmapState>((set) => ({
+export const useRoadmapStore = create<RoadmapState>((set, get) => ({
   features: sampleFeatures,
   filter: 'all',
   viewMode: 'timeline',
+  _initialized: false,
+
   setFilter: (filter) => set({ filter }),
   setViewMode: (mode) => set({ viewMode: mode }),
-  addFeature: (feature) => set((state) => ({ features: [...state.features, feature] })),
-  removeFeature: (id) => set((state) => ({ features: state.features.filter((f) => f.id !== id) })),
+
+  addFeature: (feature) => {
+    set((state) => ({ features: [...state.features, feature] }));
+    // Sync to Supabase in background
+    supabaseRoadmapService.upsertFeature(feature).catch(() => {});
+  },
+
+  updateFeature: (id, updates) => {
+    let updatedFeature: RoadmapFeature | undefined;
+    set((state) => {
+      const features = state.features.map((f) => {
+        if (f.id === id) {
+          updatedFeature = { ...f, ...updates };
+          return updatedFeature;
+        }
+        return f;
+      });
+      return { features };
+    });
+    // Sync to Supabase in background
+    if (updatedFeature) {
+      supabaseRoadmapService.upsertFeature(updatedFeature).catch(() => {});
+    }
+  },
+
+  removeFeature: (id) => {
+    set((state) => ({ features: state.features.filter((f) => f.id !== id) }));
+    // Sync to Supabase in background
+    supabaseRoadmapService.deleteFeature(id).catch(() => {});
+  },
+
+  _initFromSupabase: async () => {
+    if (get()._initialized) return;
+    set({ _initialized: true });
+
+    try {
+      const features = await supabaseRoadmapService.listFeatures();
+      if (features && features.length > 0) {
+        set({ features });
+      } else if (features !== null && features.length === 0) {
+        // Supabase is available but empty — seed with sample data
+        const currentFeatures = get().features;
+        for (const feature of currentFeatures) {
+          supabaseRoadmapService.upsertFeature(feature).catch(() => {});
+        }
+      }
+      // If features === null, Supabase is unavailable — keep local sample data
+    } catch (error) {
+      console.error('[RoadmapStore] Failed to init from Supabase:', error);
+      // Keep local sample data as fallback
+    }
+  },
 }));
+
+// Initialize from Supabase on first load
+useRoadmapStore.getState()._initFromSupabase();

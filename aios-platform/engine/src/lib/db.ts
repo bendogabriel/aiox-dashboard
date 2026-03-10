@@ -80,6 +80,23 @@ function runMigrations(): void {
   }
 }
 
+/** Get migration status for health endpoint */
+export function getMigrationStatus(): { applied: number; latest: string | null } {
+  if (!db) return { applied: 0, latest: null };
+  try {
+    const count = db.query<{ count: number }, []>('SELECT COUNT(*) as count FROM _migrations').get();
+    const latest = db.query<{ filename: string }, []>(
+      'SELECT filename FROM _migrations ORDER BY id DESC LIMIT 1',
+    ).get();
+    return {
+      applied: count?.count ?? 0,
+      latest: latest?.filename ?? null,
+    };
+  } catch {
+    return { applied: 0, latest: null };
+  }
+}
+
 export function closeDb(): void {
   if (db) {
     db.close();

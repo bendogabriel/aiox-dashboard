@@ -1,5 +1,12 @@
 import { log } from '../lib/logger';
 import { broadcast } from '../lib/ws';
+import {
+  initAgentLogs,
+  cleanupOldLogs,
+  writeAgentLog,
+  writeAgentSessionStart,
+  writeAgentSessionEnd,
+} from '../lib/agent-logger';
 import * as queue from './job-queue';
 import { buildContext, initContextBuilder } from './context-builder';
 import { createWorkspace, initWorkspaceManager, type WorkspaceInfo } from './workspace-manager';
@@ -38,6 +45,8 @@ export function initPool(cfg: EngineConfig): void {
   initWorkspaceManager(cfg);
   initCompletionHandler(cfg);
   initAuthorityEnforcer(cfg);
+  initAgentLogs();
+  cleanupOldLogs();
 
   const cpuCount = navigator?.hardwareConcurrency ?? 4;
   const maxSlots = Math.min(cpuCount, config.pool.max_concurrent);
@@ -326,6 +335,13 @@ async function spawnJob(slot: PoolSlot, job: Job): Promise<void> {
       contextHash: context.hash,
     });
 
+    // Write session header to agent log file
+    writeAgentSessionStart(job.agent_id, {
+      jobId: job.id,
+      squadId: job.squad_id,
+      cwd,
+    });
+
     // Timeout handler
     const timeoutId = setTimeout(() => {
       try {
@@ -336,13 +352,53 @@ async function spawnJob(slot: PoolSlot, job: Job): Promise<void> {
       } catch { /* dead */ }
     }, job.timeout_ms);
 
-    // Wait for completion
+    // Read stdout and stderr incrementally — tee to agent log in real time
+    const stdoutReader = proc.stdout.getReader();
+    const stderrReader = proc.stderr.getReader();
+    const stdoutDecoder = new TextDecoder();
+    const stderrDecoder = new TextDecoder();
+    const stdoutChunks: string[] = [];
+    const stderrChunks: string[] = [];
+
+    // Read both streams in parallel
+    const readStdout = (async () => {
+      try {
+        while (true) {
+          const { done, value } = await stdoutReader.read();
+          if (done) break;
+          const text = stdoutDecoder.decode(value, { stream: true });
+          stdoutChunks.push(text);
+          writeAgentLog(job.agent_id, text);
+        }
+      } catch { /* stream error */ }
+    })();
+
+    const readStderr = (async () => {
+      try {
+        while (true) {
+          const { done, value } = await stderrReader.read();
+          if (done) break;
+          const text = stderrDecoder.decode(value, { stream: true });
+          stderrChunks.push(text);
+          writeAgentLog(job.agent_id, `[stderr] ${text}`);
+        }
+      } catch { /* stream error */ }
+    })();
+
+    await Promise.all([readStdout, readStderr]);
     const exitCode = await proc.exited;
     clearTimeout(timeoutId);
 
-    const stdout = await new Response(proc.stdout).text();
-    const stderr = await new Response(proc.stderr).text();
+    const stdout = stdoutChunks.join('');
+    const stderr = stderrChunks.join('');
     const durationMs = Date.now() - (slot.startedAt ?? Date.now());
+
+    // Write session footer to agent log file
+    writeAgentSessionEnd(job.agent_id, {
+      jobId: job.id,
+      exitCode,
+      durationMs,
+    });
 
     log.info('Process completed', {
       jobId: job.id,

@@ -7,6 +7,11 @@ import { canExecute } from '../core/authority-enforcer';
 import { handleCompletion } from '../core/completion-handler';
 import { log } from '../lib/logger';
 import { broadcast } from '../lib/ws';
+import {
+  writeAgentLog,
+  writeAgentSessionStart,
+  writeAgentSessionEnd,
+} from '../lib/agent-logger';
 import type { ExecuteRequest } from '../types';
 
 // ============================================================
@@ -106,6 +111,13 @@ stream.post('/agent', async (c) => {
       queue.updateFields(job.id, { pid: proc.pid });
       const startedAt = Date.now();
 
+      // Write session header to agent log file
+      writeAgentSessionStart(body.agentId, {
+        jobId: job.id,
+        squadId: body.squadId,
+        cwd,
+      });
+
       // Timeout handler
       const timeoutId = setTimeout(() => {
         try { proc.kill('SIGTERM'); } catch { /* dead */ }
@@ -123,7 +135,12 @@ stream.post('/agent', async (c) => {
           const { done, value } = await reader.read();
           if (done) break;
 
-          buffer += decoder.decode(value, { stream: true });
+          const rawChunk = decoder.decode(value, { stream: true });
+          buffer += rawChunk;
+
+          // Tee raw output to agent log file
+          writeAgentLog(body.agentId, rawChunk);
+
           const lines = buffer.split('\n');
           buffer = lines.pop() ?? ''; // Keep incomplete line in buffer
 
@@ -174,11 +191,35 @@ stream.post('/agent', async (c) => {
         });
       }
 
+      // Read stderr in background (tee to agent log)
+      const stderrChunks: string[] = [];
+      const stderrReader = proc.stderr.getReader();
+      const stderrDecoder = new TextDecoder();
+      const readStderr = (async () => {
+        try {
+          while (true) {
+            const { done: d, value: v } = await stderrReader.read();
+            if (d) break;
+            const t = stderrDecoder.decode(v, { stream: true });
+            stderrChunks.push(t);
+            writeAgentLog(body.agentId, `[stderr] ${t}`);
+          }
+        } catch { /* stream error */ }
+      })();
+
       // Wait for process exit
       clearTimeout(timeoutId);
+      await readStderr;
       const exitCode = await proc.exited;
-      const stderr = await new Response(proc.stderr).text();
+      const stderr = stderrChunks.join('');
       const durationMs = Date.now() - startedAt;
+
+      // Write session footer to agent log file
+      writeAgentSessionEnd(body.agentId, {
+        jobId: job.id,
+        exitCode,
+        durationMs,
+      });
 
       // Update job status
       if (exitCode === 0) {

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useUIStore } from '../stores/uiStore';
+import { useMarketplaceStore } from '../stores/marketplaceStore';
 
 // Bidirectional sync between URL and uiStore.currentView
 // Supports: /dashboard, /kanban, /world, /world/room/dev-squad, /agents, /settings/appearance,
@@ -35,6 +36,14 @@ const VIEW_PATHS: Record<string, string> = {
   '/authority-matrix': 'authority-matrix',
   '/handoff-flows': 'handoff-flows',
   '/integrations': 'integrations',
+  '/brainstorm': 'brainstorm',
+  // Marketplace
+  '/marketplace': 'marketplace',
+  '/marketplace/purchases': 'marketplace-purchases',
+  '/marketplace/seller': 'marketplace-seller',
+  '/marketplace/submit': 'marketplace-submit',
+  '/marketplace/review': 'marketplace-review',
+  '/marketplace/admin': 'marketplace-admin',
   // Consolidated aliases (redirect to canonical view)
   '/cockpit': 'dashboard',
   '/insights': 'dashboard',
@@ -62,6 +71,7 @@ interface ParsedUrl {
   squadId?: string;
   agentId?: string;
   sharedTaskId?: string;
+  listingSlug?: string;
 }
 
 function parseUrl(pathname: string): ParsedUrl {
@@ -100,6 +110,12 @@ function parseUrl(pathname: string): ParsedUrl {
     return { view: 'chat', squadId: chatSquadMatch[1] };
   }
 
+  // /marketplace/{slug} — listing detail deep link
+  const listingMatch = pathname.match(/^\/marketplace\/([^/]+)$/);
+  if (listingMatch && !['purchases', 'seller', 'submit', 'review', 'admin'].includes(listingMatch[1])) {
+    return { view: 'marketplace-listing', listingSlug: listingMatch[1] };
+  }
+
   // Direct view match
   const view = VIEW_PATHS[pathname];
   if (view) return { view };
@@ -116,11 +132,17 @@ interface BuildUrlState {
   selectedSquadId?: string | null;
   selectedAgentId?: string | null;
   sharedTaskId?: string | null;
+  listingSlug?: string | null;
 }
 
 function buildUrl(state: BuildUrlState): string {
   if (state.currentView === 'share' && state.sharedTaskId) {
     return `/share/${state.sharedTaskId}`;
+  }
+
+  // /marketplace/{slug} for listing detail
+  if (state.currentView === 'marketplace-listing' && state.listingSlug) {
+    return `/marketplace/${state.listingSlug}`;
   }
 
   if (state.currentView === 'world' && state.worldZoom === 'room' && state.selectedRoomId) {
@@ -148,7 +170,7 @@ export function useUrlSync() {
   // 1. On mount: URL is source of truth — sync store to URL, set initial history state
   useEffect(() => {
     isNavigating.current = true;
-    const { view, roomId, settingsSection, squadId, agentId, sharedTaskId } = parseUrl(window.location.pathname);
+    const { view, roomId, settingsSection, squadId, agentId, sharedTaskId, listingSlug } = parseUrl(window.location.pathname);
     const store = useUIStore.getState();
 
     if (view !== store.currentView) {
@@ -157,6 +179,10 @@ export function useUrlSync() {
     // Store sharedTaskId for the SharedTaskView component to read
     if (sharedTaskId) {
       sessionStorage.setItem('shared-task-id', sharedTaskId);
+    }
+    // Sync marketplace listing slug from URL
+    if (view === 'marketplace-listing' && listingSlug) {
+      useMarketplaceStore.getState().selectListing(null, listingSlug);
     }
     if (roomId) {
       store.enterRoom(roomId);
@@ -189,6 +215,7 @@ export function useUrlSync() {
       selectedSquadId: squadId,
       selectedAgentId: agentId,
       sharedTaskId,
+      listingSlug,
     });
     window.history.replaceState({ view }, '', canonicalUrl);
 
@@ -209,6 +236,7 @@ export function useUrlSync() {
       const agentChanged = state.selectedAgentId !== prevState.selectedAgentId;
 
       if (viewChanged || roomChanged || settingsChanged || zoomChanged || squadChanged || agentChanged) {
+        const mkp = useMarketplaceStore.getState();
         const url = buildUrl({
           currentView: state.currentView,
           selectedRoomId: state.selectedRoomId,
@@ -216,6 +244,7 @@ export function useUrlSync() {
           worldZoom: state.worldZoom,
           selectedSquadId: state.selectedSquadId,
           selectedAgentId: state.selectedAgentId,
+          listingSlug: mkp.view.selectedListingSlug,
         });
 
         if (url !== window.location.pathname) {
@@ -231,12 +260,16 @@ export function useUrlSync() {
   useEffect(() => {
     const handlePopState = () => {
       isNavigating.current = true;
-      const { view, roomId, settingsSection, squadId, agentId, sharedTaskId } = parseUrl(window.location.pathname);
+      const { view, roomId, settingsSection, squadId, agentId, sharedTaskId, listingSlug } = parseUrl(window.location.pathname);
       const store = useUIStore.getState();
 
       store.setCurrentView(view as never);
       if (sharedTaskId) {
         sessionStorage.setItem('shared-task-id', sharedTaskId);
+      }
+      // Sync marketplace listing slug on back/forward
+      if (view === 'marketplace-listing' && listingSlug) {
+        useMarketplaceStore.getState().selectListing(null, listingSlug);
       }
       if (roomId) {
         store.enterRoom(roomId);

@@ -8,13 +8,15 @@ import { cn } from '../../lib/utils';
 export interface TerminalSession {
   id: string;
   agent: string;
-  status: 'working' | 'idle' | 'error';
+  agentId?: string;
+  status: 'working' | 'idle' | 'error' | 'connecting';
   dir: string;
   story: string;
   output: string[];
 }
 
 function mapStatus(status: TerminalSession['status']): StatusType {
+  if (status === 'connecting') return 'idle';
   return status;
 }
 
@@ -25,7 +27,7 @@ interface TerminalCardProps {
 
 export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
   const [minimized, setMinimized] = useState(false);
-  const isActive = session.status === 'working';
+  const isActive = session.status === 'working' || session.status === 'connecting';
   const statusType = mapStatus(session.status);
 
   // Show last 8 lines of output

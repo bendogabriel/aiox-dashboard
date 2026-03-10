@@ -47,3 +47,5 @@ export { Celebration, useCelebration } from './Celebration';
 export { DiffViewer, FileTree } from './DiffViewer';
 export { ShortcutHint } from './ShortcutHint';
 export { FocusModeIndicator } from './FocusModeIndicator';
+export { EngineOfflineBanner } from './EngineOfflineBanner';
+export { DegradationBanner } from './DegradationBanner';

@@ -1,3 +1,9 @@
+// Re-export marketplace types
+export type * from './marketplace';
+
+// Re-export vault types
+export type * from './vault';
+
 // Squad Types (expanded 2026-02-24 — matches CSS token palette)
 export type SquadType =
   | 'copywriting'    // orange
@@ -585,7 +591,11 @@ export type ViewType =
   | 'insights' | 'context' | 'knowledge' | 'roadmap' | 'squads' | 'github' | 'qa' | 'stories'
   | 'share' | 'engine' | 'cockpit'
   | 'agent-directory' | 'task-catalog' | 'workflow-catalog' | 'authority-matrix' | 'handoff-flows'
-  | 'sales-room';
+  | 'sales-room'
+  | 'integrations' | 'google-oauth-callback'
+  | 'brainstorm'
+  | 'vault'
+  | 'marketplace' | 'marketplace-listing' | 'marketplace-purchases' | 'marketplace-seller' | 'marketplace-submit' | 'marketplace-review' | 'marketplace-admin';
 export type SettingsSectionType = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
 export interface UIState {

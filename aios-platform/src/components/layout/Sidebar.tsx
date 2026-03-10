@@ -26,6 +26,9 @@ import {
   ArrowRightLeft,
   Eye,
   Plug,
+  Lightbulb,
+  Store,
+  Lock,
 } from 'lucide-react';
 import { GlassCard, GlassButton, AioxLogo } from '../ui';
 import { useUIStore } from '../../stores/uiStore';
@@ -57,11 +60,14 @@ const navItems = [
   { id: 'knowledge' as const, icon: Database, label: 'Knowledge', shortcut: 'N', separator: false },
   { id: 'roadmap' as const, icon: Map, label: 'Roadmap', shortcut: 'R', separator: false },
   { id: 'squads' as const, icon: Network, label: 'Squads', shortcut: 'Q', separator: false },
+  { id: 'vault' as const, icon: Lock, label: 'Vault', shortcut: 'V', separator: false },
   { id: 'stories' as const, icon: BookOpen, label: 'Stories', shortcut: 'Y', separator: false },
   { id: 'github' as const, icon: Github, label: 'GitHub', shortcut: 'G', separator: false },
+  { id: 'brainstorm' as const, icon: Lightbulb, label: 'Brainstorm', shortcut: 'F', separator: false },
   { id: 'sales-room' as const, icon: Eye, label: 'Sales Room', shortcut: 'L', separator: false },
   { id: 'engine' as const, icon: Server, label: 'Engine', shortcut: 'E', separator: false },
-  { id: 'integrations' as const, icon: Plug, label: 'Integrations', shortcut: 'I', separator: true },
+  { id: 'integrations' as const, icon: Plug, label: 'Integrations', shortcut: 'I', separator: false },
+  { id: 'marketplace' as const, icon: Store, label: 'Marketplace', shortcut: 'K', separator: true },
   // Registry views
   { id: 'agent-directory' as const, icon: UsersRound, label: 'Agent Dir', shortcut: '', separator: false },
   { id: 'task-catalog' as const, icon: ListTodo, label: 'Tasks', shortcut: '', separator: false },

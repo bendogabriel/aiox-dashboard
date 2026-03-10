@@ -14,11 +14,13 @@ interface TerminalState {
   appendOutput: (sessionId: string, lines: string[]) => void;
   clearOutput: (sessionId: string) => void;
   setSessions: (sessions: TerminalSession[]) => void;
+  setSessionStatus: (sessionId: string, status: TerminalSession['status']) => void;
+  getSessionByAgentId: (agentId: string) => TerminalSession | undefined;
 }
 
 export const useTerminalStore = create<TerminalState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       sessions: [],
       activeSessionId: null,
 
@@ -57,9 +59,19 @@ export const useTerminalStore = create<TerminalState>()(
         })),
 
       setSessions: (sessions) => set({ sessions }),
+
+      setSessionStatus: (sessionId, status) =>
+        set((state) => ({
+          sessions: state.sessions.map((s) =>
+            s.id === sessionId ? { ...s, status } : s
+          ),
+        })),
+
+      getSessionByAgentId: (agentId) =>
+        get().sessions.find((s) => s.agentId === agentId),
     }),
     {
-      name: 'aios-terminal-store',
+      name: 'aios-terminal-store-v2',
       storage: safePersistStorage,
       partialize: (state) => ({
         sessions: state.sessions,

@@ -14,11 +14,24 @@ import { GlobalVoiceProvider } from '../voice';
 import { useUIStore } from '../../stores/uiStore';
 import { useGlobalKeyboardShortcuts } from '../../hooks/useGlobalKeyboardShortcuts';
 import { useIntegrationOnboarding } from '../../hooks/useIntegrationOnboarding';
+import { useSetupWizardTrigger } from '../../hooks/useSetupWizardTrigger';
+import { useEngineConnection } from '../../hooks/useEngineConnection';
+import { useCapabilityRecoveryToast } from '../../hooks/useCapabilityRecoveryToast';
+import { usePostSetupRecheck } from '../../hooks/usePostSetupRecheck';
+import { useUrlConfigImport } from '../../hooks/useUrlConfigImport';
+import { useScheduledHealthCheck } from '../../hooks/useScheduledHealthCheck';
+import { EngineOfflineBanner } from '../ui/EngineOfflineBanner';
+import { DegradationBanner } from '../ui/DegradationBanner';
 import { cn } from '../../lib/utils';
 
 // Lazy-load matrix effects — only loaded when matrix theme is active
 const MatrixEffects = lazy(() =>
   import('../ui/MatrixEffects').then((m) => ({ default: m.MatrixEffects }))
+);
+
+// Lazy-load setup wizard — only loaded on first run
+const SetupWizard = lazy(() =>
+  import('../integrations/SetupWizard').then((m) => ({ default: m.SetupWizard }))
 );
 
 interface AppLayoutProps {
@@ -38,6 +51,24 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   // Auto-redirect to Integrations if nothing is connected (first run)
   useIntegrationOnboarding();
+
+  // Setup Wizard auto-trigger on first run (no core integrations connected)
+  useSetupWizardTrigger();
+
+  // Engine auto-discovery + health polling
+  useEngineConnection();
+
+  // Toast notifications when capabilities recover or degrade
+  useCapabilityRecoveryToast();
+
+  // Auto-recheck all integrations when wizard or setup modal closes
+  usePostSetupRecheck();
+
+  // Import config from URL parameter (?import=...)
+  useUrlConfigImport();
+
+  // Scheduled health monitoring with auto-recovery (P8)
+  useScheduledHealthCheck();
 
   // Show activity panel on views where it's useful (chat, bob/orchestrator, dashboard, agents)
   const VIEWS_WITH_ACTIVITY = new Set(['chat', 'bob', 'orchestrator', 'dashboard', 'agents', 'cockpit']);
@@ -83,6 +114,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 
         {/* Main Content Area */}
         <div className="flex flex-col h-screen overflow-hidden">
+          {/* Engine Offline Banner — shown above everything when engine is down */}
+          <EngineOfflineBanner />
+
           {/* Header — hidden in focus mode */}
           {!focusMode && <Header />}
 
@@ -91,6 +125,8 @@ export function AppLayout({ children }: AppLayoutProps) {
 
           {/* Main Content */}
           <main id="main-content" className="flex-1 overflow-hidden p-4 pb-20 md:p-6 md:pb-6" aria-label="Conteúdo principal">
+            {/* Degradation Banner — shows limited capabilities for current view */}
+            <DegradationBanner />
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -144,6 +180,11 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* PWA Update Prompt */}
       <PWAUpdatePrompt />
+
+      {/* Setup Wizard — lazy loaded, only rendered on first run */}
+      <Suspense fallback={null}>
+        <SetupWizard />
+      </Suspense>
 
       {/* Mobile Bottom Navigation */}
       {!focusMode && <MobileNav />}

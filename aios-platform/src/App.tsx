@@ -114,12 +114,43 @@ const SalesRoomPanel = lazy(() =>
   import('./components/sales-room/SalesRoomPanel')
 );
 
+const BrainstormRoom = lazy(() =>
+  import('./components/brainstorm/BrainstormRoom')
+);
+
+const VaultView = lazy(() =>
+  import('./components/vault/VaultView')
+);
+
 const IntegrationHub = lazy(() =>
   import('./components/integrations/IntegrationHub')
 );
 
 const GoogleOAuthCallback = lazy(() =>
   import('./components/integrations/GoogleOAuthCallback')
+);
+
+// Marketplace views
+const MarketplaceBrowse = lazy(() =>
+  import('./components/marketplace/browse/MarketplaceBrowse')
+);
+const MarketplaceListingDetail = lazy(() =>
+  import('./components/marketplace/listing/ListingDetail')
+);
+const MarketplacePurchases = lazy(() =>
+  import('./components/marketplace/orders/MyPurchases')
+);
+const MarketplaceSellerDashboard = lazy(() =>
+  import('./components/marketplace/seller/SellerDashboard')
+);
+const MarketplaceSubmitWizard = lazy(() =>
+  import('./components/marketplace/submit/SubmitWizard')
+);
+const MarketplaceReviewQueue = lazy(() =>
+  import('./components/marketplace/review-queue/ReviewQueue')
+);
+const MarketplaceAdminAnalytics = lazy(() =>
+  import('./components/marketplace/admin/AdminAnalytics')
 );
 
 // CockpitDashboard removed — consolidated into DashboardWorkspace
@@ -153,8 +184,18 @@ const viewMap: Record<string, ComponentType> = {
   'authority-matrix': AuthorityMatrix,
   'handoff-flows': HandoffVisualization,
   'sales-room': SalesRoomPanel,
+  brainstorm: BrainstormRoom,
+  vault: VaultView,
   integrations: IntegrationHub,
   'google-oauth-callback': GoogleOAuthCallback,
+  // Marketplace
+  marketplace: MarketplaceBrowse,
+  'marketplace-listing': MarketplaceListingDetail,
+  'marketplace-purchases': MarketplacePurchases,
+  'marketplace-seller': MarketplaceSellerDashboard,
+  'marketplace-submit': MarketplaceSubmitWizard,
+  'marketplace-review': MarketplaceReviewQueue,
+  'marketplace-admin': MarketplaceAdminAnalytics,
 };
 
 // Loading messages per view
@@ -185,9 +226,19 @@ const viewLoaderMessages: Record<string, string> = {
   'authority-matrix': 'Carregando matriz de autoridade...',
   'handoff-flows': 'Carregando fluxos de handoff...',
   'sales-room': 'Carregando sala de observacao...',
+  vault: 'Carregando vault...',
+  brainstorm: 'Carregando brainstorm...',
   integrations: 'Carregando integrações...',
   cockpit: 'Carregando dashboard...', // backward compat
   timeline: 'Carregando monitor...', // backward compat
+  // Marketplace
+  marketplace: 'Carregando marketplace...',
+  'marketplace-listing': 'Carregando agente...',
+  'marketplace-purchases': 'Carregando compras...',
+  'marketplace-seller': 'Carregando seller dashboard...',
+  'marketplace-submit': 'Carregando submissão...',
+  'marketplace-review': 'Carregando review queue...',
+  'marketplace-admin': 'Carregando analytics...',
 };
 
 // Create a client

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   RefreshCw,
@@ -7,173 +7,56 @@ import {
   CircleDot,
   GitBranch,
   User,
+  Radio,
+  Monitor,
 } from 'lucide-react';
 import { GlassCard, GlassButton, Badge, EmptyState, SectionLabel } from '../ui';
 import { ICON_SIZES } from '../../lib/icons';
 import { formatRelativeTime, cn } from '../../lib/utils';
-
-const MONITOR_URL = import.meta.env.VITE_MONITOR_URL || 'http://localhost:4001';
-const REPO = 'SynkraAI/aios-dashboard';
+import { useGitHubData } from '../../hooks/useGitHubData';
+import type { GitCommit as CommitType, GitHubPR as PRType, GitHubIssue as IssueType } from '../../hooks/useGitHubData';
 
 type TabType = 'commits' | 'pulls' | 'issues';
 
-interface Commit {
-  sha: string;
-  message: string;
-  author: string;
-  date: string;
-  url: string;
-  refs: string[];
-}
-
-interface PullRequest {
-  number: number;
-  title: string;
-  state: string;
-  author: { login: string };
-  createdAt: string;
-  headRefName: string;
-  url: string;
-}
-
-interface Issue {
-  number: number;
-  title: string;
-  state: string;
-  author: { login: string };
-  createdAt: string;
-  labels: Array<{ name: string; color: string }>;
-  url: string;
-}
-
-// ─── Demo Data ───────────────────────────────────────────────
-const demoCommits: Commit[] = [
-  { sha: 'a1b2c3d', message: 'feat: add kanban board filters and search', author: 'dex-dev', date: new Date(Date.now() - 2*3600000).toISOString(), url: '#', refs: ['HEAD -> master', 'origin/master'] },
-  { sha: 'e4f5g6h', message: 'fix: resolve Map constructor conflict in RoadmapView', author: 'dex-dev', date: new Date(Date.now() - 5*3600000).toISOString(), url: '#', refs: [] },
-  { sha: 'i7j8k9l', message: 'feat: implement activity timeline with demo data', author: 'dex-dev', date: new Date(Date.now() - 8*3600000).toISOString(), url: '#', refs: [] },
-  { sha: 'm0n1o2p', message: 'refactor: notification preferences store with persist', author: 'dex-dev', date: new Date(Date.now() - 24*3600000).toISOString(), url: '#', refs: ['tag: v0.4.2'] },
-  { sha: 'q3r4s5t', message: 'feat: add accent color picker to settings', author: 'aria-design', date: new Date(Date.now() - 26*3600000).toISOString(), url: '#', refs: [] },
-  { sha: 'u6v7w8x', message: 'fix: Charts.tsx JSX fragment wrapper', author: 'dex-dev', date: new Date(Date.now() - 30*3600000).toISOString(), url: '#', refs: [] },
-  { sha: 'y9z0a1b', message: 'feat: AI recommendations in InsightsView', author: 'aria-design', date: new Date(Date.now() - 48*3600000).toISOString(), url: '#', refs: [] },
-  { sha: 'c2d3e4f', message: 'chore: update dependencies and fix type errors', author: 'gage-devops', date: new Date(Date.now() - 72*3600000).toISOString(), url: '#', refs: ['tag: v0.4.1'] },
-];
-
-const demoPulls: PullRequest[] = [
-  { number: 52, title: 'feat: kanban board advanced filters', state: 'OPEN', author: { login: 'dex-dev' }, createdAt: new Date(Date.now() - 3600000).toISOString(), headRefName: 'feat/kanban-filters', url: '#' },
-  { number: 51, title: 'feat: activity timeline with mock data', state: 'MERGED', author: { login: 'dex-dev' }, createdAt: new Date(Date.now() - 12*3600000).toISOString(), headRefName: 'feat/activity-timeline', url: '#' },
-  { number: 50, title: 'fix: roadmap Map constructor collision', state: 'MERGED', author: { login: 'dex-dev' }, createdAt: new Date(Date.now() - 24*3600000).toISOString(), headRefName: 'fix/roadmap-map', url: '#' },
-  { number: 49, title: 'feat: notification preferences with persistence', state: 'MERGED', author: { login: 'dex-dev' }, createdAt: new Date(Date.now() - 48*3600000).toISOString(), headRefName: 'feat/notification-prefs', url: '#' },
-  { number: 48, title: 'refactor: URL sync for chat sub-routes', state: 'OPEN', author: { login: 'river-sm' }, createdAt: new Date(Date.now() - 2*3600000).toISOString(), headRefName: 'feat/url-sync-chat', url: '#' },
-];
-
-const demoIssues: Issue[] = [
-  { number: 23, title: 'Dashboard shows skeleton forever without API', state: 'open', author: { login: 'pax-po' }, createdAt: new Date(Date.now() - 6*3600000).toISOString(), labels: [{ name: 'bug', color: 'EF4444' }, { name: 'P1', color: 'FF6B6B' }], url: '#' },
-  { number: 22, title: 'Add mock data for all views', state: 'open', author: { login: 'pax-po' }, createdAt: new Date(Date.now() - 12*3600000).toISOString(), labels: [{ name: 'enhancement', color: '3B82F6' }], url: '#' },
-  { number: 21, title: 'Browser back navigation in chat', state: 'closed', author: { login: 'river-sm' }, createdAt: new Date(Date.now() - 48*3600000).toISOString(), labels: [{ name: 'bug', color: 'EF4444' }, { name: 'UX', color: 'A855F7' }], url: '#' },
-  { number: 20, title: 'AIOX cockpit theme: font loading fails', state: 'open', author: { login: 'aria-design' }, createdAt: new Date(Date.now() - 72*3600000).toISOString(), labels: [{ name: 'bug', color: 'EF4444' }, { name: 'theme', color: 'F59E0B' }], url: '#' },
-  { number: 19, title: 'Knowledge graph visualization needs WebGL', state: 'open', author: { login: 'aria-architect' }, createdAt: new Date(Date.now() - 96*3600000).toISOString(), labels: [{ name: 'enhancement', color: '3B82F6' }, { name: 'P2', color: 'F59E0B' }], url: '#' },
-];
-
 export default function GitHubView() {
-  const [isConnected, setIsConnected] = useState<boolean | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
+  const { data, loading, error, refetch } = useGitHubData();
   const [activeTab, setActiveTab] = useState<TabType>('commits');
-  const [demoMode, setDemoMode] = useState(false);
-
-  const [commits, setCommits] = useState<Commit[]>([]);
-  const [pulls, setPulls] = useState<PullRequest[]>([]);
-  const [issues, setIssues] = useState<Issue[]>([]);
-
-  const [loading, setLoading] = useState({ commits: false, pulls: false, issues: false });
-  const [errors, setErrors] = useState({ commits: '', pulls: '', issues: '' });
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const checkGitHubStatus = useCallback(async () => {
-    try {
-      const res = await fetch(`${MONITOR_URL}/github/status`, {
-        signal: AbortSignal.timeout(3000),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setIsConnected(data.connected);
-        setUsername(data.username || null);
-        return data.connected;
-      }
-      setIsConnected(false);
-      return false;
-    } catch {
-      setIsConnected(false);
-      return false;
-    }
-  }, []);
+  const isDemo = data.source === 'demo';
+  const isLive = data.source === 'live';
+  const isGitOnly = data.source === 'git-only';
 
-  const fetchTab = useCallback(async (tab: TabType) => {
-    setLoading((prev) => ({ ...prev, [tab]: true }));
-    setErrors((prev) => ({ ...prev, [tab]: '' }));
-    try {
-      const res = await fetch(`${MONITOR_URL}/github/${tab}`);
-      if (!res.ok) throw new Error(`Failed to fetch ${tab}`);
-      const data = await res.json();
-      if (tab === 'commits') setCommits(data);
-      else if (tab === 'pulls') setPulls(data);
-      else setIssues(data);
-    } catch (e) {
-      setErrors((prev) => ({
-        ...prev,
-        [tab]: e instanceof Error ? e.message : 'Unknown error',
-      }));
-    } finally {
-      setLoading((prev) => ({ ...prev, [tab]: false }));
-    }
-  }, []);
+  const repoName = data.repoInfo
+    ? `${data.repoInfo.owner.login}/${data.repoInfo.name}`
+    : isDemo
+      ? 'Demo Repository'
+      : 'Local Git Repository';
 
-  const activateDemoMode = useCallback(() => {
-    setDemoMode(true);
-    setIsConnected(true);
-    setUsername('demo-user');
-    setCommits(demoCommits);
-    setPulls(demoPulls);
-    setIssues(demoIssues);
-    setErrors({ commits: '', pulls: '', issues: '' });
-  }, []);
-
-  const refreshAll = useCallback(async () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    const connected = await checkGitHubStatus();
-    if (connected) {
-      setDemoMode(false);
-      await Promise.all([fetchTab('commits'), fetchTab('pulls'), fetchTab('issues')]);
-    } else {
-      activateDemoMode();
-    }
+    await refetch();
     setIsRefreshing(false);
-  }, [checkGitHubStatus, fetchTab, activateDemoMode]);
+  };
 
-  useEffect(() => {
-    refreshAll();
-  }, [refreshAll]);
+  const tabs: { id: TabType; label: string; icon: typeof GitCommit; count?: number }[] = [
+    { id: 'commits', label: 'Commits', icon: GitCommit, count: data.commits.length },
+    { id: 'pulls', label: 'Pull Requests', icon: GitPullRequest, count: data.pullRequests.length },
+    { id: 'issues', label: 'Issues', icon: CircleDot, count: data.issues.length },
+  ];
 
-  // Loading state
-  if (isConnected === null) {
+  // Initial loading state (first fetch)
+  if (loading && data.source === 'demo' && !error) {
     return (
       <div className="h-full flex items-center justify-center p-6">
         <GlassCard padding="lg" className="text-center max-w-md">
           <RefreshCw size={40} className="text-secondary mx-auto mb-4 animate-spin" />
           <h2 className="text-lg font-semibold text-primary mb-2">Checking GitHub...</h2>
+          <p className="text-secondary text-sm">Fetching commits, PRs, and issues</p>
         </GlassCard>
       </div>
     );
   }
-
-  if (!isConnected) {
-    return null;
-  }
-
-  const tabs: { id: TabType; label: string; icon: typeof GitCommit; count?: number }[] = [
-    { id: 'commits', label: 'Commits', icon: GitCommit, count: commits.length },
-    { id: 'pulls', label: 'Pull Requests', icon: GitPullRequest, count: pulls.length },
-    { id: 'issues', label: 'Issues', icon: CircleDot, count: issues.length },
-  ];
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
@@ -182,25 +65,24 @@ export default function GitHubView() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-primary">GitHub</h1>
-            {demoMode && (
-              <Badge variant="status" status="warning" size="sm">
-                Demo
-              </Badge>
-            )}
+            <SourceBadge source={data.source} />
           </div>
           <p className="text-secondary text-sm mt-0.5">
-            {REPO}
-            {username && (
+            {repoName}
+            {!isDemo && data.updatedAt && (
               <span className="text-tertiary ml-2">
-                &middot; {username}
+                &middot; updated {formatRelativeTime(data.updatedAt)}
               </span>
             )}
           </p>
+          {error && !isDemo && (
+            <p className="text-xs text-red-400 mt-1">{error}</p>
+          )}
         </div>
         <GlassButton
           variant="ghost"
           size="sm"
-          onClick={refreshAll}
+          onClick={handleRefresh}
           disabled={isRefreshing}
           leftIcon={
             <RefreshCw size={14} className={isRefreshing ? 'animate-spin' : ''} />
@@ -210,31 +92,48 @@ export default function GitHubView() {
         </GlassButton>
       </div>
 
+      {/* Git-only notice */}
+      {isGitOnly && (
+        <div className="glass-subtle rounded-xl p-3 mb-4 flex items-center gap-2 text-xs text-tertiary flex-shrink-0">
+          <Monitor size={14} className="text-yellow-400 flex-shrink-0" />
+          <span>
+            Showing local git commits only. Install and authenticate{' '}
+            <code className="text-primary font-mono">gh</code> CLI for PRs and issues.
+          </span>
+        </div>
+      )}
+
       {/* Tab Navigation */}
-      <div className="flex gap-1 p-1 glass-subtle rounded-xl mb-4 flex-shrink-0 overflow-x-auto" role="tablist" aria-label="Abas do GitHub">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            role="tab"
-            aria-selected={activeTab === tab.id}
-            tabIndex={activeTab === tab.id ? 0 : -1}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap',
-              activeTab === tab.id
-                ? 'glass text-primary shadow-sm'
-                : 'text-secondary hover:text-primary'
-            )}
-          >
-            <tab.icon size={ICON_SIZES.md} />
-            <span className="hidden sm:inline">{tab.label}</span>
-            {tab.count !== undefined && tab.count > 0 && (
-              <Badge variant="count" size="sm">
-                {tab.count}
-              </Badge>
-            )}
-          </button>
-        ))}
+      <div className="flex gap-1 p-1 glass-subtle rounded-xl mb-4 flex-shrink-0 overflow-x-auto" role="tablist" aria-label="GitHub tabs">
+        {tabs.map((tab) => {
+          const disabled = !isLive && !isDemo && tab.id !== 'commits';
+          return (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              tabIndex={activeTab === tab.id ? 0 : -1}
+              onClick={() => !disabled && setActiveTab(tab.id)}
+              disabled={disabled}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap',
+                disabled
+                  ? 'text-tertiary/50 cursor-not-allowed'
+                  : activeTab === tab.id
+                    ? 'glass text-primary shadow-sm'
+                    : 'text-secondary hover:text-primary'
+              )}
+            >
+              <tab.icon size={ICON_SIZES.md} />
+              <span className="hidden sm:inline">{tab.label}</span>
+              {tab.count !== undefined && tab.count > 0 && (
+                <Badge variant="count" size="sm">
+                  {tab.count}
+                </Badge>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* Tab Content */}
@@ -243,28 +142,22 @@ export default function GitHubView() {
           {activeTab === 'commits' && (
             <CommitsTab
               key="commits"
-              commits={commits}
-              loading={loading.commits}
-              error={errors.commits}
-              onRetry={() => fetchTab('commits')}
+              commits={data.commits}
+              loading={loading && isRefreshing}
             />
           )}
           {activeTab === 'pulls' && (
             <PullsTab
               key="pulls"
-              pulls={pulls}
-              loading={loading.pulls}
-              error={errors.pulls}
-              onRetry={() => fetchTab('pulls')}
+              pulls={data.pullRequests}
+              loading={loading && isRefreshing}
             />
           )}
           {activeTab === 'issues' && (
             <IssuesTab
               key="issues"
-              issues={issues}
-              loading={loading.issues}
-              error={errors.issues}
-              onRetry={() => fetchTab('issues')}
+              issues={data.issues}
+              loading={loading && isRefreshing}
             />
           )}
         </AnimatePresence>
@@ -273,20 +166,47 @@ export default function GitHubView() {
   );
 }
 
-// ─── Commits Tab ────────────────────────────────────────────
+// ─── Source Badge ─────────────────────────────────────────────
+function SourceBadge({ source }: { source: string }) {
+  switch (source) {
+    case 'live':
+      return (
+        <Badge variant="status" status="success" size="sm">
+          <Radio size={10} className="mr-1 animate-pulse" />
+          Live
+        </Badge>
+      );
+    case 'git-only':
+      return (
+        <Badge variant="status" status="warning" size="sm">
+          Git Only
+        </Badge>
+      );
+    case 'partial':
+      return (
+        <Badge variant="status" status="warning" size="sm">
+          Partial
+        </Badge>
+      );
+    case 'demo':
+    default:
+      return (
+        <Badge variant="status" status="warning" size="sm">
+          Demo
+        </Badge>
+      );
+  }
+}
+
+// ─── Commits Tab ─────────────────────────────────────────────
 function CommitsTab({
   commits,
   loading,
-  error,
-  onRetry,
 }: {
-  commits: Commit[];
+  commits: CommitType[];
   loading: boolean;
-  error: string;
-  onRetry: () => void;
 }) {
   if (loading) return <TabLoader />;
-  if (error) return <TabError message={error} onRetry={onRetry} />;
   if (commits.length === 0) {
     return (
       <EmptyState
@@ -309,12 +229,15 @@ function CommitsTab({
         <div className="space-y-1">
           {commits.map((commit, index) => (
             <motion.div
-              key={commit.sha}
+              key={`${commit.sha}-${index}`}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.02 }}
-              onClick={() => window.open(commit.url, '_blank')}
-              className="flex items-start justify-between gap-3 glass-subtle rounded-xl p-3 hover:bg-white/10 transition-colors cursor-pointer"
+              onClick={() => commit.url !== '#' && window.open(commit.url, '_blank')}
+              className={cn(
+                'flex items-start justify-between gap-3 glass-subtle rounded-xl p-3 transition-colors',
+                commit.url !== '#' ? 'hover:bg-white/10 cursor-pointer' : ''
+              )}
             >
               <div className="flex items-start gap-2.5 min-w-0">
                 <GitCommit size={16} className="text-blue-400 flex-shrink-0 mt-0.5" />
@@ -346,26 +269,21 @@ function CommitsTab({
   );
 }
 
-// ─── Pull Requests Tab ──────────────────────────────────────
+// ─── Pull Requests Tab ───────────────────────────────────────
 function PullsTab({
   pulls,
   loading,
-  error,
-  onRetry,
 }: {
-  pulls: PullRequest[];
+  pulls: PRType[];
   loading: boolean;
-  error: string;
-  onRetry: () => void;
 }) {
   if (loading) return <TabLoader />;
-  if (error) return <TabError message={error} onRetry={onRetry} />;
   if (pulls.length === 0) {
     return (
       <EmptyState
         icon={<GitPullRequest size={32} />}
-        title="No open pull requests"
-        description="There are no open PRs in this repository."
+        title="No pull requests"
+        description="There are no PRs in this repository."
       />
     );
   }
@@ -386,8 +304,11 @@ function PullsTab({
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.02 }}
-              onClick={() => window.open(pr.url, '_blank')}
-              className="flex items-start justify-between gap-3 glass-subtle rounded-xl p-3 hover:bg-white/10 transition-colors cursor-pointer"
+              onClick={() => pr.url !== '#' && window.open(pr.url, '_blank')}
+              className={cn(
+                'flex items-start justify-between gap-3 glass-subtle rounded-xl p-3 transition-colors',
+                pr.url !== '#' ? 'hover:bg-white/10 cursor-pointer' : ''
+              )}
             >
               <div className="flex items-start gap-2.5 min-w-0">
                 <GitPullRequest size={16} className="text-green-400 flex-shrink-0 mt-0.5" />
@@ -420,26 +341,21 @@ function PullsTab({
   );
 }
 
-// ─── Issues Tab ─────────────────────────────────────────────
+// ─── Issues Tab ──────────────────────────────────────────────
 function IssuesTab({
   issues,
   loading,
-  error,
-  onRetry,
 }: {
-  issues: Issue[];
+  issues: IssueType[];
   loading: boolean;
-  error: string;
-  onRetry: () => void;
 }) {
   if (loading) return <TabLoader />;
-  if (error) return <TabError message={error} onRetry={onRetry} />;
   if (issues.length === 0) {
     return (
       <EmptyState
         icon={<CircleDot size={32} />}
-        title="No open issues"
-        description="There are no open issues in this repository."
+        title="No issues"
+        description="There are no issues in this repository."
       />
     );
   }
@@ -460,8 +376,11 @@ function IssuesTab({
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.02 }}
-              onClick={() => window.open(issue.url, '_blank')}
-              className="flex items-start justify-between gap-3 glass-subtle rounded-xl p-3 hover:bg-white/10 transition-colors cursor-pointer"
+              onClick={() => issue.url !== '#' && window.open(issue.url, '_blank')}
+              className={cn(
+                'flex items-start justify-between gap-3 glass-subtle rounded-xl p-3 transition-colors',
+                issue.url !== '#' ? 'hover:bg-white/10 cursor-pointer' : ''
+              )}
             >
               <div className="flex items-start gap-2.5 min-w-0">
                 <CircleDot size={16} className="text-green-400 flex-shrink-0 mt-0.5" />
@@ -501,7 +420,7 @@ function IssuesTab({
   );
 }
 
-// ─── Helpers ────────────────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────────
 function RefBadge({ refName }: { refName: string }) {
   const isHead = refName.startsWith('HEAD');
   const isTag = refName.startsWith('tag: ');
@@ -549,23 +468,6 @@ function TabLoader() {
       className="flex items-center justify-center py-16"
     >
       <RefreshCw size={24} className="text-secondary animate-spin" />
-    </motion.div>
-  );
-}
-
-function TabError({ message, onRetry }: { message: string; onRetry: () => void }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <EmptyState
-        type="error"
-        title="Failed to load"
-        description={message}
-        action={{ label: 'Retry', onClick: onRetry, variant: 'primary' }}
-      />
     </motion.div>
   );
 }
