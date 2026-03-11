@@ -2,32 +2,31 @@ import { motion } from 'framer-motion';
 import { GlassCard } from '../ui';
 import { useCostSummary } from '../../hooks/useDashboard';
 import { useTokenUsage } from '../../hooks/useExecute';
+import { useDashboardOverview } from '../../hooks/useDashboardOverview';
 import { LineChart, BarChart } from './Charts';
 import { CostProviderRow } from './DashboardHelpers';
 import { TrendUpIcon } from './dashboard-icons';
 
-// Demo fallback data for CostsTab
-const DEMO_COST_SUMMARY = {
-  today: 1.24,
-  thisWeek: 8.75,
-  thisMonth: 32.40,
-  byProvider: { claude: 24.80, openai: 7.60 },
-  bySquad: { 'core-squad': 18.50, 'management-squad': 9.20, 'design-squad': 4.70 },
-  trend: [3.20, 4.10, 5.80, 4.50, 6.20, 5.40, 3.20],
-};
-
-const DEMO_TOKEN_USAGE = {
-  total: { input: 245000, output: 182000, requests: 156 },
-  claude: { input: 180000, output: 135000, requests: 98 },
-  openai: { input: 65000, output: 47000, requests: 58 },
-};
-
 export function CostsTab() {
   const { data: rawCostSummary } = useCostSummary();
   const { data: rawTokenUsage } = useTokenUsage();
+  const { costs: dashCosts } = useDashboardOverview();
 
-  const costSummary = rawCostSummary || DEMO_COST_SUMMARY;
-  const tokenUsage = rawTokenUsage || DEMO_TOKEN_USAGE;
+  // Prefer real analytics cost data, fall back to unified endpoint, then zeros
+  const costSummary = rawCostSummary || (dashCosts ? {
+    today: dashCosts.today,
+    thisWeek: dashCosts.thisWeek,
+    thisMonth: dashCosts.thisMonth,
+    byProvider: dashCosts.byProvider,
+    bySquad: dashCosts.bySquad,
+    trend: dashCosts.trend,
+  } : { today: 0, thisWeek: 0, thisMonth: 0, byProvider: { claude: 0, openai: 0 }, bySquad: {}, trend: [0, 0, 0, 0, 0, 0, 0] });
+
+  const tokenUsage = rawTokenUsage || (dashCosts ? dashCosts.tokens : {
+    total: { input: 0, output: 0, requests: 0 },
+    claude: { input: 0, output: 0, requests: 0 },
+    openai: { input: 0, output: 0, requests: 0 },
+  });
 
   return (
     <motion.div

@@ -122,6 +122,10 @@ const VaultView = lazy(() =>
   import('./components/vault/VaultView')
 );
 
+const OvernightView = lazy(() =>
+  import('./components/overnight/OvernightView')
+);
+
 const IntegrationHub = lazy(() =>
   import('./components/integrations/IntegrationHub')
 );
@@ -186,6 +190,7 @@ const viewMap: Record<string, ComponentType> = {
   'sales-room': SalesRoomPanel,
   brainstorm: BrainstormRoom,
   vault: VaultView,
+  overnight: OvernightView,
   integrations: IntegrationHub,
   'google-oauth-callback': GoogleOAuthCallback,
   // Marketplace
@@ -227,6 +232,7 @@ const viewLoaderMessages: Record<string, string> = {
   'handoff-flows': 'Carregando fluxos de handoff...',
   'sales-room': 'Carregando sala de observacao...',
   vault: 'Carregando vault...',
+  overnight: 'Carregando overnight programs...',
   brainstorm: 'Carregando brainstorm...',
   integrations: 'Carregando integrações...',
   cockpit: 'Carregando dashboard...', // backward compat

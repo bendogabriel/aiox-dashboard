@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server';
 import { promises as fs } from 'fs';
-import { existsSync } from 'fs';
 import path from 'path';
 
 // ── Configuration ──────────────────────────────────────────
@@ -184,7 +183,6 @@ function parseLogLine(rawLine: string, filename: string): MonitorEventPayload | 
 
   // FAIL or error/Error keywords
   if (/\bFAIL\b/.test(line) || /\b[Ee]rror\b/.test(line)) {
-    const isError = /\bFAIL\b/.test(line) || /\berror\b/i.test(description);
     return {
       id: generateEventId(),
       timestamp,

@@ -141,6 +141,20 @@ vi.mock('../../../hooks/useExecute', () => ({
   useLLMHealth: () => ({ data: mockLlmHealth, isLoading: false, error: null }),
 }));
 
+vi.mock('../../../hooks/useDashboardOverview', () => ({
+  useDashboardOverview: () => ({
+    data: null,
+    overview: null,
+    agents: null,
+    mcp: null,
+    costs: null,
+    system: null,
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  }),
+}));
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -190,14 +204,13 @@ describe('AgentsTab', () => {
     expect(screen.getAllByText('*qa-gate').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('falls back to demo data when hooks return null', async () => {
+  it('falls back to empty state when hooks return null', async () => {
     mockAgentAnalytics = null;
     mockCommandAnalytics = null;
     const { AgentsTab } = await import('../AgentsTab');
     render(<AgentsTab />);
-    // Demo fallback agent names
-    expect(screen.getByText('Dex (Dev)')).toBeTruthy();
-    expect(screen.getByText('Aria (Architect)')).toBeTruthy();
+    // When both analytics and dashboard overview return null, agent list is empty
+    expect(screen.getByText('Nenhum dado de execução disponível')).toBeTruthy();
   });
 
   it('shows empty state message when agent list is empty', async () => {
@@ -254,14 +267,16 @@ describe('CostsTab', () => {
     expect(screen.getByText('Custo por Squad')).toBeTruthy();
   });
 
-  it('falls back to demo data when hooks return null', async () => {
+  it('falls back to zero values when hooks return null', async () => {
     mockCostSummary = null;
     mockTokenUsage = null;
     const { CostsTab } = await import('../CostsTab');
     render(<CostsTab />);
-    // Demo fallback values
-    expect(screen.getByText('$1.24')).toBeTruthy();
-    expect(screen.getByText('$32.40')).toBeTruthy();
+    // When both cost summary and dashboard overview return null, values are zero
+    // All three cost cards show $0.00, so use getAllByText
+    expect(screen.getAllByText('$0.00').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('Hoje')).toBeTruthy();
+    expect(screen.getByText('Nenhum dado de custo por squad')).toBeTruthy();
   });
 
   it('shows empty squad message when bySquad is empty', async () => {
@@ -331,14 +346,14 @@ describe('MCPTab', () => {
     expect(screen.getByText('Tools Mais Usadas')).toBeTruthy();
   });
 
-  it('falls back to demo data when hooks return null', async () => {
+  it('falls back to zero values when hooks return null', async () => {
     mockMcpServers = null;
     mockMcpStats = null;
     const { MCPTab } = await import('../MCPTab');
     render(<MCPTab />);
-    // Demo fallback server names
-    expect(screen.getByText('context7')).toBeTruthy();
-    expect(screen.getByText('playwright')).toBeTruthy();
+    // When both MCP hooks and dashboard overview return null, stats are zero
+    expect(screen.getByText('Servidores')).toBeTruthy();
+    expect(screen.getByText('Nenhuma tool utilizada ainda')).toBeTruthy();
   });
 
   it('shows empty tools message when topTools is empty', async () => {
@@ -400,14 +415,14 @@ describe('SystemTab', () => {
     expect(screen.getByText('API key not confi...')).toBeTruthy();
   });
 
-  it('falls back to demo data when hooks return null', async () => {
+  it('falls back to zero values when hooks return null', async () => {
     mockHealth = null;
     mockMetrics = null;
     mockLlmHealth = null;
     const { SystemTab } = await import('../SystemTab');
     render(<SystemTab />);
-    // Demo fallback values
-    expect(screen.getByText('3d 0h')).toBeTruthy();
+    // When all hooks return null, falls back to zero/default values
+    expect(screen.getByText('0d 0h')).toBeTruthy();
     expect(screen.getByText('API Gateway')).toBeTruthy();
   });
 

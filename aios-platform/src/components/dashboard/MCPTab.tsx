@@ -2,38 +2,30 @@ import { motion } from 'framer-motion';
 import { Monitor as MonitorIcon, Link, Wrench, Zap } from 'lucide-react';
 import { GlassCard, Badge } from '../ui';
 import { useMCPStatus, useMCPStats } from '../../hooks/useDashboard';
+import { useDashboardOverview } from '../../hooks/useDashboardOverview';
 import { cn } from '../../lib/utils';
 import { BarChart } from './Charts';
 import { QuickStatCard } from './DashboardHelpers';
 import { PlugIcon } from './dashboard-icons';
 
-// Demo fallback data for MCPTab
-const DEMO_MCP_SERVERS = [
-  { name: 'context7', status: 'connected' as const, toolCount: 2, tools: [{ name: 'resolve-library-id', calls: 12 }, { name: 'get-library-docs', calls: 8 }], resources: [], error: undefined },
-  { name: 'playwright', status: 'connected' as const, toolCount: 5, tools: [{ name: 'navigate', calls: 15 }, { name: 'screenshot', calls: 7 }, { name: 'click', calls: 4 }], resources: [], error: undefined },
-  { name: 'exa-search', status: 'disconnected' as const, toolCount: 1, tools: [{ name: 'web_search', calls: 0 }], resources: [], error: 'Connection timed out' },
-];
-
-const DEMO_MCP_STATS = {
-  totalServers: 3,
-  connectedServers: 2,
-  totalTools: 8,
-  totalToolCalls: 46,
-  topTools: [
-    { name: 'navigate', calls: 15 },
-    { name: 'resolve-library-id', calls: 12 },
-    { name: 'get-library-docs', calls: 8 },
-    { name: 'screenshot', calls: 7 },
-    { name: 'click', calls: 4 },
-  ],
-};
-
 export function MCPTab() {
   const { data: rawMcpServers } = useMCPStatus();
   const { data: rawMcpStats } = useMCPStats();
+  const { mcp: dashMcp } = useDashboardOverview();
 
-  const mcpServers = rawMcpServers || DEMO_MCP_SERVERS;
-  const mcpStats = rawMcpStats || DEMO_MCP_STATS;
+  // Prefer real MCP data from existing hook, fall back to unified endpoint, then empty
+  const mcpServers = rawMcpServers || (dashMcp?.servers?.map(s => ({
+    ...s,
+    resources: [] as Array<{ uri: string; name: string }>,
+  }))) || [];
+
+  const mcpStats = rawMcpStats || (dashMcp ? {
+    totalServers: dashMcp.totalServers,
+    connectedServers: dashMcp.connectedServers,
+    totalTools: dashMcp.totalTools,
+    totalToolCalls: 0,
+    topTools: [] as Array<{ name: string; calls: number }>,
+  } : { totalServers: 0, connectedServers: 0, totalTools: 0, totalToolCalls: 0, topTools: [] as Array<{ name: string; calls: number }> });
 
   return (
     <motion.div

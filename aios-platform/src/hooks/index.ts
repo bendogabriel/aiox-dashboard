@@ -95,3 +95,4 @@ export type {
   DashboardCosts,
   DashboardSystemInfo,
 } from './useDashboardOverview';
+export { useMonitorSSE } from './useMonitorSSE';

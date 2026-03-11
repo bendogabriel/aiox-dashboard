@@ -87,6 +87,28 @@ vi.mock('../../../hooks/useExecute', () => ({
   }),
 }));
 
+vi.mock('../../../hooks/useDashboardOverview', () => ({
+  useDashboardOverview: () => ({
+    data: null,
+    overview: null,
+    agents: null,
+    mcp: null,
+    costs: null,
+    system: null,
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  }),
+}));
+
+vi.mock('../../../hooks/useActivityFeed', () => ({
+  useActivityFeed: () => ({
+    data: null,
+    isLoading: false,
+    error: null,
+  }),
+}));
+
 vi.mock('../../../hooks/useDashboard', () => ({
   useCostSummary: () => ({
     data: { today: 1.24, thisWeek: 8.75, thisMonth: 32.40, byProvider: { claude: 24.80, openai: 7.60 }, bySquad: { 'core-squad': 18.50 }, trend: [3, 4, 5, 4, 6, 5, 3] },

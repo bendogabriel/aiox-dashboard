@@ -201,13 +201,42 @@ export function useIntegrationStatus() {
     }
   }, [setStatus]);
 
+  /**
+   * Fetch server-side health checks from the Next.js API route.
+   * Checks env vars and network services the browser cannot reach directly.
+   */
+  const fetchServerHealth = useCallback(async () => {
+    try {
+      const res = await fetch('/api/integrations/health');
+      if (!res.ok) return;
+      const data = (await res.json()) as HealthApiResponse;
+      if (!data?.integrations) return;
+
+      // Merge server-side results into the store
+      for (const [id, result] of Object.entries(data.integrations)) {
+        const integrationId = id as IntegrationId;
+        setStatus(integrationId, result.status, result.message);
+      }
+    } catch {
+      // Server unreachable — continue with client-side checks only
+    }
+  }, [setStatus]);
+
   const checkAll = useCallback(async () => {
     // Run local checks sync
     checkApiKeys();
     checkVoice();
-    // Run network checks in parallel
-    await Promise.allSettled([checkEngine(), checkWhatsApp(), checkSupabase(), checkTelegram(), checkGoogleServices()]);
-  }, [checkEngine, checkWhatsApp, checkSupabase, checkApiKeys, checkVoice, checkTelegram, checkGoogleServices]);
+    // Run network checks in parallel (client-side)
+    await Promise.allSettled([
+      checkEngine(),
+      checkWhatsApp(),
+      checkSupabase(),
+      checkTelegram(),
+      checkGoogleServices(),
+    ]);
+    // Also fetch server-side health (non-blocking, overlays results)
+    fetchServerHealth().catch(() => { /* silent */ });
+  }, [checkEngine, checkWhatsApp, checkSupabase, checkApiKeys, checkVoice, checkTelegram, checkGoogleServices, fetchServerHealth]);
 
   const checkOne = useCallback(async (id: IntegrationId) => {
     switch (id) {
@@ -222,9 +251,20 @@ export function useIntegrationStatus() {
     }
   }, [checkEngine, checkWhatsApp, checkSupabase, checkApiKeys, checkVoice, checkTelegram, checkGoogleServices]);
 
-  // Check all on mount
+  // Check all on mount + poll every 30s
   useEffect(() => {
     checkAll();
+
+    pollTimerRef.current = setInterval(() => {
+      checkAll();
+    }, HEALTH_POLL_INTERVAL_MS);
+
+    return () => {
+      if (pollTimerRef.current) {
+        clearInterval(pollTimerRef.current);
+        pollTimerRef.current = null;
+      }
+    };
   }, [checkAll]);
 
   return { integrations, checkAll, checkOne };

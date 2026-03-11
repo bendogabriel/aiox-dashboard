@@ -1,9 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { useUIStore } from '../uiStore';
+
+vi.mock('../../services/supabase/settings', () => ({
+  supabaseSettingsService: {
+    isAvailable: () => false,
+    upsertSetting: vi.fn().mockResolvedValue(undefined),
+    getSetting: vi.fn().mockResolvedValue(null),
+    getAllSettings: vi.fn().mockResolvedValue(null),
+    resetAvailability: vi.fn(),
+    deleteSetting: vi.fn().mockResolvedValue(undefined),
+    upsertMany: vi.fn().mockResolvedValue(undefined),
+  },
+}));
 
 vi.mock('../../hooks/useSound', () => ({
   playSound: vi.fn(),
 }));
+
+import { useUIStore } from '../uiStore';
 
 describe('uiStore', () => {
   beforeEach(() => {

@@ -1,34 +1,30 @@
 import { motion } from 'framer-motion';
-import { GlassCard } from '../ui';
+import { GlassCard, Badge } from '../ui';
 import { useAgentAnalytics, useCommandAnalytics } from '../../hooks/useDashboard';
+import { useDashboardOverview } from '../../hooks/useDashboardOverview';
 import { useUIStore } from '../../stores/uiStore';
 import { cn } from '../../lib/utils';
 import { BarChart, ProgressRing } from './Charts';
 import { TerminalIcon } from './dashboard-icons';
 
-// Demo fallback data for AgentsTab
-const DEMO_AGENT_ANALYTICS = [
-  { agentId: 'dev-agent', agentName: 'Dex (Dev)', squad: 'core-squad', totalExecutions: 24, successRate: 95, avgResponseTime: 1.2 },
-  { agentId: 'qa-agent', agentName: 'Quinn (QA)', squad: 'core-squad', totalExecutions: 18, successRate: 100, avgResponseTime: 0.8 },
-  { agentId: 'architect-agent', agentName: 'Aria (Architect)', squad: 'core-squad', totalExecutions: 12, successRate: 92, avgResponseTime: 2.1 },
-  { agentId: 'pm-agent', agentName: 'Morgan (PM)', squad: 'management-squad', totalExecutions: 9, successRate: 88, avgResponseTime: 1.5 },
-];
-
-const DEMO_COMMAND_ANALYTICS = [
-  { command: '*develop', totalCalls: 32, avgDuration: 4.2, successRate: 94 },
-  { command: '*qa-gate', totalCalls: 18, avgDuration: 2.1, successRate: 100 },
-  { command: '*create-story', totalCalls: 14, avgDuration: 1.8, successRate: 92 },
-  { command: '*validate', totalCalls: 11, avgDuration: 1.2, successRate: 96 },
-  { command: '*push', totalCalls: 8, avgDuration: 3.5, successRate: 87 },
-];
-
 export function AgentsTab() {
   const { data: rawAgentAnalytics } = useAgentAnalytics();
   const { data: rawCommandAnalytics } = useCommandAnalytics();
+  const { agents: dashAgents } = useDashboardOverview();
   const { setCurrentView, setSelectedAgentId } = useUIStore();
 
-  const agentAnalytics = rawAgentAnalytics || DEMO_AGENT_ANALYTICS;
-  const commandAnalytics = rawCommandAnalytics || DEMO_COMMAND_ANALYTICS;
+  // Merge: prefer real analytics from execution history, fall back to filesystem agent data
+  const agentAnalytics = (rawAgentAnalytics && rawAgentAnalytics.length > 0)
+    ? rawAgentAnalytics
+    : (dashAgents || []).map(a => ({
+        agentId: a.agentId,
+        agentName: a.agentName,
+        squad: a.squad || '',
+        totalExecutions: a.logLines,
+        successRate: a.status === 'active' ? 100 : a.status === 'idle' ? 90 : 0,
+        avgResponseTime: 0,
+      }));
+  const commandAnalytics = rawCommandAnalytics || [];
 
   const handleAgentClick = (agentId: string) => {
     setSelectedAgentId(agentId);
@@ -89,6 +85,36 @@ export function AgentsTab() {
         </div>
       </GlassCard>
 
+      {/* Agent Definitions (from filesystem) */}
+      {dashAgents && dashAgents.length > 0 && (
+        <GlassCard>
+          <h2 className="font-semibold text-primary mb-4">Agent Definitions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {dashAgents.map((agent) => (
+              <div
+                key={agent.agentId}
+                className="p-3 rounded-xl glass-subtle flex items-center justify-between"
+              >
+                <div className="min-w-0">
+                  <p className="text-primary font-medium truncate">{agent.agentName}</p>
+                  <p className="text-xs text-tertiary truncate">{agent.role}</p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Badge variant="count" size="sm">{agent.model}</Badge>
+                  <Badge
+                    variant="status"
+                    status={agent.status === 'active' ? 'online' : agent.status === 'idle' ? 'warning' : 'offline'}
+                    size="sm"
+                  >
+                    {agent.status === 'active' ? 'Ativo' : agent.status === 'idle' ? 'Idle' : 'Off'}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      )}
+
       {/* Command Analytics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <GlassCard>
@@ -122,6 +148,9 @@ export function AgentsTab() {
                 </div>
               </div>
             ))}
+            {(!commandAnalytics || commandAnalytics.length === 0) && (
+              <p className="text-center text-tertiary py-4">Nenhum comando registrado</p>
+            )}
           </div>
         </GlassCard>
       </div>

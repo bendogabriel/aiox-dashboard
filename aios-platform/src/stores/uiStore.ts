@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { safePersistStorage } from '../lib/safeStorage';
 import { playSound } from '../hooks/useSound';
+import { supabaseSettingsService } from '../services/supabase/settings';
 import type { UIState } from '../types';
 
 type ThemeType = 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox';
@@ -245,4 +246,72 @@ if (typeof window !== 'undefined') {
       applyTheme('system');
     }
   });
+}
+
+// ── Supabase Sync for UI Preferences ──────────────────────
+// Fire-and-forget sync of theme and layout preferences
+
+let _uiSyncTimer: ReturnType<typeof setTimeout> | null = null;
+const UI_SYNC_DEBOUNCE_MS = 2000;
+let _uiSyncInitialized = false;
+
+function syncUIToSupabase() {
+  if (!supabaseSettingsService.isAvailable()) return;
+  if (_uiSyncTimer) clearTimeout(_uiSyncTimer);
+
+  _uiSyncTimer = setTimeout(() => {
+    const state = useUIStore.getState();
+    supabaseSettingsService.upsertSetting('ui-preferences', {
+      theme: state.theme,
+      sidebarCollapsed: state.sidebarCollapsed,
+      activityPanelOpen: state.activityPanelOpen,
+    }).catch(() => { /* silent */ });
+  }, UI_SYNC_DEBOUNCE_MS);
+}
+
+// Subscribe to theme changes for Supabase sync
+if (typeof window !== 'undefined') {
+  // Watch for theme, sidebar, and activity panel changes
+  useUIStore.subscribe((state, prevState) => {
+    if (!_uiSyncInitialized) return;
+    if (
+      state.theme !== prevState.theme ||
+      state.sidebarCollapsed !== prevState.sidebarCollapsed ||
+      state.activityPanelOpen !== prevState.activityPanelOpen
+    ) {
+      syncUIToSupabase();
+    }
+  });
+
+  // Load UI preferences from Supabase on startup
+  setTimeout(async () => {
+    if (!supabaseSettingsService.isAvailable()) {
+      _uiSyncInitialized = true;
+      return;
+    }
+    try {
+      const remote = await supabaseSettingsService.getSetting<{
+        theme?: string;
+        sidebarCollapsed?: boolean;
+        activityPanelOpen?: boolean;
+      }>('ui-preferences');
+      if (remote?.theme) {
+        const currentState = useUIStore.getState();
+        // Only apply remote theme if local hasn't been changed since page load
+        if (currentState.theme === 'aiox' && remote.theme !== 'aiox') {
+          applyTheme(remote.theme as ThemeType);
+          useUIStore.setState({ theme: remote.theme as ThemeType });
+        }
+        if (remote.sidebarCollapsed !== undefined) {
+          useUIStore.setState({ sidebarCollapsed: remote.sidebarCollapsed });
+        }
+        if (remote.activityPanelOpen !== undefined) {
+          useUIStore.setState({ activityPanelOpen: remote.activityPanelOpen });
+        }
+      }
+    } catch {
+      // Silent — local-first
+    }
+    _uiSyncInitialized = true;
+  }, 800);
 }

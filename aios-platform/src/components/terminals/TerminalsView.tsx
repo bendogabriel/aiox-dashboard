@@ -70,7 +70,7 @@ export default function TerminalsView() {
       initializedRef.current = true;
     }
 
-    const activeAgents = agents.filter(a => a.active);
+    const activeAgents = (agents || []).filter(a => a.active);
     for (const agent of activeAgents) {
       if (syncedRef.current.has(agent.agentId)) continue;
 
@@ -107,7 +107,7 @@ export default function TerminalsView() {
   const activeSession = sessions.find((s) => s.id === activeSessionId) ?? null;
 
   // Agents not yet in a session
-  const agentsWithoutSession = agents.filter(
+  const agentsWithoutSession = (agents || []).filter(
     a => !getSessionByAgentId(a.agentId)
   );
 

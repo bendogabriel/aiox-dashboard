@@ -8,6 +8,18 @@ vi.mock('../../lib/safeStorage', () => ({
   },
 }));
 
+vi.mock('../../services/supabase/settings', () => ({
+  supabaseSettingsService: {
+    isAvailable: () => false,
+    upsertSetting: vi.fn().mockResolvedValue(undefined),
+    getSetting: vi.fn().mockResolvedValue(null),
+    getAllSettings: vi.fn().mockResolvedValue(null),
+    resetAvailability: vi.fn(),
+    deleteSetting: vi.fn().mockResolvedValue(undefined),
+    upsertMany: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
 import { useSettingsStore } from '../settingsStore';
 
 const DEFAULT_AGENT_COLORS = [

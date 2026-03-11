@@ -16,6 +16,7 @@ import { Star } from 'lucide-react';
 import type { MarketplaceOrder, OrderStatus } from '../../../types/marketplace';
 
 const ReviewFormLazy = lazy(() => import('../reviews/ReviewForm'));
+const DisputeFormLazy = lazy(() => import('../disputes/DisputeForm'));
 
 // --- Tab types ---
 type OrderTab = 'active' | 'completed' | 'all';
@@ -64,11 +65,13 @@ const OrderCard = memo(function OrderCard({
   onSelect,
   onUseAgent,
   onReview,
+  onDispute,
 }: {
   order: MarketplaceOrder;
   onSelect: (order: MarketplaceOrder) => void;
   onUseAgent: (order: MarketplaceOrder) => void;
   onReview?: (order: MarketplaceOrder) => void;
+  onDispute?: (order: MarketplaceOrder) => void;
 }) {
   const listing = order.listing;
   const IconComponent = listing?.icon ? getIconComponent(listing.icon) : null;
@@ -210,6 +213,25 @@ const OrderCard = memo(function OrderCard({
           </button>
         </div>
       )}
+      {/* Dispute button for active/completed orders (within 15 days) */}
+      {onDispute && order.status !== 'disputed' && order.status !== 'refunded' && order.status !== 'cancelled' &&
+        (order.status === 'active' || order.status === 'in_progress' || order.status === 'completed') && (
+        <div className="px-4 pb-3">
+          <button
+            type="button"
+            onClick={() => onDispute(order)}
+            className="
+              w-full py-2 font-mono text-[10px] uppercase tracking-wider
+              text-[var(--color-text-muted,#666)]
+              hover:text-[var(--bb-error,#EF4444)]
+              transition-colors flex items-center justify-center gap-1.5
+            "
+          >
+            <AlertTriangle size={10} />
+            Abrir Disputa
+          </button>
+        </div>
+      )}
     </div>
   );
 });
@@ -220,6 +242,7 @@ const OrderCard = memo(function OrderCard({
 export default function MyPurchases() {
   const [activeTab, setActiveTab] = useState<OrderTab>('active');
   const [reviewingOrder, setReviewingOrder] = useState<MarketplaceOrder | null>(null);
+  const [disputingOrder, setDisputingOrder] = useState<MarketplaceOrder | null>(null);
   const setCurrentView = useUIStore((s) => s.setCurrentView);
   const selectListing = useMarketplaceStore((s) => s.selectListing);
 
@@ -330,6 +353,21 @@ export default function MyPurchases() {
                 </Suspense>
               </div>
             )}
+            {/* Dispute form (inline) */}
+            {disputingOrder && (
+              <div className="mb-4">
+                <Suspense fallback={<div className="h-32 bg-[var(--color-bg-surface,#0a0a0a)] border border-[var(--color-border-default,#333)] animate-pulse" />}>
+                  <DisputeFormLazy
+                    order={disputingOrder}
+                    onSubmit={(data) => {
+                      console.log('Dispute submitted:', data);
+                      setDisputingOrder(null);
+                    }}
+                    onCancel={() => setDisputingOrder(null)}
+                  />
+                </Suspense>
+              </div>
+            )}
             {orders.map((order) => (
               <OrderCard
                 key={order.id}
@@ -337,6 +375,7 @@ export default function MyPurchases() {
                 onSelect={handleSelectOrder}
                 onUseAgent={handleUseAgent}
                 onReview={(o) => setReviewingOrder(o)}
+                onDispute={(o) => setDisputingOrder(o)}
               />
             ))}
           </div>

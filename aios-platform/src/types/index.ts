@@ -595,6 +595,7 @@ export type ViewType =
   | 'integrations' | 'google-oauth-callback'
   | 'brainstorm'
   | 'vault'
+  | 'overnight'
   | 'marketplace' | 'marketplace-listing' | 'marketplace-purchases' | 'marketplace-seller' | 'marketplace-submit' | 'marketplace-review' | 'marketplace-admin';
 export type SettingsSectionType = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 

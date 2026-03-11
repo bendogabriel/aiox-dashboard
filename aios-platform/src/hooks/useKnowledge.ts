@@ -45,7 +45,17 @@ export interface AgentKnowledge {
   lastUpdated?: string;
 }
 
-// ── Mock Data ──
+export interface KnowledgeSearchResult {
+  name: string;
+  path: string;
+  size: number;
+  modified: string;
+  extension: string;
+  snippet: string;
+  lineNumber?: number;
+}
+
+// ── Mock Data (fallback when API is unavailable) ──
 
 const MOCK_OVERVIEW: KnowledgeOverview = {
   totalFiles: 47,
@@ -231,10 +241,52 @@ export function useAgentKnowledge(enabled = true) {
   return { ...query, data, agentsBySquad, squads, isMock };
 }
 
+/**
+ * Server-side full-text search through project files.
+ * Calls GET /api/knowledge/search?q=...&type=...
+ * Debounced: only fires when query is >= 2 characters.
+ */
+export function useKnowledgeServerSearch(searchQuery: string, typeFilter?: string) {
+  const trimmedQuery = searchQuery.trim();
+  const enabled = trimmedQuery.length >= 2 || !!typeFilter;
+
+  const query = useQuery<{
+    results: KnowledgeSearchResult[];
+    total: number;
+    query: string;
+    type: string;
+  }>({
+    queryKey: ['knowledge-search', trimmedQuery, typeFilter || ''],
+    queryFn: async () => {
+      try {
+        const params: Record<string, string> = {};
+        if (trimmedQuery) params.q = trimmedQuery;
+        if (typeFilter) params.type = typeFilter;
+        return await apiClient.get('/knowledge/search', params);
+      } catch {
+        return { results: [], total: 0, query: trimmedQuery, type: typeFilter || '' };
+      }
+    },
+    enabled,
+    staleTime: 30000,
+  });
+
+  return {
+    ...query,
+    results: query.data?.results || [],
+    total: query.data?.total || 0,
+  };
+}
+
+/**
+ * Client-side search/filter of overview recent files.
+ * For full-text server-side search, use useKnowledgeServerSearch separately.
+ */
 export function useKnowledgeSearch(overview: KnowledgeOverview | undefined) {
   const [query, setQuery] = useState('');
   const [filterType, setFilterType] = useState<string | null>(null);
 
+  // Client-side filter of recent files (fast, no network)
   const recentFilesFiltered = useMemo(() => {
     if (!overview?.recentFiles) return [];
     let result = overview.recentFiles;
@@ -287,4 +339,8 @@ export const FILE_TYPE_COLORS: Record<string, string> = {
   tsx: 'text-blue-500',
   js: 'text-yellow-500',
   jsx: 'text-yellow-500',
+  css: 'text-pink-400',
+  scss: 'text-pink-400',
+  html: 'text-orange-400',
+  sh: 'text-green-500',
 };

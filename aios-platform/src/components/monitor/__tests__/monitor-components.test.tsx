@@ -42,6 +42,7 @@ function createMonitorStoreState(overrides: Record<string, unknown> = {}) {
   return {
     connected: false,
     connectionMode: 'local' as const,
+    connectionSource: 'none' as const,
     events: [] as Array<{
       id: string;
       timestamp: string;
@@ -101,6 +102,11 @@ let executionHistoryState: {
 
 vi.mock('../../../hooks/useExecute', () => ({
   useExecutionHistory: vi.fn(() => executionHistoryState),
+}));
+
+// Mock useActivityFeed hook (used by ActivityTimeline)
+vi.mock('../../../hooks/useActivityFeed', () => ({
+  useActivityFeed: vi.fn(() => ({ data: null, isLoading: false, error: null })),
 }));
 
 // Mock cn utility
@@ -353,14 +359,14 @@ describe('ConnectionStatus', () => {
   });
 
   it('shows Engine label when connected in engine mode', () => {
-    monitorState = createMonitorStoreState({ connected: true, connectionMode: 'engine' });
+    monitorState = createMonitorStoreState({ connected: true, connectionMode: 'engine', connectionSource: 'ws' });
     render(<ConnectionStatus />);
     expect(screen.getByText('Engine')).toBeInTheDocument();
     expect(screen.getByTestId('status-dot').getAttribute('data-status')).toBe('working');
   });
 
   it('shows Cloud label when connected in cloud mode', () => {
-    monitorState = createMonitorStoreState({ connected: true, connectionMode: 'cloud' });
+    monitorState = createMonitorStoreState({ connected: true, connectionMode: 'cloud', connectionSource: 'ws' });
     render(<ConnectionStatus />);
     expect(screen.getByText('Cloud')).toBeInTheDocument();
   });
@@ -383,11 +389,11 @@ describe('ConnectionStatus', () => {
 // ActivityTimeline
 // ===========================================================================
 describe('ActivityTimeline', () => {
-  it('shows demo badge and demo data when no real events exist', () => {
+  it('shows No data badge and empty state when no real events exist', () => {
     monitorState = createMonitorStoreState({ events: [] });
     executionHistoryState = { data: undefined };
     render(<ActivityTimeline />);
-    expect(screen.getByText('Demo')).toBeInTheDocument();
+    expect(screen.getByText('No data')).toBeInTheDocument();
     expect(screen.getByText('Monitor')).toBeInTheDocument();
   });
 
@@ -395,8 +401,8 @@ describe('ActivityTimeline', () => {
     monitorState = createMonitorStoreState({ events: [] });
     executionHistoryState = { data: undefined };
     render(<ActivityTimeline />);
-    // Demo data has 20 items
-    expect(screen.getByText('(20 eventos)')).toBeInTheDocument();
+    // No events when all hooks return empty/null
+    expect(screen.getByText('(0 eventos)')).toBeInTheDocument();
   });
 
   it('renders filter pills including Todos', () => {

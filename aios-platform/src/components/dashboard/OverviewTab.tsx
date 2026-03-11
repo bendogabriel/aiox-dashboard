@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Package, Bot, Zap, CheckCircle, BookOpen, GitBranch } from 'lucide-react';
+import { Bot, Zap, CheckCircle, BookOpen, GitBranch } from 'lucide-react';
 import { GlassCard, Badge } from '../ui';
 import { LiveMetricCard } from './LiveMetricCard';
 import { useSquads } from '../../hooks/useSquads';
@@ -118,17 +118,9 @@ export function OverviewTab() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           <LiveMetricCard
-            key="squads"
-            label="Squads"
-            value={squads?.length || 0}
-            icon={<Package size={14} className="text-blue-400" />}
-            color="#3B82F6"
-            sparkline={executionTrend}
-          />,
-          <LiveMetricCard
             key="agents"
             label="Agents"
-            value={agents?.length || 0}
+            value={dashOverview?.totalAgents || agents?.length || 0}
             icon={<Bot size={14} className="text-emerald-400" />}
             color="#10B981"
             trend="up"
@@ -136,9 +128,17 @@ export function OverviewTab() {
             isLive
           />,
           <LiveMetricCard
+            key="stories"
+            label="Stories"
+            value={dashOverview?.totalStories || 0}
+            icon={<BookOpen size={14} className="text-blue-400" />}
+            color="#3B82F6"
+            sparkline={executionTrend}
+          />,
+          <LiveMetricCard
             key="exec"
             label="Execuções"
-            value={executions.length}
+            value={dashOverview?.totalExecutions || executions.length}
             icon={<Zap size={14} className="text-purple-400" />}
             color="#8B5CF6"
             sparkline={executionTrend}
@@ -148,11 +148,11 @@ export function OverviewTab() {
           <LiveMetricCard
             key="success"
             label="Sucesso"
-            value={successRate}
+            value={dashOverview?.successRate ?? successRate}
             format="percent"
-            icon={<CheckCircle size={14} style={{ color: successRate >= 90 ? '#10B981' : successRate >= 70 ? '#F59E0B' : '#EF4444' }} />}
-            color={successRate >= 90 ? '#10B981' : successRate >= 70 ? '#F59E0B' : '#EF4444'}
-            trend={successRate >= 90 ? 'up' : successRate >= 70 ? 'flat' : 'down'}
+            icon={<CheckCircle size={14} style={{ color: (dashOverview?.successRate ?? successRate) >= 90 ? '#10B981' : (dashOverview?.successRate ?? successRate) >= 70 ? '#F59E0B' : '#EF4444' }} />}
+            color={(dashOverview?.successRate ?? successRate) >= 90 ? '#10B981' : (dashOverview?.successRate ?? successRate) >= 70 ? '#F59E0B' : '#EF4444'}
+            trend={(dashOverview?.successRate ?? successRate) >= 90 ? 'up' : (dashOverview?.successRate ?? successRate) >= 70 ? 'flat' : 'down'}
           />,
         ].map((card, i) => (
           <motion.div
@@ -212,10 +212,10 @@ export function OverviewTab() {
         />
         <HealthCard
           title="MCP Servers"
-          status={mcpStats && mcpStats.connectedServers > 0 ? 'healthy' : 'error'}
+          status={(dashMcp?.connectedServers ?? mcpStats?.connectedServers ?? 0) > 0 ? 'healthy' : 'error'}
           details={[
-            { label: 'Conectados', value: mcpStats?.connectedServers || 0 },
-            { label: 'Tools', value: mcpStats?.totalTools || 0 },
+            { label: 'Conectados', value: dashMcp?.connectedServers ?? mcpStats?.connectedServers ?? 0 },
+            { label: 'Tools', value: dashMcp?.totalTools ?? mcpStats?.totalTools ?? 0 },
           ]}
         />
         <HealthCard
@@ -227,6 +227,34 @@ export function OverviewTab() {
           ]}
         />
       </div>
+
+      {/* Git Info */}
+      {dashOverview && (
+        <GlassCard>
+          <div className="flex items-center gap-2 mb-3">
+            <GitBranch size={16} className="text-secondary" />
+            <h2 className="font-semibold text-primary">Repositório</h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="p-3 rounded-xl glass-subtle">
+              <p className="text-xs text-tertiary mb-1">Branch</p>
+              <p className="text-sm font-semibold text-primary">{dashOverview.gitBranch}</p>
+            </div>
+            <div className="p-3 rounded-xl glass-subtle">
+              <p className="text-xs text-tertiary mb-1">Commits</p>
+              <p className="text-sm font-semibold text-primary">{dashOverview.gitCommits}</p>
+            </div>
+            <div className="p-3 rounded-xl glass-subtle">
+              <p className="text-xs text-tertiary mb-1">Log Files</p>
+              <p className="text-sm font-semibold text-primary">{dashOverview.activeLogFiles}</p>
+            </div>
+            <div className="p-3 rounded-xl glass-subtle">
+              <p className="text-xs text-tertiary mb-1">Active Tasks</p>
+              <p className="text-sm font-semibold text-primary">{dashOverview.activeExecutions}</p>
+            </div>
+          </div>
+        </GlassCard>
+      )}
 
       {/* AIOS Registry Quick Access */}
       <RegistryQuickAccess />
