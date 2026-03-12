@@ -24,6 +24,7 @@ import { registry } from './routes/registry';
 import { integrations as integrationsRoute } from './routes/integrations';
 import { telegram } from './routes/telegram';
 import { googleAuth } from './routes/google-auth';
+import { stubs } from './routes/stubs';
 
 // ============================================================
 // AIOS Agent Execution Engine — v0.4.0
@@ -81,6 +82,7 @@ app.use('/*', cors({
 // Mount routes
 app.route('/', system);
 app.route('/jobs', jobs);
+app.route('/tasks', jobs); // Alias: frontend uses /tasks, engine uses /jobs
 app.route('/execute', execute);
 app.route('/stream', stream);
 app.route('/webhook', createWebhookRoutes(config));
@@ -91,6 +93,9 @@ app.route('/registry', registry);
 app.route('/integrations', integrationsRoute);
 app.route('/telegram', telegram);
 app.route('/auth/google', googleAuth);
+
+// Stub routes for frontend compatibility (empty data, no 404s)
+app.route('/', stubs);
 
 // Serve dashboard static files if configured (AIOS_DASHBOARD_DIR env or ../dist/)
 const dashboardDir = process.env.AIOS_DASHBOARD_DIR
