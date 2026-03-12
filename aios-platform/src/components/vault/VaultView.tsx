@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Search, Shield } from 'lucide-react';
-import { GlassCard, GlassButton, GlassInput } from '../ui';
+import { GlassButton, GlassInput } from '../ui';
 import { useVaultStore } from '../../stores/vaultStore';
-import { cn } from '../../lib/utils';
 import VaultOverview from './VaultOverview';
 import WorkspaceDetail from './WorkspaceDetail';
 import DocumentViewer from './DocumentViewer';

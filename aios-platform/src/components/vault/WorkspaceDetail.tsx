@@ -58,12 +58,6 @@ const TABS: { id: VaultTab; label: string; icon: React.ElementType }[] = [
 
 const TEMPLATE_FILTER_CHIPS = ['Todos', 'AI', 'Analytics', 'Branding', 'Ops', 'Tech', 'Executive'];
 
-const ITEM_STATUS_VARIANT: Record<string, 'status'> = {
-  validated: 'status',
-  draft: 'status',
-  outdated: 'status',
-};
-
 const ITEM_STATUS_MAP: Record<string, 'success' | 'warning' | 'error'> = {
   validated: 'success',
   draft: 'warning',
@@ -555,7 +549,7 @@ function TabDados({
 
 function TabTemplates({
   groups,
-  allGroups,
+  allGroups: _allGroups,
   filter,
   onFilterChange,
 }: {
