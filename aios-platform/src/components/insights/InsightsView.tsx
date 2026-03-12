@@ -130,6 +130,7 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
   const realAgentPerf = useMemo(() => {
     if (!agentAnalytics) return null;
     return agentAnalytics.slice(0, 7).map((a: AgentAnalytics) => ({
+      agentId: a.agentId,
       name: a.agentName || a.agentId,
       stories: a.totalExecutions || 0,
       hours: Math.round((a.avgResponseTime || 0) / 3600),
@@ -304,7 +305,7 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
           <SectionLabel count={agents.length}>Agent Performance</SectionLabel>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {agents.map((agent) => (
-              <div key={agent.name} className="glass-subtle rounded-xl p-3 space-y-2">
+              <div key={'agentId' in agent ? String((agent as Record<string, unknown>).agentId) : agent.name} className="glass-subtle rounded-xl p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-primary">{agent.name}</span>
                   <Badge variant="status" status="success" size="sm">

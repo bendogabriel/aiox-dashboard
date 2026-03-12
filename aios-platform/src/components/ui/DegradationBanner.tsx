@@ -92,35 +92,51 @@ export function DegradationBanner() {
       }}
     >
       {/* Summary bar */}
-      <button
-        onClick={() => setExpanded(!expanded)}
+      <div
         style={{
           width: '100%',
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
           padding: '8px 12px',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
           color: textColor,
           fontSize: '11px',
           fontFamily: 'inherit',
           textAlign: 'left',
         }}
       >
-        <AlertTriangle size={13} />
-        <span style={{ flex: 1 }}>
-          <strong style={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            {hasUnavailable ? 'Limited Mode' : 'Degraded'}
-          </strong>
-          {' — '}
-          {summary.unavailable > 0 && `${summary.unavailable} unavailable`}
-          {summary.unavailable > 0 && summary.degraded > 0 && ', '}
-          {summary.degraded > 0 && `${summary.degraded} degraded`}
-          {' of '}
-          {summary.total} capabilities
-        </span>
+        <button
+          onClick={() => setExpanded(!expanded)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            flex: 1,
+            minWidth: 0,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'inherit',
+            fontSize: 'inherit',
+            fontFamily: 'inherit',
+            textAlign: 'left',
+            padding: 0,
+          }}
+        >
+          <AlertTriangle size={13} />
+          <span style={{ flex: 1 }}>
+            <strong style={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              {hasUnavailable ? 'Limited Mode' : 'Degraded'}
+            </strong>
+            {' — '}
+            {summary.unavailable > 0 && `${summary.unavailable} unavailable`}
+            {summary.unavailable > 0 && summary.degraded > 0 && ', '}
+            {summary.degraded > 0 && `${summary.degraded} degraded`}
+            {' of '}
+            {summary.total} capabilities
+          </span>
+          {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+        </button>
 
         {/* Recheck button */}
         <button
@@ -140,6 +156,7 @@ export function DegradationBanner() {
             alignItems: 'center',
             gap: '4px',
             opacity: checking ? 0.6 : 0.85,
+            flexShrink: 0,
           }}
           title="Recheck affected integrations"
           aria-label="Recheck integrations"
@@ -151,9 +168,7 @@ export function DegradationBanner() {
           )}
           {checking ? 'Checking...' : 'Recheck'}
         </button>
-
-        {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-      </button>
+      </div>
 
       {/* Expanded detail */}
       {expanded && (

@@ -39,7 +39,7 @@ export function CostsTab() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <GlassCard className="bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
           <p className="text-sm text-secondary mb-1">Hoje</p>
-          <p className="text-3xl font-bold text-primary">${costSummary?.today.toFixed(2) || '0.00'}</p>
+          <p className="text-3xl font-bold text-primary">${(costSummary?.today ?? 0).toFixed(2)}</p>
           <div className="flex items-center gap-1 mt-2 text-xs text-green-400">
             <TrendUpIcon />
             <span>Estimativa</span>
@@ -48,12 +48,12 @@ export function CostsTab() {
 
         <GlassCard className="bg-gradient-to-br from-blue-500/10 to-transparent border-blue-500/20">
           <p className="text-sm text-secondary mb-1">Esta Semana</p>
-          <p className="text-3xl font-bold text-primary">${costSummary?.thisWeek.toFixed(2) || '0.00'}</p>
+          <p className="text-3xl font-bold text-primary">${(costSummary?.thisWeek ?? 0).toFixed(2)}</p>
         </GlassCard>
 
         <GlassCard className="bg-gradient-to-br from-purple-500/10 to-transparent border-purple-500/20">
           <p className="text-sm text-secondary mb-1">Este Mês</p>
-          <p className="text-3xl font-bold text-primary">${costSummary?.thisMonth.toFixed(2) || '0.00'}</p>
+          <p className="text-3xl font-bold text-primary">${(costSummary?.thisMonth ?? 0).toFixed(2)}</p>
         </GlassCard>
       </div>
 
@@ -64,14 +64,14 @@ export function CostsTab() {
           <div className="space-y-4">
             <CostProviderRow
               name="Claude (Anthropic)"
-              cost={costSummary?.byProvider.claude || 0}
-              tokens={(tokenUsage?.claude.input ?? 0) + (tokenUsage?.claude.output ?? 0)}
+              cost={costSummary?.byProvider?.claude || 0}
+              tokens={(tokenUsage?.claude?.input ?? 0) + (tokenUsage?.claude?.output ?? 0)}
               color="purple"
             />
             <CostProviderRow
               name="OpenAI"
-              cost={costSummary?.byProvider.openai || 0}
-              tokens={(tokenUsage?.openai.input ?? 0) + (tokenUsage?.openai.output ?? 0)}
+              cost={costSummary?.byProvider?.openai || 0}
+              tokens={(tokenUsage?.openai?.input ?? 0) + (tokenUsage?.openai?.output ?? 0)}
               color="green"
             />
           </div>

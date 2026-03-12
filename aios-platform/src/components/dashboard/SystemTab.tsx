@@ -27,7 +27,7 @@ export function SystemTab() {
     activeConnections: 0,
   } : { uptime: 0, avgLatency: 0, requestsPerMinute: 0, errorRate: 0, queueSize: 0, activeConnections: 0 });
 
-  const llmHealth = rawLlmHealth || (dashSystem ? {
+  const llmHealth = rawLlmHealth || (dashSystem?.llmKeys ? {
     claude: { available: dashSystem.llmKeys.claude, error: dashSystem.llmKeys.claude ? undefined : 'API key not set' },
     openai: { available: dashSystem.llmKeys.openai, error: dashSystem.llmKeys.openai ? undefined : 'API key not set' },
   } : { claude: { available: false, error: 'Unknown' }, openai: { available: false, error: 'Unknown' } });
@@ -55,21 +55,21 @@ export function SystemTab() {
         />
         <QuickStatCard
           label="Latência"
-          value={metrics ? `${metrics.avgLatency.toFixed(0)}ms` : '-'}
+          value={metrics ? `${(metrics.avgLatency ?? 0).toFixed(0)}ms` : '-'}
           icon={Signal}
           color="blue"
         />
         <QuickStatCard
           label="Req/min"
-          value={metrics ? metrics.requestsPerMinute.toFixed(1) : '-'}
+          value={metrics ? (metrics.requestsPerMinute ?? 0).toFixed(1) : '-'}
           icon={TrendingUp}
           color="purple"
         />
         <QuickStatCard
           label="Erros"
-          value={metrics ? `${metrics.errorRate.toFixed(1)}%` : '-'}
+          value={metrics ? `${(metrics.errorRate ?? 0).toFixed(1)}%` : '-'}
           icon={AlertTriangle}
-          color={metrics && metrics.errorRate < 5 ? 'green' : 'red'}
+          color={metrics && (metrics.errorRate ?? 0) < 5 ? 'green' : 'red'}
         />
       </div>
 
@@ -89,13 +89,13 @@ export function SystemTab() {
           />
           <ServiceHealthCard
             name="Claude API"
-            healthy={llmHealth?.claude.available ?? false}
-            error={llmHealth?.claude.error}
+            healthy={llmHealth?.claude?.available ?? false}
+            error={llmHealth?.claude?.error}
           />
           <ServiceHealthCard
             name="OpenAI API"
-            healthy={llmHealth?.openai.available ?? false}
-            error={llmHealth?.openai.error}
+            healthy={llmHealth?.openai?.available ?? false}
+            error={llmHealth?.openai?.error}
           />
         </div>
       </GlassCard>

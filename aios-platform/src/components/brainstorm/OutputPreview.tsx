@@ -87,7 +87,7 @@ function OutputCard({
             {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             <Icon size={16} style={{ color: config.color }} />
             <Badge
-              variant="outline"
+              variant="subtle"
               className="text-[10px]"
               style={{ borderColor: config.color, color: config.color }}
             >

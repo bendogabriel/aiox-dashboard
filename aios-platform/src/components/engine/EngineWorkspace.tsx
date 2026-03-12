@@ -653,7 +653,7 @@ export default function EngineWorkspace() {
   const events = useMonitorStore((s) => s.events);
   const connectionMode = useMonitorStore((s) => s.connectionMode);
 
-  const isEngineUp = !!health && health.status === 'ok';
+  const isEngineUp = !!health && (health.status === 'ok' || health.status === 'healthy');
 
   // Tab counters
   const tabCounts: Partial<Record<TabId, number>> = {

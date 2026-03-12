@@ -204,10 +204,10 @@ export function OverviewTab() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <HealthCard
           title="LLMs"
-          status={llmHealth?.claude.available && llmHealth?.openai.available ? 'healthy' : 'partial'}
+          status={llmHealth?.claude?.available && llmHealth?.openai?.available ? 'healthy' : 'partial'}
           details={[
-            { label: 'Claude', ok: llmHealth?.claude.available ?? false },
-            { label: 'OpenAI', ok: llmHealth?.openai.available ?? false },
+            { label: 'Claude', ok: llmHealth?.claude?.available ?? false },
+            { label: 'OpenAI', ok: llmHealth?.openai?.available ?? false },
           ]}
         />
         <HealthCard

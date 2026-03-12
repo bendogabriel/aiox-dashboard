@@ -91,7 +91,7 @@ export function IdeaCard({
       className="group"
     >
       <GlassCard
-        variant="interactive"
+        variant="default"
         padding={compact ? 'sm' : 'md'}
         className={cn(
           'relative transition-all border-l-2 hover:shadow-lg',
@@ -211,7 +211,7 @@ export function IdeaCard({
             {idea.tags.map((tag) => (
               <Badge
                 key={tag}
-                variant="outline"
+                variant="subtle"
                 className="text-[10px] px-1.5 py-0 cursor-pointer hover:line-through"
                 onClick={() => handleRemoveTag(tag)}
               >

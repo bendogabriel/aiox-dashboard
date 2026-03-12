@@ -275,7 +275,7 @@ export default function BrainstormRoomView() {
 
         {/* Phase badge */}
         <Badge
-          variant="outline"
+          variant="subtle"
           className="text-[10px] font-mono uppercase tracking-wider"
           style={{ borderColor: phase.color, color: phase.color }}
         >

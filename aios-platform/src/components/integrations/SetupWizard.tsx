@@ -52,7 +52,7 @@ function EngineStep({ onDone }: { onDone: () => void }) {
     // Try configured URL first, then auto-discover
     let url = getEngineUrl();
     if (!url) {
-      url = await discoverEngineUrl();
+      url = await discoverEngineUrl() ?? undefined;
     }
 
     if (!url) {

@@ -137,7 +137,7 @@ export function BrainstormRoomList({
               exit={{ opacity: 0, y: -8 }}
             >
               <GlassCard
-                variant="interactive"
+                variant="default"
                 padding="md"
                 className={cn(
                   'cursor-pointer group transition-all',
@@ -173,9 +173,9 @@ export function BrainstormRoomList({
                   </span>
                   {/* Idea type indicators */}
                   <span className="flex items-center gap-1">
-                    {room.ideas.some((i) => i.type === 'text') && <Type size={9} title="Texto" />}
-                    {room.ideas.some((i) => i.type === 'voice') && <Mic size={9} title="Voz" />}
-                    {room.ideas.some((i) => i.type === 'link') && <Link2 size={9} title="Links" />}
+                    {room.ideas.some((i) => i.type === 'text') && <Type size={9} aria-label="Texto" />}
+                    {room.ideas.some((i) => i.type === 'voice') && <Mic size={9} aria-label="Voz" />}
+                    {room.ideas.some((i) => i.type === 'link') && <Link2 size={9} aria-label="Links" />}
                   </span>
                   {room.outputs.length > 0 && (
                     <span className="flex items-center gap-1 text-primary">

@@ -29,12 +29,12 @@ export function RatingStars({
           const filled = value >= star;
           const half = !filled && value >= star - 0.5;
 
+          const Tag = interactive ? 'button' : 'span';
+
           return (
-            <button
+            <Tag
               key={star}
-              type="button"
-              disabled={!interactive}
-              onClick={() => interactive && onChange?.(star)}
+              {...(interactive ? { type: 'button' as const, onClick: () => onChange?.(star) } : {})}
               className={`
                 ${interactive ? 'cursor-pointer hover:scale-110 transition-transform' : 'cursor-default'}
                 focus:outline-none
@@ -49,7 +49,7 @@ export function RatingStars({
                   ${!filled && !half ? 'text-[var(--color-text-muted,#666)]' : ''}
                 `}
               />
-            </button>
+            </Tag>
           );
         })}
       </div>

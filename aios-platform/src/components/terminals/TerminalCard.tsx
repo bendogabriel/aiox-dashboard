@@ -1,15 +1,19 @@
 import { useState } from 'react';
-import { Minimize2, Maximize2, FolderOpen } from 'lucide-react';
+import { Minimize2, Maximize2, FolderOpen, ArrowLeftRight, Box, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard, Badge, StatusDot } from '../ui';
 import type { StatusType } from '../ui/StatusDot';
 import { cn } from '../../lib/utils';
+
+export type InvocationType = 'full-context' | 'subagent' | 'delegated';
 
 export interface TerminalSession {
   id: string;
   agent: string;
   agentId?: string;
   status: 'working' | 'idle' | 'error' | 'connecting';
+  invocationType?: InvocationType;
+  parentAgentId?: string;
   dir: string;
   story: string;
   output: string[];
@@ -18,6 +22,53 @@ export interface TerminalSession {
 function mapStatus(status: TerminalSession['status']): StatusType {
   if (status === 'connecting') return 'idle';
   return status;
+}
+
+const invocationConfig: Record<InvocationType, {
+  label: string;
+  icon: typeof Layers;
+  className: string;
+  title: string;
+}> = {
+  'full-context': {
+    label: 'Full',
+    icon: Layers,
+    className: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_6px_rgba(16,185,129,0.3)]',
+    title: 'Full context — Agent persona + pipeline loaded',
+  },
+  'subagent': {
+    label: 'Sub',
+    icon: Box,
+    className: 'bg-transparent text-zinc-400 border border-dashed border-zinc-500/50',
+    title: 'Subagent — Lightweight isolated task, no persona',
+  },
+  'delegated': {
+    label: 'Delegated',
+    icon: ArrowLeftRight,
+    className: 'bg-blue-500/20 text-blue-400 border border-blue-500/40 shadow-[0_0_6px_rgba(59,130,246,0.3)]',
+    title: 'Delegated — Full context, initiated by orchestrator',
+  },
+};
+
+function InvocationBadge({ type, parentAgent }: { type: InvocationType; parentAgent?: string }) {
+  const config = invocationConfig[type];
+  const Icon = config.icon;
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium uppercase tracking-wider leading-none',
+        config.className,
+      )}
+      title={parentAgent ? `${config.title} (from ${parentAgent})` : config.title}
+    >
+      <Icon className="h-2.5 w-2.5" />
+      {type === 'delegated' && parentAgent ? (
+        <span className="truncate max-w-[60px]">{parentAgent}</span>
+      ) : (
+        config.label
+      )}
+    </span>
+  );
 }
 
 interface TerminalCardProps {
@@ -56,6 +107,12 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
           <span className="text-sm font-semibold text-primary truncate">
             {session.agent}
           </span>
+          {session.invocationType && (
+            <InvocationBadge
+              type={session.invocationType}
+              parentAgent={session.parentAgentId}
+            />
+          )}
         </div>
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1 text-[10px] text-tertiary">

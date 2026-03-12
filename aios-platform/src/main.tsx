@@ -27,6 +27,11 @@ const initTheme = () => {
 
 initTheme();
 
+// Enable master mode by default for the primary operator
+if (!localStorage.getItem('aios:master-mode')) {
+  localStorage.setItem('aios:master-mode', 'true');
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

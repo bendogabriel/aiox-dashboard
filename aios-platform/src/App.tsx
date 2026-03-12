@@ -122,6 +122,10 @@ const VaultView = lazy(() =>
   import('./components/vault/VaultView')
 );
 
+const RunningTasksIndicator = lazy(() =>
+  import('./components/orchestration/RunningTasksIndicator').then((m) => ({ default: m.RunningTasksIndicator }))
+);
+
 const OvernightView = lazy(() =>
   import('./components/overnight/OvernightView')
 );
@@ -361,6 +365,9 @@ function App() {
       <ErrorBoundary>
         <AppContent />
         <FocusModeIndicator />
+        <Suspense fallback={null}>
+          <RunningTasksIndicator />
+        </Suspense>
         {commandPaletteOpen && (
           <Suspense fallback={null}>
             <CommandPalette />

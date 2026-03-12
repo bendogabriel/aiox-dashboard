@@ -82,7 +82,8 @@ export function ChatContainer() {
         }}
         onDeleteSession={deleteSession}
         onNewChat={() => {
-          useUIStore.setState({ selectedAgentId: null });
+          useUIStore.setState({ selectedAgentId: null, selectedSquadId: null });
+          useChatStore.getState().setActiveSession(null);
         }}
       />
 

@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { StatusDot } from '../ui';
 import { cn } from '../../lib/utils';
-import { Wifi, WifiOff, Bell, AlertTriangle } from 'lucide-react';
+import { Wifi, WifiOff, Bell, AlertTriangle, Zap, ZapOff, Crown } from 'lucide-react';
 import { useLLMHealth, useTokenUsage } from '../../hooks/useExecute';
 import { useBobStore } from '../../stores/bobStore';
 import { useToastStore } from '../../stores/toastStore';
 import { useEngineJobs } from '../../hooks/useEngine';
 import { useCapabilities } from '../../hooks/useCapabilities';
+import { useEngineStore } from '../../stores/engineStore';
+import { getTier, getTierLabel, isMaster } from '../../lib/tier';
 
 export function StatusBar() {
   // Network connectivity
@@ -41,6 +43,11 @@ export function StatusBar() {
   const activeJob = runningJobs?.jobs?.[0] ?? null;
   const activeAgent = activeJob ? `@${activeJob.agent_id}` : null;
 
+  // Engine status
+  const engineStatus = useEngineStore((s) => s.status);
+  const engineHealth = useEngineStore((s) => s.health);
+  const engineOnline = engineStatus === 'online';
+
   // Notification count from toast store
   const unreadCount = useToastStore((s) => s.unreadCount);
   const markAllRead = useToastStore((s) => s.markAllRead);
@@ -51,6 +58,20 @@ export function StatusBar() {
   const handleBellClick = useCallback(() => {
     if (unreadCount > 0) markAllRead();
   }, [unreadCount, markAllRead]);
+
+  // Tier indicator (re-renders on tier-changed event)
+  const [tierLabel, setTierLabel] = useState(getTierLabel());
+  const [masterActive, setMasterActive] = useState(isMaster());
+  const [currentTier, setCurrentTier] = useState(getTier());
+  useEffect(() => {
+    const handler = () => {
+      setTierLabel(getTierLabel());
+      setMasterActive(isMaster());
+      setCurrentTier(getTier());
+    };
+    window.addEventListener('tier-changed', handler);
+    return () => window.removeEventListener('tier-changed', handler);
+  }, []);
 
   return (
     <footer
@@ -79,6 +100,21 @@ export function StatusBar() {
             )}
           >
             {connected ? 'Connected' : 'Disconnected'}
+          </span>
+        </div>
+
+        {/* Separator */}
+        <span className="h-3 w-px bg-glass-border" aria-hidden="true" />
+
+        {/* Engine status */}
+        <div className="flex items-center gap-1.5" title={engineOnline ? `Engine v${engineHealth?.version ?? '?'}` : 'Engine offline'}>
+          {engineOnline ? (
+            <Zap className="h-3 w-3 text-[#D1FF00]" aria-hidden="true" />
+          ) : (
+            <ZapOff className="h-3 w-3 text-red-500" aria-hidden="true" />
+          )}
+          <span className={cn('font-medium', engineOnline ? 'text-[#D1FF00]' : 'text-red-500')}>
+            {engineOnline ? 'Engine' : 'Engine Off'}
           </span>
         </div>
 
@@ -126,6 +162,19 @@ export function StatusBar() {
 
       {/* Right side */}
       <div className="flex items-center gap-3">
+        {/* Tier badge */}
+        <div className={cn(
+          'flex items-center gap-1 px-1.5 py-0.5 rounded font-mono font-medium',
+          currentTier === 'enterprise' ? 'bg-[#D1FF00]/10 text-[#D1FF00]'
+            : currentTier === 'pro' ? 'bg-blue-500/10 text-blue-400'
+            : 'bg-zinc-500/10 text-zinc-400',
+        )}>
+          {masterActive && <Crown className="h-2.5 w-2.5" aria-hidden="true" />}
+          {tierLabel}
+        </div>
+
+        <span className="h-3 w-px bg-glass-border" aria-hidden="true" />
+
         {/* Bob status */}
         <div className="flex items-center gap-1.5">
           <StatusDot

@@ -187,7 +187,7 @@ export default function ContextView() {
       {agents.length > 0 && (
         <CollapsibleSection title="Agent Definitions" icon={<Bot size={16} />} count={agents.length}>
           {agents.map((agent) => (
-            <div key={agent.name} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
+            <div key={agent.id ?? agent.name} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
               <div className="flex items-center gap-2.5">
                 <div className={cn(
                   'w-6 h-6 rounded-md flex items-center justify-center',

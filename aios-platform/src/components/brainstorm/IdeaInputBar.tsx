@@ -13,6 +13,30 @@ import {
 import { GlassButton } from '../ui';
 import { cn } from '../../lib/utils';
 
+// SpeechRecognition type declarations for Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionInstance extends EventTarget {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: ((event: Event) => void) | null;
+  start(): void;
+  stop(): void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognitionInstance;
+    webkitSpeechRecognition: new () => SpeechRecognitionInstance;
+  }
+}
+
 interface IdeaInputBarProps {
   onAddIdea: (type: 'text' | 'voice' | 'link' | 'image' | 'file', content: string, rawContent?: string) => void;
   disabled?: boolean;
@@ -25,7 +49,7 @@ export function IdeaInputBar({ onAddIdea, disabled }: IdeaInputBarProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
   // Auto-resize textarea
@@ -79,7 +103,7 @@ export function IdeaInputBar({ onAddIdea, disabled }: IdeaInputBarProps) {
 
       let transcript = '';
 
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
+      recognition.onresult = (event) => {
         for (let i = event.resultIndex; i < event.results.length; i++) {
           if (event.results[i].isFinal) {
             transcript += event.results[i][0].transcript + ' ';
@@ -193,7 +217,7 @@ export function IdeaInputBar({ onAddIdea, disabled }: IdeaInputBarProps) {
 
           {/* Voice toggle */}
           <GlassButton
-            variant={isRecording ? 'destructive' : 'ghost'}
+            variant={isRecording ? 'danger' : 'ghost'}
             size="icon"
             className={cn('h-9 w-9 flex-shrink-0', isRecording && 'animate-pulse bg-red-500/20')}
             onClick={isRecording ? stopRecording : startRecording}

@@ -79,7 +79,7 @@ export function AgentsTab() {
               </div>
             </motion.div>
           ))}
-          {agentAnalytics.length === 0 && (
+          {(agentAnalytics?.length ?? 0) === 0 && (
             <p className="text-center text-tertiary py-8">Nenhum dado de execução disponível</p>
           )}
         </div>

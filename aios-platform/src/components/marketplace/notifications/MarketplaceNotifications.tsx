@@ -204,7 +204,7 @@ export function useMarketplaceRealtime(userId: string | null) {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase!.removeChannel(channel);
     };
   }, [userId, toast]);
 }

@@ -64,7 +64,7 @@ export function OrganizePanel({
             <Loader2 size={16} className="animate-spin text-primary" />
             <span className="text-sm font-medium">Organizando ideias...</span>
           </div>
-          <ProgressBar value={progress} max={100} />
+          <ProgressBar value={progress} />
           <p className="text-xs text-tertiary">
             Analisando {ideaCount} ideias e gerando estrutura AIOS
           </p>
@@ -77,16 +77,16 @@ export function OrganizePanel({
     <div className="space-y-3">
       {/* Summary badges */}
       <div className="flex items-center gap-2 flex-wrap">
-        <Badge variant="outline" className="text-xs">
+        <Badge variant="subtle" className="text-xs">
           {ideaCount} ideias
         </Badge>
         {taggedCount > 0 && (
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="subtle" className="text-xs">
             {taggedCount} com tags
           </Badge>
         )}
         {ideas.some((i) => i.type === 'voice') && (
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="subtle" className="text-xs">
             {ideas.filter((i) => i.type === 'voice').length} voz
           </Badge>
         )}

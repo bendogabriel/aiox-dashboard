@@ -8,6 +8,8 @@ export interface BadgeProps {
   status?: 'online' | 'busy' | 'offline' | 'success' | 'error' | 'warning';
   size?: 'sm' | 'md';
   className?: string;
+  style?: React.CSSProperties;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 const squadStyles: Record<SquadType, string> = {
@@ -45,6 +47,8 @@ export function Badge({
   status,
   size = 'md',
   className,
+  style,
+  onClick,
 }: BadgeProps) {
   const baseClasses =
     'inline-flex items-center justify-center font-medium rounded-md whitespace-nowrap';
@@ -58,16 +62,21 @@ export function Badge({
     primary: 'bg-[rgba(209,255,0,0.1)] text-[#D1FF00] border border-[rgba(209,255,0,0.2)]',
   };
 
+  const Tag = onClick ? 'button' : 'span';
+
   return (
-    <span
+    <Tag
       className={cn(
         baseClasses,
         sizeClasses[size],
         variantClasses[variant],
+        onClick && 'cursor-pointer',
         className
       )}
+      style={style}
+      onClick={onClick}
     >
       {children}
-    </span>
+    </Tag>
   );
 }

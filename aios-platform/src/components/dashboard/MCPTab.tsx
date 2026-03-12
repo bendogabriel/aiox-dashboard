@@ -67,8 +67,8 @@ export function MCPTab() {
                   <div>
                     <p className="text-primary font-medium">{server.name}</p>
                     <p className="text-xs text-tertiary">
-                      {server.toolCount || server.tools.length} tools
-                      {server.resources.length > 0 && ` • ${server.resources.length} resources`}
+                      {server.toolCount || server.tools?.length || 0} tools
+                      {(server.resources?.length ?? 0) > 0 && ` • ${server.resources.length} resources`}
                     </p>
                   </div>
                 </div>
@@ -81,9 +81,9 @@ export function MCPTab() {
                 </Badge>
               </div>
 
-              {server.status === 'connected' && server.tools.length > 0 && (
+              {server.status === 'connected' && (server.tools?.length ?? 0) > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  {server.tools.map((tool) => (
+                  {server.tools?.map((tool) => (
                     <span
                       key={tool.name}
                       className="px-2 py-1 rounded-lg text-xs bg-white/5 text-secondary"

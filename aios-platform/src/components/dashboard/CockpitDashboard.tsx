@@ -51,8 +51,8 @@ export default function CockpitDashboard({ viewToggle }: { viewToggle?: React.Re
     )
   }
 
-  const claudeOk = llmHealth?.claude.available ?? false
-  const openaiOk = llmHealth?.openai.available ?? false
+  const claudeOk = llmHealth?.claude?.available ?? false
+  const openaiOk = llmHealth?.openai?.available ?? false
   const allHealthy = claudeOk && openaiOk
 
   return (

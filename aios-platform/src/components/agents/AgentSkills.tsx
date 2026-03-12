@@ -170,7 +170,7 @@ function generateSkillLevels(agent: Agent): { name: string; icon: LucideIcon; co
 
   return skills.map((skill: { name: string; icon: LucideIcon; color: string }, index: number) => {
     // Generate pseudo-random but consistent levels based on agent name and skill
-    const seed = agent.name.charCodeAt(0) + index * 17;
+    const seed = (agent.name || 'Agent').charCodeAt(0) + index * 17;
     const baseLevel = 60 + (seed % 35); // 60-95 range
     const variance = ((agent.executionCount || 100) / 100) % 10;
     const level = Math.min(98, Math.max(50, baseLevel + variance));
