@@ -52,11 +52,11 @@ const PRESETS: ConnectionProfile[] = [
     isPreset: true,
     createdAt: '2024-01-01T00:00:00Z',
     configs: {
-      engine: { url: 'http://localhost:3001' },
+      engine: { url: 'http://localhost:4002' },
       supabase: { url: 'http://localhost:54321' },
     },
     settings: {
-      engineUrl: 'http://localhost:3001',
+      engineUrl: 'http://localhost:4002',
       supabaseUrl: 'http://localhost:54321',
     },
   },
@@ -67,10 +67,10 @@ const PRESETS: ConnectionProfile[] = [
     isPreset: true,
     createdAt: '2024-01-01T00:00:00Z',
     configs: {
-      engine: { url: 'http://engine:3001' },
+      engine: { url: 'http://engine:4002' },
     },
     settings: {
-      engineUrl: 'http://engine:3001',
+      engineUrl: 'http://engine:4002',
     },
   },
   {

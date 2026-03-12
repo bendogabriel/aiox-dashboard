@@ -10,7 +10,23 @@ import { getSquadType as getSquadTypeUtil } from '../types';
 
 export function useChat() {
   const { selectedAgentId, selectedSquadId } = useUIStore();
-  const { data: fetchedAgent, isLoading: isAgentLoading } = useAgentById(selectedAgentId, selectedSquadId);
+
+  // Compute effective IDs: UIStore (in-memory) takes priority,
+  // falls back to persisted session data (survives page reload).
+  // Uses getState() (non-hook) to keep hook call order stable.
+  let effectiveAgentId = selectedAgentId;
+  let effectiveSquadId = selectedSquadId;
+  if (!effectiveAgentId) {
+    const { sessions, activeSessionId: storedSessionId } = useChatStore.getState();
+    const storedSession = storedSessionId ? sessions.find(s => s.id === storedSessionId) : null;
+    if (storedSession?.agentId) {
+      effectiveAgentId = storedSession.agentId;
+      effectiveSquadId = storedSession.squadId;
+    }
+  }
+
+  // Hook order preserved: useUIStore → useAgentById → useChatStore → useExecuteAgent
+  const { data: fetchedAgent, isLoading: isAgentLoading } = useAgentById(effectiveAgentId, effectiveSquadId);
 
   const {
     sessions,
@@ -32,23 +48,24 @@ export function useChat() {
 
   const activeSession = getActiveSession();
 
-  // Fallback: if agent not found in API but we have session data,
-  // build a minimal agent from session info (handles renamed/removed agents)
-  const selectedAgent = useMemo<AgentWithUI | null | undefined>(() => {
+  // Build selectedAgent: API data first, then session fallback
+  const selectedAgent = useMemo<AgentWithUI | null>(() => {
     if (fetchedAgent) return fetchedAgent;
-    if (!isAgentLoading && selectedAgentId && activeSession) {
+    // Fallback: use session data as agent info even while loading
+    // (handles page reload, renamed/removed agents, API loading race)
+    if (activeSession?.agentId) {
       return {
         id: activeSession.agentId,
-        name: activeSession.agentName,
+        name: activeSession.agentName || activeSession.agentId,
         squad: activeSession.squadId,
         squadType: activeSession.squadType || getSquadTypeUtil(activeSession.squadId),
         tier: 2 as const,
-        role: 'Agent (offline)',
-        status: 'offline' as const,
+        role: isAgentLoading ? 'Loading...' : 'Agent (offline)',
+        status: isAgentLoading ? 'busy' as const : 'offline' as const,
       };
     }
-    return fetchedAgent;
-  }, [fetchedAgent, isAgentLoading, selectedAgentId, activeSession]);
+    return null;
+  }, [fetchedAgent, isAgentLoading, activeSession]);
 
   const selectAgent = useCallback(
     (agent: AgentSummary) => {
@@ -87,26 +104,43 @@ export function useChat() {
   const sendMessage = useCallback(
     async (content: string, attachments?: MessageAttachment[]) => {
       // Get latest state directly from store to avoid stale closure
-      const { activeSessionId: currentSessionId, isStreaming: currentIsStreaming } = useChatStore.getState();
+      const chatState = useChatStore.getState();
+      const currentSessionId = chatState.activeSessionId;
+      const currentIsStreaming = chatState.isStreaming;
+
+      // Resolve agent/squad from selectedAgent, falling back to session data
+      const session = currentSessionId
+        ? chatState.sessions.find(s => s.id === currentSessionId)
+        : null;
+      const agentId = selectedAgent?.id || session?.agentId;
+      const agentName = selectedAgent?.name || session?.agentName || agentId || '';
+      const squadId = selectedAgent?.squad || session?.squadId;
 
       console.log('[useChat.sendMessage] Called with:', {
         content,
         attachments: attachments?.length || 0,
-        selectedAgent: selectedAgent?.id,
+        agentId,
+        squadId,
         activeSessionId: currentSessionId,
         isStreaming: currentIsStreaming
       });
 
-      if (!selectedAgent || !currentSessionId || currentIsStreaming) {
+      if (!agentId || !squadId || !currentSessionId || currentIsStreaming) {
         console.log('[useChat.sendMessage] Early return - missing:', {
-          hasAgent: !!selectedAgent,
+          agentId, squadId,
           hasSession: !!currentSessionId,
           isStreaming: currentIsStreaming
         });
         return;
       }
 
-      const squadType = getSquadTypeUtil(selectedAgent.squad);
+      // Sync UIStore if it fell out of sync (e.g. after page reload)
+      const uiState = useUIStore.getState();
+      if (!uiState.selectedAgentId || !uiState.selectedSquadId) {
+        useUIStore.setState({ selectedAgentId: agentId, selectedSquadId: squadId });
+      }
+
+      const squadType = getSquadTypeUtil(squadId);
       const { addToast } = useToastStore.getState();
 
       setError(null);
@@ -115,9 +149,9 @@ export function useChat() {
       try {
         await executeMutation.mutateAsync({
           sessionId: currentSessionId,
-          squadId: selectedAgent.squad,
-          agentId: selectedAgent.id,
-          agentName: selectedAgent.name,
+          squadId,
+          agentId,
+          agentName,
           squadType,
           message: content,
           attachments,

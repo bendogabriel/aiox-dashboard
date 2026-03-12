@@ -42,7 +42,7 @@ function getDiscoveryCandidates(): string[] {
   candidates.push(origin);
 
   // Common local dev ports
-  const localPorts = [4002, 4001, 8002];
+  const localPorts = [3000, 3001, 4002, 4001, 8002];
   for (const port of localPorts) {
     candidates.push(`http://${hostname}:${port}`);
     if (hostname !== 'localhost') {
@@ -62,7 +62,7 @@ async function probeEngine(url: string): Promise<boolean> {
     clearTimeout(timer);
     if (!res.ok) return false;
     const data = await res.json() as { status?: string };
-    return data?.status === 'ok';
+    return data?.status === 'ok' || data?.status === 'healthy';
   } catch {
     return false;
   }

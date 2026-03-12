@@ -15,7 +15,7 @@ export function usePostSetupRecheck() {
   const setupModalOpen = useIntegrationStore((s) => s.setupModalOpen);
   const prevWizardOpen = useRef(wizardOpen);
   const prevModalOpen = useRef(setupModalOpen);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const wizardJustClosed = prevWizardOpen.current && !wizardOpen;

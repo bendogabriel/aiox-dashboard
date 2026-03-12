@@ -249,10 +249,10 @@ export function useMCPStats() {
 
   const connectedServers = servers.filter(s => s.status === 'connected');
   const allTools = connectedServers.flatMap(s =>
-    s.tools.map(t => ({ ...t, server: s.name }))
+    (s.tools ?? []).map(t => ({ ...t, server: s.name }))
   );
   const totalToolCount = servers.reduce((sum, s) => {
-    const count = typeof s.toolCount === 'number' ? s.toolCount : s.tools.length;
+    const count = typeof s.toolCount === 'number' ? s.toolCount : (s.tools?.length ?? 0);
     return sum + count;
   }, 0);
   const totalCalls = allTools.reduce((sum, t) => sum + t.calls, 0);
@@ -286,19 +286,19 @@ export function useSystemHealth() {
   const healthStatus: HealthStatus | null = healthDashboard ? {
     api: {
       healthy: healthDashboard.status === 'healthy',
-      latency: healthDashboard.performance.avgLatencyMs,
+      latency: healthDashboard.performance?.avgLatencyMs ?? 0,
     },
     database: {
-      healthy: healthDashboard.services.queue.status === 'healthy',
+      healthy: healthDashboard.services?.queue?.status === 'healthy',
       latency: 10, // Not directly available
     },
     llm: {
       healthy: llmHealth
-        ? (llmHealth.claude.available || llmHealth.openai.available)
-        : healthDashboard.performance.executionSuccessRate > 50,
+        ? (llmHealth.claude?.available || llmHealth.openai?.available || false)
+        : (healthDashboard.performance?.executionSuccessRate ?? 0) > 50,
       providers: {
-        claude: llmHealth?.claude.available ?? false,
-        openai: llmHealth?.openai.available ?? false,
+        claude: llmHealth?.claude?.available ?? false,
+        openai: llmHealth?.openai?.available ?? false,
       },
     },
     mcp: {
@@ -321,11 +321,11 @@ export function useSystemMetrics() {
   });
 
   const metrics: SystemMetrics | null = (overview || healthDashboard) ? {
-    uptime: healthDashboard?.resources.uptimeSeconds || overview?.health?.uptime || 0,
-    avgLatency: realtime?.avgLatencyMs || healthDashboard?.performance.avgLatencyMs || overview?.summary.avgLatency || 0,
+    uptime: healthDashboard?.resources?.uptimeSeconds || overview?.health?.uptime || 0,
+    avgLatency: realtime?.avgLatencyMs || healthDashboard?.performance?.avgLatencyMs || overview?.summary?.avgLatency || 0,
     requestsPerMinute: realtime?.requestsPerMinute || 0,
-    errorRate: overview?.summary.errorRate || 0,
-    queueSize: healthDashboard?.services.queue.pending || realtime?.activeExecutions || 0,
+    errorRate: overview?.summary?.errorRate || 0,
+    queueSize: healthDashboard?.services?.queue?.pending || realtime?.activeExecutions || 0,
     activeConnections: realtime?.activeExecutions || 0,
   } : null;
 

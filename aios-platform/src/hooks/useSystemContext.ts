@@ -7,6 +7,7 @@ export interface RuleEntry {
 }
 
 export interface AgentEntry {
+  id: string;
   name: string;
   role: string;
   model: string;

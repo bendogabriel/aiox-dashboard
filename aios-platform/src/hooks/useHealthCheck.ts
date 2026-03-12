@@ -13,7 +13,7 @@ const probes: Record<IntegrationId, () => Promise<{ ok: boolean; msg: string }>>
     let url = getEngineUrl();
     if (!url) {
       clearDiscoveryCache();
-      url = await discoverEngineUrl();
+      url = await discoverEngineUrl() ?? undefined;
     }
     if (!url) return { ok: false, msg: 'No engine found' };
 
@@ -24,7 +24,7 @@ const probes: Record<IntegrationId, () => Promise<{ ok: boolean; msg: string }>>
       clearTimeout(timer);
       if (!res.ok) return { ok: false, msg: `HTTP ${res.status}` };
       const data = (await res.json()) as { status: string; version?: string };
-      return { ok: data.status === 'ok', msg: data.version ? `v${data.version}` : 'Connected' };
+      return { ok: data.status === 'ok' || data.status === 'healthy', msg: data.version ? `v${data.version}` : 'Connected' };
     } catch {
       clearTimeout(timer);
       return { ok: false, msg: 'Unreachable' };

@@ -23,10 +23,10 @@ export const INTEGRATION_DOCS: Record<IntegrationId, IntegrationDoc> = {
     name: 'AIOS Engine',
     description: 'The core execution engine for agents and workflows. Required for most platform features.',
     steps: [
-      'Start the engine: docker compose up engine or npm run engine:start',
-      'Engine runs on port 3001 by default',
+      'Start the engine: cd engine && bun run src/index.ts',
+      'Engine runs on port 4002 by default',
       'Set VITE_ENGINE_URL in .env if using a non-default URL',
-      'Dashboard auto-discovers engine on localhost:3001-3010',
+      'Dashboard auto-discovers engine on localhost ports 3000, 3001, 4002, 4001, 8002',
     ],
     envVars: [
       { name: 'VITE_ENGINE_URL', description: 'Engine HTTP API URL', required: false },
@@ -34,7 +34,7 @@ export const INTEGRATION_DOCS: Record<IntegrationId, IntegrationDoc> = {
       { name: 'ENGINE_SECRET', description: 'Shared secret for auth', required: false },
     ],
     troubleshooting: [
-      { problem: 'Engine not found', solution: 'Check if engine is running with docker ps or curl http://localhost:3001/health' },
+      { problem: 'Engine not found', solution: 'Check if engine is running with curl http://localhost:4002/health' },
       { problem: 'Connection refused', solution: 'Verify port mapping in docker-compose.yml and firewall rules' },
       { problem: 'Timeout on health check', solution: 'Engine may be starting up. Wait 10s and retry.' },
     ],

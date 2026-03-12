@@ -16,7 +16,7 @@ const HEALTH_TIMEOUT_MS = 3_000;
  */
 export function useEngineConnection() {
   const { status, url, health, failCount, setOnline, setOffline, setDiscovering } = useEngineStore();
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mountedRef = useRef(true);
 
   const checkHealth = useCallback(async (engineUrl: string): Promise<boolean> => {

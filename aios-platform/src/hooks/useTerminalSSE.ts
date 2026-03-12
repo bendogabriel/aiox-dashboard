@@ -14,6 +14,9 @@ interface UseTerminalSSEOptions {
 export function useTerminalSSE({ sessionId, agentId, enabled = true }: UseTerminalSSEOptions) {
   const { appendOutput, clearOutput, setSessionStatus } = useTerminalStore();
   const eventSourceRef = useRef<EventSource | null>(null);
+  const reconnectAttemptRef = useRef(0);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const MAX_RECONNECT_ATTEMPTS = 5;
 
   const connect = useCallback(() => {
     if (eventSourceRef.current) {
@@ -28,12 +31,21 @@ export function useTerminalSSE({ sessionId, agentId, enabled = true }: UseTermin
 
     es.onopen = () => {
       setSessionStatus(sessionId, 'working');
+      reconnectAttemptRef.current = 0; // Reset on successful connect
     };
 
     es.onerror = () => {
-      setSessionStatus(sessionId, 'error');
       es.close();
       eventSourceRef.current = null;
+      // Auto-reconnect with exponential backoff
+      if (reconnectAttemptRef.current < MAX_RECONNECT_ATTEMPTS) {
+        const attempt = reconnectAttemptRef.current++;
+        const delay = Math.min(1000 * Math.pow(2, attempt), 15000);
+        setSessionStatus(sessionId, 'connecting');
+        reconnectTimerRef.current = setTimeout(connect, delay);
+      } else {
+        setSessionStatus(sessionId, 'error');
+      }
     };
 
     // log:init — clear old lines on (re)connect

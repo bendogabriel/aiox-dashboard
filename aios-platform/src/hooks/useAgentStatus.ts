@@ -174,7 +174,7 @@ export function useAgentStatus(options: UseAgentStatusOptions = {}): UseAgentSta
   }, [data]);
 
   const activity = useMemo<AgentActivityEntry[]>(() => {
-    if (!data || data.activity.length === 0) return [];
+    if (!data?.activity?.length) return [];
     return data.activity.map(mapActivityToEntry);
   }, [data]);
 

@@ -240,16 +240,19 @@ export const workflowsApi = {
                   break;
                 case 'execution:completed':
                   callbacks?.onExecutionCompleted?.(data);
+                  reader?.cancel().catch(() => {});
                   resolve();
-                  break;
+                  return;
                 case 'execution:failed':
                   callbacks?.onExecutionFailed?.(data);
+                  reader?.cancel().catch(() => {});
                   resolve();
-                  break;
+                  return;
                 case 'error':
                   callbacks?.onError?.(data.error || data.message || 'Unknown error');
+                  reader?.cancel().catch(() => {});
                   reject(new Error(data.error || data.message || 'Unknown error'));
-                  break;
+                  return;
               }
             } catch (e) {
               console.error('[SSE] Failed to parse event data:', dataStr, e);
@@ -401,16 +404,19 @@ export const workflowsApi = {
                   break;
                 case 'execution:completed':
                   callbacks?.onExecutionCompleted?.(data);
+                  reader?.cancel().catch(() => {});
                   resolve();
-                  break;
+                  return;
                 case 'execution:failed':
                   callbacks?.onExecutionFailed?.(data);
+                  reader?.cancel().catch(() => {});
                   resolve();
-                  break;
+                  return;
                 case 'error':
                   callbacks?.onError?.(data.error || data.message || 'Unknown error');
+                  reader?.cancel().catch(() => {});
                   reject(new Error(data.error || data.message || 'Unknown error'));
-                  break;
+                  return;
               }
             } catch (e) {
               console.error('[Orchestration SSE] Failed to parse event data:', dataStr, e);

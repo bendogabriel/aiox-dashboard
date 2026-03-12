@@ -38,7 +38,7 @@ export function useTaskLiveMission() {
   const startTimeRef = useRef<number>(0);
   const reconnectAttemptRef = useRef(0);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const MAX_RECONNECT_ATTEMPTS = 3;
+  const MAX_RECONNECT_ATTEMPTS = 10;
 
   const close = useCallback(() => {
     if (reconnectTimerRef.current) {

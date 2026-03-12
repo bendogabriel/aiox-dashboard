@@ -67,7 +67,7 @@ export const supabaseSettingsService = {
         .from('user_settings')
         .select('value')
         .eq('id', key)
-        .single();
+        .maybeSingle();
 
       if (error) {
         if (error.code === '42P01' || error.message?.includes('does not exist')) {

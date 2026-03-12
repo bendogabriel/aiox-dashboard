@@ -167,6 +167,30 @@ export const useChatStore = create<ChatState & ChatActions>()(
         })),
         activeSessionId: state.activeSessionId,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        // Clean up stuck streaming messages from previous sessions.
+        // Messages persisted with isStreaming: true will never receive
+        // more data — mark them as failed so they don't show "..." forever.
+        let dirty = false;
+        const cleaned = state.sessions.map(session => {
+          const msgs = session.messages.map(msg => {
+            if (msg.isStreaming) {
+              dirty = true;
+              return {
+                ...msg,
+                isStreaming: false,
+                content: msg.content || '*[Resposta não recebida — tente novamente]*',
+              };
+            }
+            return msg;
+          });
+          return dirty ? { ...session, messages: msgs } : session;
+        });
+        if (dirty) {
+          useChatStore.setState({ sessions: cleaned });
+        }
+      },
     }
   )
 );

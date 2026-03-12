@@ -66,6 +66,7 @@ export function useMonitorSSE() {
 
   /** Fall back to WebSocket connection, then demo data */
   const fallbackToWS = useCallback(() => {
+    cleanupSSE(); // Ensure SSE is fully torn down before WS fallback
     console.debug('[MonitorSSE] Attempting WebSocket fallback...');
     const store = useMonitorStore.getState();
     store.connectToMonitor();
@@ -80,7 +81,7 @@ export function useMonitorSSE() {
         useMonitorStore.setState({ connectionSource: 'ws' });
       }
     }, 3000);
-  }, []);
+  }, [cleanupSSE]);
 
   /** Seed demo events when both SSE and WS are unavailable */
   const seedDemoData = useCallback(() => {

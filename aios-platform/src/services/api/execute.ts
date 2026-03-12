@@ -1,4 +1,5 @@
 import { apiClient, StreamCallbacks } from './client';
+import { getEngineUrl } from '../../lib/connection';
 import type {
   ExecuteRequest,
   ExecuteResponse,
@@ -20,12 +21,19 @@ export const executeApi = {
   },
 
   // Execute agent with streaming (SSE)
-  // POST /api/execute/agent/stream
+  // Prefers engine (Claude CLI) at /stream/agent when available,
+  // falls back to Fastify backend at /execute/agent/stream
   executeAgentStream: async (
     request: Omit<ExecuteRequest, 'options'>,
     callbacks: StreamCallbacks,
     signal?: AbortSignal
   ): Promise<void> => {
+    const engineUrl = getEngineUrl();
+    if (engineUrl) {
+      // Engine uses Claude CLI for real streaming at /stream/agent
+      return apiClient.streamAbsolute(`${engineUrl}/stream/agent`, request, callbacks, signal);
+    }
+    // Fallback: Fastify backend (LLM API-based, no Claude CLI)
     return apiClient.stream('/execute/agent/stream', request, callbacks, signal);
   },
 

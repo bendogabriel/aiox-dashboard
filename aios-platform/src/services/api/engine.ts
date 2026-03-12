@@ -1,16 +1,19 @@
 import { getEngineUrl } from '../../lib/connection';
 
 // ============================================================
-// Engine API Client — Direct access to AIOS Execution Engine
-// Connects to Bun/Hono server at VITE_ENGINE_URL (default 4002)
+// Engine API Client — Access to AIOS Engine (Bun/Hono on port 4002)
+// Routes have NO /api prefix — paths are used as-is (e.g. /health, /jobs).
 // ============================================================
 
 const ENGINE_BASE = () => getEngineUrl() || '';
 
+/**
+ * Fetch from the engine server (Hono on port 4002).
+ * Engine routes have NO /api prefix — paths are used as-is.
+ */
 async function engineFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const base = ENGINE_BASE();
   if (!base) {
-    // No engine URL configured — return empty/mock data instead of calling localhost
     throw Object.assign(new Error('Engine not configured'), {
       status: 0,
       isNetworkError: true,
@@ -24,7 +27,6 @@ async function engineFetch<T>(path: string, options?: RequestInit): Promise<T> {
       ...options,
     });
   } catch (err) {
-    // Network error — engine unreachable
     throw Object.assign(new Error('Engine unreachable'), {
       status: 0,
       isNetworkError: true,
@@ -149,7 +151,7 @@ export const engineApi = {
       body: JSON.stringify({ size }),
     }),
 
-  // Jobs
+  // Jobs — Fastify route: /api/jobs
   listJobs: (params?: { status?: string; limit?: number }) => {
     const qs = new URLSearchParams();
     if (params?.status) qs.set('status', params.status);
@@ -162,7 +164,7 @@ export const engineApi = {
     engineFetch<{ logs: string[]; hasMore: boolean }>(`/jobs/${id}/logs?tail=${tail}`),
   cancelJob: (id: string) => engineFetch<{ status: string }>(`/jobs/${id}`, { method: 'DELETE' }),
 
-  // Execute
+  // Execute — Fastify route: /api/execute
   executeAgent: (data: {
     squadId: string;
     agentId: string;
@@ -178,7 +180,7 @@ export const engineApi = {
     }),
   }),
 
-  // Workflows
+  // Workflows — Fastify route: /api/execute/workflows
   listWorkflowDefs: () => engineFetch<{ workflows: WorkflowDef[] }>('/execute/workflows'),
   startWorkflow: (data: {
     workflowId: string;
@@ -193,13 +195,13 @@ export const engineApi = {
   listActiveWorkflows: () =>
     engineFetch<{ workflows: WorkflowState[] }>('/execute/orchestrate/active'),
 
-  // Webhooks
+  // Webhooks — Fastify route: /api/webhooks
   triggerOrchestrator: (data: {
     message: string;
     callback_url?: string;
     priority?: number;
   }) => engineFetch<{ job_id: string; routed_to: { squad: string; agent: string } }>(
-    '/webhook/orchestrator',
+    '/webhooks/orchestrator',
     { method: 'POST', body: JSON.stringify(data) },
   ),
   triggerSquad: (squadId: string, data: {
@@ -207,11 +209,11 @@ export const engineApi = {
     agentId?: string;
     callback_url?: string;
   }) => engineFetch<{ job_id: string; squad_id: string; agent_id: string }>(
-    `/webhook/${squadId}`,
+    `/webhooks/${squadId}`,
     { method: 'POST', body: JSON.stringify(data) },
   ),
 
-  // Cron
+  // Cron/Scheduler — Fastify route: /api/scheduler
   listCrons: () => engineFetch<{ crons: CronJobDef[] }>('/cron'),
   createCron: (data: {
     name: string;
@@ -236,7 +238,7 @@ export const engineApi = {
     }),
   deleteCron: (id: string) => engineFetch<{ status: string }>(`/cron/${id}`, { method: 'DELETE' }),
 
-  // Memory
+  // Memory — Fastify route: /api/memory
   storeMemory: (scope: string, data: { content: string; metadata?: Record<string, unknown> }) =>
     engineFetch<{ id: string }>(`/memory/${scope}`, {
       method: 'POST',
@@ -256,7 +258,7 @@ export const engineApi = {
     );
   },
 
-  // Authority
+  // Authority — Fastify route: /api/audit
   checkAuthority: (agentId: string, operation: string, squadId: string) =>
     engineFetch<AuthorityCheckResult>('/authority/check', {
       method: 'POST',
@@ -264,7 +266,7 @@ export const engineApi = {
     }),
   getAuditLog: (limit?: number) =>
     engineFetch<{ entries: Array<Record<string, unknown>> }>(
-      `/authority/audit${limit ? `?limit=${limit}` : ''}`,
+      `/audit${limit ? `?limit=${limit}` : ''}`,
     ),
   reloadAuthority: () =>
     engineFetch<{ status: string }>('/authority/reload', { method: 'POST' }),
@@ -278,7 +280,7 @@ export const engineApi = {
       body: JSON.stringify({ bundleId }),
     }),
 
-  // Registry (project data — portable mode)
+  // Registry — Fastify routes: /api/agents, /api/squads, /api/workflows, /api/tasks
   getProjectInfo: () =>
     engineFetch<{
       projectRoot: string;
@@ -303,7 +305,7 @@ export const engineApi = {
       }>;
       count: number;
       projectRoot: string;
-    }>('/registry/squads'),
+    }>('/squads'),
 
   getRegistryAgents: (squad?: string) => {
     const qs = squad ? `?squad=${encodeURIComponent(squad)}` : '';
@@ -317,7 +319,7 @@ export const engineApi = {
         filePath: string;
       }>;
       count: number;
-    }>(`/registry/agents${qs}`);
+    }>(`/agents${qs}`);
   },
 
   getRegistryAgent: (squadId: string, agentId: string) =>
@@ -329,21 +331,21 @@ export const engineApi = {
       description?: string;
       content: string;
       filePath: string;
-    }>(`/registry/agents/${squadId}/${agentId}`),
+    }>(`/agents/${squadId}/${agentId}`),
 
   getRegistryWorkflows: () =>
     engineFetch<{
       workflows: Array<{ id: string; name: string; description: string; phases: number; file: string }>;
       count: number;
-    }>('/registry/workflows'),
+    }>('/workflows'),
 
   getRegistryTasks: () =>
     engineFetch<{
       tasks: Array<{ id: string; name: string; file: string }>;
       count: number;
-    }>('/registry/tasks'),
+    }>('/tasks'),
 
-  // Integrations
+  // Integrations — Fastify route: /api/integrations
   listIntegrations: () =>
     engineFetch<Array<{
       id: string;
@@ -367,23 +369,23 @@ export const engineApi = {
       body: JSON.stringify(data),
     }),
 
-  // Secrets vault
+  // Secrets vault — Fastify route: /api/secrets
   listSecrets: (integrationId?: string) => {
     const qs = integrationId ? `?integration=${encodeURIComponent(integrationId)}` : '';
     return engineFetch<Array<{ key: string; integration_id: string | null; updated_at: string }>>(
-      `/integrations/secrets/list${qs}`,
+      `/secrets/list${qs}`,
     );
   },
 
   storeSecret: (key: string, value: string, integration?: string) =>
-    engineFetch<{ ok: boolean; key: string }>('/integrations/secrets', {
+    engineFetch<{ ok: boolean; key: string }>('/secrets', {
       method: 'POST',
       body: JSON.stringify({ key, value, integration }),
     }),
 
   getSecretPreview: (key: string) =>
-    engineFetch<{ key: string; exists: boolean; preview: string }>(`/integrations/secrets/${key}`),
+    engineFetch<{ key: string; exists: boolean; preview: string }>(`/secrets/${key}`),
 
   deleteSecretKey: (key: string) =>
-    engineFetch<{ ok: boolean }>(`/integrations/secrets/${key}`, { method: 'DELETE' }),
+    engineFetch<{ ok: boolean }>(`/secrets/${key}`, { method: 'DELETE' }),
 };

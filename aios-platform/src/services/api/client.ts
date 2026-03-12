@@ -438,8 +438,14 @@ class ApiClient {
       return;
     }
 
+    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      const streamUrl = `${this.baseUrl}${endpoint}`;
+      if (import.meta.env.DEV) {
+        console.log('[Stream] POST', streamUrl, data);
+      }
+
+      const response = await fetch(streamUrl, {
         method: 'POST',
         headers: {
           ...this.headers,
@@ -450,17 +456,28 @@ class ApiClient {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        const errorText = await response.text().catch(() => '');
+        let errorMessage: string;
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || errorData.error || `HTTP ${response.status}`;
+        } catch {
+          errorMessage = errorText || `HTTP error! status: ${response.status}`;
+        }
+        if (import.meta.env.DEV) {
+          console.error('[Stream] HTTP error:', response.status, errorMessage);
+        }
+        throw new Error(errorMessage);
       }
 
-      const reader = response.body?.getReader();
+      reader = response.body?.getReader();
       if (!reader) {
         throw new Error('No response body');
       }
 
       const decoder = new TextDecoder();
       let buffer = '';
+      let streamTerminated = false;
 
       while (true) {
         if (signal?.aborted) {
@@ -501,9 +518,11 @@ class ApiClient {
                   onTools?.(parsed as StreamToolsEvent);
                   break;
                 case 'done':
+                  streamTerminated = true;
                   onDone?.(parsed as StreamDoneEvent);
                   return;
                 case 'error':
+                  streamTerminated = true;
                   onError?.(parsed as StreamErrorEvent);
                   return;
                 default:
@@ -515,16 +534,49 @@ class ApiClient {
               if (dataStr && dataStr !== '[DONE]') {
                 onText?.({ content: dataStr });
               }
-              if (dataStr === '[DONE]') return;
+              if (dataStr === '[DONE]') {
+                streamTerminated = true;
+                return;
+              }
             }
 
             currentEvent = '';
           }
         }
       }
+
+      // Stream body closed without a done/error event — fire error as cleanup
+      // so the mutation promise resolves and isStreaming gets reset
+      if (!streamTerminated) {
+        if (import.meta.env.DEV) {
+          console.warn('[Stream] Closed without done/error event. Remaining buffer:', buffer);
+        }
+        onError?.({ error: 'Stream encerrada sem resposta do servidor' });
+      }
     } catch (error) {
-      if ((error as Error).name === 'AbortError') return;
+      if ((error as Error).name === 'AbortError') {
+        // Explicitly cancel reader on abort to free resources
+        try { reader?.cancel(); } catch { /* already closed */ }
+        return;
+      }
       onError?.({ error: (error as Error).message });
+    }
+  }
+
+  /** Stream to an absolute URL (bypasses baseUrl). Reuses stream() internals. */
+  async streamAbsolute(
+    absoluteUrl: string,
+    data: unknown,
+    callbacks: StreamCallbacks,
+    signal?: AbortSignal
+  ): Promise<void> {
+    // Temporarily swap baseUrl so stream() builds the correct URL
+    const saved = this.baseUrl;
+    this.baseUrl = '';
+    try {
+      await this.stream(absoluteUrl, data, callbacks, signal);
+    } finally {
+      this.baseUrl = saved;
     }
   }
 }

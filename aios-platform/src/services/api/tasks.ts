@@ -23,12 +23,23 @@ export interface TaskWorkflow {
   stepCount: number;
 }
 
+export interface TaskArtifact {
+  id: string;
+  type: 'markdown' | 'code' | 'diagram' | 'data' | 'table';
+  language?: string;
+  filename?: string;
+  title?: string;
+  content: string;
+  lineRange?: [number, number];
+}
+
 export interface TaskOutput {
   stepId: string;
   stepName: string;
   output: {
     content?: string;
     response?: string;
+    artifacts?: TaskArtifact[];
     agent?: {
       id: string;
       name: string;
