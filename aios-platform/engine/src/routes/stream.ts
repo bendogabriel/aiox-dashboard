@@ -91,9 +91,11 @@ stream.post('/agent', async (c) => {
       });
 
       // Build CLI args — stream-json for real-time output
+      // --verbose is REQUIRED with --output-format stream-json in -p mode
       const args: string[] = ['claude'];
       args.push('-p', context.prompt);
       args.push('--output-format', 'stream-json');
+      args.push('--verbose');
 
       const cwd = workspace?.path || job.workspace_dir || process.cwd();
 
@@ -129,6 +131,8 @@ stream.post('/agent', async (c) => {
       let buffer = '';
       let stepCount = 0;
       let fullOutput = '';
+      let gotDeltas = false;
+      let gotAssistantText = false;
 
       try {
         while (true) {
@@ -150,19 +154,39 @@ stream.post('/agent', async (c) => {
             try {
               const parsed = JSON.parse(line);
               const sseEvent = mapClaudeStreamToSSE(parsed, ++stepCount);
-              if (sseEvent) {
-                await sseStream.writeSSE(sseEvent);
+
+              // Deduplication: Claude CLI emits overlapping events.
+              // Priority: content_block_delta > assistant > result
+              // In -p mode: assistant + result (both full text, no deltas)
+              // In interactive mode: deltas + assistant + result
+              // Send the FIRST source only, skip duplicates.
+              let shouldSend = !!sseEvent;
+              if (shouldSend) {
+                if (parsed.type === 'assistant') {
+                  if (gotDeltas) shouldSend = false; // deltas already streamed
+                  else gotAssistantText = true;
+                } else if (parsed.type === 'result') {
+                  if (gotDeltas || gotAssistantText) shouldSend = false;
+                }
               }
 
-              // Accumulate text for full output
-              if (parsed.type === 'assistant' && parsed.message?.content) {
-                for (const block of parsed.message.content) {
-                  if (block.type === 'text') {
-                    fullOutput += block.text;
-                  }
-                }
-              } else if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+              if (shouldSend) {
+                await sseStream.writeSSE(sseEvent!);
+              }
+
+              // Accumulate text for full output (single source only).
+              if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
                 fullOutput += parsed.delta.text;
+                gotDeltas = true;
+              } else if (parsed.type === 'assistant' && !gotDeltas) {
+                // In -p mode, assistant contains the full text
+                const texts = parsed.message?.content
+                  ?.filter((b: { type: string }) => b.type === 'text')
+                  .map((b: { text?: string }) => b.text || '')
+                  .join('') ?? '';
+                if (texts) fullOutput = texts; // replace, don't append
+              } else if (parsed.type === 'result' && parsed.result && !gotDeltas && !gotAssistantText) {
+                fullOutput += String(parsed.result);
               }
             } catch {
               // Not JSON — treat as raw text

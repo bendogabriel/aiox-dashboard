@@ -146,9 +146,25 @@ execute.get('/stats', (c) => {
   });
 });
 
-// GET /execute/llm/health — stub for frontend compatibility
+// GET /execute/llm/health — returns LLMHealth format for frontend
 execute.get('/llm/health', (c) => {
-  return c.json({ status: 'ok', provider: 'claude-cli', model: 'claude-max' });
+  const hasClaudeKey = !!(process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY);
+  const hasOpenaiKey = !!process.env.OPENAI_API_KEY;
+
+  // Also check if Claude CLI is available (uses OAuth, doesn't need API key env var)
+  let hasClaudeCLI = false;
+  if (!hasClaudeKey) {
+    try {
+      const check = Bun.spawnSync(['claude', '--version'], { stdout: 'pipe', stderr: 'pipe' });
+      hasClaudeCLI = check.exitCode === 0;
+    } catch { /* not installed */ }
+  }
+
+  const claudeAvailable = hasClaudeKey || hasClaudeCLI;
+  return c.json({
+    claude: { available: claudeAvailable, error: claudeAvailable ? undefined : 'Claude CLI not found' },
+    openai: { available: hasOpenaiKey, error: hasOpenaiKey ? undefined : 'API key not configured' },
+  });
 });
 
 // GET /execute/llm/models — stub

@@ -2,7 +2,7 @@ import { readFileSync, existsSync } from 'fs';
 import { createHash } from 'crypto';
 import { aiosCorePath, squadsPath } from '../lib/config';
 import { log } from '../lib/logger';
-import { recallMemories } from './memory-client';
+import { recallMemories, recallMemoriesLocal, type RecalledMemory } from './memory-client';
 import type { EngineConfig, Job } from '../types';
 
 // Agent .md file format:
@@ -43,25 +43,39 @@ export async function buildContext(job: Job): Promise<BuiltContext> {
   // 1. Load agent CLAUDE.md
   const agentMeta = loadAgentFile(job.agent_id, job.squad_id);
 
-  // 2. Recall memories
+  // 2. Recall memories (with timeout to avoid blocking on slow MCP subprocesses)
   let memories = '';
   let memoriesUsed = 0;
   try {
-    const recalled = await recallMemories(message, [
-      'global',
-      `squad:${job.squad_id}`,
-      `agent:${job.agent_id}`,
-    ], config.memory.recall_top_k);
+    const MEMORY_TIMEOUT_MS = 3_000;
+    const recalled = await Promise.race([
+      recallMemories(message, [
+        'global',
+        `squad:${job.squad_id}`,
+        `agent:${job.agent_id}`,
+      ], config.memory.recall_top_k),
+      new Promise<RecalledMemory[]>((_, reject) =>
+        setTimeout(() => reject(new Error('Memory recall timeout')), MEMORY_TIMEOUT_MS)
+      ),
+    ]);
 
     if (recalled.length > 0) {
       memories = formatMemories(recalled);
       memoriesUsed = recalled.length;
     }
   } catch (err) {
-    log.warn('Memory recall failed, proceeding without memories', {
+    log.warn('Memory recall failed/timed out, trying local fallback', {
       jobId: job.id,
       error: err instanceof Error ? err.message : String(err),
     });
+    // Fallback to local SQLite memory (instant, no subprocess)
+    try {
+      const localMemories = recallMemoriesLocal(`agent:${job.agent_id}`, config.memory.recall_top_k);
+      if (localMemories.length > 0) {
+        memories = formatMemories(localMemories);
+        memoriesUsed = localMemories.length;
+      }
+    } catch { /* ignore local fallback errors */ }
   }
 
   // 3. Load squad context (if exists)

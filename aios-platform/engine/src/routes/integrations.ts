@@ -23,6 +23,24 @@ integrations.get('/', (c) => {
   return c.json(rows.map((r) => ({ ...r, config: JSON.parse(r.config) })));
 });
 
+// GET /integrations/health — summary health for all integrations
+integrations.get('/health', (c) => {
+  const db = getDb();
+  const rows = db.query<IntegrationRow, []>('SELECT * FROM integrations ORDER BY id').all();
+  const integrationsList = rows.map((r) => ({
+    id: r.id,
+    status: r.status,
+    lastChecked: r.last_checked,
+  }));
+  const connected = integrationsList.filter((i) => i.status === 'connected').length;
+  return c.json({
+    integrations: integrationsList,
+    total: integrationsList.length,
+    connected,
+    healthy: connected === integrationsList.length && integrationsList.length > 0,
+  });
+});
+
 // GET /integrations/:id
 integrations.get('/:id', (c) => {
   const db = getDb();

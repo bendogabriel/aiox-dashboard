@@ -5,7 +5,7 @@
 # Empty = auto-detect by walking up from engine dir looking for .aios-core/
 # Set to absolute path to point engine at a specific project.
 project:
-  root: ""                       # auto-detect if empty
+  root: "/Users/rafaelcosta/Downloads/apps"  # project root where .aios-core/ and squads/ live
   aios_core: ".aios-core"       # relative to root
   squads: "squads"              # relative to root
   rules: ".claude/rules"        # relative to root
@@ -18,7 +18,9 @@ server:
     - "http://localhost:5174"
     - "http://localhost:5175"
     - "http://localhost:5176"
-    - "http://localhost:3000"
+    - "http://localhost:4002"
+    # Production: add your domain here or set CORS_ORIGINS env var
+    # - "https://your-domain.com"
 
 pool:
   max_concurrent: 5          # max CLI processes (overridden by min(CPU_CORES, this))
