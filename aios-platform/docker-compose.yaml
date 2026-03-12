@@ -2,16 +2,19 @@
 # AIOS Platform — Docker Compose
 # ============================================================
 #
-# Quick start:
-#   docker compose up                     # Engine + Dashboard only
-#   docker compose --profile messaging up # + WhatsApp (WAHA)
-#   docker compose --profile full up      # Everything
+# Quick start (dev):
+#   docker compose up                        # Engine + Dashboard only
+#   docker compose --profile messaging up    # + WhatsApp (WAHA)
+#
+# Production (VPS):
+#   docker compose --profile production up -d
+#   docker compose --profile full up -d      # + WhatsApp + Nginx
 #
 # Mount your project directory:
 #   AIOS_PROJECT_ROOT=/path/to/project docker compose up
 #
 # Environment:
-#   Copy .env.example → .env and engine/.env.example → engine/.env
+#   Copy .env.example → .env and fill in your values.
 #   Docker reads from .env automatically.
 # ============================================================
 
@@ -34,7 +37,9 @@ services:
       - ENGINE_HOST=0.0.0.0
       - AIOS_PROJECT_ROOT=/project
       - AIOS_DASHBOARD_DIR=/app/dist
-      - ENGINE_SECRET=${ENGINE_SECRET:-aios-dev-secret-change-in-production}
+      - ENGINE_SECRET=${ENGINE_SECRET:?Set ENGINE_SECRET in .env}
+      # CORS — comma-separated origins (empty = same-origin only)
+      - CORS_ORIGINS=${CORS_ORIGINS:-}
       # Google OAuth (optional)
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
@@ -55,6 +60,11 @@ services:
       retries: 3
     networks:
       - aios-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # ── WAHA — WhatsApp self-hosted (opt-in) ─────────────────
   waha:
@@ -77,26 +87,54 @@ services:
       retries: 3
     networks:
       - aios-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  # ── Nginx reverse proxy (opt-in for production) ──────────
+  # ── Nginx reverse proxy (production) ────────────────────
   nginx:
     image: nginx:alpine
     container_name: aios-nginx
     profiles: ["production", "full"]
     ports:
-      - "${NGINX_PORT:-80}:80"
+      - "80:80"
+      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - certbot-conf:/etc/letsencrypt:ro
+      - certbot-www:/var/www/certbot:ro
     depends_on:
       aios:
         condition: service_healthy
     restart: unless-stopped
     networks:
       - aios-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── Certbot — auto SSL renewal (production) ─────────────
+  certbot:
+    image: certbot/certbot
+    container_name: aios-certbot
+    profiles: ["production", "full"]
+    volumes:
+      - certbot-conf:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    # Renew certs every 12h (certbot only renews if needed)
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --quiet; sleep 12h & wait $${!}; done;'"
+    networks:
+      - aios-net
 
 volumes:
   aios-data:
   waha-data:
+  certbot-conf:
+  certbot-www:
 
 networks:
   aios-net:

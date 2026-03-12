@@ -1,12 +1,44 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { readFileSync, existsSync } from 'fs';
+import { resolve } from 'path';
 
 // Check if running in Storybook
 const isStorybook = process.argv[1]?.includes('storybook');
 
+// Read .env.local overrides that should win over shell env vars
+function readLocalEnvOverrides(): Record<string, string> {
+  const overrides: Record<string, string> = {};
+  for (const f of ['.env.local', `.env.${process.env.NODE_ENV || 'development'}`]) {
+    const p = resolve(__dirname, f);
+    if (!existsSync(p)) continue;
+    for (const line of readFileSync(p, 'utf-8').split('\n')) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const eq = trimmed.indexOf('=');
+      if (eq < 1) continue;
+      const key = trimmed.slice(0, eq).trim();
+      const val = trimmed.slice(eq + 1).trim();
+      overrides[key] = val;
+    }
+  }
+  return overrides;
+}
+
+const localOverrides = readLocalEnvOverrides();
+
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(() => {
+  // Build define map to force .env.local values over shell env
+  const envDefine: Record<string, string> = {};
+  for (const [key, val] of Object.entries(localOverrides)) {
+    if (key.startsWith('VITE_')) {
+      envDefine[`import.meta.env.${key}`] = JSON.stringify(val);
+    }
+  }
+
+  return {
   plugins: [
     react(),
     !isStorybook && VitePWA({
@@ -106,9 +138,10 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/fal-proxy/, ''),
       },
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:4002',
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''),
         // Configure for SSE streaming
         configure: (proxy) => {
           proxy.on('proxyReq', (proxyReq, req) => {
@@ -197,4 +230,7 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react', 'react-dom', 'lucide-react', 'framer-motion', '@tanstack/react-query', 'zustand'],
   },
+  // Force .env.local values over conflicting shell env vars
+  define: envDefine,
+};
 });
