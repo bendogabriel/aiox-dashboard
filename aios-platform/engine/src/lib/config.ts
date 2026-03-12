@@ -79,10 +79,11 @@ export function loadConfig(): EngineConfig {
     config = deepMerge(DEFAULTS as EngineConfig & Record<string, unknown>, parsed) as EngineConfig;
 
     // Initialize ProjectResolver from config's project section if present
+    // AIOS_PROJECT_ROOT env var overrides config file (highest priority for project root)
     const projectConfig = (parsed as Record<string, Record<string, string>>).project;
     if (projectConfig) {
       initProjectResolver({
-        projectRoot: projectConfig.root || undefined,
+        projectRoot: process.env.AIOS_PROJECT_ROOT || projectConfig.root || undefined,
         aiosCoreDir: projectConfig.aios_core || undefined,
         squadsDir: projectConfig.squads || undefined,
         rulesDir: projectConfig.rules || undefined,
@@ -96,6 +97,9 @@ export function loadConfig(): EngineConfig {
   }
   if (process.env.ENGINE_HOST) {
     config.server.host = process.env.ENGINE_HOST;
+  }
+  if (process.env.CORS_ORIGINS) {
+    config.server.cors_origins = process.env.CORS_ORIGINS.split(',').map(s => s.trim());
   }
 
   return config;
