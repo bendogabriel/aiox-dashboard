@@ -1,9 +1,0 @@
-/* Sidebar Component Tokens */
-:root {
-  --sidebar-active-bg: rgba(59, 130, 246, 0.1);
-  --sidebar-active-border: rgba(59, 130, 246, 0.3);
-  --sidebar-active-text: #3b82f6;
-  --sidebar-active-kbd-bg: rgba(59, 130, 246, 0.2);
-  --sidebar-active-kbd-text: #60a5fa;
-  --sidebar-logo-gradient: linear-gradient(to bottom right, #3b82f6, #a855f7, #ec4899);
-}

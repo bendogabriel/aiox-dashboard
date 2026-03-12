@@ -1,7 +1,0 @@
-/* PageLoader Component Tokens */
-:root {
-  --loader-ring: rgba(59, 130, 246, 0.2);
-  --loader-arc: #3b82f6;
-  --loader-dot-from: #3b82f6;
-  --loader-dot-to: #a855f7;
-}

@@ -1,1 +1,0 @@
-export { InsightsPanel } from './InsightsPanel';
