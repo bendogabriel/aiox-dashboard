@@ -15,9 +15,11 @@ import {
   XCircle,
 } from 'lucide-react';
 import { AgentOutputCard } from './AgentOutputCard';
+import { ExportPanel } from './ExportPanel';
 import type { TaskEvent } from './orchestration-types';
 import { getSquadColor, statusLabel, formatDuration, formatTimeAgo } from './orchestration-types';
 import { tasksApi } from '../../services/api/tasks';
+import { supabaseTasksService } from '../../services/supabase/tasks';
 import type { Task, TaskOutput, TaskSquadSelection } from '../../services/api/tasks';
 
 export const EventsPanel = memo(function EventsPanel({ events, isActive }: { events: TaskEvent[]; isActive: boolean }) {
@@ -107,12 +109,15 @@ export function TaskHistoryPanel({
   const fetchTasks = useCallback(async () => {
     setLoading(true);
     try {
-      const params: { limit: number; status?: string } = { limit: 50 };
-      if (filter) params.status = filter;
-      const res = await tasksApi.listTasks(params);
+      const params = { limit: 50, status: filter || undefined };
+      // Supabase-first, fallback to API
+      let res = supabaseTasksService.isAvailable()
+        ? await supabaseTasksService.listTasks(params)
+        : null;
+      if (!res) res = await tasksApi.listTasks(params);
       setTasks(res.tasks);
       setTotal(res.total);
-      setDbPersistence(res.dbPersistence);
+      setDbPersistence(res.dbPersistence ?? false);
     } catch {
       // Silently fail — tasks will show from cache or be empty
     } finally {
@@ -295,6 +300,7 @@ export function TaskDetailView({
         agent: out.agent || { id: 'unknown', name: 'Unknown', squad: 'unknown' },
         role: (out.role as string) || 'specialist',
         response: (out.response as string) || (out.content as string) || '',
+        artifacts: out.artifacts,
         processingTimeMs: (out.processingTimeMs as number) || 0,
         llmMetadata: out.llmMetadata,
       };
@@ -370,6 +376,11 @@ export function TaskDetailView({
               copied={copiedIndex === index}
             />
           ))
+        )}
+
+        {/* Export panel for completed tasks */}
+        {(task.status === 'completed' || task.status === 'failed') && (
+          <ExportPanel task={task} />
         )}
 
         {/* Error display */}

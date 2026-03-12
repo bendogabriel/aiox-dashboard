@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, lazy, Suspense } from 'react';
+import { useState, useEffect, memo, lazy, Suspense, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Loader2,
@@ -8,11 +8,27 @@ import {
   Check,
   ChevronDown,
   Target,
+  Download,
+  Package,
 } from 'lucide-react';
-import type { AgentOutput, StreamingOutput } from './orchestration-types';
+import type { AgentOutput, StreamingOutput, TaskArtifact } from './orchestration-types';
 import { getSquadColor } from './orchestration-types';
+import { parseArtifacts } from '../../lib/artifact-parser';
+import { ArtifactCard } from './ArtifactCard';
 
 const MarkdownRenderer = lazy(() => import('../chat/MarkdownRenderer'));
+
+function downloadText(content: string, filename: string, mimeType = 'text/plain') {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 export const AgentOutputCard = memo(function AgentOutputCard({
   output,
@@ -21,6 +37,7 @@ export const AgentOutputCard = memo(function AgentOutputCard({
   isReviewer,
   onCopy,
   copied,
+  onSaveToVault,
 }: {
   output?: AgentOutput;
   streaming?: StreamingOutput;
@@ -28,6 +45,7 @@ export const AgentOutputCard = memo(function AgentOutputCard({
   isReviewer: boolean;
   onCopy: (text: string) => void;
   copied: boolean;
+  onSaveToVault?: (artifact: TaskArtifact, stepName: string) => void;
 }) {
   const [expanded, setExpanded] = useState(true);
   const [streamElapsed, setStreamElapsed] = useState(() =>
@@ -43,6 +61,28 @@ export const AgentOutputCard = memo(function AgentOutputCard({
     return () => clearInterval(interval);
   }, [streaming]);
 
+  // Parse artifacts: use server-provided if available, otherwise parse client-side
+  const artifacts: TaskArtifact[] = output?.artifacts && output.artifacts.length > 0
+    ? output.artifacts
+    : output?.response ? parseArtifacts(output.response) : [];
+
+  const hasNonProseArtifacts = artifacts.some(a => a.type !== 'markdown');
+
+  const handleDownloadArtifact = useCallback((artifact: TaskArtifact, filename: string) => {
+    const mimeMap: Record<string, string> = {
+      json: 'application/json', yaml: 'text/yaml', csv: 'text/csv',
+      xml: 'application/xml', html: 'text/html', sql: 'text/plain',
+    };
+    const mime = artifact.language ? (mimeMap[artifact.language] || 'text/plain') : 'text/plain';
+    downloadText(artifact.content, filename, mime);
+  }, []);
+
+  const handleVaultSave = useCallback((artifact: TaskArtifact) => {
+    if (onSaveToVault && data) {
+      onSaveToVault(artifact, data.stepName);
+    }
+  }, [onSaveToVault, data]);
+
   if (!data) return null;
 
   const isStreaming = !!streaming;
@@ -56,9 +96,10 @@ export const AgentOutputCard = memo(function AgentOutputCard({
 
   return (
     <motion.div
-      initial={{ y: 30, opacity: 0, scale: 0.95 }}
-      animate={{ y: 0, opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.05, type: 'spring', stiffness: 100 }}
+      layout
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.3 }}
       className={`relative rounded-2xl border backdrop-blur-xl overflow-hidden ${
         isReviewer
           ? 'bg-gradient-to-br from-yellow-500/10 via-amber-500/5 to-orange-500/10 border-yellow-500/30'
@@ -80,9 +121,7 @@ export const AgentOutputCard = memo(function AgentOutputCard({
       )}
 
       {/* Header */}
-      <div
-        className="relative flex items-center justify-between p-4"
-      >
+      <div className="relative flex items-center justify-between p-4">
         <div className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer" onClick={() => setExpanded(!expanded)}>
           <div className="relative">
             <motion.div
@@ -130,16 +169,22 @@ export const AgentOutputCard = memo(function AgentOutputCard({
                   Resultado Final
                 </span>
               )}
+              {!isStreaming && hasNonProseArtifacts && (
+                <span className="px-2 py-0.5 rounded-full text-xs bg-cyan-500/10 text-cyan-400/70 flex items-center gap-1">
+                  <Package className="w-3 h-3" />
+                  {artifacts.filter(a => a.type !== 'markdown').length} artefatos
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-2 text-xs text-white/50">
               <span style={{ color: color.text }}>{data.agent.squad}</span>
-              <span>•</span>
+              <span>·</span>
               <span className="capitalize">{data.role}</span>
-              <span>•</span>
+              <span>·</span>
               <span>{elapsedTime}s</span>
               {output?.llmMetadata && (
                 <>
-                  <span>•</span>
+                  <span>·</span>
                   <span>{output.llmMetadata.outputTokens} tokens</span>
                 </>
               )}
@@ -154,9 +199,28 @@ export const AgentOutputCard = memo(function AgentOutputCard({
               whileTap={{ scale: 0.95 }}
               onClick={() => onCopy(response)}
               className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all"
-              aria-label="Copiar"
+              aria-label="Copiar tudo"
             >
               {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+            </motion.button>
+          )}
+          {!isStreaming && hasNonProseArtifacts && (
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                // Download all non-markdown artifacts
+                artifacts.filter(a => a.type !== 'markdown').forEach((a, i) => {
+                  setTimeout(() => {
+                    const fn = a.filename || `${data.stepName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${i}${a.language ? `.${a.language}` : '.txt'}`;
+                    handleDownloadArtifact(a, fn);
+                  }, i * 100);
+                });
+              }}
+              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all"
+              aria-label="Download artefatos"
+            >
+              <Download className="w-4 h-4" />
             </motion.button>
           )}
           <button
@@ -164,10 +228,7 @@ export const AgentOutputCard = memo(function AgentOutputCard({
             className="p-2 rounded-lg bg-white/5 text-white/50 hover:bg-white/10 transition-all"
             aria-label={expanded ? 'Recolher' : 'Expandir'}
           >
-            <motion.span
-              animate={{ rotate: expanded ? 180 : 0 }}
-              className="block"
-            >
+            <motion.span animate={{ rotate: expanded ? 180 : 0 }} className="block">
               <ChevronDown className="w-4 h-4" />
             </motion.span>
           </button>
@@ -183,13 +244,14 @@ export const AgentOutputCard = memo(function AgentOutputCard({
             exit={{ height: 0 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4">
-              <div
-                className={`p-4 rounded-xl ${
-                  isReviewer ? 'bg-black/30' : 'bg-black/20'
-                } border border-white/5`}
-              >
-                {isStreaming ? (
+            <div className="px-4 pb-4 space-y-2">
+              {isStreaming ? (
+                /* Streaming: show raw text with cursor */
+                <div
+                  className={`p-4 rounded-xl ${
+                    isReviewer ? 'bg-black/30' : 'bg-black/20'
+                  } border border-white/5`}
+                >
                   <div className="text-sm text-white/90 whitespace-pre-wrap leading-relaxed">
                     {response}
                     <motion.span
@@ -198,12 +260,32 @@ export const AgentOutputCard = memo(function AgentOutputCard({
                       transition={{ duration: 0.5, repeat: Infinity }}
                     />
                   </div>
-                ) : (
+                </div>
+              ) : artifacts.length > 0 ? (
+                /* Completed: show structured artifacts */
+                artifacts.map((artifact, artIdx) => (
+                  <ArtifactCard
+                    key={artifact.id}
+                    artifact={artifact}
+                    stepName={data.stepName}
+                    onCopy={onCopy}
+                    onDownload={handleDownloadArtifact}
+                    onSaveToVault={onSaveToVault ? handleVaultSave : undefined}
+                    index={artIdx}
+                  />
+                ))
+              ) : (
+                /* Fallback: plain markdown render */
+                <div
+                  className={`p-4 rounded-xl ${
+                    isReviewer ? 'bg-black/30' : 'bg-black/20'
+                  } border border-white/5`}
+                >
                   <Suspense fallback={<div className="text-sm text-white/50 animate-pulse">...</div>}>
                     <MarkdownRenderer content={response} className="text-sm text-white/90" />
                   </Suspense>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

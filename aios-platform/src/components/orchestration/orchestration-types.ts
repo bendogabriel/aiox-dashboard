@@ -1,5 +1,8 @@
 import { Brain, Target, Activity, CheckCircle2 } from 'lucide-react';
 import { getSquadInlineStyle } from '../../lib/theme';
+import type { TaskArtifact } from '../../services/api/tasks';
+
+export type { TaskArtifact };
 
 export interface TaskEvent {
   event: string;
@@ -25,6 +28,7 @@ export interface AgentOutput {
   };
   role: string;
   response: string;
+  artifacts?: TaskArtifact[];
   processingTimeMs: number;
   isStreaming?: boolean;
   llmMetadata?: {

@@ -60,12 +60,14 @@ export const LiveMetrics = memo(function LiveMetrics({ state }: { state: TaskSta
       return;
     }
 
+    // When completed/failed, set final elapsed time and stop
+    if (state.status === 'completed' || state.status === 'failed') {
+      setElapsed(Math.floor((Date.now() - state.startTime) / 1000));
+      return;
+    }
+
     const startTime = state.startTime;
     const interval = setInterval(() => {
-      if (state.status === 'completed' || state.status === 'failed') {
-        clearInterval(interval);
-        return;
-      }
       setElapsed(Math.floor((Date.now() - startTime) / 1000));
     }, 100);
 
@@ -150,14 +152,14 @@ export const PhaseProgress = memo(function PhaseProgress({ currentStatus }: { cu
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: index * 0.1 }}
               className={`relative flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl transition-all duration-300 ${
-                isActive
-                  ? `bg-${phase.color}-500/20 border border-${phase.color}-500/40 shadow-lg shadow-${phase.color}-500/20`
-                  : isCompleted
+                isCompleted
                   ? 'bg-green-500/10 border border-green-500/30'
+                  : isActive
+                  ? `bg-${phase.color}-500/20 border border-${phase.color}-500/40 shadow-lg shadow-${phase.color}-500/20`
                   : 'bg-white/5 border border-white/10'
               }`}
             >
-              {isActive && !isFailed && (
+              {isActive && !isFailed && !isCompleted && (
                 <motion.div
                   className="absolute inset-0 rounded-xl"
                   style={{
@@ -168,7 +170,7 @@ export const PhaseProgress = memo(function PhaseProgress({ currentStatus }: { cu
                 />
               )}
               <div className="relative">
-                {isActive && !isFailed ? (
+                {isActive && !isFailed && !isCompleted ? (
                   <Loader2 className={`w-4 h-4 animate-spin text-${phase.color}-400`} />
                 ) : isCompleted ? (
                   <CheckCircle2 className="w-4 h-4 text-green-400" />
@@ -178,7 +180,7 @@ export const PhaseProgress = memo(function PhaseProgress({ currentStatus }: { cu
               </div>
               <span
                 className={`text-xs md:text-sm font-medium hidden sm:inline ${
-                  isActive ? `text-${phase.color}-400` : isCompleted ? 'text-green-400' : 'text-white/40'
+                  isCompleted ? 'text-green-400' : isActive ? `text-${phase.color}-400` : 'text-white/40'
                 }`}
               >
                 {phase.label}
