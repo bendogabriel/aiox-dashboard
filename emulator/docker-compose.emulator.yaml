@@ -1,0 +1,14 @@
+version: '3.8'
+
+# Override to mount an emulated project into the engine container.
+# Usage:
+#   EMULATE_ARCHETYPE=greenfield-standard docker compose \
+#     -f docker-compose.yaml \
+#     -f emulator/docker-compose.emulator.yaml up
+
+services:
+  aios:
+    volumes:
+      - ./emulator/output/${EMULATE_ARCHETYPE:-greenfield-standard}:/project:ro
+    environment:
+      - AIOS_PROJECT_ROOT=/project

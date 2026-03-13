@@ -1,0 +1,25 @@
+{
+  "name": "@aios/emulator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "bun bin/emulate.ts generate",
+    "list": "bun bin/emulate.ts list",
+    "serve": "bun bin/emulate.ts serve",
+    "test": "bun bin/emulate.ts test",
+    "test:unit": "bun test tests/generator.test.ts",
+    "clean": "bun bin/emulate.ts clean",
+    "validate": "bun bin/emulate.ts validate",
+    "e2e": "npx playwright test --config=playwright.config.ts",
+    "e2e:setup": "bun scripts/e2e-server.ts",
+    "test:all": "bun test tests/generator.test.ts tests/discovery.test.ts tests/api-surface.test.ts tests/error-handling.test.ts"
+  },
+  "dependencies": {
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/bun": "latest"
+  }
+}

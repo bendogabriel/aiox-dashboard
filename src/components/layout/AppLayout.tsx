@@ -1,0 +1,195 @@
+import { ReactNode, useState, lazy, Suspense } from 'react';
+import { Header } from './Header';
+import { Sidebar } from './Sidebar';
+import { ActivityPanel } from './ActivityPanel';
+import { MobileNav } from './MobileNav';
+import { AgentExplorer } from '../agents/AgentExplorer';
+import { GlobalSearch, useGlobalSearch } from '../search';
+import { ToastContainer, KeyboardShortcuts, PWAUpdatePrompt, SkipLinks } from '../ui';
+import { IntegrationSetupModal } from '../integrations';
+import { OnboardingTour } from '../onboarding';
+import { StatusBar } from '../status-bar/StatusBar';
+import { ProjectTabs } from '../project-tabs/ProjectTabs';
+import { GlobalVoiceProvider } from '../voice';
+import { useUIStore } from '../../stores/uiStore';
+import { useGlobalKeyboardShortcuts } from '../../hooks/useGlobalKeyboardShortcuts';
+import { useIntegrationOnboarding } from '../../hooks/useIntegrationOnboarding';
+import { useSetupWizardTrigger } from '../../hooks/useSetupWizardTrigger';
+import { useEngineConnection } from '../../hooks/useEngineConnection';
+import { useCapabilityRecoveryToast } from '../../hooks/useCapabilityRecoveryToast';
+import { usePostSetupRecheck } from '../../hooks/usePostSetupRecheck';
+import { useUrlConfigImport } from '../../hooks/useUrlConfigImport';
+import { useScheduledHealthCheck } from '../../hooks/useScheduledHealthCheck';
+import { EngineOfflineBanner } from '../ui/EngineOfflineBanner';
+import { DegradationBanner } from '../ui/DegradationBanner';
+import { cn } from '../../lib/utils';
+
+// Lazy-load matrix effects — only loaded when matrix theme is active
+const MatrixEffects = lazy(() =>
+  import('../ui/MatrixEffects').then((m) => ({ default: m.MatrixEffects }))
+);
+
+// Lazy-load setup wizard — only loaded on first run
+const SetupWizard = lazy(() =>
+  import('../integrations/SetupWizard').then((m) => ({ default: m.SetupWizard }))
+);
+
+interface AppLayoutProps {
+  children: ReactNode;
+}
+
+export function AppLayout({ children }: AppLayoutProps) {
+  const { sidebarCollapsed, activityPanelOpen, agentExplorerOpen, setAgentExplorerOpen, currentView, theme, focusMode } = useUIStore();
+  const globalSearch = useGlobalSearch();
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const isMatrix = theme === 'matrix';
+
+  // Global keyboard shortcuts - all handled in one place
+  useGlobalKeyboardShortcuts({
+    onShowShortcuts: () => setShowShortcuts(true),
+  });
+
+  // Auto-redirect to Integrations if nothing is connected (first run)
+  useIntegrationOnboarding();
+
+  // Setup Wizard auto-trigger on first run (no core integrations connected)
+  useSetupWizardTrigger();
+
+  // Engine auto-discovery + health polling
+  useEngineConnection();
+
+  // Toast notifications when capabilities recover or degrade
+  useCapabilityRecoveryToast();
+
+  // Auto-recheck all integrations when wizard or setup modal closes
+  usePostSetupRecheck();
+
+  // Import config from URL parameter (?import=...)
+  useUrlConfigImport();
+
+  // Scheduled health monitoring with auto-recovery (P8)
+  useScheduledHealthCheck();
+
+  // Show activity panel on views where it's useful (chat, bob/orchestrator, dashboard, agents)
+  const VIEWS_WITH_ACTIVITY = new Set(['chat', 'bob', 'orchestrator', 'dashboard', 'agents', 'cockpit']);
+  const showActivityPanel = activityPanelOpen && VIEWS_WITH_ACTIVITY.has(currentView);
+
+  return (
+    <div className="min-h-screen relative isolate">
+      {/* Skip Links for Accessibility */}
+      <SkipLinks />
+
+      {/* Gradient Background + HUD Pattern Overlay */}
+      <div className="app-background" aria-hidden="true" />
+      <div className="pattern-dot-grid--sparse fixed inset-0 pointer-events-none z-0 opacity-40" aria-hidden="true" />
+      <div className="grain-overlay fixed inset-0 pointer-events-none z-0" aria-hidden="true" />
+
+      {/* Matrix Effects — only rendered when matrix theme is active */}
+      {isMatrix && (
+        <Suspense fallback={null}>
+          <MatrixEffects />
+        </Suspense>
+      )}
+
+      {/* Main Grid - No sidebar in mobile (handled by drawer) */}
+      <div
+        className={cn(
+          'grid h-screen transition-all duration-300 ease-out',
+          // Focus mode: full width, no sidebar/activity
+          focusMode
+            ? 'grid-cols-1'
+            : cn(
+                // Mobile: single column (sidebar is a drawer)
+                'grid-cols-1',
+                // Desktop: sidebar + content
+                sidebarCollapsed
+                  ? 'md:grid-cols-[72px_1fr]'
+                  : 'md:grid-cols-[220px_1fr]',
+                // Desktop with activity panel (not on settings)
+                showActivityPanel && !sidebarCollapsed && 'lg:grid-cols-[220px_1fr_320px]',
+                showActivityPanel && sidebarCollapsed && 'lg:grid-cols-[72px_1fr_320px]'
+              ),
+        )}
+      >
+        {/* Sidebar (Desktop: grid item, Mobile: drawer handled inside component) */}
+        {!focusMode && <Sidebar />}
+
+        {/* Main Content Area */}
+        <div className="flex flex-col h-screen overflow-hidden">
+          {/* Engine Offline Banner — shown above everything when engine is down */}
+          <EngineOfflineBanner />
+
+          {/* Header — hidden in focus mode */}
+          {!focusMode && <Header />}
+
+          {/* Project Tabs */}
+          {!focusMode && <ProjectTabs />}
+
+          {/* Main Content */}
+          <main id="main-content" className="flex-1 overflow-hidden p-4 pb-20 md:p-6 md:pb-10" aria-label="Conteúdo principal">
+            {/* Degradation Banner — shows limited capabilities for current view */}
+            <DegradationBanner />
+            <div
+              className="h-full"
+            >
+              {children}
+            </div>
+          </main>
+        </div>
+
+        {/* Activity Panel - Hidden on settings view and focus mode */}
+        {showActivityPanel && !focusMode && (
+            <div
+              className="hidden lg:block"
+            >
+              <ActivityPanel />
+            </div>
+          )}
+</div>
+
+      {/* Agent Explorer Modal */}
+      <AgentExplorer
+        isOpen={agentExplorerOpen}
+        onClose={() => setAgentExplorerOpen(false)}
+      />
+
+      {/* Global Search Modal (Cmd+K) */}
+      <GlobalSearch
+        isOpen={globalSearch.isOpen}
+        onClose={globalSearch.close}
+      />
+
+      {/* Toast Notifications */}
+      <ToastContainer />
+
+      {/* Keyboard Shortcuts Modal */}
+      <KeyboardShortcuts
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
+      />
+
+      {/* Onboarding Tour */}
+      <OnboardingTour />
+
+      {/* PWA Update Prompt */}
+      <PWAUpdatePrompt />
+
+      {/* Setup Wizard — lazy loaded, only rendered on first run */}
+      <Suspense fallback={null}>
+        <SetupWizard />
+      </Suspense>
+
+      {/* Integration Setup Modal — accessible from any view via DegradationBanner */}
+      <IntegrationSetupModal />
+
+      {/* Mobile Bottom Navigation */}
+      {!focusMode && <MobileNav />}
+
+      {/* Global Voice — FAB + overlay accessible from any view (Cmd+J) */}
+      <GlobalVoiceProvider />
+
+      {/* Status Bar */}
+      {!focusMode && <StatusBar />}
+    </div>
+  );
+}

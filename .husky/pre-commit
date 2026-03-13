@@ -1,0 +1,2 @@
+bash scripts/check-registry-sync.sh
+npm test

@@ -1,0 +1,1713 @@
+/* ============================================
+   AIOX COCKPIT — Component Style Overrides
+   Transforms glass components into brandbook cockpit aesthetic:
+   - Monospace labels, uppercase, letter-spacing 0.08em
+   - Solid dark surfaces instead of heavy blur
+   - Brutalist borders (no rounded corners)
+   - Neon lime glow on interactive states
+
+   STRATEGY:
+   1. Nuclear border-radius reset on all elements
+   2. Glass → Solid surface replacements
+   3. Flat app background (no gradients/blobs)
+   4. Hover: no translateY, use neon glow
+   5. Cover tabs, dropdowns, tooltips, sidebar, modals
+   ============================================ */
+
+/* ============================================
+   BRUTALIST RESET — Zero Radius on Containers
+   Targets containers, cards, buttons, inputs, panels.
+   Preserves: dots, indicators, pings, spinners, SVG.
+   ============================================ */
+
+html[data-theme="aiox"] div,
+html[data-theme="aiox"] section,
+html[data-theme="aiox"] article,
+html[data-theme="aiox"] aside,
+html[data-theme="aiox"] main,
+html[data-theme="aiox"] nav,
+html[data-theme="aiox"] header,
+html[data-theme="aiox"] footer,
+html[data-theme="aiox"] button,
+html[data-theme="aiox"] input,
+html[data-theme="aiox"] select,
+html[data-theme="aiox"] textarea,
+html[data-theme="aiox"] a,
+html[data-theme="aiox"] span,
+html[data-theme="aiox"] kbd,
+html[data-theme="aiox"] li,
+html[data-theme="aiox"] p,
+html[data-theme="aiox"] [role="dialog"],
+html[data-theme="aiox"] [role="tablist"],
+html[data-theme="aiox"] [role="tab"],
+html[data-theme="aiox"] [role="tooltip"],
+html[data-theme="aiox"] [role="menu"],
+html[data-theme="aiox"] [role="listbox"] {
+  border-radius: 0 !important;
+}
+
+/* Preserve round shapes: status dots, pings, spinners */
+html[data-theme="aiox"] .status-online,
+html[data-theme="aiox"] .status-busy,
+html[data-theme="aiox"] .status-offline,
+html[data-theme="aiox"] [class*="rounded-full"]:is(
+  .h-2, .h-3, .w-2, .w-3, .h-4, .w-4,
+  [class*="animate-ping"], [class*="animate-pulse"]
+) {
+  border-radius: 9999px !important;
+}
+
+/* Small indicator dots (h-2 w-2, h-3 w-3, h-4 w-4) always round */
+html[data-theme="aiox"] span[class*="rounded-full"][class*="h-2"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="h-3"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="w-2"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="w-3"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="h-4"]:not([class*="px-"]),
+html[data-theme="aiox"] span[class*="rounded-full"][class*="w-4"]:not([class*="px-"]) {
+  border-radius: 9999px !important;
+}
+
+/* Toggle switch knobs stay round */
+html[data-theme="aiox"] [role="switch"] span,
+html[data-theme="aiox"] [data-state] > span[class*="rounded-full"][class*="block"] {
+  border-radius: 9999px !important;
+}
+
+/* Ping/pulse animations stay round */
+html[data-theme="aiox"] [class*="animate-ping"],
+html[data-theme="aiox"] .animate-spin {
+  border-radius: 9999px !important;
+}
+
+/* Avatar: brutalist square shape (not round) */
+html[data-theme="aiox"] [class*="avatar"] img,
+html[data-theme="aiox"] [class*="avatar"] div[class*="rounded-full"] {
+  border-radius: 0 !important;
+}
+html[data-theme="aiox"] img[class*="rounded-full"][alt] {
+  border-radius: 0 !important;
+}
+
+/* Scrollbar thumb: tiny radius for usability */
+html[data-theme="aiox"] ::-webkit-scrollbar-thumb {
+  border-radius: 2px !important;
+}
+
+/* Progress bar fill keeps radius for visual continuity */
+html[data-theme="aiox"] [class*="rounded-full"][class*="h-1"],
+html[data-theme="aiox"] [class*="rounded-full"][class*="h-1\\.5"],
+html[data-theme="aiox"] [class*="rounded-full"][class*="h-2"][class*="overflow"] {
+  border-radius: 0 !important;
+}
+
+/* ============================================
+   APP BACKGROUND — Flat Near-Black
+   No gradients, no blobs, no noise animation.
+   ============================================ */
+
+html[data-theme="aiox"] .app-background::before {
+  background: var(--aiox-dark) !important;
+  animation: none !important;
+  filter: none !important;
+}
+
+html[data-theme="aiox"] .app-background::after {
+  opacity: 0 !important;
+}
+
+/* ============================================
+   GLASS → SOLID — All Glass Utilities
+   Replace backdrop-blur with solid surfaces.
+   ============================================ */
+
+html[data-theme="aiox"] .glass {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-lg {
+  background: var(--aiox-surface-panel) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-xl {
+  background: var(--aiox-surface-deep) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-subtle {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.1) !important;
+}
+
+/* ============================================
+   BACKDROP-BLUR KILL — Remove All Blur Effects
+   The AIOX cockpit uses solid opaque surfaces, not
+   frosted glass. Removes blur globally.
+   ============================================ */
+
+html[data-theme="aiox"] [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ============================================
+   SEMITRANSPARENT BG FIX — Solid Replacements
+   bg-black/50, bg-black/40 etc. are invisible
+   without blur on flat dark backgrounds.
+   Give them a solid surface color instead.
+   Excludes fullscreen overlays (inset-0).
+   ============================================ */
+
+html[data-theme="aiox"] [class*="backdrop-blur"]:not([class*="inset-0"]):not(.app-background) {
+  background: var(--aiox-surface) !important;
+}
+
+/* Fullscreen overlays stay dark + opaque */
+html[data-theme="aiox"] [class*="backdrop-blur"][class*="inset-0"] {
+  background: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* ============================================
+   GLASS CARD — Solid Cockpit Panel
+   ============================================ */
+
+html[data-theme="aiox"] .glass-card {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-card:hover {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-card-active {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(209, 255, 0, 0.3) !important;
+  box-shadow: 0 0 12px var(--aiox-lime-glow-soft) !important;
+}
+
+/* ============================================
+   GLASS PANEL — Sidebar & Major Panels
+   ============================================ */
+
+html[data-theme="aiox"] .glass-panel {
+  background: var(--aiox-surface-panel) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 156, 156, 0.12) !important;
+  box-shadow: none !important;
+}
+
+/* ============================================
+   INTERACTIVE STATES — No Lift, Neon Glow
+   ============================================ */
+
+html[data-theme="aiox"] .glass-interactive:hover {
+  background: rgba(209, 255, 0, 0.04) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  border-color: rgba(209, 255, 0, 0.15) !important;
+}
+
+html[data-theme="aiox"] .glass-interactive:active {
+  transform: none !important;
+  background: rgba(209, 255, 0, 0.08) !important;
+}
+
+/* ============================================
+   BUTTONS — Cockpit Style
+   ============================================ */
+
+html[data-theme="aiox"] .glass-button {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+html[data-theme="aiox"] .glass-button:hover {
+  background: rgba(209, 255, 0, 0.06) !important;
+  border-color: rgba(209, 255, 0, 0.2) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aiox"] .glass-button:active {
+  transform: none !important;
+}
+
+html[data-theme="aiox"] .glass-button-primary {
+  background: var(--aiox-lime) !important;
+  color: var(--aiox-dark) !important;
+  border: none !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+html[data-theme="aiox"] .glass-button-primary:hover {
+  box-shadow: 0 0 20px var(--aiox-lime-glow), 0 0 60px var(--aiox-lime-glow-soft) !important;
+  transform: none !important;
+}
+
+/* Small button */
+html[data-theme="aiox"] .glass-button[class*="text-xs"],
+html[data-theme="aiox"] .glass-button[class*="text-sm"],
+html[data-theme="aiox"] button[class*="text-xs"] {
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+}
+
+/* Generic buttons inherit mono font */
+html[data-theme="aiox"] button {
+  font-family: var(--font-family-mono);
+}
+
+/* Action buttons get uppercase. Discriminator: inline-flex = action button,
+   w-full + flex + text-left = content-wrapper button (file lists, cards).
+   GlassButton always renders with inline-flex. */
+html[data-theme="aiox"] .glass-button,
+html[data-theme="aiox"] .glass-button-primary,
+html[data-theme="aiox"] button[class*="inline-flex"],
+html[data-theme="aiox"] nav button {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Content-wrapper buttons: restore mixed-case for file lists, card items.
+   These are w-full + text-left buttons used as clickable rows (NOT nav items). */
+html[data-theme="aiox"] button[class*="text-left"] {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Sidebar nav ALWAYS uppercase (higher specificity to win over content-wrapper) */
+html[data-theme="aiox"] nav[aria-label] button {
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* ============================================
+   INPUTS — Cockpit Precision
+   ============================================ */
+
+html[data-theme="aiox"] .glass-input {
+  font-family: var(--font-family-mono);
+  font-size: 0.7rem;
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] .glass-input:focus {
+  border-color: var(--aiox-lime) !important;
+  box-shadow: 0 0 0 1px var(--aiox-lime) !important;
+}
+
+html[data-theme="aiox"] .glass-input::placeholder {
+  color: var(--aiox-gray-dim);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+html[data-theme="aiox"] textarea.glass-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* All native inputs/selects */
+html[data-theme="aiox"] input:not([type="color"]),
+html[data-theme="aiox"] select,
+html[data-theme="aiox"] textarea {
+  font-family: var(--font-family-mono);
+  background: var(--aiox-surface);
+  border: 1px solid rgba(156, 156, 156, 0.15);
+}
+
+/* Color picker — preserve native rendering */
+html[data-theme="aiox"] input[type="color"] {
+  background: transparent;
+  border: 1px solid rgba(156, 156, 156, 0.15);
+  padding: 2px;
+  cursor: pointer;
+}
+
+html[data-theme="aiox"] input:focus,
+html[data-theme="aiox"] select:focus,
+html[data-theme="aiox"] textarea:focus {
+  border-color: var(--aiox-lime);
+  box-shadow: 0 0 0 1px var(--aiox-lime);
+}
+
+/* Native select dropdown options — ensure readability in dark theme */
+html[data-theme="aiox"] select {
+  color: var(--aiox-cream);
+  cursor: pointer;
+}
+
+html[data-theme="aiox"] select option {
+  background-color: #111;
+  color: #e5e5e5;
+  padding: 0.5rem;
+}
+
+/* ============================================
+   BADGES — Cockpit Labels
+   ============================================ */
+
+html[data-theme="aiox"] .glass-badge {
+  font-family: var(--font-family-mono);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-theme="aiox"] .glass-badge-squad {
+  background: var(--aiox-neon-dim);
+  color: var(--aiox-lime);
+  border: 1px solid rgba(209, 255, 0, 0.2);
+}
+
+/* ============================================
+   MESSAGE BUBBLES — Solid Cockpit
+   ============================================ */
+
+html[data-theme="aiox"] .message-bubble-user {
+  background: var(--aiox-lime) !important;
+  color: var(--aiox-dark) !important;
+}
+
+html[data-theme="aiox"] .message-bubble-agent {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+/* Markdown content inside agent bubbles */
+html[data-theme="aiox"] .message-bubble-agent .markdown-content {
+  color: var(--aiox-cream);
+}
+
+html[data-theme="aiox"] .message-bubble-agent .markdown-content a {
+  color: var(--aiox-lime);
+}
+
+html[data-theme="aiox"] .message-bubble-agent .markdown-content blockquote {
+  border-left-color: rgba(209, 255, 0, 0.3);
+  background: rgba(209, 255, 0, 0.03);
+}
+
+html[data-theme="aiox"] .message-bubble-agent .markdown-content hr {
+  border-color: rgba(156, 156, 156, 0.15);
+}
+
+/* Audio/video players in AIOX theme */
+html[data-theme="aiox"] .message-bubble-agent audio {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-theme="aiox"] .message-bubble-agent video {
+  border-radius: 0;
+}
+
+/* ============================================
+   DIALOG / MODAL — Cockpit Overlay
+   ============================================ */
+
+html[data-theme="aiox"] [role="dialog"] {
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+  background: var(--aiox-dark) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Dialog backdrop */
+html[data-theme="aiox"] [data-radix-overlay],
+html[data-theme="aiox"] .dialog-overlay,
+html[data-theme="aiox"] [role="dialog"] + div[class*="overlay"],
+html[data-theme="aiox"] [class*="backdrop"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* ============================================
+   DROPDOWNS & POPOVERS
+   ============================================ */
+
+html[data-theme="aiox"] [role="listbox"],
+html[data-theme="aiox"] [role="menu"],
+html[data-theme="aiox"] [data-radix-popper-content-wrapper] > *,
+html[data-theme="aiox"] [class*="dropdown"],
+html[data-theme="aiox"] [class*="popover"] {
+  background: var(--aiox-dark) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+/* ============================================
+   TABS — Cockpit Navigation
+   ============================================ */
+
+html[data-theme="aiox"] [role="tablist"] {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [role="tab"] {
+  font-family: var(--font-family-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+html[data-theme="aiox"] [role="tab"][aria-selected="true"] {
+  background: rgba(209, 255, 0, 0.08) !important;
+  color: var(--aiox-lime) !important;
+  border: 1px solid rgba(209, 255, 0, 0.2) !important;
+}
+
+/* ============================================
+   TOOLTIPS
+   ============================================ */
+
+html[data-theme="aiox"] [role="tooltip"] {
+  background: var(--aiox-dark) !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.6rem;
+}
+
+/* ============================================
+   DIVIDERS — Sharp Lines
+   ============================================ */
+
+html[data-theme="aiox"] .glass-divider {
+  background: rgba(156, 156, 156, 0.15) !important;
+}
+
+/* ============================================
+   TABLES — Data-Dense Cockpit
+   ============================================ */
+
+html[data-theme="aiox"] table {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  border-collapse: collapse;
+}
+
+html[data-theme="aiox"] th {
+  background: var(--aiox-surface);
+  border-bottom: 1px solid rgba(156, 156, 156, 0.15);
+  font-size: 0.55rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.75rem 1.25rem;
+  color: var(--aiox-gray-dim);
+}
+
+html[data-theme="aiox"] td {
+  border-bottom: 1px solid rgba(156, 156, 156, 0.10);
+  padding: 0.75rem 1.25rem;
+}
+
+html[data-theme="aiox"] tr:hover td {
+  background: rgba(209, 255, 0, 0.02);
+}
+
+/* Tabular numbers for data columns */
+html[data-theme="aiox"] td[class*="num"],
+html[data-theme="aiox"] td[class*="count"],
+html[data-theme="aiox"] td[class*="value"] {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ============================================
+   TOAST — Cockpit Notifications
+   ============================================ */
+
+html[data-theme="aiox"] [role="alert"] {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+}
+
+/* ============================================
+   HEADINGS — Display Font (opt-in via .heading-display)
+   ============================================ */
+
+/* Opt-in display heading: use on page-level h1 titles only */
+html[data-theme="aiox"] .heading-display {
+  font-family: var(--font-family-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: var(--font-size-xl);
+  line-height: 1;
+}
+
+/* ============================================
+   LABELS & META — Mono Uppercase
+   ============================================ */
+
+html[data-theme="aiox"] .section-label,
+html[data-theme="aiox"] label,
+html[data-theme="aiox"] legend {
+  font-family: var(--font-family-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================
+   SIDEBAR & NAVIGATION
+   ============================================ */
+
+html[data-theme="aiox"] nav {
+  font-family: var(--font-family-mono);
+}
+
+html[data-theme="aiox"] nav button,
+html[data-theme="aiox"] nav a {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Active nav item: lime accent left border */
+html[data-theme="aiox"] nav button[class*="glass"],
+html[data-theme="aiox"] nav a[class*="glass"] {
+  background: rgba(209, 255, 0, 0.06) !important;
+  border-left: 2px solid var(--aiox-lime) !important;
+}
+
+/* ============================================
+   PROGRESS BARS & RINGS
+   ============================================ */
+
+html[data-theme="aiox"] progress {
+  background: var(--aiox-surface);
+}
+
+html[data-theme="aiox"] progress::-webkit-progress-bar {
+  background: var(--aiox-surface);
+}
+
+html[data-theme="aiox"] progress::-webkit-progress-value {
+  background: var(--aiox-lime);
+}
+
+/* ============================================
+   GRADIENT OVERRIDES — Tame Glass Gradients
+   Only override large container gradients (cards with
+   from-*-500/20). Preserve progress bar gradients and
+   inline-style gradients used for data visualization.
+   ============================================ */
+
+html[data-theme="aiox"] .glass-card[class*="bg-gradient-to"],
+html[data-theme="aiox"] div[class*="bg-gradient-to"][class*="border"] {
+  background: var(--aiox-surface) !important;
+}
+
+/* ============================================
+   SCROLLBAR — Cockpit Style
+   ============================================ */
+
+html[data-theme="aiox"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html[data-theme="aiox"] ::-webkit-scrollbar-track {
+  background: var(--aiox-dark);
+}
+
+html[data-theme="aiox"] ::-webkit-scrollbar-thumb {
+  background: rgba(156, 156, 156, 0.15);
+}
+
+html[data-theme="aiox"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 156, 156, 0.25);
+}
+
+/* ============================================
+   SELECTION — Lime on Dark
+   ============================================ */
+
+html[data-theme="aiox"] ::selection {
+  background: var(--aiox-dark);
+  color: var(--aiox-lime);
+}
+
+/* ============================================
+   FOCUS — Lime Ring
+   ============================================ */
+
+html[data-theme="aiox"] *:focus-visible {
+  outline: 2px solid rgba(209, 255, 0, 0.5) !important;
+  outline-offset: 2px !important;
+}
+
+html[data-theme="aiox"] input:focus-visible,
+html[data-theme="aiox"] textarea:focus-visible,
+html[data-theme="aiox"] select:focus-visible {
+  outline: none !important;
+}
+
+/* ============================================
+   REDUCED MOTION — Accessibility
+   ============================================ */
+
+/* ============================================
+   COLOR REMAPPING — AIOX Palette Enforcement
+   Overrides Tailwind color utilities to map to
+   the AIOX palette when data-theme="aiox" is active.
+
+   Palette:
+   - Lime:    #D1FF00 (primary accent)
+   - Red:     #FF3B30 (errors, critical)
+   - Amber:   #FFB800 (warnings, in-progress)
+   - Surface: #0a0a0a / rgba(255,255,255,0.05) (neutral bg)
+   - Gray:    #666 (dim labels)
+   ============================================ */
+
+/* --- Success / Active / Online → Lime --- */
+html[data-theme="aiox"] [class*="bg-green-500\/1"] {
+  background-color: rgba(209, 255, 0, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-green-4"],
+html[data-theme="aiox"] [class*="text-green-5"] {
+  color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="border-green-500"] {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+}
+
+/* --- Info / Default → Lime dim --- */
+html[data-theme="aiox"] [class*="bg-blue-500\/1"] {
+  background-color: rgba(209, 255, 0, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="text-blue-4"],
+html[data-theme="aiox"] [class*="text-blue-5"] {
+  color: rgba(209, 255, 0, 0.7) !important;
+}
+html[data-theme="aiox"] [class*="border-blue-500"] {
+  border-color: rgba(209, 255, 0, 0.15) !important;
+}
+
+/* Solid blue backgrounds (progress dots, indicators) → lime */
+html[data-theme="aiox"] [class*="bg-blue-500"]:not([class*="/"]) {
+  background-color: #D1FF00 !important;
+}
+
+/* --- Cyan → Lime --- */
+html[data-theme="aiox"] [class*="bg-cyan-500\/"] {
+  background-color: rgba(209, 255, 0, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="bg-cyan-4"] {
+  background-color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="text-cyan-4"],
+html[data-theme="aiox"] [class*="text-cyan-5"] {
+  color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="border-cyan-500"] {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+}
+
+/* --- Purple → Surface muted --- */
+html[data-theme="aiox"] [class*="bg-purple-500\/1"] {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+html[data-theme="aiox"] [class*="text-purple-4"],
+html[data-theme="aiox"] [class*="text-purple-5"] {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+html[data-theme="aiox"] [class*="border-purple-500"] {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* --- Error / Critical → AIOX Red --- */
+html[data-theme="aiox"] [class*="bg-red-500\/1"] {
+  background-color: rgba(255, 59, 48, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-red-4"],
+html[data-theme="aiox"] [class*="text-red-5"] {
+  color: #FF3B30 !important;
+}
+html[data-theme="aiox"] [class*="border-red-500"] {
+  border-color: rgba(255, 59, 48, 0.2) !important;
+}
+
+/* --- Warning / In-Progress → AIOX Amber --- */
+html[data-theme="aiox"] [class*="bg-yellow-500\/"],
+html[data-theme="aiox"] [class*="bg-amber-500\/"] {
+  background-color: rgba(255, 184, 0, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-yellow-4"],
+html[data-theme="aiox"] [class*="text-yellow-6"],
+html[data-theme="aiox"] [class*="text-amber-4"] {
+  color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="border-yellow-500"],
+html[data-theme="aiox"] [class*="border-amber-500"] {
+  border-color: rgba(255, 184, 0, 0.2) !important;
+}
+
+/* --- Orange → AIOX Amber --- */
+html[data-theme="aiox"] [class*="bg-orange-500\/1"] {
+  background-color: rgba(255, 184, 0, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-orange-5"] {
+  color: #FFB800 !important;
+}
+
+/* --- Orange-400 → Amber --- */
+html[data-theme="aiox"] [class*="text-orange-4"] {
+  color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="border-orange-500"] {
+  border-color: rgba(255, 184, 0, 0.2) !important;
+}
+
+/* --- Emerald → Lime (success) --- */
+html[data-theme="aiox"] [class*="bg-emerald-500\/"] {
+  background-color: rgba(209, 255, 0, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="bg-emerald-500"]:not([class*="/"]) {
+  background-color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="text-emerald-4"],
+html[data-theme="aiox"] [class*="text-emerald-5"] {
+  color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="border-emerald-500"] {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+}
+
+/* --- Teal → Lime dim --- */
+html[data-theme="aiox"] [class*="bg-teal-500\/"] {
+  background-color: rgba(209, 255, 0, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="text-teal-4"],
+html[data-theme="aiox"] [class*="text-teal-5"] {
+  color: rgba(209, 255, 0, 0.7) !important;
+}
+
+/* --- Violet → Muted surface (same as purple) --- */
+html[data-theme="aiox"] [class*="bg-violet-500\/"] {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+html[data-theme="aiox"] [class*="text-violet-4"],
+html[data-theme="aiox"] [class*="text-violet-5"] {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* --- Indigo → Lime dim --- */
+html[data-theme="aiox"] [class*="bg-indigo-500\/"] {
+  background-color: rgba(209, 255, 0, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="text-indigo-4"],
+html[data-theme="aiox"] [class*="text-indigo-5"] {
+  color: rgba(209, 255, 0, 0.7) !important;
+}
+
+/* --- Rose → Red (error) --- */
+html[data-theme="aiox"] [class*="bg-rose-500\/"] {
+  background-color: rgba(255, 59, 48, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-rose-4"],
+html[data-theme="aiox"] [class*="text-rose-5"] {
+  color: #FF3B30 !important;
+}
+
+/* --- Pink → Muted surface --- */
+html[data-theme="aiox"] [class*="bg-pink-500\/1"] {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+html[data-theme="aiox"] [class*="text-pink-4"],
+html[data-theme="aiox"] [class*="text-pink-5"] {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* --- Red-300 → Softer red --- */
+html[data-theme="aiox"] [class*="text-red-3"] {
+  color: rgba(255, 59, 48, 0.7) !important;
+}
+
+/* --- Solid color dots/indicators → Lime for positive, Red for negative --- */
+html[data-theme="aiox"] [class*="bg-green-4"]:not([class*="/"]) {
+  background-color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="bg-emerald-4"]:not([class*="/"]) {
+  background-color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="bg-red-4"]:not([class*="/"]) {
+  background-color: #FF3B30 !important;
+}
+html[data-theme="aiox"] [class*="bg-orange-4"]:not([class*="/"]) {
+  background-color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="bg-orange-5"]:not([class*="/"]) {
+  background-color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="bg-yellow-4"]:not([class*="/"]) {
+  background-color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="bg-amber-4"]:not([class*="/"]) {
+  background-color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="bg-amber-5"]:not([class*="/"]) {
+  background-color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="bg-purple-4"]:not([class*="/"]),
+html[data-theme="aiox"] [class*="bg-purple-5"]:not([class*="/"]) {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+html[data-theme="aiox"] [class*="bg-cyan-5"]:not([class*="/"]) {
+  background-color: #D1FF00 !important;
+}
+
+/* --- Yellow text → Amber --- */
+html[data-theme="aiox"] [class*="text-yellow-5"] {
+  color: #FFB800 !important;
+}
+
+/* ============================================
+   SKILL BARS — All lime in AIOX theme
+   ============================================ */
+
+html[data-theme="aiox"] .skill-bar-fill,
+html[data-theme="aiox"] .skill-bar-fill.orange,
+html[data-theme="aiox"] .skill-bar-fill.purple,
+html[data-theme="aiox"] .skill-bar-fill.green,
+html[data-theme="aiox"] .skill-bar-fill.blue,
+html[data-theme="aiox"] .skill-bar-fill.pink,
+html[data-theme="aiox"] .skill-bar-fill.cyan {
+  background: var(--aiox-lime) !important;
+}
+
+/* Kill the shimmer animation — brutalist, no bling */
+html[data-theme="aiox"] .skill-bar-fill::after {
+  display: none !important;
+}
+
+/* ============================================
+   SQUAD GRADIENTS — Brandbook-aligned overrides
+   ============================================ */
+
+html[data-theme="aiox"] {
+  --squad-orchestrator-gradient: linear-gradient(135deg, #D1FF00, #a8cc00);
+  --squad-design-gradient: linear-gradient(135deg, #a8cc00, #859E00);
+  --squad-development-gradient: linear-gradient(135deg, #0099FF, #0077CC);
+  --squad-engineering-gradient: linear-gradient(135deg, #0077CC, #005EA6);
+  --squad-analytics-gradient: linear-gradient(135deg, #3DB2FF, #2D8FCC);
+  --squad-content-gradient: linear-gradient(135deg, #ED4609, #BD3807);
+  --squad-creator-gradient: linear-gradient(135deg, #F06838, #C0532D);
+  --squad-marketing-gradient: linear-gradient(135deg, #C04D26, #9A3B1E);
+  --squad-copywriting-gradient: linear-gradient(135deg, #BDBDBD, #999999);
+  --squad-advisory-gradient: linear-gradient(135deg, #999999, #696969);
+}
+
+/* ============================================
+   CODE BLOCKS & TERMINAL — Cockpit Console
+   ============================================ */
+
+html[data-theme="aiox"] pre,
+html[data-theme="aiox"] code {
+  font-family: var(--font-family-mono);
+}
+
+html[data-theme="aiox"] pre {
+  background: var(--aiox-surface-deep) !important;
+  border: 1px solid rgba(156, 156, 156, 0.12) !important;
+  font-size: 0.7rem;
+}
+
+html[data-theme="aiox"] code:not(pre code) {
+  background: rgba(209, 255, 0, 0.06);
+  color: var(--aiox-lime);
+  padding: 0.1em 0.35em;
+  font-size: 0.85em;
+}
+
+html[data-theme="aiox"] pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+/* ============================================
+   CHARTS & SVG — AIOX Palette
+   Map common chart colors to AIOX palette.
+   ============================================ */
+
+html[data-theme="aiox"] svg text {
+  font-family: var(--font-family-mono);
+  fill: var(--aiox-gray-dim);
+}
+
+html[data-theme="aiox"] svg [class*="chart"] text,
+html[data-theme="aiox"] svg [class*="axis"] text {
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   SKELETON LOADERS — Cockpit Pulse
+   ============================================ */
+
+html[data-theme="aiox"] [class*="skeleton"],
+html[data-theme="aiox"] [class*="animate-pulse"] > div {
+  background: rgba(209, 255, 0, 0.04) !important;
+}
+
+@keyframes aiox-skeleton {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+html[data-theme="aiox"] [class*="skeleton"] {
+  animation: aiox-skeleton 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   COMMAND PALETTE — Cockpit Search Overlay
+   ============================================ */
+
+html[data-theme="aiox"] [class*="command-palette"],
+html[data-theme="aiox"] [cmdk-root] {
+  background: var(--aiox-dark) !important;
+  border: 1px solid rgba(209, 255, 0, 0.15) !important;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), 0 0 8px var(--aiox-lime-glow-soft) !important;
+}
+
+html[data-theme="aiox"] [cmdk-input] {
+  font-family: var(--font-family-mono);
+  background: var(--aiox-surface) !important;
+  border-bottom: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [cmdk-item][aria-selected="true"],
+html[data-theme="aiox"] [cmdk-item]:hover {
+  background: rgba(209, 255, 0, 0.06) !important;
+}
+
+html[data-theme="aiox"] [cmdk-group-heading] {
+  font-family: var(--font-family-mono);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--aiox-gray-dim);
+}
+
+/* ============================================
+   AGENT CARDS — Cockpit Style Override
+   Map agent border colors to AIOX palette.
+   ============================================ */
+
+html[data-theme="aiox"] [class*="agent-card"],
+html[data-theme="aiox"] [class*="agent"] > [class*="card"] {
+  border-color: rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [class*="agent-card"]:hover,
+html[data-theme="aiox"] [class*="agent"] > [class*="card"]:hover {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+  box-shadow: 0 0 12px var(--aiox-lime-glow-soft) !important;
+}
+
+/* ============================================
+   KANBAN COLUMNS — Cockpit Board
+   ============================================ */
+
+html[data-theme="aiox"] [class*="kanban"] [class*="column"],
+html[data-theme="aiox"] [class*="kanban"] [class*="lane"] {
+  background: var(--aiox-surface) !important;
+  border: 1px solid rgba(156, 156, 156, 0.12) !important;
+}
+
+html[data-theme="aiox"] [class*="kanban"] [class*="column-header"],
+html[data-theme="aiox"] [class*="kanban"] [class*="lane-header"] {
+  font-family: var(--font-family-mono);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid rgba(156, 156, 156, 0.12);
+}
+
+/* Drag-over state */
+html[data-theme="aiox"] [class*="kanban"] [class*="drag-over"],
+html[data-theme="aiox"] [class*="kanban"] [class*="drop-target"] {
+  background: rgba(209, 255, 0, 0.04) !important;
+  border-color: rgba(209, 255, 0, 0.2) !important;
+}
+
+/* ============================================
+   EMPTY STATES — Cockpit Placeholder
+   ============================================ */
+
+html[data-theme="aiox"] [class*="empty-state"],
+html[data-theme="aiox"] [class*="no-data"],
+html[data-theme="aiox"] [class*="placeholder"] {
+  font-family: var(--font-family-mono);
+  color: var(--aiox-gray-dim);
+}
+
+html[data-theme="aiox"] [class*="empty-state"] svg,
+html[data-theme="aiox"] [class*="no-data"] svg {
+  opacity: 0.3;
+  color: var(--aiox-gray-dim);
+}
+
+/* ============================================
+   TOGGLE SWITCHES — Cockpit Style
+   ============================================ */
+
+html[data-theme="aiox"] [role="switch"] {
+  background: var(--aiox-surface) !important;
+  border: 1px solid rgba(156, 156, 156, 0.15) !important;
+}
+
+html[data-theme="aiox"] [role="switch"][aria-checked="true"],
+html[data-theme="aiox"] [role="switch"][data-state="checked"] {
+  background: rgba(209, 255, 0, 0.15) !important;
+  border-color: rgba(209, 255, 0, 0.3) !important;
+}
+
+html[data-theme="aiox"] [role="switch"][aria-checked="true"] span,
+html[data-theme="aiox"] [role="switch"][data-state="checked"] span {
+  background: var(--aiox-lime) !important;
+}
+
+/* ============================================
+   KBD / KEYBOARD SHORTCUTS — Cockpit Keys
+   ============================================ */
+
+html[data-theme="aiox"] kbd {
+  background: var(--aiox-surface) !important;
+  border: 1px solid rgba(156, 156, 156, 0.2) !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--aiox-gray-muted);
+}
+
+/* ============================================
+   NOTIFICATION BADGES — Cockpit Counters
+   ============================================ */
+
+html[data-theme="aiox"] [class*="notification-badge"],
+html[data-theme="aiox"] [class*="badge-count"] {
+  background: var(--aiox-lime) !important;
+  color: var(--aiox-dark) !important;
+  font-family: var(--font-family-mono);
+  font-size: 0.5rem;
+  font-weight: 700;
+}
+
+/* ============================================
+   BRUTALIST OVERRIDES — Visual Discipline
+   Kill shadows, excessive rounding, backdrop blur,
+   and decorative gradients globally in AIOX theme.
+   ============================================ */
+
+/* --- Shadows: Kill all decorative shadows --- */
+html[data-theme="aiox"] [class*="shadow-lg"],
+html[data-theme="aiox"] [class*="shadow-xl"],
+html[data-theme="aiox"] [class*="shadow-2xl"] {
+  box-shadow: none !important;
+}
+
+/* --- Rounded corners: Enforce brutalist sharp edges --- */
+html[data-theme="aiox"] [class*="rounded-xl"],
+html[data-theme="aiox"] [class*="rounded-2xl"],
+html[data-theme="aiox"] [class*="rounded-3xl"] {
+  border-radius: 0 !important;
+}
+
+html[data-theme="aiox"] [class*="rounded-lg"] {
+  border-radius: 2px !important;
+}
+
+html[data-theme="aiox"] [class*="rounded-md"] {
+  border-radius: 1px !important;
+}
+
+/* Preserve rounded-full for dots, avatars, status indicators */
+html[data-theme="aiox"] [class*="rounded-full"] {
+  border-radius: 9999px !important;
+}
+
+/* --- Backdrop blur: Remove glass effects --- */
+html[data-theme="aiox"] [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* --- Decorative gradients: Flatten to solid surfaces --- */
+html[data-theme="aiox"] [class*="bg-gradient-to-"]:not([class*="squad"]):not([class*="skill"]):not(.text-gradient-neon) {
+  background-image: none !important;
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Preserve gradient text for headlines only */
+html[data-theme="aiox"] .text-gradient-neon {
+  background-image: linear-gradient(90deg, var(--aiox-lime), var(--aiox-lime-bright, #e5ff4d)) !important;
+}
+
+/* --- Ring colors: Use lime for focus rings --- */
+html[data-theme="aiox"] [class*="ring-blue-"],
+html[data-theme="aiox"] [class*="ring-purple-"],
+html[data-theme="aiox"] [class*="ring-cyan-"] {
+  --tw-ring-color: rgba(209, 255, 0, 0.4) !important;
+}
+
+/* ============================================
+   REDUCED MOTION — Accessibility
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="aiox"] *,
+  html[data-theme="aiox"] *::before,
+  html[data-theme="aiox"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   MONO LABEL SYSTEM — Consistent Cockpit Labels
+   Brandbook: Roboto Mono, 10-11px, uppercase, 0.15-0.2em
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .label-mono {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--aiox-gray-dim);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .label-hud {
+  font-family: var(--font-family-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--aiox-lime);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .label-hud-muted {
+  font-family: var(--font-family-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--aiox-gray-muted);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .label-section {
+  font-family: var(--font-family-mono);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--aiox-gray-dim);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(156, 156, 156, 0.12);
+}
+
+/* ============================================
+   HAIRLINE GRID — 1px gap reveals parent bg
+   Brandbook signature: gap-px grid pattern
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-hairline {
+  gap: 1px;
+  background: rgba(156, 156, 156, 0.12);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-hairline > * {
+  background: var(--aiox-surface-deep, #050505);
+}
+
+/* ============================================
+   OPACITY LADDER — 14 steps for lime
+   Brandbook defines fine-grained opacity levels
+   ============================================ */
+
+html[data-theme="aiox"] {
+  --lime-2: rgba(209, 255, 0, 0.02);
+  --lime-4: rgba(209, 255, 0, 0.04);
+  --lime-6: rgba(209, 255, 0, 0.06);
+  --lime-8: rgba(209, 255, 0, 0.08);
+  --lime-10: rgba(209, 255, 0, 0.10);
+  --lime-15: rgba(209, 255, 0, 0.15);
+  --lime-20: rgba(209, 255, 0, 0.20);
+  --lime-30: rgba(209, 255, 0, 0.30);
+  --lime-40: rgba(209, 255, 0, 0.40);
+  --lime-50: rgba(209, 255, 0, 0.50);
+  --lime-60: rgba(209, 255, 0, 0.60);
+  --lime-70: rgba(209, 255, 0, 0.70);
+  --lime-80: rgba(209, 255, 0, 0.80);
+  --lime-90: rgba(209, 255, 0, 0.90);
+}
+
+html[data-theme="aiox-gold"] {
+  --lime-2: rgba(221, 209, 187, 0.02);
+  --lime-4: rgba(221, 209, 187, 0.04);
+  --lime-6: rgba(221, 209, 187, 0.06);
+  --lime-8: rgba(221, 209, 187, 0.08);
+  --lime-10: rgba(221, 209, 187, 0.10);
+  --lime-15: rgba(221, 209, 187, 0.15);
+  --lime-20: rgba(221, 209, 187, 0.20);
+  --lime-30: rgba(221, 209, 187, 0.30);
+  --lime-40: rgba(221, 209, 187, 0.40);
+  --lime-50: rgba(221, 209, 187, 0.50);
+  --lime-60: rgba(221, 209, 187, 0.60);
+  --lime-70: rgba(221, 209, 187, 0.70);
+  --lime-80: rgba(221, 209, 187, 0.80);
+  --lime-90: rgba(221, 209, 187, 0.90);
+}
+
+/* ============================================
+   GRAIN OVERLAY — Subtle noise texture
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grain-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  z-index: 1;
+}
+
+/* ============================================
+   BENTO DASHBOARD GRID — 4-Col Asymmetric
+   Brandbook "Bento Dashboard" template
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-2 { grid-column: span 2; }
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-3 { grid-column: span 3; }
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-4 { grid-column: span 4; }
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .row-span-2 { grid-row: span 2; }
+
+@media (max-width: 768px) {
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento {
+    grid-template-columns: 1fr;
+  }
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-2,
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-3,
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-4 {
+    grid-column: span 1;
+  }
+}
+
+/* ============================================
+   CONTENT GRID — Auto-fit (min 340px)
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 1rem;
+}
+
+/* ============================================
+   PHASE 1: SURFACE STACK — Depth Hierarchy
+   Brandbook defines 9 surface levels. These utility
+   classes create visual depth differentiation.
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-canvas {
+  background: var(--aiox-dark);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-base {
+  background: var(--aiox-surface);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-raised {
+  background: var(--aiox-surface-alt);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-deep {
+  background: var(--aiox-surface-deep);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-panel {
+  background: var(--aiox-surface-panel);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-console {
+  background: var(--aiox-surface-console);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-overlay {
+  background: var(--aiox-surface-overlay);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-hover-strong {
+  background: var(--aiox-surface-hover-strong);
+}
+
+/* Component surface mapping overrides */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card {
+  background: var(--aiox-surface) !important;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card .glass-card,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-base .surface-base {
+  background: var(--aiox-surface-alt) !important;
+}
+
+/* Header: surface-base with bottom border for separation from canvas */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) header[class*="border-b"] {
+  background: var(--aiox-surface) !important;
+  border-bottom-color: var(--color-border-default) !important;
+}
+
+/* Dropdown menus: surface-base with strong border */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) [role="menu"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) [role="listbox"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) [data-radix-popper-content-wrapper] > div {
+  background: var(--aiox-surface) !important;
+  border-color: var(--color-border-strong) !important;
+}
+
+/* Code/terminal blocks: deep surface */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) pre,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) code[class*="block"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .terminal-block {
+  background: var(--aiox-surface-deep) !important;
+}
+
+/* ============================================
+   PHASE 2: TYPE HIERARCHY — Typography Scale
+   Brandbook: Display/H1/H2/Body/Small/Label/Micro
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-display {
+  font-size: var(--font-size-display);
+  font-family: var(--font-family-display);
+  font-weight: 800;
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: 1.1;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-h1 {
+  font-size: var(--font-size-2xl);
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: 1.2;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-h2 {
+  font-size: var(--font-size-xl);
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-body {
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-sans);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-small {
+  font-size: var(--font-size-small);
+  font-family: var(--font-family-sans);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-label {
+  font-size: var(--font-size-label);
+  font-family: var(--font-family-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-micro {
+  font-size: var(--font-size-micro);
+  font-family: var(--font-family-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
+}
+
+/* ============================================
+   PHASE 3: HARDCODED COLOR CLEANUP
+   Override Tailwind color utilities that bypass
+   the AIOX token system.
+   ============================================ */
+
+/* --- text-white → cream (#F4F4E8) --- */
+html[data-theme="aiox"] .text-white {
+  color: #F4F4E8 !important;
+}
+
+/* --- bg-white → surface --- */
+html[data-theme="aiox"] .bg-white {
+  background-color: var(--aiox-surface) !important;
+}
+
+html[data-theme="aiox"] .bg-white\/5 {
+  background-color: rgba(244, 244, 232, 0.05) !important;
+}
+
+html[data-theme="aiox"] .bg-white\/10 {
+  background-color: rgba(244, 244, 232, 0.10) !important;
+}
+
+html[data-theme="aiox"] .bg-white\/20 {
+  background-color: rgba(244, 244, 232, 0.20) !important;
+}
+
+/* --- text-gray-* → brandbook gray scale --- */
+html[data-theme="aiox"] .text-gray-300,
+html[data-theme="aiox"] [class*="text-gray-300"] {
+  color: var(--aiox-gray-silver) !important;
+}
+
+html[data-theme="aiox"] .text-gray-400,
+html[data-theme="aiox"] [class*="text-gray-400"] {
+  color: var(--aiox-gray-muted) !important;
+}
+
+html[data-theme="aiox"] .text-gray-500,
+html[data-theme="aiox"] [class*="text-gray-500"] {
+  color: var(--aiox-gray-dim) !important;
+}
+
+html[data-theme="aiox"] .text-gray-600,
+html[data-theme="aiox"] [class*="text-gray-600"] {
+  color: var(--aiox-gray-charcoal) !important;
+}
+
+/* --- bg-gray-* → surface tokens --- */
+html[data-theme="aiox"] [class*="bg-gray-800"],
+html[data-theme="aiox"] [class*="bg-gray-900"] {
+  background-color: var(--aiox-surface) !important;
+}
+
+html[data-theme="aiox"] [class*="bg-gray-700"] {
+  background-color: var(--aiox-surface-alt) !important;
+}
+
+/* --- text-zinc-* → brandbook grays --- */
+html[data-theme="aiox"] [class*="text-zinc-3"] {
+  color: var(--aiox-gray-silver) !important;
+}
+
+html[data-theme="aiox"] [class*="text-zinc-4"] {
+  color: var(--aiox-gray-muted) !important;
+}
+
+html[data-theme="aiox"] [class*="text-zinc-5"] {
+  color: var(--aiox-gray-dim) !important;
+}
+
+/* --- text-slate-* → brandbook grays --- */
+html[data-theme="aiox"] [class*="text-slate-3"] {
+  color: var(--aiox-gray-silver) !important;
+}
+
+html[data-theme="aiox"] [class*="text-slate-4"] {
+  color: var(--aiox-gray-muted) !important;
+}
+
+html[data-theme="aiox"] [class*="text-slate-5"] {
+  color: var(--aiox-gray-dim) !important;
+}
+
+/* --- text-neutral-* → brandbook grays --- */
+html[data-theme="aiox"] [class*="text-neutral-3"] {
+  color: var(--aiox-gray-silver) !important;
+}
+
+html[data-theme="aiox"] [class*="text-neutral-4"] {
+  color: var(--aiox-gray-muted) !important;
+}
+
+html[data-theme="aiox"] [class*="text-neutral-5"] {
+  color: var(--aiox-gray-dim) !important;
+}
+
+/* --- border-white/* → cream-tinted --- */
+html[data-theme="aiox"] [class*="border-white\\/"] {
+  border-color: rgba(244, 244, 232, 0.12) !important;
+}
+
+/* ============================================
+   PHASE 4: BORDER HIERARCHY — Semantic Application
+   Uses tokens from aiox.css (already fixed).
+   Applies correct border level per component context.
+   ============================================ */
+
+/* Cards: soft border (barely visible container edge) */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card {
+  border-color: var(--color-border-soft) !important;
+}
+
+/* Cards on hover: elevate border */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card:hover {
+  border-color: var(--color-border-hover) !important;
+}
+
+/* Internal dividers: default level */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .divide-y > * + *,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .divide-x > * + * {
+  border-color: var(--color-border-default) !important;
+}
+
+/* Form inputs: input level (more visible for affordance) */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) input,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) textarea,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) select {
+  border-color: var(--color-border-input) !important;
+}
+
+/* ============================================
+   PHASE 5: GLOW & INTERACTIVE STATES
+   Brandbook signature: neon lime glow on interaction
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-hover:hover {
+  box-shadow: 0 0 16px var(--aiox-lime-glow-soft);
+  border-color: rgba(209, 255, 0, 0.20) !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-hover-subtle:hover {
+  box-shadow: 0 0 8px var(--aiox-lime-glow-soft);
+  transition: box-shadow 0.2s ease;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-active {
+  box-shadow: 0 0 8px var(--aiox-neon-glow), 0 0 24px var(--aiox-lime-glow);
+  border-color: rgba(209, 255, 0, 0.30) !important;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-focus:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(209, 255, 0, 0.3), 0 0 16px var(--aiox-lime-glow-soft);
+}
+
+/* Auto-apply glow hover to glass-card interactions */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card:hover {
+  box-shadow: 0 0 12px var(--aiox-lime-glow-soft) !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Sidebar active item glow */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) nav a[aria-current="page"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) nav a.active,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) nav [data-active="true"] {
+  background: rgba(209, 255, 0, 0.06) !important;
+  box-shadow: inset 0 0 12px rgba(209, 255, 0, 0.04);
+  border-left: 2px solid var(--aiox-lime) !important;
+}
+
+/* CTA button glow on hover */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) button[class*="bg-lime"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) button[class*="bg-primary"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .btn-primary {
+  transition: box-shadow 0.2s ease;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) button[class*="bg-lime"]:hover,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) button[class*="bg-primary"]:hover,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .btn-primary:hover {
+  box-shadow: 0 0 20px rgba(209, 255, 0, 0.3), 0 0 40px rgba(209, 255, 0, 0.1);
+}
+
+/* Status dot glow pulse for active states */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .status-online {
+  box-shadow: 0 0 6px rgba(209, 255, 0, 0.4);
+}
+
+/* ============================================
+   PHASE 6: SPACING NORMALIZATION
+   Custom properties for consistent spacing contexts.
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) {
+  --space-page: 1.25rem;       /* 20px — page edge padding */
+  --space-page-md: 1.5rem;     /* 24px — page edge on md+ */
+  --space-section: 1.25rem;    /* 20px — gap between sections/cards */
+  --space-card: 1rem;          /* 16px — card internal padding */
+  --space-element: 0.5rem;     /* 8px — gap between elements in a group */
+  --space-micro: 0.375rem;     /* 6px — icon+text, inline pairs */
+}
+
+/* Reduced motion: disable glow transitions */
+@media (prefers-reduced-motion: reduce) {
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-hover:hover,
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-hover-subtle:hover,
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-active,
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card:hover {
+    box-shadow: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,245 @@
+/* ============================================
+   AIOX COCKPIT — Animations & Motion
+   Brandbook-aligned keyframes and motion tokens.
+   ============================================ */
+
+/* ============================================
+   MOTION TOKENS (override platform defaults)
+   ============================================ */
+
+html[data-theme="aiox"] {
+  /* Brandbook easing curves */
+  --easing-default: cubic-bezier(0.25, 0.1, 0.25, 1);  /* bb-ease-smooth */
+  --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);   /* bb-ease-spring */
+  --easing-out: cubic-bezier(0, 0, 0.2, 1);              /* bb-ease-decel */
+  --easing-in: cubic-bezier(0.4, 0, 1, 1);               /* bb-ease-accel */
+  --easing-scroll: cubic-bezier(0.16, 1, 0.3, 1);        /* scroll reveal */
+
+  /* Brandbook durations */
+  --duration-fast: 200ms;
+  --duration-base: 400ms;
+  --duration-slow: 700ms;
+  --duration-slower: 700ms;
+}
+
+/* ============================================
+   KEYFRAMES — UI Animations
+   ============================================ */
+
+/* Fade in-out — success feedback overlay */
+@keyframes fade-in-out {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Ticker — horizontal scrolling text */
+@keyframes aiox-ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Pulse — activity indicator */
+@keyframes aiox-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Pulse glow — neon breathing */
+@keyframes aiox-pulse-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* Bar grow — progress fill */
+@keyframes aiox-bar-grow {
+  from { width: 0; }
+}
+
+/* Draw line — horizontal reveal */
+@keyframes aiox-draw-line {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Draw line vertical */
+@keyframes aiox-draw-line-v {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* ============================================
+   KEYFRAMES — Loading
+   ============================================ */
+
+/* Content in — fade + slide up */
+@keyframes aiox-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Blinds open — reveal effect */
+@keyframes aiox-blinds-open {
+  from { --blinds-width: 100%; }
+  to { --blinds-width: 0px; }
+}
+
+/* Letter in — stagger text */
+@keyframes aiox-letter-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   KEYFRAMES — Decorative
+   ============================================ */
+
+/* Scanline sweep — HUD effect */
+@keyframes aiox-scanline {
+  from { transform: translateY(-100vh); }
+  to { transform: translateY(100vh); }
+}
+
+/* Shimmer — skeleton loading */
+@keyframes aiox-shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+/* Spin — spinner */
+@keyframes aiox-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   SCROLL REVEAL — Intersection Observer
+   ============================================ */
+
+html[data-theme="aiox"] .anim {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme="aiox"] .anim.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+html[data-theme="aiox"] .anim-left {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme="aiox"] .anim-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+html[data-theme="aiox"] .anim-right {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme="aiox"] .anim-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+html[data-theme="aiox"] .anim-scale {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme="aiox"] .anim-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Stagger delay classes */
+html[data-theme="aiox"] .delay-1 { transition-delay: 0.1s; }
+html[data-theme="aiox"] .delay-2 { transition-delay: 0.2s; }
+html[data-theme="aiox"] .delay-3 { transition-delay: 0.3s; }
+html[data-theme="aiox"] .delay-4 { transition-delay: 0.4s; }
+html[data-theme="aiox"] .delay-5 { transition-delay: 0.5s; }
+
+/* ============================================
+   UTILITY CLASSES — Glow effects
+   ============================================ */
+
+html[data-theme="aiox"] .glow-lime {
+  box-shadow: 0 0 10px 1px var(--aiox-lime-glow);
+}
+
+html[data-theme="aiox"] .glow-lime-soft {
+  box-shadow: 0 0 10px 1px var(--aiox-lime-glow-soft);
+}
+
+html[data-theme="aiox"] .glow-neon {
+  box-shadow: 0 0 20px var(--aiox-lime-glow), 0 0 60px var(--aiox-lime-glow-soft);
+}
+
+html[data-theme="aiox"] .glow-neon-strong {
+  box-shadow: 0 0 20px var(--aiox-lime-glow), 0 0 60px var(--aiox-lime-glow);
+}
+
+html[data-theme="aiox"] .text-gradient-neon {
+  background: linear-gradient(135deg, var(--aiox-lime), rgba(209, 255, 0, 0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   AIOX LOGO HOVER — X Spin + Lime Color
+   ============================================ */
+
+.aiox-logo-hover .aiox-letter,
+.aiox-logo-hover .aiox-letter-x {
+  transition: fill 0.3s ease;
+}
+
+/* X spins 360deg around its own center (937.9, 160) */
+.aiox-logo-hover .aiox-letter-x {
+  transform-origin: 937.9px 160px;
+  transition: fill 0.3s ease, transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.aiox-logo-hover:hover .aiox-letter,
+.aiox-logo-hover:hover .aiox-letter-x {
+  fill: #D1FF00;
+}
+
+.aiox-logo-hover:hover .aiox-letter-x {
+  transform: rotate(360deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aiox-logo-hover .aiox-letter-x {
+    transition: fill 0.3s ease;
+  }
+  .aiox-logo-hover:hover .aiox-letter-x {
+    transform: none;
+  }
+}
