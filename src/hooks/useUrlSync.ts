@@ -46,6 +46,7 @@ const VIEW_PATHS: Record<string, string> = {
   '/marketplace/submit': 'marketplace-submit',
   '/marketplace/review': 'marketplace-review',
   '/marketplace/admin': 'marketplace-admin',
+  '/ds-preview': 'ds-preview',
   // Consolidated aliases (redirect to canonical view)
   '/cockpit': 'dashboard',
   '/insights': 'dashboard',
