@@ -160,6 +160,10 @@ const MarketplaceAdminAnalytics = lazy(() =>
   import('./components/marketplace/admin/AdminAnalytics')
 );
 
+const DSPreview = lazy(() =>
+  import('./components/ds-preview/DSPreview')
+);
+
 // CockpitDashboard removed — consolidated into DashboardWorkspace
 
 // View map — maps ViewType to lazy component
@@ -204,6 +208,7 @@ const viewMap: Record<string, ComponentType> = {
   'marketplace-submit': MarketplaceSubmitWizard,
   'marketplace-review': MarketplaceReviewQueue,
   'marketplace-admin': MarketplaceAdminAnalytics,
+  'ds-preview': DSPreview,
 };
 
 // Loading messages per view
@@ -248,6 +253,7 @@ const viewLoaderMessages: Record<string, string> = {
   'marketplace-submit': 'Carregando submissão...',
   'marketplace-review': 'Carregando review queue...',
   'marketplace-admin': 'Carregando analytics...',
+  'ds-preview': 'Carregando design system preview...',
 };
 
 // Create a client

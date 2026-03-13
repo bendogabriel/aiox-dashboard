@@ -105,6 +105,33 @@ export default {
             end: 'var(--squad-default-end)',
           }),
         },
+        // shadcn compatibility layer
+        primary: {
+          DEFAULT: 'var(--primary)',
+          foreground: 'var(--primary-foreground)',
+        },
+        secondary: {
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
+        },
+        destructive: {
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)',
+        },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        popover: {
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)',
+        },
+        card: {
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
+        },
+        ring: 'var(--ring)',
+        input: 'var(--input)',
         tier: {
           0: withAlpha('var(--tier-0-default)', {
             muted: 'var(--tier-0-muted)',
@@ -121,6 +148,7 @@ export default {
         },
       },
       borderRadius: {
+        DEFAULT: 'var(--radius)',
         xs: 'var(--radius-xs)',
         sm: 'var(--radius-sm)',
         md: 'var(--radius-md)',

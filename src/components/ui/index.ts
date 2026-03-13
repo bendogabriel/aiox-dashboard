@@ -77,3 +77,8 @@ export { ShortcutHint } from './ShortcutHint';
 export { FocusModeIndicator } from './FocusModeIndicator';
 export { EngineOfflineBanner } from './EngineOfflineBanner';
 export { DegradationBanner } from './DegradationBanner';
+
+// shadcn/ui components
+export { Button, buttonVariants, type ButtonProps } from './button';
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './card';
+export { Input } from './input';
