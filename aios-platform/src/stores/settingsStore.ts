@@ -7,6 +7,7 @@ export interface AgentColorConfig {
   id: string;
   label: string;
   color: string;
+  squad?: string;
 }
 
 const DEFAULT_AGENT_COLORS: AgentColorConfig[] = [

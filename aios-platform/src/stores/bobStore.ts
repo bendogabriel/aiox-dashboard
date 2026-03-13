@@ -14,6 +14,7 @@ export interface BobAgent {
   name: string;
   task: string;
   status: 'working' | 'completed' | 'waiting' | 'failed';
+  squad?: string;
 }
 
 export interface BobDecision {

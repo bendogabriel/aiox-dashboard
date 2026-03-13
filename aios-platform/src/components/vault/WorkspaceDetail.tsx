@@ -11,6 +11,7 @@ import {
   Cloud,
   Upload,
   Package,
+  Brain,
 } from 'lucide-react';
 import { CockpitCard, CockpitButton, CockpitKpiCard, Badge, StatusDot, ProgressBar } from '../ui';
 import type { StatusType } from '../ui/StatusDot';
@@ -30,6 +31,8 @@ import { getIconComponent } from '../../lib/icons';
 import SpaceList from './SpaceList';
 import SourceList from './SourceList';
 import DocumentUpload from './DocumentUpload';
+import AiMemoryImport from './AiMemoryImport';
+import PackageBuilder from './PackageBuilder';
 
 // ── Props ──
 
@@ -518,13 +521,10 @@ export default function WorkspaceDetail({
           <SourceList sources={sources} />
         )}
         {activeTab === 'documents' && (
-          <div className="space-y-4">
-            <DocumentUpload workspaceId={workspace.id} />
-            <TabDados
-              categories={workspace.categories}
-              onSelectDocument={onSelectDocument}
-            />
-          </div>
+          <TabDocuments
+            workspace={workspace}
+            onSelectDocument={onSelectDocument}
+          />
         )}
         {activeTab === 'taxonomy' && (
           <TabTaxonomias
@@ -534,7 +534,7 @@ export default function WorkspaceDetail({
           />
         )}
         {activeTab === 'packages' && (
-          <TabCSuite personas={workspace.csuitePersonas} />
+          <PackageBuilder workspaceId={workspace.id} />
         )}
         {activeTab === 'templates' && (
           <TabTemplates
@@ -604,6 +604,46 @@ function TabOverview({ workspace }: { workspace: VaultWorkspace }) {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+// ── Tab: Documents (combines upload, AI import, and data categories) ──
+
+function TabDocuments({
+  workspace,
+  onSelectDocument,
+}: {
+  workspace: VaultWorkspace;
+  onSelectDocument: (documentId: string) => void;
+}) {
+  const [showAiImport, setShowAiImport] = useState(false);
+
+  return (
+    <div className="space-y-4">
+      {showAiImport ? (
+        <AiMemoryImport
+          workspaceId={workspace.id}
+          onClose={() => setShowAiImport(false)}
+        />
+      ) : (
+        <>
+          <DocumentUpload workspaceId={workspace.id} />
+          <CockpitButton
+            size="sm"
+            variant="ghost"
+            onClick={() => setShowAiImport(true)}
+            leftIcon={<Brain size={14} />}
+            className="w-full"
+          >
+            Import AI Memory (Claude, ChatGPT, Gemini)
+          </CockpitButton>
+        </>
+      )}
+      <TabDados
+        categories={workspace.categories}
+        onSelectDocument={onSelectDocument}
+      />
     </div>
   );
 }

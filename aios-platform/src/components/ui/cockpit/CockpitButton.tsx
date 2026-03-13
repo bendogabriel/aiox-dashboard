@@ -3,7 +3,7 @@ import { cn } from '../../../lib/utils'
 import type { ButtonHTMLAttributes } from 'react'
 
 export interface CockpitButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'destructive'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'destructive' | 'default' | 'danger' | 'outline'
   size?: 'sm' | 'md' | 'lg' | 'icon'
   loading?: boolean
   leftIcon?: React.ReactNode
@@ -58,6 +58,9 @@ export const CockpitButton = forwardRef<HTMLButtonElement, CockpitButtonProps>(
       secondary: { background: 'transparent', color: 'var(--aiox-cream)', border: '1px solid rgba(156, 156, 156, 0.15)' },
       ghost: { background: 'transparent', color: 'var(--aiox-gray-dim)' },
       destructive: { background: 'var(--color-status-error)', color: 'white' },
+      default: { background: 'transparent', color: 'var(--aiox-cream)', border: '1px solid rgba(156, 156, 156, 0.15)' },
+      danger: { background: 'var(--color-status-error)', color: 'white' },
+      outline: { background: 'transparent', color: 'var(--aiox-cream)', border: '1px solid rgba(156, 156, 156, 0.25)' },
     }
 
     return (

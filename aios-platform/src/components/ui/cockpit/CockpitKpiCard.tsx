@@ -7,6 +7,7 @@ export interface CockpitKpiCardProps extends HTMLAttributes<HTMLDivElement> {
   value: string | number
   change?: string
   trend?: 'up' | 'down' | 'neutral'
+  size?: 'sm' | 'md' | 'lg'
 }
 
 const trendColors: Record<string, string> = {
@@ -15,7 +16,7 @@ const trendColors: Record<string, string> = {
   neutral: 'var(--aiox-gray-dim)',
 }
 
-export function CockpitKpiCard({ label, value, change, trend = 'neutral', className, style, ...props }: CockpitKpiCardProps) {
+export function CockpitKpiCard({ label, value, change, trend = 'neutral', size: _size, className, style, ...props }: CockpitKpiCardProps) {
   return (
     <div
       className={cn(className)}

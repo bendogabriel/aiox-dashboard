@@ -643,7 +643,7 @@ export type ViewType =
   | 'vault'
   | 'overnight'
   | 'marketplace' | 'marketplace-listing' | 'marketplace-purchases' | 'marketplace-seller' | 'marketplace-submit' | 'marketplace-review' | 'marketplace-admin'
-  | 'sales-dashboard' | 'traffic-dashboard' | 'creative-gallery' | 'marketing' | 'ds-preview';
+  | 'sales-dashboard' | 'traffic-dashboard' | 'creative-gallery' | 'marketing' | 'marketing-hub' | 'ds-preview';
 export type SettingsSectionType = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
 export interface UIState {

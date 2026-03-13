@@ -1,16 +1,19 @@
 import { cn } from '../../../lib/utils'
 import type { HTMLAttributes } from 'react'
 
-export interface CockpitTableColumn<T> {
+export interface CockpitTableColumn<T = Record<string, unknown>> {
   key: string
-  header: string
-  render?: (value: unknown, row: T) => React.ReactNode
+  header?: string
+  label?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  render?: ((...args: any[]) => React.ReactNode)
   sortable?: boolean
   width?: string
   align?: 'left' | 'center' | 'right'
 }
 
-export interface CockpitTableProps<T extends Record<string, unknown>> extends Omit<HTMLAttributes<HTMLTableElement>, 'children'> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface CockpitTableProps<T = any> extends Omit<HTMLAttributes<HTMLTableElement>, 'children'> {
   columns: CockpitTableColumn<T>[]
   data: T[]
   onSort?: (key: string, direction: 'asc' | 'desc') => void
@@ -22,6 +25,7 @@ export interface CockpitTableProps<T extends Record<string, unknown>> extends Om
   compact?: boolean
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function SortIndicator({ active, direction }: { active: boolean; direction?: 'asc' | 'desc' }) {
   return (
     <span
@@ -62,7 +66,8 @@ function SortIndicator({ active, direction }: { active: boolean; direction?: 'as
   )
 }
 
-export function CockpitTable<T extends Record<string, unknown>>({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function CockpitTable<T = any>({
   columns,
   data,
   onSort,
@@ -129,7 +134,7 @@ export function CockpitTable<T extends Record<string, unknown>>({
                   userSelect: col.sortable ? 'none' : 'auto',
                 }}
               >
-                {col.header}
+                {col.header || col.label}
                 {col.sortable && (
                   <SortIndicator
                     active={sortKey === col.key}
@@ -182,7 +187,7 @@ export function CockpitTable<T extends Record<string, unknown>>({
                 }}
               >
                 {columns.map((col) => {
-                  const cellValue = row[col.key]
+                  const cellValue = (row as Record<string, unknown>)[col.key]
                   return (
                     <td
                       key={col.key}

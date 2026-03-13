@@ -13,7 +13,7 @@ export async function parseXlsx(
 
     for (const sheetName of workbook.SheetNames) {
       const sheet = workbook.Sheets[sheetName];
-      const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { header: 1 }) as unknown[][];
+      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as unknown[][];
 
       if (rows.length === 0) continue;
 

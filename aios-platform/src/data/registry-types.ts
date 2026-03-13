@@ -40,6 +40,8 @@ export interface AgentDefinition {
   dependencyTemplates: string[];
   /** Checklist files in dependencies */
   dependencyChecklists: string[];
+  /** Squad this agent belongs to */
+  squad?: string;
 }
 
 export interface AgentCommand {

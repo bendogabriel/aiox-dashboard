@@ -71,3 +71,38 @@ CREATE TABLE IF NOT EXISTS vault_sources (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+CREATE TABLE IF NOT EXISTS vault_sync_jobs (
+  id TEXT PRIMARY KEY,
+  source_id TEXT NOT NULL,
+  workspace_id TEXT NOT NULL,
+  space_id TEXT,
+  status TEXT NOT NULL DEFAULT 'pending',
+  phase TEXT NOT NULL DEFAULT 'idle',
+  progress_current INTEGER NOT NULL DEFAULT 0,
+  progress_total INTEGER NOT NULL DEFAULT 0,
+  documents_created INTEGER NOT NULL DEFAULT 0,
+  documents_updated INTEGER NOT NULL DEFAULT 0,
+  documents_skipped INTEGER NOT NULL DEFAULT 0,
+  errors TEXT NOT NULL DEFAULT '[]',
+  started_at TEXT,
+  completed_at TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS vault_context_packages (
+  id TEXT PRIMARY KEY,
+  workspace_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'draft',
+  filter_criteria TEXT NOT NULL DEFAULT '{}',
+  document_ids TEXT NOT NULL DEFAULT '[]',
+  total_tokens INTEGER NOT NULL DEFAULT 0,
+  document_count INTEGER NOT NULL DEFAULT 0,
+  built_content TEXT NOT NULL DEFAULT '',
+  built_at TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

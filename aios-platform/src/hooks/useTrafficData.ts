@@ -32,6 +32,7 @@ export function useTrafficDashboard() {
           platform: 'Google' as const,
           objective: '',
           impressions: 0,
+          clicks: 0,
           roas: 0,
         })),
       ],

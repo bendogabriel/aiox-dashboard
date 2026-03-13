@@ -8,6 +8,7 @@ import { apiClient } from './client';
 export interface TaskAgent {
   id: string;
   name: string;
+  squad?: string;
 }
 
 export interface TaskSquadSelection {

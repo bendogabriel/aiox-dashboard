@@ -23,7 +23,11 @@ interface RegistryAgent {
   id: string;
   name: string;
   squad: string;
+  squadId?: string;
   title?: string;
+  role?: string;
+  description?: string;
+  filePath?: string;
 }
 
 export default function CronJobEditor({ isOpen, onClose }: CronJobEditorProps) {
@@ -45,7 +49,10 @@ export default function CronJobEditor({ isOpen, onClose }: CronJobEditorProps) {
     staleTime: 60_000,
   });
 
-  const agents: RegistryAgent[] = agentsData?.agents || [];
+  const agents: RegistryAgent[] = (agentsData?.agents || []).map((a) => ({
+    ...a,
+    squad: a.squadId ?? (a as Record<string, unknown>).squad as string ?? '',
+  })) as RegistryAgent[];
 
   // Derive unique squads from agents
   const squads = [...new Set(agents.map((a) => a.squad))].sort();

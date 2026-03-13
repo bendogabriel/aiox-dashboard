@@ -44,6 +44,7 @@ export interface SalesAgent {
   resolvedToday: number;
   conversionRate: number;
   avgResponseTime: number;
+  squad?: string;
 }
 
 export interface ActivityEvent {

@@ -1,66 +1,112 @@
-import { Sparkles, Image, Wand2, FolderOpen, Zap } from 'lucide-react';
+import { useState, lazy, Suspense } from 'react';
+import { Sparkles, FolderOpen, Wand2, Zap, type LucideIcon } from 'lucide-react';
 import { ModuleHeader } from '../shared';
 
-const CREATIVE_TOOLS = [
-  { label: 'Galeria de Criativos', description: 'Todos os criativos aprovados e em teste', icon: FolderOpen, status: 'Fase 2' },
-  { label: 'Gerador IA', description: 'Criar criativos com fal-ai + nano-banana', icon: Wand2, status: 'Fase 2' },
-  { label: 'Editor de Imagem', description: 'Editar, remover fundo, composicao', icon: Image, status: 'Fase 2' },
-  { label: 'Teste A/B Visual', description: 'Comparar variantes de criativos', icon: Zap, status: 'Fase 2' },
+// Reuse existing CreativeGallery component
+const CreativeGallery = lazy(() =>
+  import('../../creative-gallery/CreativeGallery')
+);
+
+type CreativeTab = 'gallery' | 'generate' | 'compare';
+
+interface TabDef {
+  id: CreativeTab;
+  label: string;
+  icon: LucideIcon;
+}
+
+const TABS: TabDef[] = [
+  { id: 'gallery', label: 'Galeria', icon: FolderOpen },
+  { id: 'generate', label: 'Gerar IA', icon: Wand2 },
+  { id: 'compare', label: 'A/B Test', icon: Zap },
 ];
 
+function GeneratePanel() {
+  return (
+    <div
+      className="flex flex-col items-center justify-center gap-4 py-12"
+      style={{
+        background: 'var(--aiox-surface)',
+        border: '1px dashed rgba(156,156,156,0.15)',
+      }}
+    >
+      <Wand2 size={32} style={{ color: 'var(--aiox-gray-dim)' }} />
+      <p style={{ fontFamily: 'var(--font-family-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--aiox-cream)' }}>
+        Gerador de Criativos IA
+      </p>
+      <p style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.65rem', color: 'var(--aiox-gray-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center', maxWidth: 400 }}>
+        Gere variantes de criativos para Meta Ads usando fal-ai + nano-banana.
+        Interface completa em desenvolvimento.
+      </p>
+    </div>
+  );
+}
+
+function ComparePanel() {
+  return (
+    <div
+      className="flex flex-col items-center justify-center gap-4 py-12"
+      style={{
+        background: 'var(--aiox-surface)',
+        border: '1px dashed rgba(156,156,156,0.15)',
+      }}
+    >
+      <Zap size={32} style={{ color: 'var(--aiox-gray-dim)' }} />
+      <p style={{ fontFamily: 'var(--font-family-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--aiox-cream)' }}>
+        Teste A/B Visual
+      </p>
+      <p style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.65rem', color: 'var(--aiox-gray-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center', maxWidth: 400 }}>
+        Compare variantes de criativos lado a lado com metricas de performance.
+        Interface completa em desenvolvimento.
+      </p>
+    </div>
+  );
+}
+
 export default function CreativeStudio() {
+  const [activeTab, setActiveTab] = useState<CreativeTab>('gallery');
+
   return (
     <div>
-      <ModuleHeader title="Criativos" subtitle="Assets e studio criativo" icon={Sparkles} />
-
-      <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-        {CREATIVE_TOOLS.map((tool) => {
-          const Icon = tool.icon;
-          return (
-            <div
-              key={tool.label}
-              className="relative"
-              style={{
-                padding: '1.5rem',
-                background: 'var(--aiox-surface)',
-                border: '1px solid rgba(156, 156, 156, 0.12)',
-                opacity: 0.6,
-              }}
-            >
-              <div className="flex items-start gap-3">
-                <span
-                  style={{
-                    width: 40,
-                    height: 40,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'rgba(225, 48, 108, 0.06)',
-                    border: '1px solid rgba(225, 48, 108, 0.12)',
-                    flexShrink: 0,
-                  }}
-                >
-                  <Icon size={18} style={{ color: '#E1306C' }} />
-                </span>
-                <div>
-                  <span style={{ fontFamily: 'var(--font-family-display)', fontSize: '0.95rem', fontWeight: 700, color: 'var(--aiox-cream)', display: 'block' }}>
-                    {tool.label}
-                  </span>
-                  <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.6rem', color: 'var(--aiox-gray-muted)', letterSpacing: '0.04em' }}>
-                    {tool.description}
-                  </span>
-                </div>
-              </div>
-              <span
-                className="absolute top-3 right-3"
-                style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--aiox-gray-dim)', background: 'rgba(156, 156, 156, 0.08)', padding: '0.15rem 0.4rem' }}
+      <ModuleHeader title="Criativos" subtitle="Assets e studio criativo" icon={Sparkles}>
+        <div className="flex items-center gap-0" style={{ border: '1px solid rgba(156,156,156,0.12)' }}>
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-all"
+                style={{
+                  background: isActive ? 'rgba(209,255,0,0.06)' : 'transparent',
+                  color: isActive ? 'var(--aiox-cream)' : 'var(--aiox-gray-muted)',
+                  borderRight: '1px solid rgba(156,156,156,0.08)',
+                }}
               >
-                {tool.status}
+                <Icon size={12} style={isActive ? { color: 'var(--aiox-lime)' } : undefined} />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+      </ModuleHeader>
+
+      {activeTab === 'gallery' && (
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-48">
+              <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.6rem', color: 'var(--aiox-gray-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                Carregando galeria...
               </span>
             </div>
-          );
-        })}
-      </div>
+          }
+        >
+          <CreativeGallery />
+        </Suspense>
+      )}
+      {activeTab === 'generate' && <GeneratePanel />}
+      {activeTab === 'compare' && <ComparePanel />}
     </div>
   );
 }

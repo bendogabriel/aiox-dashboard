@@ -91,6 +91,16 @@ export const VaultImportDialog = memo(function VaultImportDialog({
         lastUpdated: new Date().toISOString(),
         categoryId: category,
         workspaceId: selectedWorkspace || 'default',
+        spaceId: null,
+        sourceId: null,
+        contentHash: '',
+        summary: '',
+        language: 'pt-BR',
+        tags: [],
+        sourceMetadata: {},
+        quality: null as unknown as import('../../types/vault').DocumentQuality,
+        validatedAt: null,
+        createdAt: new Date().toISOString(),
       };
 
       await supabaseVaultService.upsertDocument(doc);

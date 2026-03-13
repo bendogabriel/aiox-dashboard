@@ -1,14 +1,15 @@
 import { cn } from '../../../lib/utils'
 
 export interface CockpitSectionDividerProps {
-  label: string
+  label?: string
   concept?: string
   num?: string
   className?: string
   style?: React.CSSProperties
+  children?: React.ReactNode
 }
 
-export function CockpitSectionDivider({ label, concept, num, className, style }: CockpitSectionDividerProps) {
+export function CockpitSectionDivider({ label, concept, num, className, style, children }: CockpitSectionDividerProps) {
   return (
     <div
       className={cn(className)}
@@ -49,6 +50,7 @@ export function CockpitSectionDivider({ label, concept, num, className, style }:
         </span>
       )}
       <span style={{ height: 1, flex: 1, background: 'rgba(156, 156, 156, 0.15)' }} />
+      {children}
     </div>
   )
 }

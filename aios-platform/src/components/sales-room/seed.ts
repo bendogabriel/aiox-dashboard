@@ -7,7 +7,7 @@ export const INITIAL_AGENTS: SalesAgent[] = [
   {
     id: 'sdr-aaron-ross', name: 'Aaron (SDR)', avatar: 'A', status: 'ocioso',
     activeConversations: 0, resolvedToday: 0, conversionRate: 0, avgResponseTime: 0,
-    currentLead: null, messages: [], conversations: [], conversations: [],
+    currentLead: null, messages: [], conversations: [],
   },
   {
     id: 'pre-venda-jeb-blount', name: 'Jeb (Pre-Venda)', avatar: 'J', status: 'ocioso',

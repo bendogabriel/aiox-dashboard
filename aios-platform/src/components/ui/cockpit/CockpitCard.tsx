@@ -8,6 +8,7 @@ export interface CockpitCardProps extends HTMLAttributes<HTMLDivElement> {
   padding?: 'none' | 'sm' | 'md' | 'lg'
   accentBorder?: 'left' | 'top' | 'none'
   accentColor?: string
+  accent?: string
 }
 
 const paddingMap = {
@@ -25,6 +26,7 @@ export const CockpitCard = forwardRef<HTMLDivElement, CockpitCardProps>(
       padding = 'md',
       accentBorder = 'none',
       accentColor,
+      accent,
       className,
       style,
       children,
@@ -52,12 +54,12 @@ export const CockpitCard = forwardRef<HTMLDivElement, CockpitCardProps>(
       accentBorder === 'left'
         ? {
             borderLeftWidth: '3px',
-            borderLeftColor: accentColor || 'var(--aiox-lime)',
+            borderLeftColor: accentColor || accent || 'var(--aiox-lime)',
           }
         : accentBorder === 'top'
           ? {
               borderTopWidth: '3px',
-              borderTopColor: accentColor || 'var(--aiox-lime)',
+              borderTopColor: accentColor || accent || 'var(--aiox-lime)',
             }
           : {}
 

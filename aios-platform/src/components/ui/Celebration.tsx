@@ -34,7 +34,10 @@ function createParticles(count: number, originX: number, originY: number): Parti
 }
 
 interface CelebrationProps {
-  trigger: boolean;
+  /** @deprecated Use `celebrating` instead */
+  trigger?: boolean;
+  /** Alias for trigger — starts the celebration animation */
+  celebrating?: boolean;
   originX?: number;
   originY?: number;
   particleCount?: number;
@@ -43,16 +46,19 @@ interface CelebrationProps {
 
 export function Celebration({
   trigger,
+  celebrating,
   originX = window.innerWidth / 2,
   originY = window.innerHeight / 2,
   particleCount = 24,
   onComplete,
 }: CelebrationProps) {
+  // Support both `trigger` and `celebrating` props
+  const shouldTrigger = celebrating ?? trigger ?? false;
   const [particles, setParticles] = useState<Particle[]>([]);
   const [active, setActive] = useState(false);
 
   useEffect(() => {
-    if (trigger && !active) {
+    if (shouldTrigger && !active) {
       setActive(true);
       setParticles(createParticles(particleCount, originX, originY));
 
@@ -64,7 +70,7 @@ export function Celebration({
 
       return () => clearTimeout(timer);
     }
-  }, [trigger]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [shouldTrigger]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

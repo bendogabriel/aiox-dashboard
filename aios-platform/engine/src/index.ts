@@ -7,6 +7,7 @@ import { cors } from 'hono/cors';
 import { tasksApp } from './routes/tasks';
 import { vaultApp } from './routes/vault';
 import { marketingApp } from './routes/marketing';
+import { contentApp } from './routes/content';
 import { discoverAgents } from './core/agent-discovery';
 import { isClaudeAvailable } from './lib/claude-cli';
 
@@ -34,6 +35,9 @@ app.route('/vault', vaultApp);
 
 // Marketing Hub routes
 app.route('/marketing', marketingApp);
+
+// Content Module routes
+app.route('/content', contentApp);
 
 // 404 catch-all
 app.notFound((c) => c.json({ error: 'Not found' }, 404));

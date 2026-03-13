@@ -92,6 +92,7 @@ export interface WorkflowMission {
   agents: {
     id: string;
     name: string;
+    squad?: string;
     squadType: SquadType;
     role: string;
     status: 'working' | 'waiting' | 'completed';

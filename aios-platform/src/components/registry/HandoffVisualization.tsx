@@ -13,6 +13,7 @@ interface AgentRelationship {
   delegatesTo: string[];
   receivesFrom: string[];
   exclusiveOps: string[];
+  squad?: string;
 }
 
 // ── Handoff Visualization ──

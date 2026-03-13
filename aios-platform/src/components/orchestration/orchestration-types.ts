@@ -14,7 +14,7 @@ export interface SquadSelection {
   squadId: string;
   chief: string;
   agentCount: number;
-  agents: Array<{ id: string; name: string }>;
+  agents: Array<{ id: string; name: string; squad?: string }>;
 }
 
 export interface AgentOutput {

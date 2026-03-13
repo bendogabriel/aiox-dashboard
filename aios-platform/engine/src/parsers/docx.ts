@@ -8,13 +8,13 @@ export async function parseDocx(
 ): Promise<{ content: string; metadata: Record<string, unknown> }> {
   try {
     const mammoth = await import('mammoth');
-    const result = await mammoth.convertToMarkdown({ buffer });
+    // mammoth doesn't have convertToMarkdown — use extractRawText for plain text
+    const result = await mammoth.extractRawText({ buffer });
 
     return {
       content: result.value,
       metadata: {
         format: 'docx',
-        warnings: result.messages.length,
         bytes: buffer.byteLength,
       },
     };

@@ -37,7 +37,7 @@ import {
 import {
   CockpitKpiCard,
   CockpitCard,
-  CockpitTable,
+  CockpitTable, type CockpitTableColumn,
   CockpitTabs,
   CockpitBadge,
   CockpitButton,
@@ -1702,8 +1702,8 @@ function PaidTrafficTab({
                   <span style={{ fontVariantNumeric: 'tabular-nums' }}>{row.ctr.toFixed(2)}%</span>
                 ),
               },
-            ] as Array<{ key: string; header: string; width?: string; sortable?: boolean; align?: 'left' | 'center' | 'right'; render?: (value: unknown, row: CampaignRow) => React.ReactNode }>}
-            data={sortedCampaigns as unknown as Array<Record<string, unknown>>}
+            ] as CockpitTableColumn<CampaignRow>[]}
+            data={sortedCampaigns}
             hoverable
             striped
             compact
@@ -1896,8 +1896,8 @@ function OrganicTab() {
                   </span>
                 ),
               },
-            ] as Array<{ key: string; header: string; width?: string; sortable?: boolean; align?: 'left' | 'center' | 'right'; render?: (value: unknown, row: OrganicPost) => React.ReactNode }>}
-            data={ORGANIC_POSTS as unknown as Array<Record<string, unknown>>}
+            ] as CockpitTableColumn<OrganicPost>[]}
+            data={ORGANIC_POSTS}
             hoverable
             striped
             compact

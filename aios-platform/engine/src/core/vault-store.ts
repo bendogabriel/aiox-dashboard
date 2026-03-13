@@ -81,6 +81,41 @@ export interface SourceRow {
   updated_at: string;
 }
 
+export interface SyncJobRow {
+  id: string;
+  source_id: string;
+  workspace_id: string;
+  space_id: string | null;
+  status: string;
+  phase: string;
+  progress_current: number;
+  progress_total: number;
+  documents_created: number;
+  documents_updated: number;
+  documents_skipped: number;
+  errors: string;
+  started_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ContextPackageRow {
+  id: string;
+  workspace_id: string;
+  name: string;
+  description: string;
+  status: string;
+  filter_criteria: string;
+  document_ids: string;
+  total_tokens: number;
+  document_count: number;
+  built_content: string;
+  built_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // ── DB initialization ──
 
 let db: Database | null = null;
@@ -324,4 +359,196 @@ export function listDocuments(filters?: {
 
 export function deleteDocument(id: string): void {
   getDb().prepare('DELETE FROM vault_documents WHERE id = ?').run(id);
+}
+
+// ── Sources ──
+
+export function createSource(data: {
+  workspaceId: string;
+  name: string;
+  type: string;
+  config?: Record<string, unknown>;
+}): string {
+  const id = `src-${crypto.randomUUID().slice(0, 8)}`;
+  const now = new Date().toISOString();
+
+  getDb()
+    .prepare(
+      `INSERT INTO vault_sources (id, workspace_id, name, type, config, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
+    )
+    .run(id, data.workspaceId, data.name, data.type, JSON.stringify(data.config || {}), now, now);
+
+  return id;
+}
+
+export function getSource(id: string): SourceRow | null {
+  return getDb()
+    .prepare('SELECT * FROM vault_sources WHERE id = ?')
+    .get(id) as SourceRow | null;
+}
+
+export function listSources(workspaceId: string): SourceRow[] {
+  return getDb()
+    .prepare('SELECT * FROM vault_sources WHERE workspace_id = ? ORDER BY created_at DESC')
+    .all(workspaceId) as SourceRow[];
+}
+
+export function updateSource(id: string, data: Partial<Omit<SourceRow, 'id' | 'workspace_id' | 'created_at'>>): void {
+  const fields: string[] = [];
+  const values: (string | number | null)[] = [];
+
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) {
+      fields.push(`${key} = ?`);
+      values.push(value as string | number | null);
+    }
+  }
+  if (fields.length === 0) return;
+
+  fields.push('updated_at = ?');
+  values.push(new Date().toISOString());
+  values.push(id);
+
+  getDb()
+    .prepare(`UPDATE vault_sources SET ${fields.join(', ')} WHERE id = ?`)
+    .run(...values);
+}
+
+export function deleteSource(id: string): void {
+  getDb().prepare('DELETE FROM vault_sources WHERE id = ?').run(id);
+}
+
+// ── Sync Jobs ──
+
+export function createSyncJob(data: {
+  sourceId: string;
+  workspaceId: string;
+  spaceId?: string;
+}): string {
+  const id = `job-${crypto.randomUUID().slice(0, 8)}`;
+  const now = new Date().toISOString();
+
+  getDb()
+    .prepare(
+      `INSERT INTO vault_sync_jobs (id, source_id, workspace_id, space_id, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    )
+    .run(id, data.sourceId, data.workspaceId, data.spaceId || null, now, now);
+
+  return id;
+}
+
+export function getSyncJob(id: string): SyncJobRow | null {
+  return getDb()
+    .prepare('SELECT * FROM vault_sync_jobs WHERE id = ?')
+    .get(id) as SyncJobRow | null;
+}
+
+export function updateSyncJob(id: string, data: Partial<Omit<SyncJobRow, 'id' | 'source_id' | 'created_at'>>): void {
+  const fields: string[] = [];
+  const values: (string | number | null)[] = [];
+
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) {
+      fields.push(`${key} = ?`);
+      values.push(value as string | number | null);
+    }
+  }
+  if (fields.length === 0) return;
+
+  fields.push('updated_at = ?');
+  values.push(new Date().toISOString());
+  values.push(id);
+
+  getDb()
+    .prepare(`UPDATE vault_sync_jobs SET ${fields.join(', ')} WHERE id = ?`)
+    .run(...values);
+}
+
+export function listSyncJobs(sourceId?: string): SyncJobRow[] {
+  if (sourceId) {
+    return getDb()
+      .prepare('SELECT * FROM vault_sync_jobs WHERE source_id = ? ORDER BY created_at DESC LIMIT 50')
+      .all(sourceId) as SyncJobRow[];
+  }
+  return getDb()
+    .prepare('SELECT * FROM vault_sync_jobs ORDER BY created_at DESC LIMIT 50')
+    .all() as SyncJobRow[];
+}
+
+// ── Context Packages ──
+
+export function createPackage(data: {
+  workspaceId: string;
+  name: string;
+  description?: string;
+  filterCriteria?: Record<string, unknown>;
+  documentIds?: string[];
+}): string {
+  const id = `pkg-${crypto.randomUUID().slice(0, 8)}`;
+  const now = new Date().toISOString();
+
+  getDb()
+    .prepare(
+      `INSERT INTO vault_context_packages (id, workspace_id, name, description, filter_criteria, document_ids, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .run(
+      id,
+      data.workspaceId,
+      data.name,
+      data.description || '',
+      JSON.stringify(data.filterCriteria || {}),
+      JSON.stringify(data.documentIds || []),
+      now,
+      now
+    );
+
+  return id;
+}
+
+export function getPackage(id: string): ContextPackageRow | null {
+  return getDb()
+    .prepare('SELECT * FROM vault_context_packages WHERE id = ?')
+    .get(id) as ContextPackageRow | null;
+}
+
+export function listPackages(workspaceId?: string): ContextPackageRow[] {
+  if (workspaceId) {
+    return getDb()
+      .prepare('SELECT * FROM vault_context_packages WHERE workspace_id = ? ORDER BY created_at DESC')
+      .all(workspaceId) as ContextPackageRow[];
+  }
+  return getDb()
+    .prepare('SELECT * FROM vault_context_packages ORDER BY created_at DESC')
+    .all() as ContextPackageRow[];
+}
+
+export function updatePackage(
+  id: string,
+  data: Partial<Omit<ContextPackageRow, 'id' | 'workspace_id' | 'created_at'>>
+): void {
+  const fields: string[] = [];
+  const values: (string | number | null)[] = [];
+
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) {
+      fields.push(`${key} = ?`);
+      values.push(value as string | number | null);
+    }
+  }
+  if (fields.length === 0) return;
+
+  fields.push('updated_at = ?');
+  values.push(new Date().toISOString());
+  values.push(id);
+
+  getDb()
+    .prepare(`UPDATE vault_context_packages SET ${fields.join(', ')} WHERE id = ?`)
+    .run(...values);
+}
+
+export function deletePackage(id: string): void {
+  getDb().prepare('DELETE FROM vault_context_packages WHERE id = ?').run(id);
 }

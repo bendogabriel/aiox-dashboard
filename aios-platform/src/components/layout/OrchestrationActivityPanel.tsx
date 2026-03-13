@@ -251,11 +251,11 @@ function OrchStatusTab({
                   </div>
                   {/* Agent list */}
                   <div className="mt-2 space-y-1">
-                    {squad.agents.map((agent) => {
+                    {squad.agents.map((agent, agentIndex) => {
                       const hasOutput = task.agentOutputs.some(o => o.agent.id === agent.id);
                       const isStreaming = task.streamingAgents.some(a => a.agentId === agent.id);
                       return (
-                        <div key={`${agent.id}-${index}`} className="flex items-center gap-2 text-[10px]">
+                        <div key={`${agent.id}-${agentIndex}`} className="flex items-center gap-2 text-[10px]">
                           <span className={`h-1.5 w-1.5 rounded-full ${isStreaming ? 'bg-[var(--bb-flare)] animate-pulse' : hasOutput ? 'bg-[var(--color-status-success)]' : 'bg-white/20'}`} />
                           <span className={isStreaming ? 'text-[var(--bb-flare)]' : hasOutput ? 'text-[var(--color-status-success)]' : 'text-tertiary'}>
                             {agent.name}

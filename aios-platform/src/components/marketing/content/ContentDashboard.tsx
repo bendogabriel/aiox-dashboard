@@ -1,75 +1,61 @@
-import { FileImage, Image, Calendar, Send, Play, PenTool } from 'lucide-react';
+import { useState } from 'react';
+import { FileImage, Image, Calendar, PenTool, type LucideIcon } from 'lucide-react';
 import { ModuleHeader } from '../shared';
+import { ThumbnailCreator } from './ThumbnailCreator';
+import { CarouselBuilder } from './CarouselBuilder';
+import { ContentCalendar } from './ContentCalendar';
 
-const CONTENT_TOOLS = [
-  { label: 'Thumbnail Creator', description: 'Gerar thumbnails com IA (fal-ai)', icon: Image, status: 'Fase 2' },
-  { label: 'Carousel Builder', description: 'Montar carrosseis para Instagram', icon: PenTool, status: 'Fase 2' },
-  { label: 'Calendario Editorial', description: 'Planejar conteudo semanal/mensal', icon: Calendar, status: 'Fase 2' },
-  { label: 'Social Publisher', description: 'Agendar posts via Blotato', icon: Send, status: 'Fase 2' },
-  { label: 'Video Shorts', description: 'Pipeline de Shorts/Reels', icon: Play, status: 'Fase 2' },
+type ContentTab = 'calendar' | 'thumbnails' | 'carousel';
+
+interface TabDef {
+  id: ContentTab;
+  label: string;
+  icon: LucideIcon;
+}
+
+const TABS: TabDef[] = [
+  { id: 'calendar', label: 'Calendario', icon: Calendar },
+  { id: 'thumbnails', label: 'Thumbnails', icon: Image },
+  { id: 'carousel', label: 'Carrossel', icon: PenTool },
 ];
 
 export default function ContentDashboard() {
+  const [activeTab, setActiveTab] = useState<ContentTab>('calendar');
+
   return (
     <div>
-      <ModuleHeader title="Content" subtitle="Criacao e distribuicao de conteudo" icon={FileImage} />
-
-      <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-        {CONTENT_TOOLS.map((tool) => {
-          const Icon = tool.icon;
-          return (
-            <div
-              key={tool.label}
-              className="relative"
-              style={{
-                padding: '1.5rem',
-                background: 'var(--aiox-surface)',
-                border: '1px solid rgba(156, 156, 156, 0.12)',
-                opacity: 0.6,
-              }}
-            >
-              <div className="flex items-start gap-3">
-                <span
-                  style={{
-                    width: 40,
-                    height: 40,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'rgba(237, 70, 9, 0.06)',
-                    border: '1px solid rgba(237, 70, 9, 0.12)',
-                    flexShrink: 0,
-                  }}
-                >
-                  <Icon size={18} style={{ color: '#ED4609' }} />
-                </span>
-                <div>
-                  <span style={{ fontFamily: 'var(--font-family-display)', fontSize: '0.95rem', fontWeight: 700, color: 'var(--aiox-cream)', display: 'block' }}>
-                    {tool.label}
-                  </span>
-                  <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.6rem', color: 'var(--aiox-gray-muted)', letterSpacing: '0.04em' }}>
-                    {tool.description}
-                  </span>
-                </div>
-              </div>
-              <span
-                className="absolute top-3 right-3"
+      <ModuleHeader title="Content" subtitle="Criacao e distribuicao de conteudo" icon={FileImage}>
+        {/* Sub-tabs */}
+        <div
+          className="flex items-center gap-0"
+          style={{ border: '1px solid rgba(156,156,156,0.12)' }}
+        >
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-all"
                 style={{
-                  fontFamily: 'var(--font-family-mono)',
-                  fontSize: '0.5rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                  color: 'var(--aiox-gray-dim)',
-                  background: 'rgba(156, 156, 156, 0.08)',
-                  padding: '0.15rem 0.4rem',
+                  background: isActive ? 'rgba(209,255,0,0.06)' : 'transparent',
+                  color: isActive ? 'var(--aiox-cream)' : 'var(--aiox-gray-muted)',
+                  borderRight: '1px solid rgba(156,156,156,0.08)',
                 }}
               >
-                {tool.status}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+                <Icon size={12} style={isActive ? { color: 'var(--aiox-lime)' } : undefined} />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+      </ModuleHeader>
+
+      {/* Tab content */}
+      {activeTab === 'calendar' && <ContentCalendar />}
+      {activeTab === 'thumbnails' && <ThumbnailCreator />}
+      {activeTab === 'carousel' && <CarouselBuilder />}
     </div>
   );
 }
