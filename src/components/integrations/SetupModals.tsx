@@ -1,0 +1,1240 @@
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { X, Server, MessageSquare, Database, Copy, Check, ExternalLink, QrCode, KeyRound, Mic, Plus, Trash2, Send as SendIcon, HardDrive, CalendarDays } from 'lucide-react';
+import { useIntegrationStore } from '../../stores/integrationStore';
+import { getEngineUrl } from '../../lib/connection';
+import { startGoogleOAuth, disconnectGoogle, getGoogleAuthStatus } from '../../lib/integration-sync';
+import { supabaseBrainstormService } from '../../services/supabase/brainstorm';
+
+// ── Shared Modal Shell ────────────────────────────────────
+
+function ModalShell({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
+  return createPortal(
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(0, 0, 0, 0.85)',
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 520,
+          maxHeight: '90vh',
+          overflow: 'auto',
+          background: 'var(--aiox-dark, #050505)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px 20px',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          <h2
+            style={{
+              margin: 0,
+              fontSize: '14px',
+              fontFamily: 'var(--font-family-mono, monospace)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              fontWeight: 600,
+              color: 'var(--aiox-cream, #E5E5E5)',
+            }}
+          >
+            {title}
+          </h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--aiox-gray-dim, #696969)',
+              cursor: 'pointer',
+              padding: 4,
+            }}
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: '20px' }}>
+          {children}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+// ── Shared Styles ─────────────────────────────────────────
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '10px 12px',
+  fontSize: '13px',
+  fontFamily: 'var(--font-family-mono, monospace)',
+  background: 'rgba(255,255,255,0.03)',
+  border: '1px solid rgba(255,255,255,0.1)',
+  color: 'var(--aiox-cream, #E5E5E5)',
+  outline: 'none',
+  borderRadius: 0,
+};
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: '11px',
+  fontFamily: 'var(--font-family-mono, monospace)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+  color: 'var(--aiox-gray-muted, #999)',
+  marginBottom: '6px',
+};
+
+const hintStyle: React.CSSProperties = {
+  fontSize: '11px',
+  color: 'var(--aiox-gray-dim, #696969)',
+  marginTop: '6px',
+  fontFamily: 'var(--font-family-mono, monospace)',
+};
+
+const primaryBtnStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '10px',
+  fontSize: '13px',
+  fontFamily: 'var(--font-family-mono, monospace)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+  fontWeight: 600,
+  background: 'rgba(255, 255, 255, 0.06)',
+  color: 'var(--aiox-cream, #E5E5E5)',
+  border: '1px solid rgba(255, 255, 255, 0.15)',
+  cursor: 'pointer',
+};
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+      style={{ background: 'none', border: 'none', color: 'var(--aiox-gray-muted)', cursor: 'pointer', padding: 2 }}
+      title="Copy"
+    >
+      {copied ? <Check size={14} style={{ color: 'var(--color-status-success, #4ADE80)' }} /> : <Copy size={14} />}
+    </button>
+  );
+}
+
+// ── Engine Setup ──────────────────────────────────────────
+
+function EngineSetup({ onClose }: { onClose: () => void }) {
+  const currentUrl = getEngineUrl() || '';
+  const [testing, setTesting] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
+
+  const testConnection = async () => {
+    const url = currentUrl;
+    if (!url) { setResult({ ok: false, msg: 'VITE_ENGINE_URL not set in .env' }); return; }
+    setTesting(true);
+    setResult(null);
+    try {
+      const res = await fetch(`${url}/health`);
+      const data = await res.json() as { status: string; version: string; ws_clients: number };
+      setResult({ ok: true, msg: `v${data.version} — ${data.ws_clients} WS clients — ${data.status}` });
+    } catch {
+      setResult({ ok: false, msg: `Cannot reach ${url}` });
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  return (
+    <ModalShell title="Engine Connection" onClose={onClose}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--aiox-blue, #0099FF)' }}>
+          <Server size={20} />
+          <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>AIOS Execution Engine</span>
+        </div>
+
+        <div>
+          <label style={labelStyle}>Engine URL</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <input
+              readOnly
+              value={currentUrl || '(not configured)'}
+              style={{ ...inputStyle, opacity: currentUrl ? 1 : 0.5 }}
+            />
+            {currentUrl && <CopyButton text={currentUrl} />}
+          </div>
+          <p style={hintStyle}>
+            Set <code style={{ color: 'var(--aiox-lime)' }}>VITE_ENGINE_URL</code> in your <code>.env</code> file.
+            Default: <code>http://localhost:4002</code>
+          </p>
+        </div>
+
+        <button onClick={testConnection} disabled={testing} style={primaryBtnStyle}>
+          {testing ? 'Testing...' : 'Test Connection'}
+        </button>
+
+        {result && (
+          <div
+            style={{
+              padding: '10px 12px',
+              fontSize: '12px',
+              fontFamily: 'var(--font-family-mono)',
+              background: result.ok ? 'rgba(74, 222, 128, 0.06)' : 'rgba(239,68,68,0.06)',
+              border: `1px solid ${result.ok ? 'rgba(74, 222, 128, 0.15)' : 'rgba(239,68,68,0.2)'}`,
+              color: result.ok ? 'var(--color-status-success, #4ADE80)' : 'var(--color-status-error)',
+            }}
+          >
+            {result.ok ? <Check size={14} style={{ display: 'inline', marginRight: 6 }} /> : <X size={14} style={{ display: 'inline', marginRight: 6 }} />}
+            {result.msg}
+          </div>
+        )}
+
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px' }}>
+          <p style={hintStyle}>
+            Quick start: <code style={{ color: 'var(--aiox-lime)' }}>cd engine && bun run dev</code>
+          </p>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── WhatsApp Setup ────────────────────────────────────────
+
+function WhatsAppSetup({ onClose }: { onClose: () => void }) {
+  const engineUrl = getEngineUrl() || '';
+  const [provider, setProvider] = useState<'waha' | 'meta'>('waha');
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrData, setQrData] = useState<string | null>(null);
+  const [statusMsg, setStatusMsg] = useState<string | null>(null);
+
+  const fetchQR = async () => {
+    if (!engineUrl) { setStatusMsg('Engine not configured'); return; }
+    setQrLoading(true);
+    setQrData(null);
+    try {
+      const res = await fetch(`${engineUrl}/whatsapp/qr`);
+      const data = await res.json() as { qr?: string; error?: string; message?: string };
+      if (data.qr) {
+        setQrData(data.qr);
+      } else {
+        setStatusMsg(data.message || data.error || 'QR not available');
+      }
+    } catch {
+      setStatusMsg('Cannot reach engine');
+    } finally {
+      setQrLoading(false);
+    }
+  };
+
+  const checkStatus = async () => {
+    if (!engineUrl) return;
+    try {
+      const res = await fetch(`${engineUrl}/whatsapp/status`);
+      const data = await res.json() as { configured: boolean; provider?: string; session?: { status?: string } };
+      setStatusMsg(
+        data.configured
+          ? `${data.provider} — session: ${data.session?.status || 'unknown'}`
+          : 'Not configured',
+      );
+    } catch {
+      setStatusMsg('Cannot reach engine');
+    }
+  };
+
+  return (
+    <ModalShell title="WhatsApp Integration" onClose={onClose}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#25D366' }}>
+          <MessageSquare size={20} />
+          <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>WhatsApp Business</span>
+        </div>
+
+        {/* Provider selector */}
+        <div>
+          <label style={labelStyle}>Provider</label>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {(['waha', 'meta'] as const).map((p) => (
+              <button
+                key={p}
+                onClick={() => setProvider(p)}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  fontSize: '12px',
+                  fontFamily: 'var(--font-family-mono)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  background: provider === p ? 'rgba(37, 211, 102, 0.1)' : 'transparent',
+                  border: `1px solid ${provider === p ? 'rgba(37, 211, 102, 0.3)' : 'rgba(255,255,255,0.08)'}`,
+                  color: provider === p ? '#25D366' : 'var(--aiox-gray-muted)',
+                  cursor: 'pointer',
+                }}
+              >
+                {p === 'waha' ? 'WAHA (Self-hosted)' : 'Meta Cloud API'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {provider === 'waha' ? (
+          <>
+            <div style={hintStyle}>
+              <strong style={{ color: 'var(--aiox-cream)' }}>WAHA setup:</strong><br />
+              1. Run <code style={{ color: 'var(--aiox-lime)' }}>docker run -p 3000:3000 devlikeapro/waha</code><br />
+              2. Set env vars in <code>engine/.env</code>:<br />
+              <code style={{ color: 'var(--aiox-lime)' }}>WHATSAPP_PROVIDER=waha</code><br />
+              <code style={{ color: 'var(--aiox-lime)' }}>WAHA_URL=http://localhost:3000</code><br />
+              3. Restart engine, then scan QR below
+            </div>
+            <button onClick={fetchQR} disabled={qrLoading} style={primaryBtnStyle}>
+              <QrCode size={14} style={{ display: 'inline', marginRight: 6 }} />
+              {qrLoading ? 'Loading QR...' : 'Get QR Code'}
+            </button>
+            {qrData && (
+              <div style={{ textAlign: 'center', padding: '16px', background: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <img src={qrData} alt="WhatsApp QR" style={{ maxWidth: 256, imageRendering: 'pixelated' }} />
+              </div>
+            )}
+          </>
+        ) : (
+          <div style={hintStyle}>
+            <strong style={{ color: 'var(--aiox-cream)' }}>Meta Cloud API setup:</strong><br />
+            1. Create a Meta Business App at{' '}
+            <a href="https://developers.facebook.com" target="_blank" rel="noreferrer" style={{ color: 'var(--aiox-blue)' }}>
+              developers.facebook.com <ExternalLink size={11} style={{ display: 'inline' }} />
+            </a><br />
+            2. Set env vars in <code>engine/.env</code>:<br />
+            <code style={{ color: 'var(--aiox-lime)' }}>WHATSAPP_PROVIDER=meta</code><br />
+            <code style={{ color: 'var(--aiox-lime)' }}>WHATSAPP_ACCESS_TOKEN=...</code><br />
+            <code style={{ color: 'var(--aiox-lime)' }}>WHATSAPP_PHONE_NUMBER_ID=...</code><br />
+            <code style={{ color: 'var(--aiox-lime)' }}>WHATSAPP_VERIFY_TOKEN=...</code><br />
+            3. Set webhook URL to <code style={{ color: 'var(--aiox-lime)' }}>{engineUrl}/whatsapp/webhook</code>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={checkStatus} style={{ ...primaryBtnStyle, flex: 1, background: 'transparent', color: 'var(--aiox-cream)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            Check Status
+          </button>
+          <button
+            onClick={async () => {
+              if (!engineUrl) { setStatusMsg('Engine not configured'); return; }
+              setStatusMsg('Sending test message...');
+              try {
+                const res = await fetch(`${engineUrl}/whatsapp/test`, { method: 'POST' });
+                const data = await res.json() as { success?: boolean; message?: string; error?: string };
+                setStatusMsg(data.success ? `Test sent: ${data.message || 'OK'}` : `Failed: ${data.error || data.message || 'Unknown error'}`);
+              } catch {
+                setStatusMsg('Cannot reach engine');
+              }
+            }}
+            style={{ ...primaryBtnStyle, flex: 1, background: 'rgba(37, 211, 102, 0.15)', color: '#25D366', border: '1px solid rgba(37, 211, 102, 0.3)' }}
+          >
+            <SendIcon size={14} style={{ display: 'inline', marginRight: 6 }} />
+            Send Test
+          </button>
+        </div>
+
+        {statusMsg && (
+          <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', color: 'var(--aiox-gray-muted)', background: 'rgba(255,255,255,0.02)', borderLeft: '2px solid rgba(37, 211, 102, 0.3)' }}>
+            {statusMsg}
+          </div>
+        )}
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── Supabase Required Tables ─────────────────────────────
+
+interface RequiredTable {
+  name: string;
+  label: string;
+  migrationSql: string;
+}
+
+const BRAINSTORM_ROOMS_SQL = `-- Brainstorm Rooms table
+CREATE TABLE IF NOT EXISTS brainstorm_rooms (
+  id          text        PRIMARY KEY,
+  name        text        NOT NULL,
+  description text,
+  phase       text        NOT NULL DEFAULT 'collecting',
+  ideas       jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  groups      jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  outputs     jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  tags        jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  updated_at  timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_brainstorm_rooms_created_at
+  ON brainstorm_rooms (created_at DESC);
+
+ALTER TABLE brainstorm_rooms ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow anonymous read access on brainstorm_rooms"
+  ON brainstorm_rooms FOR SELECT USING (true);
+CREATE POLICY "Allow anonymous insert access on brainstorm_rooms"
+  ON brainstorm_rooms FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anonymous update access on brainstorm_rooms"
+  ON brainstorm_rooms FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Allow anonymous delete access on brainstorm_rooms"
+  ON brainstorm_rooms FOR DELETE USING (true);`;
+
+const ORCHESTRATION_TASKS_SQL = `-- Orchestration Tasks table
+CREATE TABLE IF NOT EXISTS orchestration_tasks (
+  task_id     text        PRIMARY KEY,
+  title       text,
+  description text,
+  status      text        NOT NULL DEFAULT 'pending',
+  squads      jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  outputs     jsonb       NOT NULL DEFAULT '[]'::jsonb,
+  metadata    jsonb       NOT NULL DEFAULT '{}'::jsonb,
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  updated_at  timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_orchestration_tasks_created_at
+  ON orchestration_tasks (created_at DESC);
+
+ALTER TABLE orchestration_tasks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow anonymous read access on orchestration_tasks"
+  ON orchestration_tasks FOR SELECT USING (true);
+CREATE POLICY "Allow anonymous insert access on orchestration_tasks"
+  ON orchestration_tasks FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anonymous update access on orchestration_tasks"
+  ON orchestration_tasks FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Allow anonymous delete access on orchestration_tasks"
+  ON orchestration_tasks FOR DELETE USING (true);`;
+
+const REQUIRED_TABLES: RequiredTable[] = [
+  { name: 'orchestration_tasks', label: 'Orchestration Tasks', migrationSql: ORCHESTRATION_TASKS_SQL },
+  { name: 'brainstorm_rooms', label: 'Brainstorm Rooms', migrationSql: BRAINSTORM_ROOMS_SQL },
+];
+
+type TableStatus = 'unknown' | 'checking' | 'exists' | 'missing';
+
+/** Check if a table exists by attempting a SELECT with limit 0 */
+async function checkTableExists(supabaseUrl: string, apiKey: string, tableName: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/${tableName}?select=*&limit=0`, {
+      headers: { apikey: apiKey, Authorization: `Bearer ${apiKey}` },
+    });
+    // 200 = exists, 404/PGRST = not found
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** Extract project ref from Supabase URL (e.g. "abc123" from "https://abc123.supabase.co") */
+function getProjectRef(url: string): string | null {
+  try {
+    const hostname = new URL(url).hostname;
+    const ref = hostname.split('.')[0];
+    return ref || null;
+  } catch {
+    return null;
+  }
+}
+
+// ── Supabase Setup ────────────────────────────────────────
+
+function SupabaseSetup({ onClose }: { onClose: () => void }) {
+  const currentUrl = import.meta.env.VITE_SUPABASE_URL || '';
+  const hasKey = !!import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const [testing, setTesting] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [tableStatuses, setTableStatuses] = useState<Record<string, TableStatus>>({});
+  const [copiedTable, setCopiedTable] = useState<string | null>(null);
+
+  const checkTables = async () => {
+    if (!currentUrl || !hasKey) return;
+    const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const statuses: Record<string, TableStatus> = {};
+    for (const t of REQUIRED_TABLES) {
+      statuses[t.name] = 'checking';
+    }
+    setTableStatuses({ ...statuses });
+
+    for (const t of REQUIRED_TABLES) {
+      const exists = await checkTableExists(currentUrl, key, t.name);
+      statuses[t.name] = exists ? 'exists' : 'missing';
+      setTableStatuses({ ...statuses });
+
+      // Reset the service flag when table is detected as existing
+      if (exists && t.name === 'brainstorm_rooms') {
+        supabaseBrainstormService.resetTableFlag();
+      }
+    }
+  };
+
+  const testConnection = async () => {
+    if (!currentUrl || !hasKey) {
+      setResult({ ok: false, msg: 'VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY not set' });
+      return;
+    }
+    setTesting(true);
+    setResult(null);
+    setTableStatuses({});
+    try {
+      const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const res = await fetch(`${currentUrl}/rest/v1/`, {
+        headers: { apikey: key, Authorization: `Bearer ${key}` },
+      });
+      if (res.ok || res.status === 200) {
+        setResult({ ok: true, msg: `Connected to ${new URL(currentUrl).hostname}` });
+        // Auto-check tables after successful connection
+        setTimeout(() => checkTables(), 300);
+      } else {
+        setResult({ ok: false, msg: `HTTP ${res.status}` });
+      }
+    } catch {
+      setResult({ ok: false, msg: 'Unreachable' });
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  const handleCopyAndOpen = (table: RequiredTable) => {
+    navigator.clipboard.writeText(table.migrationSql);
+    setCopiedTable(table.name);
+    setTimeout(() => setCopiedTable(null), 3000);
+
+    // Open Supabase SQL Editor
+    const ref = getProjectRef(currentUrl);
+    if (ref) {
+      window.open(`https://supabase.com/dashboard/project/${ref}/sql/new`, '_blank');
+    }
+  };
+
+  const handleCopyAll = () => {
+    const missingTables = REQUIRED_TABLES.filter((t) => tableStatuses[t.name] === 'missing');
+    const allSql = missingTables.map((t) => t.migrationSql).join('\n\n');
+    navigator.clipboard.writeText(allSql);
+    setCopiedTable('__all__');
+    setTimeout(() => setCopiedTable(null), 3000);
+
+    const ref = getProjectRef(currentUrl);
+    if (ref) {
+      window.open(`https://supabase.com/dashboard/project/${ref}/sql/new`, '_blank');
+    }
+  };
+
+  const hasMissing = Object.values(tableStatuses).some((s) => s === 'missing');
+  const hasChecked = Object.keys(tableStatuses).length > 0;
+
+  return (
+    <ModalShell title="Supabase Connection" onClose={onClose}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#3ECF8E' }}>
+          <Database size={20} />
+          <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>Supabase</span>
+        </div>
+
+        <div>
+          <label style={labelStyle}>Project URL</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <input readOnly value={currentUrl || '(not configured)'} style={{ ...inputStyle, opacity: currentUrl ? 1 : 0.5 }} />
+            {currentUrl && <CopyButton text={currentUrl} />}
+          </div>
+        </div>
+
+        <div>
+          <label style={labelStyle}>Anon Key</label>
+          <input
+            readOnly
+            value={hasKey ? '••••••••••••••••••••' : '(not configured)'}
+            style={{ ...inputStyle, opacity: hasKey ? 1 : 0.5 }}
+          />
+        </div>
+
+        <p style={hintStyle}>
+          Set in your <code>.env</code> file:<br />
+          <code style={{ color: 'var(--aiox-lime)' }}>VITE_SUPABASE_URL=https://xxx.supabase.co</code><br />
+          <code style={{ color: 'var(--aiox-lime)' }}>VITE_SUPABASE_ANON_KEY=eyJ...</code>
+        </p>
+
+        <button onClick={testConnection} disabled={testing} style={primaryBtnStyle}>
+          {testing ? 'Testing...' : 'Test Connection'}
+        </button>
+
+        {result && (
+          <div
+            style={{
+              padding: '10px 12px',
+              fontSize: '12px',
+              fontFamily: 'var(--font-family-mono)',
+              background: result.ok ? 'rgba(62,207,142,0.06)' : 'rgba(239,68,68,0.06)',
+              border: `1px solid ${result.ok ? 'rgba(62,207,142,0.2)' : 'rgba(239,68,68,0.2)'}`,
+              color: result.ok ? '#3ECF8E' : 'var(--color-status-error)',
+            }}
+          >
+            {result.ok ? <Check size={14} style={{ display: 'inline', marginRight: 6 }} /> : <X size={14} style={{ display: 'inline', marginRight: 6 }} />}
+            {result.msg}
+          </div>
+        )}
+
+        {/* Database Tables Section */}
+        {hasChecked && (
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
+            <label style={{ ...labelStyle, marginBottom: '10px' }}>Database Tables</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {REQUIRED_TABLES.map((table) => {
+                const status = tableStatuses[table.name] || 'unknown';
+                return (
+                  <div
+                    key={table.name}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px 10px',
+                      fontSize: '12px',
+                      fontFamily: 'var(--font-family-mono)',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: `1px solid ${
+                        status === 'exists' ? 'rgba(62,207,142,0.15)'
+                        : status === 'missing' ? 'rgba(239,68,68,0.15)'
+                        : 'rgba(255,255,255,0.06)'
+                      }`,
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {status === 'checking' && (
+                        <span style={{ color: 'var(--aiox-gray-muted)', fontSize: '11px' }}>...</span>
+                      )}
+                      {status === 'exists' && (
+                        <Check size={13} style={{ color: '#3ECF8E' }} />
+                      )}
+                      {status === 'missing' && (
+                        <X size={13} style={{ color: 'var(--color-status-error, #EF4444)' }} />
+                      )}
+                      <span style={{ color: status === 'exists' ? '#3ECF8E' : status === 'missing' ? 'var(--color-status-error, #EF4444)' : 'var(--aiox-gray-muted)' }}>
+                        {table.name}
+                      </span>
+                    </div>
+                    {status === 'missing' && (
+                      <button
+                        onClick={() => handleCopyAndOpen(table)}
+                        style={{
+                          background: 'none',
+                          border: '1px solid rgba(209, 255, 0, 0.3)',
+                          color: 'var(--aiox-lime, #D1FF00)',
+                          fontSize: '10px',
+                          fontFamily: 'var(--font-family-mono)',
+                          textTransform: 'uppercase',
+                          padding: '3px 8px',
+                          cursor: 'pointer',
+                          letterSpacing: '0.04em',
+                        }}
+                      >
+                        {copiedTable === table.name ? 'SQL copiado!' : 'Copy SQL'}
+                      </button>
+                    )}
+                    {status === 'exists' && (
+                      <span style={{ color: 'rgba(62,207,142,0.5)', fontSize: '10px', textTransform: 'uppercase' }}>OK</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {hasMissing && (
+              <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <button
+                  onClick={handleCopyAll}
+                  style={{
+                    ...primaryBtnStyle,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  {copiedTable === '__all__' ? (
+                    <>
+                      <Check size={14} />
+                      SQL copiado — cole no SQL Editor
+                    </>
+                  ) : (
+                    <>
+                      <ExternalLink size={14} />
+                      Copy All SQL & Open SQL Editor
+                    </>
+                  )}
+                </button>
+                <p style={{ ...hintStyle, marginTop: 0 }}>
+                  O SQL sera copiado para o clipboard e o SQL Editor do Supabase sera aberto.
+                  Cole e execute o SQL para criar as tabelas.
+                </p>
+              </div>
+            )}
+
+            {hasChecked && !hasMissing && Object.values(tableStatuses).every((s) => s === 'exists') && (
+              <p style={{ ...hintStyle, color: '#3ECF8E', marginTop: '10px' }}>
+                Todas as tabelas estao configuradas corretamente.
+              </p>
+            )}
+
+            <button
+              onClick={checkTables}
+              style={{
+                marginTop: '10px',
+                background: 'none',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: 'var(--aiox-gray-muted)',
+                fontSize: '11px',
+                fontFamily: 'var(--font-family-mono)',
+                textTransform: 'uppercase',
+                padding: '6px 12px',
+                cursor: 'pointer',
+                letterSpacing: '0.04em',
+                width: '100%',
+              }}
+            >
+              Re-check Tables
+            </button>
+          </div>
+        )}
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── API Keys Setup ───────────────────────────────────────
+
+const STORAGE_KEY = 'aios-api-keys';
+
+interface ApiKeyEntry {
+  id: string;
+  label: string;
+  key: string;
+}
+
+function loadKeys(): ApiKeyEntry[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveKeys(keys: ApiKeyEntry[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(keys));
+}
+
+function ApiKeysSetup({ onClose }: { onClose: () => void }) {
+  const [keys, setKeys] = useState<ApiKeyEntry[]>(loadKeys);
+  const [label, setLabel] = useState('');
+  const [key, setKey] = useState('');
+
+  const addKey = () => {
+    if (!label.trim() || !key.trim()) return;
+    const next = [...keys, { id: crypto.randomUUID(), label: label.trim(), key: key.trim() }];
+    setKeys(next);
+    saveKeys(next);
+    setLabel('');
+    setKey('');
+  };
+
+  const removeKey = (id: string) => {
+    const next = keys.filter((k) => k.id !== id);
+    setKeys(next);
+    saveKeys(next);
+  };
+
+  return (
+    <ModalShell title="API Keys" onClose={onClose}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--aiox-lime, #D1FF00)' }}>
+          <KeyRound size={20} />
+          <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>LLM Provider Keys</span>
+        </div>
+
+        {/* Existing keys */}
+        {keys.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {keys.map((entry) => (
+              <div
+                key={entry.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 12px',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: '12px', fontFamily: 'var(--font-family-mono)', color: 'var(--aiox-cream, #E5E5E5)' }}>
+                    {entry.label}
+                  </div>
+                  <div style={{ fontSize: '11px', fontFamily: 'var(--font-family-mono)', color: 'var(--aiox-gray-dim, #696969)' }}>
+                    {entry.key.slice(0, 8)}••••{entry.key.slice(-4)}
+                  </div>
+                </div>
+                <button
+                  onClick={() => removeKey(entry.id)}
+                  style={{ background: 'none', border: 'none', color: 'var(--color-status-error, #EF4444)', cursor: 'pointer', padding: 4 }}
+                  title="Remove"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Add new key */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div>
+            <label style={labelStyle}>Provider</label>
+            <input
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              placeholder="e.g. OpenAI, Anthropic, Google"
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>API Key</label>
+            <input
+              value={key}
+              onChange={(e) => setKey(e.target.value)}
+              placeholder="sk-..."
+              type="password"
+              style={inputStyle}
+            />
+          </div>
+          <button onClick={addKey} disabled={!label.trim() || !key.trim()} style={primaryBtnStyle}>
+            <Plus size={14} style={{ display: 'inline', marginRight: 6 }} />
+            Add Key
+          </button>
+        </div>
+
+        <p style={hintStyle}>
+          Keys are stored in <code>localStorage</code> and sent to the engine for LLM calls.
+          For production, use environment variables instead.
+        </p>
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── Voice Setup ──────────────────────────────────────────
+
+const VOICE_STORAGE_KEY = 'aios-voice-settings';
+
+function VoiceSetup({ onClose }: { onClose: () => void }) {
+  const [provider, setProvider] = useState<string>(() => {
+    try {
+      const raw = localStorage.getItem(VOICE_STORAGE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        return data?.state?.ttsProvider || data?.state?.provider || 'browser';
+      }
+    } catch { /* empty */ }
+    return 'browser';
+  });
+
+  const saveProvider = (p: string) => {
+    setProvider(p);
+    const existing = (() => {
+      try {
+        const raw = localStorage.getItem(VOICE_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch { return {}; }
+    })();
+    localStorage.setItem(VOICE_STORAGE_KEY, JSON.stringify({
+      ...existing,
+      state: { ...(existing.state || {}), ttsProvider: p, provider: p },
+    }));
+  };
+
+  const providers = [
+    { value: 'browser', label: 'Browser TTS', hint: 'Built-in, no API key needed' },
+    { value: 'elevenlabs', label: 'ElevenLabs', hint: 'High quality, requires API key' },
+    { value: 'openai', label: 'OpenAI TTS', hint: 'Requires OpenAI API key' },
+  ];
+
+  return (
+    <ModalShell title="Voice / TTS" onClose={onClose}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--aiox-blue, #0099FF)' }}>
+          <Mic size={20} />
+          <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>Text-to-Speech Provider</span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {providers.map((p) => (
+            <button
+              key={p.value}
+              onClick={() => saveProvider(p.value)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px',
+                background: provider === p.value ? 'rgba(0, 153, 255, 0.08)' : 'rgba(255,255,255,0.02)',
+                border: `1px solid ${provider === p.value ? 'rgba(0, 153, 255, 0.3)' : 'rgba(255,255,255,0.06)'}`,
+                color: provider === p.value ? 'var(--aiox-blue, #0099FF)' : 'var(--aiox-cream, #E5E5E5)',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '13px', fontFamily: 'var(--font-family-mono)', fontWeight: 500 }}>{p.label}</div>
+                <div style={{ fontSize: '11px', fontFamily: 'var(--font-family-mono)', color: 'var(--aiox-gray-dim)', marginTop: '2px' }}>{p.hint}</div>
+              </div>
+              {provider === p.value && <Check size={16} />}
+            </button>
+          ))}
+        </div>
+
+        <p style={hintStyle}>
+          Selected provider is saved to <code>localStorage</code> and used by the voice module.
+          API-based providers require a valid key in the API Keys section.
+        </p>
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── Telegram Setup ───────────────────────────────────────
+
+function TelegramSetup({ onClose }: { onClose: () => void }) {
+  const engineUrl = getEngineUrl() || '';
+  const [statusMsg, setStatusMsg] = useState<string | null>(null);
+
+  const checkStatus = async () => {
+    if (!engineUrl) { setStatusMsg('Engine not configured'); return; }
+    try {
+      const res = await fetch(`${engineUrl}/telegram/status`);
+      const data = await res.json() as { configured: boolean; bot_username?: string; webhook_set?: boolean };
+      setStatusMsg(
+        data.configured
+          ? `@${data.bot_username} — webhook: ${data.webhook_set ? 'active' : 'not set'}`
+          : 'Not configured',
+      );
+    } catch {
+      setStatusMsg('Cannot reach engine');
+    }
+  };
+
+  const setWebhook = async () => {
+    if (!engineUrl) return;
+    setStatusMsg('Setting webhook...');
+    try {
+      const res = await fetch(`${engineUrl}/telegram/webhook/setup`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      const data = await res.json() as { success?: boolean; message?: string; error?: string };
+      setStatusMsg(data.success ? 'Webhook set successfully' : `Failed: ${data.error || data.message}`);
+    } catch {
+      setStatusMsg('Cannot reach engine');
+    }
+  };
+
+  return (
+    <ModalShell title="Telegram Bot" onClose={onClose}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#26A5E4' }}>
+          <SendIcon size={20} />
+          <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>Telegram Bot API</span>
+        </div>
+
+        <div style={hintStyle}>
+          <strong style={{ color: 'var(--aiox-cream)' }}>Setup:</strong><br />
+          1. Create a bot via{' '}
+          <a href="https://t.me/BotFather" target="_blank" rel="noreferrer" style={{ color: '#26A5E4' }}>
+            @BotFather <ExternalLink size={11} style={{ display: 'inline' }} />
+          </a><br />
+          2. Set env vars in <code>engine/.env</code>:<br />
+          <code style={{ color: 'var(--aiox-lime)' }}>TELEGRAM_BOT_TOKEN=123456:ABC-...</code><br />
+          <code style={{ color: 'var(--aiox-lime)' }}>TELEGRAM_WEBHOOK_URL={engineUrl}/telegram/webhook</code><br />
+          3. Restart engine, then click "Set Webhook" below
+        </div>
+
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={checkStatus} style={{ ...primaryBtnStyle, flex: 1, background: 'transparent', color: 'var(--aiox-cream)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            Check Status
+          </button>
+          <button onClick={setWebhook} style={{ ...primaryBtnStyle, flex: 1, background: 'rgba(38, 165, 228, 0.15)', color: '#26A5E4', border: '1px solid rgba(38, 165, 228, 0.3)' }}>
+            Set Webhook
+          </button>
+        </div>
+
+        {statusMsg && (
+          <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', color: 'var(--aiox-gray-muted)', background: 'rgba(255,255,255,0.02)', borderLeft: '2px solid rgba(38, 165, 228, 0.3)' }}>
+            {statusMsg}
+          </div>
+        )}
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── Google Drive Setup ───────────────────────────────────
+
+function GoogleDriveSetup({ onClose }: { onClose: () => void }) {
+  const [statusMsg, setStatusMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [engineConfigured, setEngineConfigured] = useState<boolean | null>(null);
+  const [connected, setConnected] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    getGoogleAuthStatus().then((data) => {
+      if (data) {
+        setEngineConfigured(data.configured);
+        const svc = data.services['google-drive'];
+        if (svc?.connected) {
+          setConnected(true);
+          setEmail(svc.email || null);
+        }
+      } else {
+        // Fallback to localStorage
+        try {
+          const raw = localStorage.getItem('aios-google-drive');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            setConnected(!!(parsed?.accessToken || parsed?.refreshToken));
+            setEmail(parsed?.email || null);
+          }
+        } catch { /* empty */ }
+      }
+    });
+  }, []);
+
+  const handleConnect = async () => {
+    setLoading(true);
+    setStatusMsg(null);
+    const result = await startGoogleOAuth('google-drive');
+    if ('error' in result) {
+      setStatusMsg(result.error);
+      setLoading(false);
+    } else {
+      // Redirect to Google
+      window.location.href = result.url;
+    }
+  };
+
+  const handleDisconnect = async () => {
+    setLoading(true);
+    await disconnectGoogle('google-drive');
+    setConnected(false);
+    setEmail(null);
+    setStatusMsg('Disconnected');
+    setLoading(false);
+  };
+
+  return (
+    <ModalShell title="Google Drive" onClose={onClose}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#4285F4' }}>
+          <HardDrive size={20} />
+          <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>Google Drive API</span>
+        </div>
+
+        {connected && (
+          <div style={{ padding: '10px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', background: 'rgba(66,133,244,0.06)', border: '1px solid rgba(66,133,244,0.2)', color: '#4285F4', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>
+              <Check size={14} style={{ display: 'inline', marginRight: 6 }} />
+              {email || 'Authenticated'}
+            </span>
+            <button
+              onClick={handleDisconnect}
+              disabled={loading}
+              style={{ background: 'none', border: 'none', color: 'var(--color-status-error)', cursor: 'pointer', fontSize: '11px', fontFamily: 'var(--font-family-mono)', textDecoration: 'underline' }}
+            >
+              Disconnect
+            </button>
+          </div>
+        )}
+
+        {!connected && (
+          <button onClick={handleConnect} disabled={loading || engineConfigured === false} style={primaryBtnStyle}>
+            {loading ? 'Redirecting...' : 'Connect with Google'}
+          </button>
+        )}
+
+        {engineConfigured === false && (
+          <div style={{ ...hintStyle, color: 'var(--color-status-error)' }}>
+            Engine not configured. Set <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_ID</code> and{' '}
+            <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_SECRET</code> in <code>engine/.env</code>.
+          </div>
+        )}
+
+        <div style={hintStyle}>
+          <strong style={{ color: 'var(--aiox-cream)' }}>Setup:</strong><br />
+          1. Go to{' '}
+          <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer" style={{ color: '#4285F4' }}>
+            Google Cloud Console <ExternalLink size={11} style={{ display: 'inline' }} />
+          </a><br />
+          2. Create OAuth 2.0 Client ID (Web application)<br />
+          3. Add <code style={{ color: 'var(--aiox-lime)' }}>{window.location.origin}/auth/google/callback</code> to authorized redirect URIs<br />
+          4. Enable Google Drive API<br />
+          5. Set <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_ID</code> and <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_SECRET</code> in <code>engine/.env</code>
+        </div>
+
+        {statusMsg && (
+          <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', color: 'var(--aiox-gray-muted)', background: 'rgba(255,255,255,0.02)', borderLeft: '2px solid rgba(66, 133, 244, 0.3)' }}>
+            {statusMsg}
+          </div>
+        )}
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── Google Calendar Setup ────────────────────────────────
+
+function GoogleCalendarSetup({ onClose }: { onClose: () => void }) {
+  const [statusMsg, setStatusMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [engineConfigured, setEngineConfigured] = useState<boolean | null>(null);
+  const [connected, setConnected] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    getGoogleAuthStatus().then((data) => {
+      if (data) {
+        setEngineConfigured(data.configured);
+        const svc = data.services['google-calendar'];
+        if (svc?.connected) {
+          setConnected(true);
+          setEmail(svc.email || null);
+        }
+      } else {
+        try {
+          const raw = localStorage.getItem('aios-google-calendar');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            setConnected(!!(parsed?.accessToken || parsed?.refreshToken));
+            setEmail(parsed?.email || null);
+          }
+        } catch { /* empty */ }
+      }
+    });
+  }, []);
+
+  const handleConnect = async () => {
+    setLoading(true);
+    setStatusMsg(null);
+    const result = await startGoogleOAuth('google-calendar');
+    if ('error' in result) {
+      setStatusMsg(result.error);
+      setLoading(false);
+    } else {
+      window.location.href = result.url;
+    }
+  };
+
+  const handleDisconnect = async () => {
+    setLoading(true);
+    await disconnectGoogle('google-calendar');
+    setConnected(false);
+    setEmail(null);
+    setStatusMsg('Disconnected');
+    setLoading(false);
+  };
+
+  return (
+    <ModalShell title="Google Calendar" onClose={onClose}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#4285F4' }}>
+          <CalendarDays size={20} />
+          <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}>Google Calendar API</span>
+        </div>
+
+        {connected && (
+          <div style={{ padding: '10px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', background: 'rgba(66,133,244,0.06)', border: '1px solid rgba(66,133,244,0.2)', color: '#4285F4', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>
+              <Check size={14} style={{ display: 'inline', marginRight: 6 }} />
+              {email || 'Authenticated'}
+            </span>
+            <button
+              onClick={handleDisconnect}
+              disabled={loading}
+              style={{ background: 'none', border: 'none', color: 'var(--color-status-error)', cursor: 'pointer', fontSize: '11px', fontFamily: 'var(--font-family-mono)', textDecoration: 'underline' }}
+            >
+              Disconnect
+            </button>
+          </div>
+        )}
+
+        {!connected && (
+          <button onClick={handleConnect} disabled={loading || engineConfigured === false} style={primaryBtnStyle}>
+            {loading ? 'Redirecting...' : 'Connect with Google'}
+          </button>
+        )}
+
+        {engineConfigured === false && (
+          <div style={{ ...hintStyle, color: 'var(--color-status-error)' }}>
+            Engine not configured. Set <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_ID</code> and{' '}
+            <code style={{ color: 'var(--aiox-lime)' }}>GOOGLE_CLIENT_SECRET</code> in <code>engine/.env</code>.
+          </div>
+        )}
+
+        <div style={hintStyle}>
+          <strong style={{ color: 'var(--aiox-cream)' }}>Setup:</strong><br />
+          1. Enable Google Calendar API in{' '}
+          <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com" target="_blank" rel="noreferrer" style={{ color: '#4285F4' }}>
+            Google Cloud Console <ExternalLink size={11} style={{ display: 'inline' }} />
+          </a><br />
+          2. Uses the same Google Cloud project credentials as Drive<br />
+          3. Scopes: <code style={{ color: 'var(--aiox-lime)' }}>calendar.readonly</code>, <code style={{ color: 'var(--aiox-lime)' }}>calendar.events</code>
+        </div>
+
+        {statusMsg && (
+          <div style={{ padding: '8px 12px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', color: 'var(--aiox-gray-muted)', background: 'rgba(255,255,255,0.02)', borderLeft: '2px solid rgba(66, 133, 244, 0.3)' }}>
+            {statusMsg}
+          </div>
+        )}
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── Router ────────────────────────────────────────────────
+
+const modals: Record<string, React.ComponentType<{ onClose: () => void }>> = {
+  engine: EngineSetup,
+  whatsapp: WhatsAppSetup,
+  supabase: SupabaseSetup,
+  'api-keys': ApiKeysSetup,
+  voice: VoiceSetup,
+  telegram: TelegramSetup,
+  'google-drive': GoogleDriveSetup,
+  'google-calendar': GoogleCalendarSetup,
+};
+
+export function IntegrationSetupModal() {
+  const { setupModalOpen, closeSetup } = useIntegrationStore();
+
+  const Modal = setupModalOpen ? modals[setupModalOpen] : null;
+
+  return (
+    <>
+    {Modal && <Modal onClose={closeSetup} />}
+    </>
+);
+}

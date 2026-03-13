@@ -1,0 +1,245 @@
+/* ============================================
+   AIOX GOLD THEME — Champagne Gold Variant
+   Premium enterprise alternative to neon lime.
+   Applied via data-theme="aiox-gold" on <html>
+
+   Based on brandbook gold palette:
+   - Gold:    #DDD1BB (replaces lime #D1FF00)
+   - Dark:    #0A0908 (warmer dark)
+   - Cream:   #F4F0E8 (warmer cream)
+   ============================================ */
+
+html[data-theme="aiox-gold"] {
+  /* ----- Gold Palette Primitives ----- */
+  --aiox-lime: #DDD1BB;
+  --aiox-dark: #0A0908;
+  --aiox-void: #000000;
+  --aiox-surface: #100F0D;
+  --aiox-surface-alt: #1C1A16;
+  --aiox-surface-hover: #1C1A16;
+  --aiox-surface-deep: #080706;
+  --aiox-surface-panel: #121110;
+  --aiox-surface-console: #0E0D0B;
+  --aiox-surface-hover-strong: #1E1C18;
+  --aiox-surface-overlay: rgba(16, 15, 13, 0.92);
+  --aiox-cream: #F4F0E8;
+  --aiox-cream-alt: #F5F1E7;
+  --aiox-warm-white: #FFFEF5;
+  --aiox-blue: #0099FF;
+  --aiox-flare: #ED4609;
+  --aiox-ink: #1A1815;
+
+  /* ----- Gray Scale (warm-shifted) ----- */
+  --aiox-gray-charcoal: #3D3A35;
+  --aiox-gray-dim: #696560;
+  --aiox-gray-muted: #999590;
+  --aiox-gray-silver: #BDB9B2;
+
+  /* ----- Neon / Glow Tokens → Gold Glow ----- */
+  --aiox-neon-dim: rgba(221, 209, 187, 0.15);
+  --aiox-neon-glow: rgba(221, 209, 187, 0.4);
+  --aiox-lime-glow: rgba(221, 209, 187, 0.25);
+  --aiox-lime-glow-soft: rgba(221, 209, 187, 0.1);
+
+  /* ----- Typography (same fonts) ----- */
+  --font-family-display: 'TASAOrbiterDisplay', system-ui, sans-serif;
+  --font-family-sans: 'Geist', system-ui, sans-serif;
+  --font-family-mono: 'Roboto Mono', 'SF Mono', monospace;
+
+  /* ----- Background layers ----- */
+  --color-background-primary: rgba(16, 15, 13, 0.85);
+  --color-background-secondary: rgba(28, 26, 22, 0.70);
+  --color-background-tertiary: rgba(16, 15, 13, 0.55);
+  --color-background-base: #0A0908;
+  --color-background-hover: rgba(221, 209, 187, 0.06);
+  --color-background-active: rgba(221, 209, 187, 0.10);
+  --color-background-disabled: rgba(255, 255, 255, 0.03);
+
+  /* ----- Text ----- */
+  --color-text-primary: #FFFEF5;
+  --color-text-secondary: #9C9890;
+  --color-text-tertiary: #858078;
+  --color-text-disabled: #6D6860;
+  --color-text-inverse: #0A0908;
+
+  /* ----- Borders (gold-tinted) ----- */
+  --color-border-default: #2A2822;
+  --color-border-subtle: rgba(156, 150, 140, 0.12);
+  --color-border-strong: rgba(221, 209, 187, 0.20);
+  --color-border-focus: rgba(221, 209, 187, 0.50);
+
+  /* ----- Accent (gold) ----- */
+  --color-accent: #DDD1BB;
+  --color-accent-hover: #E8DDC8;
+  --color-accent-active: #CFC3AD;
+  --color-accent-muted: rgba(221, 209, 187, 0.15);
+  --color-accent-text: #0A0908;
+  --color-accent-inverse: #0A0908;
+
+  /* ----- Status Colors (same as aiox) ----- */
+  --color-status-success: #4ADE80;
+  --color-status-error: #EF4444;
+  --color-status-warning: #f59e0b;
+  --color-status-info: #0099FF;
+
+  /* ----- Selection ----- */
+  --color-selection-bg: rgba(221, 209, 187, 0.3);
+  --color-selection-text: #FFFEF5;
+
+  /* ----- Button tokens ----- */
+  --button-primary-bg: #DDD1BB;
+  --button-primary-text: #0A0908;
+  --button-primary-border: transparent;
+  --button-primary-hover-bg: #E8DDC8;
+  --button-ghost-hover: rgba(221, 209, 187, 0.08);
+  --button-danger-bg: rgba(239, 68, 68, 0.15);
+  --button-danger-text: #EF4444;
+  --button-danger-border: rgba(239, 68, 68, 0.3);
+  --button-focus-ring: rgba(221, 209, 187, 0.5);
+
+  /* ----- Input tokens ----- */
+  --input-focus-ring: rgba(221, 209, 187, 0.4);
+  --input-error-ring: rgba(239, 68, 68, 0.4);
+  --input-success-ring: rgba(74, 222, 128, 0.4);
+}
+
+/* Gold theme inherits all aiox-components.css rules via data-theme prefix.
+   The aiox-components.css uses var(--aiox-lime), var(--aiox-surface) etc.
+   which are overridden above, so all component styles automatically adapt. */
+
+/* Override the data-theme="aiox" selectors to also match gold */
+html[data-theme="aiox-gold"] div,
+html[data-theme="aiox-gold"] section,
+html[data-theme="aiox-gold"] article,
+html[data-theme="aiox-gold"] aside,
+html[data-theme="aiox-gold"] main,
+html[data-theme="aiox-gold"] nav,
+html[data-theme="aiox-gold"] header,
+html[data-theme="aiox-gold"] footer,
+html[data-theme="aiox-gold"] button,
+html[data-theme="aiox-gold"] input,
+html[data-theme="aiox-gold"] select,
+html[data-theme="aiox-gold"] textarea,
+html[data-theme="aiox-gold"] a,
+html[data-theme="aiox-gold"] span,
+html[data-theme="aiox-gold"] kbd,
+html[data-theme="aiox-gold"] li,
+html[data-theme="aiox-gold"] p,
+html[data-theme="aiox-gold"] [role="dialog"],
+html[data-theme="aiox-gold"] [role="tablist"],
+html[data-theme="aiox-gold"] [role="tab"],
+html[data-theme="aiox-gold"] [role="tooltip"],
+html[data-theme="aiox-gold"] [role="menu"],
+html[data-theme="aiox-gold"] [role="listbox"] {
+  border-radius: 0 !important;
+}
+
+/* Preserve round shapes */
+html[data-theme="aiox-gold"] [role="switch"] span,
+html[data-theme="aiox-gold"] [class*="animate-ping"],
+html[data-theme="aiox-gold"] .animate-spin {
+  border-radius: 9999px !important;
+}
+
+/* App background */
+html[data-theme="aiox-gold"] .app-background::before {
+  background: var(--aiox-dark) !important;
+  animation: none !important;
+  filter: none !important;
+}
+
+html[data-theme="aiox-gold"] .app-background::after {
+  opacity: 0 !important;
+}
+
+/* Glass → Solid */
+html[data-theme="aiox-gold"] .glass,
+html[data-theme="aiox-gold"] .glass-lg,
+html[data-theme="aiox-gold"] .glass-xl,
+html[data-theme="aiox-gold"] .glass-subtle {
+  background: var(--aiox-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(156, 150, 140, 0.15) !important;
+  box-shadow: none !important;
+}
+
+/* Gold glow on interactive states */
+html[data-theme="aiox-gold"] .glass-interactive:hover {
+  background: rgba(221, 209, 187, 0.04) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  border-color: rgba(221, 209, 187, 0.15) !important;
+}
+
+/* Buttons */
+html[data-theme="aiox-gold"] .glass-button {
+  font-family: var(--font-family-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border: 1px solid rgba(156, 150, 140, 0.15) !important;
+}
+
+html[data-theme="aiox-gold"] .glass-button-primary {
+  background: var(--aiox-lime) !important;
+  color: var(--aiox-dark) !important;
+  border: none !important;
+}
+
+html[data-theme="aiox-gold"] .glass-button-primary:hover {
+  box-shadow: 0 0 20px var(--aiox-lime-glow), 0 0 60px var(--aiox-lime-glow-soft) !important;
+}
+
+/* Backdrop blur removal */
+html[data-theme="aiox-gold"] [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Focus ring */
+html[data-theme="aiox-gold"] *:focus-visible {
+  outline: 2px solid rgba(221, 209, 187, 0.5) !important;
+  outline-offset: 2px !important;
+}
+
+/* Selection */
+html[data-theme="aiox-gold"] ::selection {
+  background: var(--aiox-dark);
+  color: var(--aiox-lime);
+}
+
+/* Headings */
+html[data-theme="aiox-gold"] h1,
+html[data-theme="aiox-gold"] h2 {
+  font-family: var(--font-family-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+}
+
+/* Shadows kill */
+html[data-theme="aiox-gold"] [class*="shadow-lg"],
+html[data-theme="aiox-gold"] [class*="shadow-xl"],
+html[data-theme="aiox-gold"] [class*="shadow-2xl"] {
+  box-shadow: none !important;
+}
+
+/* Rounded override */
+html[data-theme="aiox-gold"] [class*="rounded-xl"],
+html[data-theme="aiox-gold"] [class*="rounded-2xl"],
+html[data-theme="aiox-gold"] [class*="rounded-3xl"] {
+  border-radius: 0 !important;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="aiox-gold"] *,
+  html[data-theme="aiox-gold"] *::before,
+  html[data-theme="aiox-gold"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,148 @@
+/* Semantic Color Tokens — intent-based mapping, references primitives only */
+:root {
+  /* --- Background --- */
+  --color-background-primary: color-mix(in srgb, var(--palette-white) 65%, transparent);
+  --color-background-secondary: color-mix(in srgb, var(--palette-white) 55%, transparent);
+  --color-background-tertiary: color-mix(in srgb, var(--palette-white) 45%, transparent);
+  --color-background-base: var(--palette-warm-50);
+  --color-background-hover: color-mix(in srgb, var(--palette-black) 4%, transparent);
+  --color-background-active: color-mix(in srgb, var(--palette-black) 6%, transparent);
+  --color-background-disabled: color-mix(in srgb, var(--palette-black) 3%, transparent);
+
+  /* --- Text --- */
+  --color-text-primary: color-mix(in srgb, var(--palette-black) 88%, transparent);
+  --color-text-secondary: color-mix(in srgb, var(--palette-black) 65%, transparent);
+  --color-text-tertiary: color-mix(in srgb, var(--palette-black) 45%, transparent);
+  --color-text-disabled: color-mix(in srgb, var(--palette-black) 25%, transparent);
+  --color-text-inverse: var(--palette-white);
+
+  /* --- Borders --- */
+  --color-border-default: color-mix(in srgb, var(--palette-black) 8%, transparent);
+  --color-border-subtle: color-mix(in srgb, var(--palette-black) 5%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--palette-black) 15%, transparent);
+  --color-border-focus: color-mix(in srgb, var(--palette-blue-800) 50%, transparent);
+
+  /* --- Status --- */
+  --color-status-success: var(--palette-green-500);
+  --color-status-warning: var(--palette-yellow-500);
+  --color-status-error: var(--palette-red-500);
+  --color-status-info: var(--palette-blue-500);
+
+  /* --- Accent / Selection --- */
+  --color-accent: var(--palette-blue-800);
+  --color-accent-subtle: color-mix(in srgb, var(--palette-blue-800) 15%, transparent);
+  --color-selection-bg: color-mix(in srgb, var(--palette-blue-800) 30%, transparent);
+  --color-selection-text: inherit;
+
+  /* --- Squads --- */
+  --squad-copywriting-default: var(--palette-orange-500);
+  --squad-copywriting-gradient: linear-gradient(90deg, var(--palette-orange-500), var(--palette-amber-500));
+  --squad-design-default: var(--palette-purple-500);
+  --squad-design-gradient: linear-gradient(90deg, var(--palette-purple-500), var(--palette-violet-500));
+  --squad-creator-default: var(--palette-green-500);
+  --squad-creator-gradient: linear-gradient(90deg, var(--palette-green-500), var(--palette-green-600));
+  --squad-orchestrator-default: var(--palette-cyan-500);
+  --squad-orchestrator-gradient: linear-gradient(90deg, var(--palette-cyan-500), var(--palette-cyan-600));
+  --squad-development-default: var(--palette-blue-500);
+  --squad-development-gradient: linear-gradient(90deg, var(--palette-blue-500), var(--palette-blue-600));
+  --squad-marketing-default: var(--palette-pink-500);
+  --squad-marketing-gradient: linear-gradient(90deg, var(--palette-pink-500), var(--palette-pink-600));
+  --squad-default-default: var(--palette-gray-400);
+  --squad-default-gradient: linear-gradient(90deg, var(--palette-gray-400), var(--palette-gray-500));
+  --squad-content-default: var(--palette-red-500);
+  --squad-content-gradient: linear-gradient(90deg, var(--palette-red-500), var(--palette-pink-500));
+  --squad-engineering-default: var(--palette-indigo-500);
+  --squad-engineering-gradient: linear-gradient(90deg, var(--palette-indigo-500), var(--palette-violet-500));
+  --squad-analytics-default: var(--palette-teal-500);
+  --squad-analytics-gradient: linear-gradient(90deg, var(--palette-teal-500), var(--palette-cyan-500));
+  --squad-advisory-default: var(--palette-yellow-500);
+  --squad-advisory-gradient: linear-gradient(90deg, var(--palette-yellow-500), var(--palette-amber-500));
+
+  /* --- Squad gradient endpoints --- */
+  --squad-copywriting-end: var(--palette-amber-500);
+  --squad-design-end: var(--palette-violet-500);
+  --squad-creator-end: var(--palette-green-600);
+  --squad-orchestrator-end: var(--palette-cyan-600);
+  --squad-development-end: var(--palette-blue-600);
+  --squad-marketing-end: var(--palette-pink-600);
+  --squad-content-end: var(--palette-pink-500);
+  --squad-engineering-end: var(--palette-violet-500);
+  --squad-analytics-end: var(--palette-cyan-500);
+  --squad-advisory-end: var(--palette-amber-500);
+  --squad-default-end: var(--palette-gray-500);
+
+  /* --- Squad muted (lighter shade for text) --- */
+  --squad-copywriting-muted: var(--palette-orange-400);
+  --squad-design-muted: var(--palette-purple-400);
+  --squad-creator-muted: var(--palette-green-400);
+  --squad-orchestrator-muted: var(--palette-cyan-400);
+  --squad-development-muted: var(--palette-blue-400);
+  --squad-marketing-muted: var(--palette-pink-400);
+  --squad-content-muted: var(--palette-red-400);
+  --squad-engineering-muted: var(--palette-indigo-400);
+  --squad-analytics-muted: var(--palette-teal-400);
+  --squad-advisory-muted: var(--palette-yellow-400);
+  --squad-default-muted: var(--palette-gray-400);
+
+  /* --- Tier colors --- */
+  --tier-0-default: var(--palette-cyan-500);
+  --tier-0-muted: var(--palette-cyan-400);
+  --tier-0-end: var(--palette-blue-500);
+  --tier-1-default: var(--palette-purple-500);
+  --tier-1-muted: var(--palette-purple-400);
+  --tier-1-end: var(--palette-pink-500);
+  --tier-2-default: var(--palette-orange-500);
+  --tier-2-muted: var(--palette-orange-400);
+  --tier-2-end: var(--palette-amber-500);
+
+  /* --- Status muted (lighter shade for text) --- */
+  --color-status-success-muted: var(--palette-green-400);
+  --color-status-warning-muted: var(--palette-yellow-400);
+  --color-status-error-muted: var(--palette-red-400);
+  --color-status-info-muted: var(--palette-blue-400);
+
+  /* --- Dashboard status (with bg) --- */
+  --status-success: var(--palette-green-500);
+  --status-error: var(--palette-red-500);
+  --status-warning: var(--palette-yellow-500);
+  --status-info: var(--palette-blue-500);
+  --status-idle: var(--palette-gray-400);
+  --status-success-bg: color-mix(in srgb, var(--palette-green-500) 10%, transparent);
+  --status-error-bg: color-mix(in srgb, var(--palette-red-500) 10%, transparent);
+  --status-warning-bg: color-mix(in srgb, var(--palette-yellow-500) 10%, transparent);
+  --status-info-bg: color-mix(in srgb, var(--palette-blue-500) 10%, transparent);
+  --status-idle-bg: color-mix(in srgb, var(--palette-gray-400) 10%, transparent);
+
+  /* --- Agent colors --- */
+  --agent-dev: var(--palette-green-500);
+  --agent-qa: var(--palette-purple-500);
+  --agent-architect: var(--palette-blue-500);
+  --agent-pm: var(--palette-orange-500);
+  --agent-po: var(--palette-pink-500);
+  --agent-analyst: var(--palette-cyan-500);
+  --agent-devops: var(--palette-yellow-500);
+
+  /* --- Phase colors --- */
+  --phase-planning: var(--palette-blue-500);
+  --phase-coding: var(--palette-green-500);
+  --phase-testing: var(--palette-purple-500);
+  --phase-reviewing: var(--palette-orange-500);
+  --phase-deploying: var(--palette-yellow-500);
+
+  /* --- Complexity --- */
+  --complexity-simple: var(--palette-green-500);
+  --complexity-standard: var(--palette-blue-500);
+  --complexity-complex: var(--palette-orange-500);
+
+  /* --- Category --- */
+  --category-feature: var(--palette-blue-500);
+  --category-fix: var(--palette-red-500);
+  --category-refactor: var(--palette-purple-500);
+  --category-docs: var(--palette-cyan-500);
+
+  /* --- Priority (MoSCoW) --- */
+  --priority-must: var(--palette-red-500);
+  --priority-should: var(--palette-yellow-500);
+  --priority-could: var(--palette-blue-500);
+  --priority-wont: var(--palette-gray-500);
+}

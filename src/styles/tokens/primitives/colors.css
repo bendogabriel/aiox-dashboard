@@ -1,0 +1,75 @@
+/* Primitive Color Palette — raw hex values, single source of truth */
+:root {
+  /* Neutrals */
+  --palette-white: #ffffff;
+  --palette-black: #000000;
+  --palette-warm-50: #f5f0eb;
+
+  /* Dark surfaces */
+  --palette-dark-900: #0f0f0f;
+  --palette-dark-800: #141414;
+  --palette-dark-700: #191919;
+  --palette-dark-600: #1e1e1e;
+  --palette-dark-500: #282828;
+
+  /* Green */
+  --palette-green-400: #4ade80;
+  --palette-green-500: #22c55e;
+  --palette-green-600: #16a34a;
+
+  /* Yellow */
+  --palette-yellow-400: #facc15;
+  --palette-yellow-500: #eab308;
+
+  /* Red */
+  --palette-red-400: #f87171;
+  --palette-red-500: #ef4444;
+
+  /* Blue */
+  --palette-blue-400: #60a5fa;
+  --palette-blue-500: #3b82f6;
+  --palette-blue-600: #2563eb;
+  --palette-blue-650: #0066dd;
+  --palette-blue-700: #0055cc;
+  --palette-blue-750: #1a8aff;
+  --palette-blue-800: #007aff;
+
+  /* Cyan */
+  --palette-cyan-400: #22d3ee;
+  --palette-cyan-500: #06b6d4;
+  --palette-cyan-600: #0891b2;
+
+  /* Orange */
+  --palette-orange-400: #fb923c;
+  --palette-orange-500: #f97316;
+
+  /* Amber */
+  --palette-amber-500: #f59e0b;
+
+  /* Purple */
+  --palette-purple-400: #c084fc;
+  --palette-purple-500: #a855f7;
+
+  /* Violet */
+  --palette-violet-500: #8b5cf6;
+
+  /* Indigo */
+  --palette-indigo-400: #818cf8;
+  --palette-indigo-500: #6366f1;
+
+  /* Teal */
+  --palette-teal-400: #2dd4bf;
+  --palette-teal-500: #14b8a6;
+
+  /* Pink */
+  --palette-pink-400: #f472b6;
+  --palette-pink-500: #ec4899;
+  --palette-pink-600: #db2777;
+
+  /* Gray */
+  --palette-gray-400: #9ca3af;
+  --palette-gray-500: #6b7280;
+
+  /* Slate */
+  --palette-slate-500: #64748b;
+}

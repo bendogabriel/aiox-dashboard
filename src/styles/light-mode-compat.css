@@ -1,0 +1,210 @@
+/* ============================================
+   LIGHT MODE COMPATIBILITY LAYER
+   Remaps hardcoded dark-only Tailwind utilities
+   (text-white, bg-white/*, border-white/*, bg-black/*)
+   to appropriate light-mode values using semantic tokens.
+
+   Applied via :root:not(.dark) so it ONLY activates
+   when dark mode is NOT present.
+
+   Pattern follows matrix.css approach — global overrides
+   with explicit exceptions for colored-background contexts.
+   ============================================ */
+
+/* ============================================
+   TEXT — white → dark
+   ============================================ */
+
+/* text-white → semantic primary text */
+:root:not(.dark) .text-white {
+  color: var(--color-text-primary) !important;
+}
+
+/* text-white with opacity variants */
+:root:not(.dark) .text-white\/90 { color: var(--color-text-primary) !important; }
+:root:not(.dark) .text-white\/80 { color: var(--color-text-primary) !important; }
+:root:not(.dark) .text-white\/70 { color: var(--color-text-secondary) !important; }
+:root:not(.dark) .text-white\/60 { color: var(--color-text-secondary) !important; }
+:root:not(.dark) .text-white\/50 { color: var(--color-text-tertiary) !important; }
+:root:not(.dark) .text-white\/40 { color: var(--color-text-tertiary) !important; }
+:root:not(.dark) .text-white\/30 { color: var(--color-text-disabled) !important; }
+:root:not(.dark) .text-white\/20 { color: var(--color-text-disabled) !important; }
+
+/* Catch-all for any text-white/ not explicitly listed */
+:root:not(.dark) [class*="text-white\/"] {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Placeholder text */
+:root:not(.dark) [class*="placeholder-white"]::placeholder,
+:root:not(.dark) [class*="placeholder\:text-white"]::placeholder {
+  color: var(--color-text-tertiary) !important;
+}
+
+/* ---- EXCEPTIONS: keep white text on colored backgrounds ---- */
+:root:not(.dark) .bg-blue-500 .text-white,
+:root:not(.dark) .bg-blue-600 .text-white,
+:root:not(.dark) .bg-green-500 .text-white,
+:root:not(.dark) .bg-red-500 .text-white,
+:root:not(.dark) .bg-purple-500 .text-white,
+:root:not(.dark) .bg-orange-500 .text-white,
+:root:not(.dark) .bg-indigo-500 .text-white,
+:root:not(.dark) .bg-cyan-500 .text-white,
+:root:not(.dark) .bg-pink-500 .text-white,
+:root:not(.dark) [class*="bg-gradient-to-r"] .text-white,
+:root:not(.dark) [class*="bg-gradient-to-br"] .text-white,
+:root:not(.dark) [class*="bg-gradient-to-b"] .text-white,
+:root:not(.dark) .glass-button-primary .text-white,
+:root:not(.dark) .message-bubble-user .text-white {
+  color: #ffffff !important;
+}
+
+/* ============================================
+   BORDERS — white opacity → dark opacity
+   ============================================ */
+:root:not(.dark) .border-white\/5 { border-color: var(--color-border-subtle) !important; }
+:root:not(.dark) .border-white\/10 { border-color: var(--color-border-default) !important; }
+:root:not(.dark) .border-white\/15 { border-color: var(--color-border-default) !important; }
+:root:not(.dark) .border-white\/20 { border-color: var(--color-border-strong) !important; }
+:root:not(.dark) .border-white\/30 { border-color: var(--color-border-strong) !important; }
+
+/* Catch-all */
+:root:not(.dark) [class*="border-white\/"] {
+  border-color: var(--color-border-default) !important;
+}
+
+/* Hover border variants */
+:root:not(.dark) .hover\:border-white\/10:hover { border-color: var(--color-border-default) !important; }
+:root:not(.dark) .hover\:border-white\/20:hover { border-color: var(--color-border-strong) !important; }
+:root:not(.dark) .hover\:border-white\/30:hover { border-color: var(--color-border-strong) !important; }
+
+/* ============================================
+   BACKGROUNDS — white/black opacity → light surfaces
+   ============================================ */
+
+/* bg-white/ variants → subtle dark tints (for light surfaces) */
+:root:not(.dark) .bg-white\/5 { background-color: rgba(0, 0, 0, 0.03) !important; }
+:root:not(.dark) .bg-white\/8 { background-color: rgba(0, 0, 0, 0.04) !important; }
+:root:not(.dark) .bg-white\/10 { background-color: rgba(0, 0, 0, 0.05) !important; }
+:root:not(.dark) .bg-white\/12 { background-color: rgba(0, 0, 0, 0.06) !important; }
+:root:not(.dark) .bg-white\/15 { background-color: rgba(0, 0, 0, 0.07) !important; }
+:root:not(.dark) .bg-white\/20 { background-color: rgba(0, 0, 0, 0.08) !important; }
+
+/* Hover variants */
+:root:not(.dark) .hover\:bg-white\/5:hover { background-color: rgba(0, 0, 0, 0.04) !important; }
+:root:not(.dark) .hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.06) !important; }
+:root:not(.dark) .hover\:bg-white\/20:hover { background-color: rgba(0, 0, 0, 0.10) !important; }
+
+/* bg-black/ variants → lighter overlays */
+:root:not(.dark) .bg-black\/10 { background-color: rgba(0, 0, 0, 0.04) !important; }
+:root:not(.dark) .bg-black\/20 { background-color: rgba(0, 0, 0, 0.06) !important; }
+:root:not(.dark) .bg-black\/30 { background-color: rgba(0, 0, 0, 0.08) !important; }
+:root:not(.dark) .bg-black\/40 { background-color: rgba(0, 0, 0, 0.10) !important; }
+:root:not(.dark) .bg-black\/50 { background-color: rgba(0, 0, 0, 0.15) !important; }
+:root:not(.dark) .bg-black\/60 { background-color: rgba(0, 0, 0, 0.20) !important; }
+:root:not(.dark) .bg-black\/70 { background-color: rgba(0, 0, 0, 0.25) !important; }
+:root:not(.dark) .bg-black\/80 { background-color: rgba(0, 0, 0, 0.35) !important; }
+:root:not(.dark) .bg-black\/90 { background-color: rgba(0, 0, 0, 0.50) !important; }
+
+/* bg-gray-900 variants (commonly used as dark panels) */
+:root:not(.dark) .bg-gray-900\/95 { background-color: rgba(255, 255, 255, 0.90) !important; }
+:root:not(.dark) .bg-gray-900\/90 { background-color: rgba(255, 255, 255, 0.85) !important; }
+:root:not(.dark) [class*="bg-gray-900"] {
+  background-color: rgba(255, 255, 255, 0.80) !important;
+}
+:root:not(.dark) [class*="bg-gray-800"] {
+  background-color: rgba(255, 255, 255, 0.75) !important;
+}
+:root:not(.dark) [class*="bg-slate-900"] {
+  background-color: rgba(255, 255, 255, 0.80) !important;
+}
+:root:not(.dark) [class*="bg-slate-800"] {
+  background-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* ============================================
+   TEXT COLORS — gray/slate dark variants → appropriate light values
+   ============================================ */
+:root:not(.dark) .text-gray-300,
+:root:not(.dark) .text-gray-400 { color: var(--color-text-secondary) !important; }
+:root:not(.dark) .text-gray-500 { color: var(--color-text-tertiary) !important; }
+:root:not(.dark) .text-gray-600 { color: var(--color-text-secondary) !important; }
+
+:root:not(.dark) .text-slate-300,
+:root:not(.dark) .text-slate-400 { color: var(--color-text-secondary) !important; }
+:root:not(.dark) .text-slate-500 { color: var(--color-text-tertiary) !important; }
+
+/* ============================================
+   RINGS & FOCUS — white rings → dark rings
+   ============================================ */
+:root:not(.dark) [class*="ring-white\/"] {
+  --tw-ring-color: rgba(0, 0, 0, 0.1) !important;
+}
+:root:not(.dark) [class*="focus\:ring-white"]:focus {
+  --tw-ring-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ============================================
+   DIVIDE — white dividers → dark dividers
+   ============================================ */
+:root:not(.dark) [class*="divide-white\/"] > * + * {
+  border-color: var(--color-border-default) !important;
+}
+
+/* ============================================
+   SHADOWS — override dark-mode glow shadows
+   ============================================ */
+:root:not(.dark) [class*="shadow-white\/"],
+:root:not(.dark) [class*="shadow-black\/"] {
+  --tw-shadow-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* ============================================
+   SCROLLBAR — dark thumb → light theme thumb
+   ============================================ */
+:root:not(.dark) {
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+:root:not(.dark) .glass-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+}
+:root:not(.dark) .glass-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+/* ============================================
+   COMPONENT-LEVEL OVERRIDES
+   ============================================ */
+
+/* Message bubbles — user bubble keeps colored bg */
+:root:not(.dark) .message-bubble-user {
+  color: #ffffff;
+}
+
+/* Agent message bubble — light glass */
+:root:not(.dark) .message-bubble-agent {
+  background: var(--glass-background-card);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+/* Glass card text inherits semantic colors */
+:root:not(.dark) .glass-card {
+  color: var(--color-text-primary);
+}
+
+/* Sidebar border-r */
+:root:not(.dark) [class*="border-r"][class*="border-white\/"] {
+  border-right-color: var(--color-border-default) !important;
+}
+
+/* Bottom/top borders */
+:root:not(.dark) [class*="border-b"][class*="border-white\/"] {
+  border-bottom-color: var(--color-border-default) !important;
+}
+:root:not(.dark) [class*="border-t"][class*="border-white\/"] {
+  border-top-color: var(--color-border-default) !important;
+}
+:root:not(.dark) [class*="border-l"][class*="border-white\/"] {
+  border-left-color: var(--color-border-default) !important;
+}

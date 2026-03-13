@@ -1,0 +1,141 @@
+# ============================================================
+# AIOS Platform — Docker Compose
+# ============================================================
+#
+# Quick start (dev):
+#   docker compose up                        # Engine + Dashboard only
+#   docker compose --profile messaging up    # + WhatsApp (WAHA)
+#
+# Production (VPS):
+#   docker compose --profile production up -d
+#   docker compose --profile full up -d      # + WhatsApp + Nginx
+#
+# Mount your project directory:
+#   AIOS_PROJECT_ROOT=/path/to/project docker compose up
+#
+# Environment:
+#   Copy .env.example → .env and fill in your values.
+#   Docker reads from .env automatically.
+# ============================================================
+
+services:
+  # ── AIOS Engine + Dashboard (always runs) ────────────────
+  aios:
+    build: .
+    container_name: aios-platform
+    ports:
+      - "${ENGINE_PORT:-4002}:4002"
+    volumes:
+      # Mount the project root (where .aios-core/ and squads/ live)
+      - ${AIOS_PROJECT_ROOT:-.}:/project:ro
+      # Persist engine database across restarts
+      - aios-data:/app/engine/data
+      # Mount engine .env if it exists (secrets, API keys)
+      - ./engine/.env:/app/engine/.env:ro
+    environment:
+      - ENGINE_PORT=4002
+      - ENGINE_HOST=0.0.0.0
+      - AIOS_PROJECT_ROOT=/project
+      - AIOS_DASHBOARD_DIR=/app/dist
+      - ENGINE_SECRET=${ENGINE_SECRET:?Set ENGINE_SECRET in .env}
+      # CORS — comma-separated origins (empty = same-origin only)
+      - CORS_ORIGINS=${CORS_ORIGINS:-}
+      # Google OAuth (optional)
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      # Telegram (optional)
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_WEBHOOK_URL=${TELEGRAM_WEBHOOK_URL:-}
+      # WhatsApp — connects to WAHA service if messaging profile is active
+      - WHATSAPP_PROVIDER=${WHATSAPP_PROVIDER:-}
+      - WAHA_URL=${WAHA_URL:-http://waha:3000}
+      - WAHA_API_KEY=${WAHA_API_KEY:-}
+      - WAHA_SESSION=${WAHA_SESSION:-default}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4002/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    networks:
+      - aios-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── WAHA — WhatsApp self-hosted (opt-in) ─────────────────
+  waha:
+    image: devlikeapro/waha
+    container_name: aios-waha
+    profiles: ["messaging", "full"]
+    ports:
+      - "${WAHA_PORT:-3000}:3000"
+    environment:
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WHATSAPP_RESTART_ALL_SESSIONS=true
+    volumes:
+      - waha-data:/app/.sessions
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    networks:
+      - aios-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── Nginx reverse proxy (production) ────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: aios-nginx
+    profiles: ["production", "full"]
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - certbot-conf:/etc/letsencrypt:ro
+      - certbot-www:/var/www/certbot:ro
+    depends_on:
+      aios:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - aios-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── Certbot — auto SSL renewal (production) ─────────────
+  certbot:
+    image: certbot/certbot
+    container_name: aios-certbot
+    profiles: ["production", "full"]
+    volumes:
+      - certbot-conf:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    # Renew certs every 12h (certbot only renews if needed)
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --quiet; sleep 12h & wait $${!}; done;'"
+    networks:
+      - aios-net
+
+volumes:
+  aios-data:
+  waha-data:
+  certbot-conf:
+  certbot-www:
+
+networks:
+  aios-net:
+    driver: bridge

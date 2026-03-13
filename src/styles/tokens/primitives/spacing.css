@@ -1,0 +1,23 @@
+/* Spacing Scale */
+:root {
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+
+  /* Brandbook 14-step scale (AIOX Cockpit) */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 15px;
+  --space-5: 20px;
+  --space-6: 30px;
+  --space-7: 40px;
+  --space-8: 60px;
+  --space-9: 80px;
+  --space-10: 90px;
+  --space-11: 120px;
+  --space-12: 150px;
+  --space-13: 180px;
+}

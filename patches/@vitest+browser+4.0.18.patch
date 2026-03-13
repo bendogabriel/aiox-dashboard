@@ -1,0 +1,75 @@
+diff --git a/node_modules/@vitest/browser/dist/client/__vitest_browser__/tester-k74mgIRa.js b/node_modules/@vitest/browser/dist/client/__vitest_browser__/tester-k74mgIRa.js
+index afd67e5..361a8d6 100644
+--- a/node_modules/@vitest/browser/dist/client/__vitest_browser__/tester-k74mgIRa.js
++++ b/node_modules/@vitest/browser/dist/client/__vitest_browser__/tester-k74mgIRa.js
+@@ -1010,7 +1010,8 @@ function createBrowserRunner(runnerClass, mocker, state, coverageModule) {
+         hash = Date.now().toString();
+         this.hashMap.set(filepath, hash);
+       }
+-      const prefix = `/${/^\w:/.test(filepath) ? "@fs/" : ""}`;
++      const needsFsPrefix = /^\w:/.test(filepath);
++      const prefix = `/${needsFsPrefix ? "@fs/" : ""}`;
+       const query = `browserv=${hash}`;
+       const importpath = `${prefix}${filepath}?${query}`.replace(/\/+/g, "/");
+       const trace = this.config.browser.trace;
+@@ -1023,7 +1024,23 @@ function createBrowserRunner(runnerClass, mocker, state, coverageModule) {
+           importpath
+         );
+       } catch (err) {
+-        throw new Error(`Failed to import test file ${filepath}`, { cause: err });
++        if (err && err.message && /Failed to fetch dynamically imported module/.test(err.message)) {
++          await new Promise(function(r) { setTimeout(r, 150); });
++          const retryHash = Date.now().toString() + "r";
++          this.hashMap.set(filepath, retryHash);
++          const retryQuery = `browserv=${retryHash}`;
++          const retryPath = `${prefix}${filepath}?${retryQuery}`.replace(/\/+/g, "/");
++          try {
++            await import(
++              /* @vite-ignore */
++              retryPath
++            );
++          } catch (retryErr) {
++            throw new Error(`Failed to import test file ${filepath}`, { cause: retryErr });
++          }
++        } else {
++          throw new Error(`Failed to import test file ${filepath}`, { cause: err });
++        }
+       }
+     };
+     trace = (name, attributes, cb) => {
+diff --git a/node_modules/@vitest/browser/dist/index.js b/node_modules/@vitest/browser/dist/index.js
+index 853de96..16e674c 100644
+--- a/node_modules/@vitest/browser/dist/index.js
++++ b/node_modules/@vitest/browser/dist/index.js
+@@ -1157,12 +1157,15 @@ var BrowserPlugin = (parentServer, base = "/") => {
+ 				};
+ 			},
+ 			async resolveId(id) {
+-				if (!/\?browserv=\w+$/.test(id)) {
++				if (!/[?&]browserv=\w+/.test(id)) {
+ 					return;
+ 				}
+-				let useId = id.slice(0, id.lastIndexOf("?"));
++				let useId = id.slice(0, id.indexOf("?"));
+ 				if (useId.startsWith("/@fs/")) {
+ 					useId = useId.slice(5);
++					if (useId && useId[0] !== "/" && !/^\w:/.test(useId)) {
++						useId = "/" + useId;
++					}
+ 				}
+ 				if (/^\w:/.test(useId)) {
+ 					useId = useId.replace(/\\/g, "/");
+@@ -1181,6 +1184,13 @@ var BrowserPlugin = (parentServer, base = "/") => {
+ 		{
+ 			name: "vitest:browser:assets",
+ 			configureServer(server) {
++				const rootPrefix = parentServer.vitest.config.root + "/";
++				server.middlewares.use(function vitestFsRewrite(req, _res, next) {
++					if (req.url && req.url.startsWith(rootPrefix)) {
++						req.url = "/@fs" + req.url;
++					}
++					next();
++				});
+ 				server.middlewares.use("/__vitest__", sirv(resolve(distRoot, "client/__vitest__")));
+ 			},
+ 			resolveId(id) {

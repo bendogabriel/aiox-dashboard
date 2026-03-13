@@ -1,0 +1,41 @@
+/* Dark Mode Overrides — references primitives only */
+.dark {
+  /* --- Background --- */
+  --color-background-primary: color-mix(in srgb, var(--palette-dark-600) 65%, transparent);
+  --color-background-secondary: color-mix(in srgb, var(--palette-dark-700) 55%, transparent);
+  --color-background-tertiary: color-mix(in srgb, var(--palette-dark-500) 45%, transparent);
+  --color-background-base: var(--palette-dark-900);
+  --color-background-hover: color-mix(in srgb, var(--palette-white) 6%, transparent);
+  --color-background-active: color-mix(in srgb, var(--palette-white) 8%, transparent);
+  --color-background-disabled: color-mix(in srgb, var(--palette-white) 4%, transparent);
+
+  /* --- Text --- */
+  --color-text-primary: color-mix(in srgb, var(--palette-white) 92%, transparent);
+  --color-text-secondary: color-mix(in srgb, var(--palette-white) 65%, transparent);
+  --color-text-tertiary: color-mix(in srgb, var(--palette-white) 40%, transparent);
+  --color-text-disabled: color-mix(in srgb, var(--palette-white) 20%, transparent);
+  --color-text-inverse: var(--palette-black);
+
+  /* --- Borders --- */
+  --color-border-default: color-mix(in srgb, var(--palette-white) 10%, transparent);
+  --color-border-subtle: color-mix(in srgb, var(--palette-white) 6%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--palette-white) 20%, transparent);
+  --color-border-focus: color-mix(in srgb, var(--palette-blue-800) 60%, transparent);
+
+  /* --- Glass --- */
+  --glass-border-color: color-mix(in srgb, var(--palette-white) 10%, transparent);
+  --glass-border-color-subtle: color-mix(in srgb, var(--palette-white) 6%, transparent);
+  --glass-background-panel: color-mix(in srgb, var(--palette-dark-800) 80%, transparent);
+  --glass-background-panel-hover: color-mix(in srgb, var(--palette-dark-600) 85%, transparent);
+  --glass-background-card: color-mix(in srgb, var(--palette-dark-700) 70%, transparent);
+  --glass-background-card-active: linear-gradient(135deg, color-mix(in srgb, var(--palette-blue-800) 12%, transparent) 0%, color-mix(in srgb, var(--palette-blue-800) 6%, transparent) 100%);
+  --glass-background-input: color-mix(in srgb, var(--palette-dark-900) 85%, transparent);
+  --glass-background-button: color-mix(in srgb, var(--palette-dark-500) 60%, transparent);
+  --glass-background-button-primary: linear-gradient(135deg, var(--palette-blue-800), var(--palette-blue-700));
+  --glass-background-button-primary-hover: linear-gradient(135deg, var(--palette-blue-750), var(--palette-blue-650));
+
+  /* --- Shadows --- */
+  --glass-shadow-default: 0 0 0 1px color-mix(in srgb, var(--palette-white) 4%, transparent) inset, 0 4px 16px color-mix(in srgb, var(--palette-black) 30%, transparent);
+  --glass-shadow-large: 0 0 0 1px color-mix(in srgb, var(--palette-white) 4%, transparent) inset, 0 8px 32px color-mix(in srgb, var(--palette-black) 40%, transparent);
+  --glass-shadow-hover: 0 0 0 1px color-mix(in srgb, var(--palette-white) 6%, transparent) inset, 0 12px 40px color-mix(in srgb, var(--palette-black) 50%, transparent);
+}
