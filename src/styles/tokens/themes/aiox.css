@@ -357,25 +357,27 @@ html[data-theme="aiox"] {
   --world-status-completed: #4ADE80;
   --world-status-failed: #EF4444;
 
-  /* ===== shadcn/ui compatibility bridge ===== */
+  /* ===== shadcn/ui compatibility bridge =====
+     Mirrors dashboard-aiox-lovable palette.
+     Primary=lime, secondary=dark surface, accent=lime glow */
   --background: var(--aiox-dark);
   --foreground: var(--aiox-warm-white);
   --primary: var(--aiox-lime);
   --primary-foreground: var(--aiox-dark);
-  --secondary: var(--aiox-blue);
-  --secondary-foreground: #ffffff;
+  --secondary: var(--aiox-surface-alt);
+  --secondary-foreground: var(--aiox-warm-white);
   --card: var(--aiox-surface);
   --card-foreground: var(--aiox-warm-white);
-  --muted: var(--aiox-surface-alt);
-  --muted-foreground: var(--aiox-gray-muted);
-  --accent: var(--aiox-blue);
-  --accent-foreground: #ffffff;
+  --muted: var(--aiox-surface);
+  --muted-foreground: rgba(255, 255, 237, 0.4);
+  --accent: rgba(209, 255, 0, 0.10);
+  --accent-foreground: var(--aiox-lime);
   --destructive: var(--color-status-error);
   --destructive-foreground: #ffffff;
   --border: var(--color-border-default);
   --input: var(--color-border-input);
-  --ring: var(--color-border-focus);
-  --radius: 0px;
+  --ring: rgba(209, 255, 0, 0.40);
+  --radius: 0.5rem;
   --popover: var(--aiox-surface);
   --popover-foreground: var(--aiox-warm-white);
 }

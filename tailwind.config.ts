@@ -28,6 +28,7 @@ export default {
     extend: {
       colors: {
         background: {
+          DEFAULT: 'var(--background)',
           primary: 'var(--color-background-primary)',
           secondary: 'var(--color-background-secondary)',
           tertiary: 'var(--color-background-tertiary)',
@@ -37,6 +38,7 @@ export default {
           disabled: 'var(--color-background-disabled)',
         },
         foreground: {
+          DEFAULT: 'var(--foreground)',
           primary: 'var(--color-text-primary)',
           secondary: 'var(--color-text-secondary)',
           tertiary: 'var(--color-text-tertiary)',
@@ -50,7 +52,8 @@ export default {
           focus: 'var(--color-border-focus)',
         },
         accent: {
-          DEFAULT: 'var(--color-accent)',
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
           subtle: 'var(--color-accent-subtle)',
         },
         status: {

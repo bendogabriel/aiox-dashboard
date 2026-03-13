@@ -6,18 +6,7 @@ import { CockpitButton } from '../ui/cockpit/CockpitButton'
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2
-      style={{
-        fontFamily: 'var(--font-family-display)',
-        fontSize: '1.25rem',
-        color: 'var(--aiox-lime)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.12em',
-        marginBottom: '1rem',
-        borderBottom: '1px solid rgba(209, 255, 0, 0.15)',
-        paddingBottom: '0.5rem',
-      }}
-    >
+    <h2 className="text-xl font-semibold tracking-tight text-primary mb-4 border-b border-border pb-2">
       {children}
     </h2>
   )
@@ -25,17 +14,8 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function SubSection({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: '1.5rem' }}>
-      <p
-        style={{
-          fontFamily: 'var(--font-family-mono)',
-          fontSize: '0.6rem',
-          color: 'var(--aiox-gray-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-          marginBottom: '0.75rem',
-        }}
-      >
+    <div className="mb-6">
+      <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">
         {label}
       </p>
       <div className="flex flex-wrap items-center gap-3">{children}</div>
@@ -47,54 +27,34 @@ export default function DSPreview() {
   const [inputValue, setInputValue] = useState('')
 
   return (
-    <div
-      className="h-full overflow-y-auto p-8"
-      style={{ background: 'var(--aiox-dark)', color: 'var(--aiox-warm-white)' }}
-    >
+    <div className="h-full overflow-y-auto p-8 bg-background text-foreground">
       <div className="max-w-5xl mx-auto space-y-12">
         {/* Header */}
         <div>
-          <h1
-            style={{
-              fontFamily: 'var(--font-family-display)',
-              fontSize: '2rem',
-              color: 'var(--aiox-lime)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.15em',
-            }}
-          >
+          <h1 className="text-3xl font-bold tracking-tight text-primary">
             Design System Preview
           </h1>
-          <p
-            style={{
-              fontFamily: 'var(--font-family-mono)',
-              fontSize: '0.7rem',
-              color: 'var(--aiox-gray-muted)',
-              marginTop: '0.5rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-            }}
-          >
-            shadcn/ui components with AIOX Cockpit theme bridge
+          <p className="text-sm text-muted-foreground mt-1">
+            shadcn/ui components with AIOX theme bridge — matching dashboard-aiox-lovable
           </p>
         </div>
 
         {/* ─── BUTTONS ─── */}
         <section>
-          <SectionTitle>shadcn Button</SectionTitle>
+          <SectionTitle>Button</SectionTitle>
 
           <SubSection label="Variants">
-            <Button variant="primary">Primary</Button>
+            <Button variant="default">Default</Button>
             <Button variant="secondary">Secondary</Button>
+            <Button variant="outline">Outline</Button>
             <Button variant="ghost">Ghost</Button>
             <Button variant="destructive">Destructive</Button>
-            <Button variant="outline">Outline</Button>
             <Button variant="link">Link</Button>
           </SubSection>
 
           <SubSection label="Sizes">
             <Button size="sm">Small</Button>
-            <Button size="md">Medium</Button>
+            <Button size="default">Default</Button>
             <Button size="lg">Large</Button>
             <Button size="icon" aria-label="Icon button">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -108,12 +68,15 @@ export default function DSPreview() {
             <Button variant="secondary" disabled>
               Disabled Secondary
             </Button>
+            <Button variant="outline" disabled>
+              Disabled Outline
+            </Button>
           </SubSection>
         </section>
 
         {/* ─── CARDS ─── */}
         <section>
-          <SectionTitle>shadcn Card</SectionTitle>
+          <SectionTitle>Card</SectionTitle>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
@@ -122,7 +85,7 @@ export default function DSPreview() {
                 <CardDescription>All agents operational</CardDescription>
               </CardHeader>
               <CardContent>
-                <p style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.7rem' }}>
+                <p className="text-sm">
                   12 agents active across 4 squads. No incidents in the last 24h.
                 </p>
               </CardContent>
@@ -140,23 +103,8 @@ export default function DSPreview() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-baseline gap-2">
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-family-display)',
-                      fontSize: '2rem',
-                      color: 'var(--aiox-lime)',
-                    }}
-                  >
-                    847
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-family-mono)',
-                      fontSize: '0.6rem',
-                      color: 'var(--aiox-gray-muted)',
-                      textTransform: 'uppercase',
-                    }}
-                  >
+                  <span className="text-4xl font-bold text-primary">847</span>
+                  <span className="text-sm text-muted-foreground">
                     tasks completed
                   </span>
                 </div>
@@ -167,7 +115,7 @@ export default function DSPreview() {
 
         {/* ─── INPUTS ─── */}
         <section>
-          <SectionTitle>shadcn Input</SectionTitle>
+          <SectionTitle>Input</SectionTitle>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <SubSection label="Default">
@@ -190,13 +138,7 @@ export default function DSPreview() {
               <div className="w-full space-y-2">
                 <label
                   htmlFor="ds-label-input"
-                  style={{
-                    fontFamily: 'var(--font-family-mono)',
-                    fontSize: '0.55rem',
-                    color: 'var(--aiox-gray-muted)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                  }}
+                  className="text-sm font-medium leading-none"
                 >
                   Agent Name
                 </label>
@@ -213,16 +155,7 @@ export default function DSPreview() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Cockpit */}
             <div>
-              <p
-                style={{
-                  fontFamily: 'var(--font-family-mono)',
-                  fontSize: '0.6rem',
-                  color: 'var(--aiox-gray-dim)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                  marginBottom: '1rem',
-                }}
-              >
+              <p className="text-xs text-muted-foreground uppercase tracking-widest mb-4">
                 Cockpit (inline styles)
               </p>
               <div className="flex flex-wrap gap-3">
@@ -235,20 +168,11 @@ export default function DSPreview() {
 
             {/* shadcn */}
             <div>
-              <p
-                style={{
-                  fontFamily: 'var(--font-family-mono)',
-                  fontSize: '0.6rem',
-                  color: 'var(--aiox-gray-dim)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                  marginBottom: '1rem',
-                }}
-              >
+              <p className="text-xs text-muted-foreground uppercase tracking-widest mb-4">
                 shadcn (Tailwind + CSS vars)
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button variant="primary">Primary</Button>
+                <Button variant="default">Default</Button>
                 <Button variant="secondary">Secondary</Button>
                 <Button variant="ghost">Ghost</Button>
                 <Button variant="destructive">Destructive</Button>
