@@ -288,7 +288,7 @@ export default function TaskOrchestrator() {
           {/* Title */}
           <div className="flex items-center gap-3">
             <Workflow className="w-5 h-5 text-[var(--color-accent,#D1FF00)] flex-shrink-0" />
-            <h1 className="text-base md:text-lg font-bold text-white whitespace-nowrap">Orquestrador</h1>
+            <h1 className="text-base md:text-lg font-bold text-white whitespace-nowrap type-h2">Orquestrador</h1>
             {isAwaitingApproval && (
               <span className="px-2 py-1 rounded text-[10px] font-medium bg-[var(--bb-warning)]/15 text-[var(--bb-warning)] border border-[var(--bb-warning)]/30">
                 Aguardando Aprovação

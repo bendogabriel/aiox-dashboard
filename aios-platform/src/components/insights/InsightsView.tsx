@@ -225,7 +225,7 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <BarChart3 size={22} className="text-[var(--aiox-blue)]" />
-          <h1 className="heading-display text-xl font-semibold text-primary">Dashboard</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary type-h2">Dashboard</h1>
           <Badge variant="status" status={hasLiveData ? 'success' : 'warning'} size="sm">
             {hasLiveData ? 'Live' : 'Mock'}
           </Badge>
@@ -309,8 +309,8 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
         <CockpitCard padding="md" className="lg:col-span-2">
           <SectionLabel count={agents.length}>Agent Performance</SectionLabel>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {agents.map((agent) => (
-              <div key={'agentId' in agent ? String((agent as Record<string, unknown>).agentId) : agent.name} className="glass-subtle rounded-none p-3 space-y-2">
+            {agents.map((agent, idx) => (
+              <div key={'agentId' in agent ? `${idx}-${String((agent as Record<string, unknown>).agentId)}` : agent.name} className="glass-subtle rounded-none p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-primary">{agent.name}</span>
                   <Badge variant="status" status="success" size="sm">

@@ -35,7 +35,7 @@ export function RegistryQuickAccess() {
           >
             <item.icon size={20} style={{ color: 'var(--aiox-gray-dim, #696969)' }} />
             <span className="text-lg font-bold text-white/90">{item.value}</span>
-            <span className="text-[10px] text-white/40 group-hover:text-white/60 flex items-center gap-1">
+            <span className="type-micro text-white/40 group-hover:text-white/60 flex items-center gap-1">
               {item.label} <ChevronRight size={10} />
             </span>
           </button>

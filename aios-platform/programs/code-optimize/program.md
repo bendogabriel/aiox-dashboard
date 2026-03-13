@@ -2,8 +2,8 @@
 name: "Bundle Size Optimizer"
 version: "1.0.0"
 type: "code-optimize"
-squad_id: "engineering"
-agent_id: "dev"
+squad_id: "full-stack-dev"
+agent_id: "dev-chief"
 
 editable_scope:
   - "src/components/**/*.tsx"
@@ -56,39 +56,39 @@ enabled: true
 
 Reduzir o bundle size do dashboard AIOS iterativamente, mantendo funcionalidade e testes passando.
 
-## Estrategia
+## Estratégia
 
-1. Analise o bundle atual com `npx vite build`
+1. Análise o bundle atual com `npx vite build`
 2. Identifique o maior contributor para o tamanho
-3. Aplique UMA otimizacao por iteracao (apenas uma mudanca atomica)
+3. Aplique UMA otimizacao por iteracao (apenas uma mudança atomica)
 4. Garanta que o codigo continua compilando sem erros
-5. Se o bundle diminuiu, a mudanca sera mantida. Se aumentou, sera revertida automaticamente.
+5. Se o bundle diminuiu, a mudança será mantida. Se aumentou, será revertida automaticamente.
 
-## Tecnicas Priorizadas (em ordem de impacto)
+## Técnicas Priorizadas (em ordem de impacto)
 
-1. **Remove unused imports** — imports que nao sao usados no arquivo
+1. **Remove unused imports** — imports que não são usados no arquivo
 2. **Tree-shake barrel exports** — substituir `import { X } from './index'` por import direto do arquivo
-3. **Lazy-load heavy components** — usar `React.lazy()` para componentes pesados nao vistos na carga inicial
+3. **Lazy-load heavy components** — usar `React.lazy()` para componentes pesados não vistos na carga inicial
 4. **Code-split routes** — garantir que cada view usa `lazy()` no App.tsx
 5. **Extract shared constants** — mover constantes duplicadas para arquivo compartilhado
-6. **Remove dead code** — funcoes, componentes ou variaveis exportadas mas nunca importadas
+6. **Remove dead code** — funções, componentes ou variaveis exportadas mas nunca importadas
 
 ## Regras Inviolaveis
 
-- NUNCA remova funcionalidade visivel ao usuario
+- NUNCA remova funcionalidade visível ao usuario
 - NUNCA quebre a compilacao TypeScript (`npx tsc --noEmit` deve passar)
-- APENAS uma mudanca por iteracao (atomicidade)
+- APENAS uma mudança por iteracao (atomicidade)
 - NUNCA modifique testes, configuracoes de build, ou package.json
-- Consulte o Experiment History para evitar repetir tentativas ja feitas
-- Se uma estrategia ja foi tentada 3+ vezes sem melhoria, mude de estrategia
+- Consulte o Experiment History para evitar repetir tentativas já feitas
+- Se uma estratégia já foi tentada 3+ vezes sem melhoria, mude de estratégia
 
 ## Anti-patterns (evitar)
 
-- Nao comprima codigo manualmente (minification e responsabilidade do bundler)
-- Nao remova type imports (TypeScript os elimina automaticamente no build)
-- Nao mova codigo entre arquivos sem motivo claro de reducao
-- Nao adicione novas dependencias
-- Nao crie abstractions desnecessarias "para reduzir codigo"
+- Não comprima codigo manualmente (minification e responsabilidade do bundler)
+- Não remova type imports (TypeScript os elimina automaticamente no build)
+- Não mova codigo entre arquivos sem motivo claro de redução
+- Não adicione novas dependencias
+- Não crie abstractions desnecessarias "para reduzir codigo"
 
 ## Formato da Resposta
 
@@ -97,4 +97,4 @@ Comece SEMPRE com:
 Hypothesis: [descricao clara do que voce vai mudar e por que]
 ```
 
-Depois implemente a mudanca.
+Depois implemente a mudança.

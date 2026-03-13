@@ -70,7 +70,7 @@ export function SquadOrgChart({ agents }: SquadOrgChartProps) {
           {/* Agent nodes */}
           <div className="flex flex-wrap justify-center gap-4">
             {group.agents.map((agent, ai) => (
-              <AgentNode key={agent.id} agent={agent} index={gi * 3 + ai} />
+              <AgentNode key={`${agent.squad}-${agent.id}`} agent={agent} index={gi * 3 + ai} />
             ))}
           </div>
 

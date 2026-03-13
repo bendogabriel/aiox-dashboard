@@ -16,7 +16,7 @@ export function QuickStatCard({ label, value, icon: Icon }: {
     )}>
       <div className="flex items-center gap-2 mb-2">
         <Icon size={ICON_SIZES.xl} className="text-secondary" />
-        <span className="text-xs text-tertiary uppercase tracking-wider">{label}</span>
+        <span className="type-label text-tertiary">{label}</span>
       </div>
       <p className="text-lg font-bold text-primary">{value}</p>
     </div>
@@ -81,7 +81,7 @@ export function CostProviderRow({ name, cost, tokens, color }: {
         <div className={cn('h-3 w-3 rounded-full', colorClasses[color])} />
         <div>
           <p className="text-primary font-medium">{name}</p>
-          <p className="text-xs text-tertiary">{formatNumber(tokens)} tokens</p>
+          <p className="type-label text-tertiary">{formatNumber(tokens)} tokens</p>
         </div>
       </div>
       <p className="text-xl font-bold text-primary">${cost.toFixed(2)}</p>
@@ -116,7 +116,7 @@ export function ServiceHealthCard({ name, healthy, latency, error }: {
           <span className="text-primary font-medium">{name}</span>
         </div>
         {healthy && latency !== undefined && (
-          <span className="text-xs text-tertiary">{latency.toFixed(0)}ms</span>
+          <span className="type-label text-tertiary">{latency.toFixed(0)}ms</span>
         )}
       </div>
       {!healthy && error && (

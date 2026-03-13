@@ -127,7 +127,7 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
             <div className="grid grid-cols-2 gap-3">
               {mission.agents.map((agent) => (
                 <CockpitCard
-                  key={agent.id}
+                  key={`${agent.squad}-${agent.id}`}
                   variant="subtle"
                   padding="sm"
                   className="flex items-center gap-3"

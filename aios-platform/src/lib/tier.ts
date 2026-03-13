@@ -24,6 +24,7 @@ const PRO_FEATURES = [
   'bob', 'terminals', 'monitor', 'squads', 'world', 'engine',
   'stories', 'roadmap', 'knowledge', 'brainstorm', 'integrations',
   'vault', 'github', 'marketplace',
+  'marketing-hub', 'sales-dashboard', 'traffic-dashboard', 'creative-gallery',
 ] as const;
 
 const ENTERPRISE_FEATURES = [

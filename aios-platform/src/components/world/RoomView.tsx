@@ -344,7 +344,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
 
               return (
                 <AgentSprite
-                  key={agent.id}
+                  key={`${agent.squad}-${agent.id}`}
                   name={agent.name}
                   domain={domain}
                   tier={agent.tier as AgentTier}
@@ -373,7 +373,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
               if (agentActivity?.isActive) {
                 return (
                   <LiveSpeechBubble
-                    key={`live-bubble-${agent.id}`}
+                    key={`live-bubble-${agent.squad}-${agent.id}`}
                     activity={agentActivity}
                     x={moveState.x}
                     y={moveState.y}
@@ -386,7 +386,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
               if (!moveState.bubble) return null;
               return (
                 <SpeechBubble
-                  key={`bubble-${agent.id}`}
+                  key={`bubble-${agent.squad}-${agent.id}`}
                   content={moveState.bubble}
                   x={moveState.x}
                   y={moveState.y}

@@ -201,7 +201,7 @@ export default function CronJobEditor({ isOpen, onClose }: CronJobEditorProps) {
             >
               <option value="">{squadId ? 'Selecione um agent...' : 'Escolha o squad primeiro'}</option>
               {filteredAgents.map((a) => (
-                <option key={a.id} value={a.id}>
+                <option key={`${a.squad}-${a.id}`} value={a.id}>
                   {a.name || a.id} {a.title ? `— ${a.title}` : ''}
                 </option>
               ))}

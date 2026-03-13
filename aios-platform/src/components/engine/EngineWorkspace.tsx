@@ -699,8 +699,8 @@ export default function EngineWorkspace() {
         <div className="flex items-center gap-3">
           <Server className="h-5 w-5 text-primary" />
           <div>
-            <h1 className="heading-display text-xl font-semibold text-primary">Engine</h1>
-            <p className="text-xs text-tertiary">
+            <h1 className="heading-display text-xl font-semibold text-primary type-h2">Engine</h1>
+            <p className="type-label text-tertiary">
               AIOS Agent Execution Engine
             </p>
           </div>

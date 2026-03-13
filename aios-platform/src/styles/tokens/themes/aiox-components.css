@@ -209,7 +209,7 @@ html[data-theme="aiox"] .glass-card-active {
    ============================================ */
 
 html[data-theme="aiox"] .glass-panel {
-  background: var(--aiox-dark) !important;
+  background: var(--aiox-surface-panel) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border-color: rgba(156, 156, 156, 0.12) !important;
@@ -1365,4 +1365,349 @@ html[data-theme="aiox-gold"] {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 1rem;
+}
+
+/* ============================================
+   PHASE 1: SURFACE STACK — Depth Hierarchy
+   Brandbook defines 9 surface levels. These utility
+   classes create visual depth differentiation.
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-canvas {
+  background: var(--aiox-dark);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-base {
+  background: var(--aiox-surface);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-raised {
+  background: var(--aiox-surface-alt);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-deep {
+  background: var(--aiox-surface-deep);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-panel {
+  background: var(--aiox-surface-panel);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-console {
+  background: var(--aiox-surface-console);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-overlay {
+  background: var(--aiox-surface-overlay);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-hover-strong {
+  background: var(--aiox-surface-hover-strong);
+}
+
+/* Component surface mapping overrides */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card {
+  background: var(--aiox-surface) !important;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card .glass-card,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .surface-base .surface-base {
+  background: var(--aiox-surface-alt) !important;
+}
+
+/* Header: surface-base with bottom border for separation from canvas */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) header[class*="border-b"] {
+  background: var(--aiox-surface) !important;
+  border-bottom-color: var(--color-border-default) !important;
+}
+
+/* Dropdown menus: surface-base with strong border */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) [role="menu"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) [role="listbox"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) [data-radix-popper-content-wrapper] > div {
+  background: var(--aiox-surface) !important;
+  border-color: var(--color-border-strong) !important;
+}
+
+/* Code/terminal blocks: deep surface */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) pre,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) code[class*="block"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .terminal-block {
+  background: var(--aiox-surface-deep) !important;
+}
+
+/* ============================================
+   PHASE 2: TYPE HIERARCHY — Typography Scale
+   Brandbook: Display/H1/H2/Body/Small/Label/Micro
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-display {
+  font-size: var(--font-size-display);
+  font-family: var(--font-family-display);
+  font-weight: 800;
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: 1.1;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-h1 {
+  font-size: var(--font-size-2xl);
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: 1.2;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-h2 {
+  font-size: var(--font-size-xl);
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-body {
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-sans);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-small {
+  font-size: var(--font-size-small);
+  font-family: var(--font-family-sans);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-label {
+  font-size: var(--font-size-label);
+  font-family: var(--font-family-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .type-micro {
+  font-size: var(--font-size-micro);
+  font-family: var(--font-family-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
+}
+
+/* ============================================
+   PHASE 3: HARDCODED COLOR CLEANUP
+   Override Tailwind color utilities that bypass
+   the AIOX token system.
+   ============================================ */
+
+/* --- text-white → cream (#F4F4E8) --- */
+html[data-theme="aiox"] .text-white {
+  color: #F4F4E8 !important;
+}
+
+/* --- bg-white → surface --- */
+html[data-theme="aiox"] .bg-white {
+  background-color: var(--aiox-surface) !important;
+}
+
+html[data-theme="aiox"] .bg-white\/5 {
+  background-color: rgba(244, 244, 232, 0.05) !important;
+}
+
+html[data-theme="aiox"] .bg-white\/10 {
+  background-color: rgba(244, 244, 232, 0.10) !important;
+}
+
+html[data-theme="aiox"] .bg-white\/20 {
+  background-color: rgba(244, 244, 232, 0.20) !important;
+}
+
+/* --- text-gray-* → brandbook gray scale --- */
+html[data-theme="aiox"] .text-gray-300,
+html[data-theme="aiox"] [class*="text-gray-300"] {
+  color: var(--aiox-gray-silver) !important;
+}
+
+html[data-theme="aiox"] .text-gray-400,
+html[data-theme="aiox"] [class*="text-gray-400"] {
+  color: var(--aiox-gray-muted) !important;
+}
+
+html[data-theme="aiox"] .text-gray-500,
+html[data-theme="aiox"] [class*="text-gray-500"] {
+  color: var(--aiox-gray-dim) !important;
+}
+
+html[data-theme="aiox"] .text-gray-600,
+html[data-theme="aiox"] [class*="text-gray-600"] {
+  color: var(--aiox-gray-charcoal) !important;
+}
+
+/* --- bg-gray-* → surface tokens --- */
+html[data-theme="aiox"] [class*="bg-gray-800"],
+html[data-theme="aiox"] [class*="bg-gray-900"] {
+  background-color: var(--aiox-surface) !important;
+}
+
+html[data-theme="aiox"] [class*="bg-gray-700"] {
+  background-color: var(--aiox-surface-alt) !important;
+}
+
+/* --- text-zinc-* → brandbook grays --- */
+html[data-theme="aiox"] [class*="text-zinc-3"] {
+  color: var(--aiox-gray-silver) !important;
+}
+
+html[data-theme="aiox"] [class*="text-zinc-4"] {
+  color: var(--aiox-gray-muted) !important;
+}
+
+html[data-theme="aiox"] [class*="text-zinc-5"] {
+  color: var(--aiox-gray-dim) !important;
+}
+
+/* --- text-slate-* → brandbook grays --- */
+html[data-theme="aiox"] [class*="text-slate-3"] {
+  color: var(--aiox-gray-silver) !important;
+}
+
+html[data-theme="aiox"] [class*="text-slate-4"] {
+  color: var(--aiox-gray-muted) !important;
+}
+
+html[data-theme="aiox"] [class*="text-slate-5"] {
+  color: var(--aiox-gray-dim) !important;
+}
+
+/* --- text-neutral-* → brandbook grays --- */
+html[data-theme="aiox"] [class*="text-neutral-3"] {
+  color: var(--aiox-gray-silver) !important;
+}
+
+html[data-theme="aiox"] [class*="text-neutral-4"] {
+  color: var(--aiox-gray-muted) !important;
+}
+
+html[data-theme="aiox"] [class*="text-neutral-5"] {
+  color: var(--aiox-gray-dim) !important;
+}
+
+/* --- border-white/* → cream-tinted --- */
+html[data-theme="aiox"] [class*="border-white\\/"] {
+  border-color: rgba(244, 244, 232, 0.12) !important;
+}
+
+/* ============================================
+   PHASE 4: BORDER HIERARCHY — Semantic Application
+   Uses tokens from aiox.css (already fixed).
+   Applies correct border level per component context.
+   ============================================ */
+
+/* Cards: soft border (barely visible container edge) */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card {
+  border-color: var(--color-border-soft) !important;
+}
+
+/* Cards on hover: elevate border */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card:hover {
+  border-color: var(--color-border-hover) !important;
+}
+
+/* Internal dividers: default level */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .divide-y > * + *,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .divide-x > * + * {
+  border-color: var(--color-border-default) !important;
+}
+
+/* Form inputs: input level (more visible for affordance) */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) input,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) textarea,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) select {
+  border-color: var(--color-border-input) !important;
+}
+
+/* ============================================
+   PHASE 5: GLOW & INTERACTIVE STATES
+   Brandbook signature: neon lime glow on interaction
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-hover:hover {
+  box-shadow: 0 0 16px var(--aiox-lime-glow-soft);
+  border-color: rgba(209, 255, 0, 0.20) !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-hover-subtle:hover {
+  box-shadow: 0 0 8px var(--aiox-lime-glow-soft);
+  transition: box-shadow 0.2s ease;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-active {
+  box-shadow: 0 0 8px var(--aiox-neon-glow), 0 0 24px var(--aiox-lime-glow);
+  border-color: rgba(209, 255, 0, 0.30) !important;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-focus:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(209, 255, 0, 0.3), 0 0 16px var(--aiox-lime-glow-soft);
+}
+
+/* Auto-apply glow hover to glass-card interactions */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card:hover {
+  box-shadow: 0 0 12px var(--aiox-lime-glow-soft) !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Sidebar active item glow */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) nav a[aria-current="page"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) nav a.active,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) nav [data-active="true"] {
+  background: rgba(209, 255, 0, 0.06) !important;
+  box-shadow: inset 0 0 12px rgba(209, 255, 0, 0.04);
+  border-left: 2px solid var(--aiox-lime) !important;
+}
+
+/* CTA button glow on hover */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) button[class*="bg-lime"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) button[class*="bg-primary"],
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .btn-primary {
+  transition: box-shadow 0.2s ease;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) button[class*="bg-lime"]:hover,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) button[class*="bg-primary"]:hover,
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .btn-primary:hover {
+  box-shadow: 0 0 20px rgba(209, 255, 0, 0.3), 0 0 40px rgba(209, 255, 0, 0.1);
+}
+
+/* Status dot glow pulse for active states */
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .status-online {
+  box-shadow: 0 0 6px rgba(209, 255, 0, 0.4);
+}
+
+/* ============================================
+   PHASE 6: SPACING NORMALIZATION
+   Custom properties for consistent spacing contexts.
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) {
+  --space-page: 1.25rem;       /* 20px — page edge padding */
+  --space-page-md: 1.5rem;     /* 24px — page edge on md+ */
+  --space-section: 1.25rem;    /* 20px — gap between sections/cards */
+  --space-card: 1rem;          /* 16px — card internal padding */
+  --space-element: 0.5rem;     /* 8px — gap between elements in a group */
+  --space-micro: 0.375rem;     /* 6px — icon+text, inline pairs */
+}
+
+/* Reduced motion: disable glow transitions */
+@media (prefers-reduced-motion: reduce) {
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-hover:hover,
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-hover-subtle:hover,
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glow-active,
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .glass-card:hover {
+    box-shadow: none !important;
+    transition: none !important;
+  }
 }

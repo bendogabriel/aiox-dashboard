@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { Pencil, Eye, Save, X } from 'lucide-react';
-import { CockpitCard, CockpitButton, CockpitTextarea, Badge } from '../ui';
+import { Pencil, Eye, Save, X, CheckCircle } from 'lucide-react';
+import { CockpitCard, CockpitButton, CockpitTextarea, Badge, ProgressBar } from '../ui';
 import { cn } from '../../lib/utils';
 import type { VaultDocument } from '../../types/vault';
+import { useVaultStore } from '../../stores/vaultStore';
 
 // ── Type badge color map ──
 
-const typeBadgeColors: Record<VaultDocument['type'], string> = {
+const typeBadgeColors: Record<string, string> = {
   offerbook: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
   brand: 'bg-[var(--bb-flare)]/15 text-[var(--bb-flare)]',
   narrative: 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]',
@@ -15,14 +16,20 @@ const typeBadgeColors: Record<VaultDocument['type'], string> = {
   proof: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
   template: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
   generic: 'bg-[var(--aiox-gray-dim)]/15 text-tertiary',
+  sop: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  reference: 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]',
+  raw: 'bg-[var(--aiox-gray-dim)]/15 text-tertiary',
 };
 
 // ── Status badge mapping ──
 
-const statusBadgeMap: Record<VaultDocument['status'], { label: string; status: 'success' | 'warning' | 'error' }> = {
+const statusBadgeMap: Record<string, { label: string; status: 'success' | 'warning' | 'error' }> = {
   validated: { label: 'Validated', status: 'success' },
   draft: { label: 'Draft', status: 'warning' },
   outdated: { label: 'Outdated', status: 'error' },
+  raw: { label: 'Raw', status: 'warning' },
+  stale: { label: 'Stale', status: 'error' },
+  archived: { label: 'Archived', status: 'error' },
 };
 
 // ── Simple markdown renderer ──
@@ -172,8 +179,52 @@ function DocumentViewer({ document, onSave }: DocumentViewerProps) {
         )}
       </CockpitCard>
 
+      {/* ── Quality Scores ── */}
+      {document.quality && (document.quality.completeness > 0 || document.quality.freshness > 0) && (
+        <CockpitCard padding="sm" aria-label="Quality scores">
+          <span className="text-xs text-tertiary font-medium block mb-2">Quality</span>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <div className="flex justify-between text-[10px] text-tertiary mb-1">
+                <span>Completeness</span>
+                <span>{document.quality.completeness}%</span>
+              </div>
+              <ProgressBar value={document.quality.completeness} size="sm" variant={document.quality.completeness >= 80 ? 'success' : 'default'} />
+            </div>
+            <div>
+              <div className="flex justify-between text-[10px] text-tertiary mb-1">
+                <span>Freshness</span>
+                <span>{document.quality.freshness}%</span>
+              </div>
+              <ProgressBar value={document.quality.freshness} size="sm" variant={document.quality.freshness >= 80 ? 'success' : 'default'} />
+            </div>
+            <div>
+              <div className="flex justify-between text-[10px] text-tertiary mb-1">
+                <span>Consistency</span>
+                <span>{document.quality.consistency}%</span>
+              </div>
+              <ProgressBar value={document.quality.consistency} size="sm" variant={document.quality.consistency >= 80 ? 'success' : 'default'} />
+            </div>
+          </div>
+        </CockpitCard>
+      )}
+
+      {/* ── Tags ── */}
+      {document.tags && document.tags.length > 0 && (
+        <CockpitCard padding="sm" aria-label="Document tags">
+          <div className="flex flex-row flex-wrap items-center gap-2">
+            <span className="text-xs text-tertiary font-medium">Tags:</span>
+            {document.tags.map((tag) => (
+              <Badge key={tag} variant="subtle" size="sm">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </CockpitCard>
+      )}
+
       {/* ── Agent Consumers Footer ── */}
-      {document.consumers.length > 0 && (
+      {document.consumers && document.consumers.length > 0 && (
         <CockpitCard padding="sm" aria-label="Agent consumers">
           <div className="flex flex-row flex-wrap items-center gap-2">
             <span className="text-xs text-tertiary font-medium">Usado por:</span>

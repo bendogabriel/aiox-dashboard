@@ -573,7 +573,7 @@ export default function AgentDirectory() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {filtered.map((agent, i) => (
               <AgentCard
-                key={agent.id}
+                key={`${agent.squad}-${agent.id}`}
                 agent={agent}
                 index={i}
                 onSelect={handleSelect}

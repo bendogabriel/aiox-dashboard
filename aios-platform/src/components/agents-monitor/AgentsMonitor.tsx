@@ -199,7 +199,7 @@ export default function AgentsMonitor() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="heading-display text-xl font-semibold text-primary">Agent Activity</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary type-h2">Agent Activity</h1>
           <Badge variant="status" status="online" size="sm">
             {activeAgents.length}/{agents.length} active
           </Badge>

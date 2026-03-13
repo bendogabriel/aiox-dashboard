@@ -2,8 +2,8 @@
 name: "Security Audit"
 version: "1.0.0"
 type: "security-audit"
-squad_id: "engineering"
-agent_id: "dev"
+squad_id: "aios-core-dev"
+agent_id: "dev-chief"
 
 editable_scope:
   - "src/**/*.ts"
@@ -47,27 +47,27 @@ enabled: true
 
 ## Objetivo
 
-Eliminar erros de linting iterativamente, focando em problemas de seguranca e qualidade.
+Eliminar erros de linting iterativamente, focando em problemas de segurança e qualidade.
 
-## Estrategia
+## Estratégia
 
 1. Execute `npx eslint src/` para listar erros atuais
-2. Identifique o erro mais critico (seguranca > correctness > style)
+2. Identifique o erro mais critico (segurança > correctness > style)
 3. Corrija apenas aquele erro
-4. Verifique que a correcao nao introduz novos erros
+4. Verifique que a correcao não introduz novos erros
 
 ## Prioridade
 
 1. **Security rules** — XSS, injection, eval, dangerouslySetInnerHTML
 2. **Correctness** — hooks rules, dependency arrays, exhaustive deps
 3. **Best practices** — unused vars, unreachable code, no-console
-4. **Style** — apenas se nao houver mais dos anteriores
+4. **Style** — apenas se não houver mais dos anteriores
 
 ## Regras
 
 - Um erro por iteracao
 - NUNCA adicione eslint-disable comments
-- Corrija o problema real, nao o sintoma
+- Corrija o problema real, não o sintoma
 - Consulte o Experiment History
 
 ## Formato

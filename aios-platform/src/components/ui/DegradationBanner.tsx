@@ -182,9 +182,14 @@ export function DegradationBanner() {
             const cfg = levelConfig[cap.level];
             const fixTarget = getPrimaryDependency(cap);
             return (
-              <div
+              <button
                 key={cap.id}
-                title={cap.reason}
+                title={cap.reason || (fixTarget ? `Configure ${fixTarget}` : cap.label)}
+                onClick={() => {
+                  if (fixTarget) {
+                    openSetup(fixTarget);
+                  }
+                }}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -196,32 +201,15 @@ export function DegradationBanner() {
                   color: cfg.color,
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
+                  cursor: fixTarget ? 'pointer' : 'default',
+                  fontFamily: 'inherit',
                 }}
+                aria-label={fixTarget ? `Fix ${cap.label}: configure ${fixTarget}` : cap.label}
               >
                 {cfg.icon}
                 {cap.label}
-                {fixTarget && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openSetup(fixTarget);
-                    }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'inherit',
-                      cursor: 'pointer',
-                      padding: '0 0 0 2px',
-                      opacity: 0.7,
-                      display: 'inline-flex',
-                    }}
-                    title={`Configure ${fixTarget}`}
-                    aria-label={`Fix ${cap.label}: configure ${fixTarget}`}
-                  >
-                    <Settings size={10} />
-                  </button>
-                )}
-              </div>
+                {fixTarget && <Settings size={10} style={{ opacity: 0.7 }} />}
+              </button>
             );
           })}
         </div>

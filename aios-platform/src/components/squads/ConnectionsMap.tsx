@@ -13,9 +13,9 @@ interface ConnectionsMapProps {
 }
 
 const tierColors: Record<AgentTier, { fill: string; stroke: string; text: string }> = {
-  0: { fill: '#a855f7', stroke: '#a855f740', text: '#e9d5ff' },
-  1: { fill: '#3b82f6', stroke: '#3b82f640', text: '#dbeafe' },
-  2: { fill: '#22c55e', stroke: '#22c55e40', text: '#dcfce7' },
+  0: { fill: '#999999', stroke: '#99999940', text: '#e0e0e0' },
+  1: { fill: '#0099FF', stroke: '#0099FF40', text: '#dbeafe' },
+  2: { fill: '#D1FF00', stroke: '#D1FF0030', text: '#f0ffe0' },
 };
 
 interface NodePos {
@@ -26,37 +26,55 @@ interface NodePos {
 
 export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
   const layout = useMemo(() => {
-    if (agents.length === 0) return [];
-
-    const width = 600;
-    const height = 400;
-    const cx = width / 2;
-    const cy = height / 2;
+    if (agents.length === 0) return { nodes: [], viewBox: '0 0 600 500' };
 
     // Group by tier and place in concentric rings
     const tiers: AgentTier[] = [0, 1, 2];
     const byTier = tiers.map((t) => agents.filter((a) => a.tier === t));
 
+    // Calculate ring radius based on agent count to avoid overlap
+    const maxGroupSize = Math.max(...byTier.map(g => g.length), 1);
+    const baseRadius = Math.max(120, maxGroupSize * 28);
+    const nodeRadius = 22;
+    const labelPadding = 44; // space for name label below node
+
     const nodes: NodePos[] = [];
 
     byTier.forEach((group, ti) => {
       if (group.length === 0) return;
-      const radius = ti === 0 ? 0 : ti * 120;
+      const radius = ti === 0 ? 0 : ti * baseRadius;
       group.forEach((agent, ai) => {
         if (radius === 0) {
-          nodes.push({ x: cx, y: cy, agent });
+          nodes.push({ x: 0, y: 0, agent });
         } else {
           const angle = (2 * Math.PI * ai) / group.length - Math.PI / 2;
           nodes.push({
-            x: cx + radius * Math.cos(angle),
-            y: cy + radius * Math.sin(angle),
+            x: radius * Math.cos(angle),
+            y: radius * Math.sin(angle),
             agent,
           });
         }
       });
     });
 
-    return nodes;
+    // Compute bounding box from nodes and add generous padding
+    const padding = nodeRadius + labelPadding + 20;
+    const xs = nodes.map(n => n.x);
+    const ys = nodes.map(n => n.y);
+    const minX = Math.min(...xs) - padding;
+    const maxX = Math.max(...xs) + padding;
+    const minY = Math.min(...ys) - padding;
+    const maxY = Math.max(...ys) + padding;
+
+    const vbWidth = maxX - minX;
+    const vbHeight = maxY - minY;
+
+    // Offset nodes so they sit inside the viewBox
+    const offsetX = -minX;
+    const offsetY = -minY;
+    const finalNodes = nodes.map(n => ({ ...n, x: n.x + offsetX, y: n.y + offsetY }));
+
+    return { nodes: finalNodes, viewBox: `0 0 ${Math.ceil(vbWidth)} ${Math.ceil(vbHeight)}` };
   }, [agents]);
 
   if (agents.length === 0) {
@@ -67,16 +85,17 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
     );
   }
 
-  const nodeMap = new Map(layout.map((n) => [n.agent.id, n]));
+  const nodeMap = new Map(layout.nodes.map((n) => [n.agent.id, n]));
 
   return (
     <div
       className="w-full overflow-x-auto"
     >
       <svg
-        viewBox="0 0 600 400"
-        className="w-full max-w-[600px] mx-auto h-auto"
-        style={{ minHeight: 300 }}
+        viewBox={layout.viewBox}
+        className="w-full mx-auto h-auto"
+        style={{ minHeight: 400 }}
+        preserveAspectRatio="xMidYMid meet"
       >
         <defs>
           <marker
@@ -137,7 +156,7 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
         })}
 
         {/* Nodes */}
-        {layout.map((node, i) => {
+        {layout.nodes.map((node, i) => {
           const colors = tierColors[node.agent.tier];
           const initials = node.agent.name
             .split(' ')
@@ -148,7 +167,7 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
 
           return (
             <g
-              key={node.agent.id}
+              key={`${node.agent.squad || i}-${node.agent.id}`}
               style={{ transformOrigin: `${node.x}px ${node.y}px` }}
             >
               <circle
@@ -196,15 +215,15 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
           <span>Receives</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[var(--aiox-gray-muted)]/30 border border-[var(--aiox-gray-muted)]" />
+          <div className="w-3 h-3 rounded-full" style={{ background: tierColors[0].stroke, border: `1px solid ${tierColors[0].fill}` }} />
           <span>T0</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[var(--aiox-blue)]/30 border border-[var(--aiox-blue)]" />
+          <div className="w-3 h-3 rounded-full" style={{ background: tierColors[1].stroke, border: `1px solid ${tierColors[1].fill}` }} />
           <span>T1</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[var(--color-status-success)]/30 border border-[var(--color-status-success)]" />
+          <div className="w-3 h-3 rounded-full" style={{ background: tierColors[2].stroke, border: `1px solid ${tierColors[2].fill}` }} />
           <span>T2</span>
         </div>
       </div>

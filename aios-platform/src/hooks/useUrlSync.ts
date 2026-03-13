@@ -100,6 +100,18 @@ function parseUrl(pathname: string): ParsedUrl {
     return { view: 'settings', settingsSection: settingsMatch[1] };
   }
 
+  // /squads/{squadId}/{agentId}
+  const squadsAgentMatch = pathname.match(/^\/squads\/([^/]+)\/([^/]+)/);
+  if (squadsAgentMatch) {
+    return { view: 'squads', squadId: squadsAgentMatch[1], agentId: squadsAgentMatch[2] };
+  }
+
+  // /squads/{squadId}
+  const squadsSquadMatch = pathname.match(/^\/squads\/([^/]+)/);
+  if (squadsSquadMatch) {
+    return { view: 'squads', squadId: squadsSquadMatch[1] };
+  }
+
   // /chat/squad/{squadId}/{agentId}
   const chatAgentMatch = pathname.match(/^\/chat\/squad\/([^/]+)\/([^/]+)/);
   if (chatAgentMatch) {
@@ -155,6 +167,14 @@ function buildUrl(state: BuildUrlState): string {
     return `/settings/${state.settingsSection}`;
   }
 
+  // Squads sub-routes for squad/agent drill-down
+  if (state.currentView === 'squads' && state.selectedSquadId) {
+    if (state.selectedAgentId) {
+      return `/squads/${state.selectedSquadId}/${state.selectedAgentId}`;
+    }
+    return `/squads/${state.selectedSquadId}`;
+  }
+
   // Chat sub-routes for squad/agent selection
   if (state.currentView === 'chat' && state.selectedSquadId) {
     if (state.selectedAgentId) {
@@ -194,8 +214,8 @@ export function useUrlSync() {
     if (settingsSection) {
       store.setSettingsSection(settingsSection as ReturnType<typeof useUIStore.getState>['settingsSection']);
     }
-    // Restore chat squad/agent selection from URL
-    if (view === 'chat') {
+    // Restore squad/agent selection from URL (chat and squads views)
+    if (view === 'chat' || view === 'squads') {
       if (squadId && squadId !== store.selectedSquadId) {
         store.setSelectedSquadId(squadId);
       }
@@ -281,8 +301,8 @@ export function useUrlSync() {
       if (settingsSection) {
         store.setSettingsSection(settingsSection as ReturnType<typeof useUIStore.getState>['settingsSection']);
       }
-      // Restore chat squad/agent on back/forward
-      if (view === 'chat') {
+      // Restore squad/agent on back/forward (chat and squads views)
+      if (view === 'chat' || view === 'squads') {
         store.setSelectedSquadId(squadId || null);
         store.setSelectedAgentId(agentId || null);
       }

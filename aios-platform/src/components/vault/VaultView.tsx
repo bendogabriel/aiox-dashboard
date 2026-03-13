@@ -19,8 +19,10 @@ export default function VaultView() {
     level,
     workspaces,
     documents,
+    spaces,
     selectedWorkspaceId,
     selectedDocumentId,
+    selectedSpaceId,
     goBack,
     selectWorkspace,
     selectDocument,
@@ -28,10 +30,12 @@ export default function VaultView() {
 
   const selectedWorkspace = workspaces.find((w) => w.id === selectedWorkspaceId);
   const selectedDocument = documents.find((d) => d.id === selectedDocumentId);
+  const selectedSpace = spaces.find((s) => s.id === selectedSpaceId);
 
   // Resolve category name for level 3 breadcrumb
   const documentCategory = (() => {
     if (!selectedDocument || !selectedWorkspace) return '';
+    if (selectedSpace) return selectedSpace.name;
     const cat = selectedWorkspace.categories.find((c) => c.id === selectedDocument.categoryId);
     return cat?.name ?? selectedWorkspace.name;
   })();
@@ -45,7 +49,7 @@ export default function VaultView() {
           {level === 1 && (
             <div className="flex items-center gap-3">
               <Shield size={22} className="text-[var(--aiox-blue)]" />
-              <h1 className="heading-display text-xl font-semibold text-primary">Vault</h1>
+              <h1 className="heading-display text-xl font-semibold text-primary type-h2">Vault</h1>
             </div>
           )}
 

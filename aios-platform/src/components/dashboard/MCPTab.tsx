@@ -62,7 +62,7 @@ export function MCPTab() {
                   </div>
                   <div>
                     <p className="text-primary font-medium">{server.name}</p>
-                    <p className="text-xs text-tertiary">
+                    <p className="type-label text-tertiary">
                       {server.toolCount || server.tools?.length || 0} tools
                       {(server.resources?.length ?? 0) > 0 && ` • ${server.resources.length} resources`}
                     </p>

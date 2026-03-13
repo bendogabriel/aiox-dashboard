@@ -48,7 +48,7 @@ export default function HandoffVisualization() {
     <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="p-4 md:p-6 border-b border-white/10">
-        <h1 className="text-xl font-bold text-white/90">Handoff Flows</h1>
+        <h1 className="heading-display text-xl font-bold text-white/90 type-h2">Handoff Flows</h1>
         <p className="text-xs text-white/40 mt-1">
           Visualize how work flows between agents
         </p>
@@ -168,7 +168,7 @@ export default function HandoffVisualization() {
 
               return (
                 <div
-                  key={agent.id}
+                  key={`${agent.squad}-${agent.id}`}
                   className={cn(
                     'border rounded-none p-4 transition-colors cursor-pointer',
                     'bg-white/[0.03] backdrop-blur-sm',

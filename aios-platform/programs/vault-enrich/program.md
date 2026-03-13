@@ -2,8 +2,8 @@
 name: "Vault Enricher"
 version: "1.0.0"
 type: "vault-enrich"
-squad_id: "operations"
-agent_id: "analyst"
+squad_id: "orquestrador-global"
+agent_id: "classificador-intencao"
 
 editable_scope:
   - ".aios/overnight/vault-enrich/output/**/*"
@@ -51,22 +51,22 @@ enabled: true
 
 ## Objetivo
 
-Melhorar a saude do vault do AIOS incrementalmente, identificando e preenchendo gaps nos dados do vault. O vault contem knowledge base, taxonomias, definicoes de agentes e metadados que alimentam o sistema de orquestracao. Cada iteracao deve aumentar o percentual de saude reportado pela API.
+Melhorar a saúde do vault do AIOS incrementalmente, identificando e preenchendo gaps nos dados do vault. O vault contem knowledge base, taxonomias, definicoes de agentes e metadados que alimentam o sistema de orquestracao. Cada iteracao deve aumentar o percentual de saúde reportado pela API.
 
-## Estrategia
+## Estratégia
 
-1. **Diagnostico** — Consulte a API de saude do vault (`/api/vault/health`) para identificar o score atual e areas com gaps
-2. **Identificacao de gaps** — Analise os arquivos do vault comparando contra a taxonomia de dominios (`domain-taxonomy.ts`) e definicoes de agentes em `.aios-core/agents/`
-3. **Geracao de conteudo** — Crie ou enriqueca entradas do vault com dados estruturados: descricoes, metadados, relacoes e exemplos
+1. **Diagnóstico** — Consulte a API de saúde do vault (`/api/vault/health`) para identificar o score atual e áreas com gaps
+2. **Identificação de gaps** — Análise os arquivos do vault comparando contra a taxonomia de dominios (`domain-taxonomy.ts`) e definicoes de agentes em `.aios-core/agents/`
+3. **Geração de conteúdo** — Crie ou enriqueca entradas do vault com dados estruturados: descricoes, metadados, relacoes e exemplos
 4. **Validacao contra taxonomia** — Verifique que cada entrada gerada esta alinhada com os dominios, squads e tipos definidos na taxonomia
-5. **Verificacao de saude** — Apos cada mudanca, re-consulte a API para confirmar melhoria no score
+5. **Verificação de saúde** — Após cada mudança, re-consulte a API para confirmar melhoria no score
 
 ## Tipos de Enriquecimento Priorizados (em ordem de impacto)
 
-1. **Entradas ausentes** — Criar entradas do vault para agentes, squads ou dominios que existem na taxonomia mas nao no vault
-2. **Metadados incompletos** — Adicionar campos faltantes (descricao, tags, relacoes, exemplos) em entradas existentes
+1. **Entradas ausentes** — Criar entradas do vault para agentes, squads ou dominios que existem na taxonomia mas não no vault
+2. **Metadados incompletos** — Adicionar campos faltantes (descrição, tags, relacoes, exemplos) em entradas existentes
 3. **Relacoes entre entradas** — Mapear dependencias e relacoes entre entradas do vault (agent -> squad, squad -> domain)
-4. **Exemplos praticos** — Adicionar exemplos de uso, comandos e workflows relevantes a cada entrada
+4. **Exemplos práticos** — Adicionar exemplos de uso, comandos e workflows relevantes a cada entrada
 5. **Consistencia de formato** — Padronizar formato de entradas existentes para seguir o schema esperado
 
 ## Schema de Entrada do Vault
@@ -87,21 +87,21 @@ related:
 ---
 ```
 
-Cada entrada JSON/YAML deve conter no minimo: `id`, `type`, `name`, `description`, `tags`.
+Cada entrada JSON/YAML deve conter no mínimo: `id`, `type`, `name`, `description`, `tags`.
 
 ## Regras
 
 - NUNCA remova ou sobrescreva dados existentes no vault — apenas adicione ou enriqueca
 - NUNCA crie entradas duplicadas — verifique por `id` antes de criar
-- NUNCA invente taxonomias ou dominios que nao existem em `domain-taxonomy.ts`
+- NUNCA invente taxonomias ou dominios que não existem em `domain-taxonomy.ts`
 - Cada iteracao deve focar em UMA entrada ou UM tipo de enriquecimento (atomicidade)
 - Mantenha consistencia de formato entre todas as entradas
-- Se a API de saude nao estiver disponivel, use a contagem de arquivos com `status: complete` como metrica alternativa
-- Consulte o Experiment History para evitar retrabalho em entradas ja enriquecidas
+- Se a API de saúde não estiver disponível, use a contagem de arquivos com `status: complete` como métrica alternativa
+- Consulte o Experiment History para evitar retrabalho em entradas já enriquecidas
 
-## Fallback de Metrica
+## Fallback de Métrica
 
-Se a API nao responder, use esta metrica alternativa:
+Se a API não responder, use esta métrica alternativa:
 ```bash
 grep -rl 'status: "complete"' .aios/vault/ 2>/dev/null | wc -l
 ```
@@ -113,4 +113,4 @@ Comece SEMPRE com:
 Hypothesis: Enrich vault [entry type] for [id/name] by adding [missing data]
 ```
 
-Depois implemente a mudanca no vault.
+Depois implemente a mudança no vault.

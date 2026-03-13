@@ -18,6 +18,10 @@
   --font-size-xl: 1.5rem;
   --font-size-2xl: 2.5rem;
   --font-size-display: 4rem;
+  /* Brandbook additional sizes */
+  --font-size-small: 0.8rem;   /* 12.8px — brandbook Small */
+  --font-size-label: 0.65rem;  /* 10.4px — brandbook Label */
+  --font-size-micro: 0.6rem;   /* 9.6px  — brandbook Micro */
   --letter-spacing-tight: -0.03em;
   --letter-spacing-wide: 0.05em;
   --letter-spacing-wider: 0.08em;

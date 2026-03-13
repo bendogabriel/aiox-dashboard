@@ -227,19 +227,19 @@ export function OverviewTab() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="p-3 rounded-none glass-subtle">
-              <p className="text-xs text-tertiary mb-1">Branch</p>
+              <p className="type-label text-tertiary mb-1">Branch</p>
               <p className="text-sm font-semibold text-primary">{dashOverview.gitBranch}</p>
             </div>
             <div className="p-3 rounded-none glass-subtle">
-              <p className="text-xs text-tertiary mb-1">Commits</p>
+              <p className="type-label text-tertiary mb-1">Commits</p>
               <p className="text-sm font-semibold text-primary">{dashOverview.gitCommits}</p>
             </div>
             <div className="p-3 rounded-none glass-subtle">
-              <p className="text-xs text-tertiary mb-1">Log Files</p>
+              <p className="type-label text-tertiary mb-1">Log Files</p>
               <p className="text-sm font-semibold text-primary">{dashOverview.activeLogFiles}</p>
             </div>
             <div className="p-3 rounded-none glass-subtle">
-              <p className="text-xs text-tertiary mb-1">Active Tasks</p>
+              <p className="type-label text-tertiary mb-1">Active Tasks</p>
               <p className="text-sm font-semibold text-primary">{dashOverview.activeExecutions}</p>
             </div>
           </div>

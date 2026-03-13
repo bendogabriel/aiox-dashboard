@@ -6,8 +6,13 @@ import {
   Crown,
   ChevronRight,
   ChevronDown,
+  LayoutDashboard,
+  FolderOpen,
+  Cloud,
+  Upload,
+  Package,
 } from 'lucide-react';
-import { CockpitCard, CockpitButton, Badge, StatusDot, ProgressBar } from '../ui';
+import { CockpitCard, CockpitButton, CockpitKpiCard, Badge, StatusDot, ProgressBar } from '../ui';
 import type { StatusType } from '../ui/StatusDot';
 import type {
   VaultWorkspace,
@@ -22,6 +27,9 @@ import type {
 import { useVaultStore } from '../../stores/vaultStore';
 import { cn } from '../../lib/utils';
 import { getIconComponent } from '../../lib/icons';
+import SpaceList from './SpaceList';
+import SourceList from './SourceList';
+import DocumentUpload from './DocumentUpload';
 
 // ── Props ──
 
@@ -51,10 +59,13 @@ const STATUS_DOT_MAP: Record<string, StatusType> = {
 };
 
 const TABS: { id: VaultTab; label: string; icon: React.ElementType }[] = [
-  { id: 'dados', label: 'Dados', icon: Database },
+  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+  { id: 'spaces', label: 'Spaces', icon: FolderOpen },
+  { id: 'sources', label: 'Sources', icon: Cloud },
+  { id: 'documents', label: 'Documents', icon: Database },
+  { id: 'taxonomy', label: 'Taxonomy', icon: GitFork },
+  { id: 'packages', label: 'Packages', icon: Package },
   { id: 'templates', label: 'Templates', icon: FileText },
-  { id: 'taxonomias', label: 'Taxonomias', icon: GitFork },
-  { id: 'csuite', label: 'C-Suite', icon: Crown },
 ];
 
 const TEMPLATE_FILTER_CHIPS = ['Todos', 'AI', 'Analytics', 'Branding', 'Ops', 'Tech', 'Executive'];
@@ -395,6 +406,8 @@ export default function WorkspaceDetail({
   // Use store as default, props as override
   const storeTab = useVaultStore((s) => s.activeTab);
   const storeSetTab = useVaultStore((s) => s.setActiveTab);
+  const spaces = useVaultStore((s) => s.spaces).filter((sp) => sp.workspaceId === workspace.id);
+  const sources = useVaultStore((s) => s.sources).filter((src) => src.workspaceId === workspace.id);
 
   const activeTab = activeTabProp ?? storeTab;
   const onTabChange = onTabChangeProp ?? storeSetTab;
@@ -495,11 +508,33 @@ export default function WorkspaceDetail({
 
       {/* ── Tab Content ── */}
       <div id={`tabpanel-${activeTab}`} role="tabpanel">
-        {activeTab === 'dados' && (
-          <TabDados
-            categories={workspace.categories}
-            onSelectDocument={onSelectDocument}
+        {activeTab === 'overview' && (
+          <TabOverview workspace={workspace} />
+        )}
+        {activeTab === 'spaces' && (
+          <SpaceList spaces={spaces} />
+        )}
+        {activeTab === 'sources' && (
+          <SourceList sources={sources} />
+        )}
+        {activeTab === 'documents' && (
+          <div className="space-y-4">
+            <DocumentUpload workspaceId={workspace.id} />
+            <TabDados
+              categories={workspace.categories}
+              onSelectDocument={onSelectDocument}
+            />
+          </div>
+        )}
+        {activeTab === 'taxonomy' && (
+          <TabTaxonomias
+            sections={workspace.taxonomySections}
+            selectedNode={selectedTaxonomyNode}
+            onSelectNode={setSelectedTaxonomyNode}
           />
+        )}
+        {activeTab === 'packages' && (
+          <TabCSuite personas={workspace.csuitePersonas} />
         )}
         {activeTab === 'templates' && (
           <TabTemplates
@@ -509,16 +544,65 @@ export default function WorkspaceDetail({
             onFilterChange={setTemplateFilter}
           />
         )}
-        {activeTab === 'taxonomias' && (
-          <TabTaxonomias
-            sections={workspace.taxonomySections}
-            selectedNode={selectedTaxonomyNode}
-            onSelectNode={setSelectedTaxonomyNode}
-          />
-        )}
-        {activeTab === 'csuite' && (
-          <TabCSuite personas={workspace.csuitePersonas} />
-        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Tab: Overview ──
+
+function TabOverview({ workspace }: { workspace: VaultWorkspace }) {
+  const totalDocs = workspace.categories.reduce((sum, cat) => sum + cat.items.length, 0);
+  const validatedDocs = workspace.categories.reduce(
+    (sum, cat) => sum + cat.items.filter((i) => i.status === 'validated').length, 0
+  );
+  const draftDocs = workspace.categories.reduce(
+    (sum, cat) => sum + cat.items.filter((i) => i.status === 'draft').length, 0
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* KPIs */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <CockpitKpiCard label="Documents" value={totalDocs} size="sm" />
+        <CockpitKpiCard label="Validated" value={validatedDocs} size="sm" />
+        <CockpitKpiCard label="Draft" value={draftDocs} size="sm" />
+        <CockpitKpiCard
+          label="Tokens"
+          value={`${((workspace.totalTokens || 0) / 1000).toFixed(1)}k`}
+          size="sm"
+        />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <CockpitKpiCard label="Spaces" value={workspace.spacesCount || 0} size="sm" />
+        <CockpitKpiCard label="Sources" value={workspace.sourcesCount || 0} size="sm" />
+        <CockpitKpiCard label="Health" value={`${workspace.healthPercent}%`} size="sm" />
+      </div>
+
+      {/* Health bar */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs text-tertiary uppercase tracking-wider">Workspace Health</span>
+          <span className="text-xs text-secondary">{workspace.healthPercent}%</span>
+        </div>
+        <ProgressBar
+          value={workspace.healthPercent}
+          variant={workspace.healthPercent >= 80 ? 'success' : workspace.healthPercent >= 50 ? 'default' : 'error'}
+        />
+      </div>
+
+      {/* Categories summary */}
+      <div>
+        <h3 className="text-xs text-tertiary uppercase tracking-wider mb-3">Categories</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          {workspace.categories.map((cat) => (
+            <div key={cat.id} className="flex items-center gap-2 p-2 rounded bg-white/[0.03]">
+              <StatusDot status={cat.status === 'complete' ? 'success' : cat.status === 'partial' ? 'waiting' : 'error'} size="sm" />
+              <span className="text-xs text-secondary">{cat.name}</span>
+              <span className="text-[10px] text-tertiary ml-auto">{cat.items.length}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

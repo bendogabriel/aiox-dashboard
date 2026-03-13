@@ -157,7 +157,7 @@ export function WorkflowSidebar({
 
             return (
               <div
-                key={agent.id}
+                key={`${agent.squad}-${agent.id}`}
                 className={cn(
                   'flex items-center gap-3 p-2.5 rounded-none cursor-pointer transition-all',
                   `bg-gradient-to-r ${squadGradients[agent.squadType] || 'from-gray-500/20 to-gray-400/20'}`,

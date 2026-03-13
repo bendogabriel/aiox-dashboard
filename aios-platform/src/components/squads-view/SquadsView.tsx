@@ -10,15 +10,16 @@ import {
 } from 'lucide-react';
 import { CockpitCard, CockpitButton, CockpitInput, CockpitSectionDivider, Badge, StatusDot, SectionLabel, Avatar, RevealGroup, RevealItem } from '../ui';
 import { SquadOrgChart } from '../squads/SquadOrgChart';
-import { AgentDetailPanel } from '../squads/AgentDetailPanel';
+import { AgentTechSheet } from '../agents/tech-sheet';
 import { ConnectionsMap } from '../squads/ConnectionsMap';
 import { SquadStatsPanel } from '../squads/SquadStatsPanel';
 import { useSquads, useSquadStats, useSquadConnections } from '../../hooks/useSquads';
-import { useAgents, useAgent } from '../../hooks/useAgents';
+import { useAgents } from '../../hooks/useAgents';
+import { useUIStore } from '../../stores/uiStore';
 import { cn } from '../../lib/utils';
 import { hasAgentAvatar, getSquadImageUrl } from '../../lib/agent-avatars';
 import { getSquadType } from '../../types';
-import type { Squad, AgentSummary, Agent } from '../../types';
+import type { Squad, AgentSummary } from '../../types';
 
 // --- Domain Groups ---
 
@@ -30,23 +31,27 @@ interface DomainGroup {
 const domainGroups: DomainGroup[] = [
   {
     name: 'Content & Marketing',
-    squadIds: ['youtube-content', 'content-ecosystem', 'copywriting', 'creative-studio', 'social-publisher'],
+    squadIds: ['content-ecosystem', 'copywriting', 'creative-studio', 'youtube-lives', 'communication-natalia-tanaka', 'community-natalia-tanaka'],
   },
   {
     name: 'Sales & Ads',
-    squadIds: ['sales', 'media-buy', 'funnel-creator', 'deep-scraper'],
+    squadIds: ['sales', 'media-buy', 'funnel-creator', 'deep-scraper', 'traffic-squad', 'agora-direct-response', 'marketing-automation'],
   },
   {
     name: 'Product & Dev',
-    squadIds: ['full-stack-dev', 'aios-core-dev', 'design-system', 'infoproduct-creation'],
+    squadIds: ['full-stack-dev', 'aios-core-dev', 'design-system', 'infoproduct-creation', 'etl-ops'],
   },
   {
     name: 'Data & Strategy',
-    squadIds: ['data-analytics', 'conselho', 'seo'],
+    squadIds: ['data-analytics', 'conselho', 'seo', 'market-research', 'strategy-natalia-tanaka', 'academic-research'],
+  },
+  {
+    name: 'Media & Video',
+    squadIds: ['media-production', 'video-production', 'asmr-shorts'],
   },
   {
     name: 'Operations',
-    squadIds: ['project-management-clickup', 'orquestrador-global', 'support'],
+    squadIds: ['project-management-clickup', 'orquestrador-global', 'support', 'navigator', 'squad-creator', 'squad-creator-pro', 'sop-factory', 'skill-tester'],
   },
 ];
 
@@ -92,16 +97,20 @@ const squadTabs: Array<{ id: SquadTab; label: string; icon: React.ReactNode }> =
 // --- Main Component ---
 
 export default function SquadsView() {
-  const [level, setLevel] = useState<1 | 2 | 3>(1);
-  const [selectedSquadId, setSelectedSquadId] = useState<string | null>(null);
-  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
+  const selectedSquadId = useUIStore((s) => s.selectedSquadId);
+  const selectedAgentId = useUIStore((s) => s.selectedAgentId);
+  const setSelectedSquadId = useUIStore((s) => s.setSelectedSquadId);
+  const setSelectedAgentId = useUIStore((s) => s.setSelectedAgentId);
+
+  // Derive level from selection state
+  const level: 1 | 2 | 3 = selectedAgentId ? 3 : selectedSquadId ? 2 : 1;
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<SquadTab>('overview');
 
   const { data: squadsData } = useSquads();
   const { data: agentsData } = useAgents(selectedSquadId);
   const { data: squadStats } = useSquadStats(selectedSquadId);
-  const { data: fullAgent } = useAgent(selectedSquadId, selectedAgentId);
   const { data: connections = [] } = useSquadConnections(selectedSquadId);
 
   const squads = squadsData && squadsData.length > 0 ? squadsData : placeholderSquads;
@@ -134,21 +143,17 @@ export default function SquadsView() {
   const navigateToSquad = (squadId: string) => {
     setSelectedSquadId(squadId);
     setActiveTab('overview');
-    setLevel(2);
   };
 
   const navigateToAgent = (agentId: string) => {
     setSelectedAgentId(agentId);
-    setLevel(3);
   };
 
   const goBack = () => {
     if (level === 3) {
       setSelectedAgentId(null);
-      setLevel(2);
     } else if (level === 2) {
       setSelectedSquadId(null);
-      setLevel(1);
     }
   };
 
@@ -158,7 +163,7 @@ export default function SquadsView() {
       <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6 pattern-dot-grid--sparse">
         <div className="flex items-center gap-3">
           <Users size={22} className="text-[var(--aiox-lime)]" />
-          <h1 className="heading-display text-xl font-semibold text-primary">Squads</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary type-h2">Squads</h1>
           <Badge variant="count" size="sm">{squads.length}</Badge>
         </div>
 
@@ -339,7 +344,7 @@ export default function SquadsView() {
                 const tier = tierConfig[agent.tier as 0 | 1 | 2] || tierConfig[2];
                 return (
                   <CockpitCard
-                    key={agent.id}
+                    key={`${agent.squad}-${agent.id}`}
                     padding="md"
                     interactive
                     className="cursor-pointer"
@@ -396,7 +401,7 @@ export default function SquadsView() {
           <CockpitButton
             size="sm"
             variant="ghost"
-            onClick={() => { setSelectedAgentId(null); setLevel(2); }}
+            onClick={() => { setSelectedAgentId(null); }}
             leftIcon={<ChevronLeft size={14} />}
           >
             {selectedSquad.name}
@@ -405,16 +410,7 @@ export default function SquadsView() {
           <span className="text-sm text-primary font-medium">{selectedAgent.name}</span>
         </div>
 
-        <AgentDetailPanel
-          agent={fullAgent || {
-            id: selectedAgent.id,
-            name: selectedAgent.name,
-            tier: selectedAgent.tier,
-            squad: selectedAgent.squad,
-            title: selectedAgent.title,
-            description: selectedAgent.description,
-          } as Agent}
-        />
+        <AgentTechSheet squadId={selectedSquadId!} agentId={selectedAgentId!} />
       </div>
     );
   }
@@ -425,7 +421,7 @@ export default function SquadsView() {
       <CockpitCard padding="lg" className="text-center">
         <p className="text-primary text-lg font-semibold">Squads</p>
         <p className="text-secondary text-sm mt-1">No data available</p>
-        <CockpitButton size="sm" className="mt-3" onClick={() => { setLevel(1); setSelectedSquadId(null); setSelectedAgentId(null); }}>
+        <CockpitButton size="sm" className="mt-3" onClick={() => { setSelectedSquadId(null); setSelectedAgentId(null); }}>
           Go back
         </CockpitButton>
       </CockpitCard>

@@ -1,6 +1,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useUIStore } from '../../stores/uiStore';
 import { useMonitorStore } from '../../stores/monitorStore';
+import { useEngineStore } from '../../stores/engineStore';
 import { WorldMap } from './WorldMap';
 import { RoomView } from './RoomView';
 import { WorldMinimap } from './WorldMinimap';
@@ -26,13 +27,29 @@ function GatherWorldInner() {
     exitRoom,
   } = useUIStore();
 
-  // Auto-connect to monitor for live agent activity
-  const { connected, connectToMonitor, disconnectFromMonitor } = useMonitorStore();
+  // Auto-connect to monitor for live agent activity.
+  // Subscribes to engineStore so it reconnects when engine comes online later.
+  const { disconnectFromMonitor } = useMonitorStore();
   useEffect(() => {
-    if (!connected) {
-      connectToMonitor();
-    }
+    const tryConnect = () => {
+      const { connected } = useMonitorStore.getState();
+      const engineStatus = useEngineStore.getState().status;
+      if (connected || engineStatus !== 'online') return;
+      useMonitorStore.getState().connectToMonitor();
+    };
+
+    // Try immediately if engine is already online
+    tryConnect();
+
+    // Subscribe to engine status changes for auto-reconnect
+    const unsubscribe = useEngineStore.subscribe((state, prev) => {
+      if (state.status === 'online' && prev.status !== 'online') {
+        tryConnect();
+      }
+    });
+
     return () => {
+      unsubscribe();
       disconnectFromMonitor();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

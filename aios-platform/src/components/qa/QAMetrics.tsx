@@ -159,7 +159,7 @@ export default function QAMetrics() {
       {/* Header */}
       <div className="flex items-center gap-3">
         <Shield size={22} className="text-[var(--color-status-success)]" />
-        <h1 className="heading-display text-xl font-semibold text-primary">QA Metrics</h1>
+        <h1 className="heading-display text-xl font-semibold text-primary type-h2">QA Metrics</h1>
         <Badge variant="status" status={healthStatus} size="sm">{healthLabel}</Badge>
         <DataSourceBadge source={data.source} />
         <button

@@ -78,7 +78,7 @@ export function WidgetCustomizer() {
               <div className="p-3 border-t border-white/10 flex justify-between">
                 <button
                   onClick={resetWidgets}
-                  className="flex items-center gap-1.5 text-xs text-tertiary hover:text-primary transition-colors"
+                  className="flex items-center gap-1.5 type-label text-tertiary hover:text-primary transition-colors"
                 >
                   <RotateCcw size={12} />
                   Reset

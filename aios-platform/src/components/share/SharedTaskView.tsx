@@ -201,7 +201,7 @@ export default function SharedTaskView() {
                     {squad.agents && (
                       <div className="flex flex-wrap gap-1">
                         {squad.agents.map((agent) => (
-                          <span key={agent.id} className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/50">
+                          <span key={`${agent.squad}-${agent.id}`} className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/50">
                             {agent.name || agent.id}
                           </span>
                         ))}

@@ -77,15 +77,15 @@ export function AgentProfile({ agent, onStartChat, onClose }: AgentProfileProps)
             <p className="text-lg font-bold text-primary">
               {agent.executionCount?.toLocaleString() || '0'}
             </p>
-            <p className="text-xs text-tertiary">Execuções</p>
+            <p className="type-label text-tertiary">Execuções</p>
           </div>
           <div className="text-center border-x border-white/10">
             <p className="text-lg font-bold text-primary">98%</p>
-            <p className="text-xs text-tertiary">Taxa de Sucesso</p>
+            <p className="type-label text-tertiary">Taxa de Sucesso</p>
           </div>
           <div className="text-center">
             <p className="text-lg font-bold text-primary">1.2s</p>
-            <p className="text-xs text-tertiary">Tempo Médio</p>
+            <p className="type-label text-tertiary">Tempo Médio</p>
           </div>
         </div>
 

@@ -98,32 +98,32 @@ export function SystemTab() {
 
       {/* System Info */}
       <CockpitCard>
-        <h2 className="font-semibold text-primary mb-4">Informações do Sistema</h2>
+        <h2 className="font-semibold text-primary mb-4 type-body">Informações do Sistema</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div className="p-3 rounded-none glass-subtle">
-            <p className="text-xs text-tertiary mb-1">Fila de Execução</p>
+            <p className="type-label text-tertiary mb-1">Fila de Execução</p>
             <p className="text-xl font-semibold text-primary">{metrics?.queueSize ?? 0} tarefas</p>
           </div>
           <div className="p-3 rounded-none glass-subtle">
-            <p className="text-xs text-tertiary mb-1">Conexões Ativas</p>
+            <p className="type-label text-tertiary mb-1">Conexões Ativas</p>
             <p className="text-xl font-semibold text-primary">{metrics?.activeConnections ?? 0}</p>
           </div>
           {dashSystem && (
             <>
               <div className="p-3 rounded-none glass-subtle">
-                <p className="text-xs text-tertiary mb-1">Node.js</p>
+                <p className="type-label text-tertiary mb-1">Node.js</p>
                 <p className="text-sm font-semibold text-primary">{dashSystem.nodeVersion}</p>
               </div>
               <div className="p-3 rounded-none glass-subtle">
-                <p className="text-xs text-tertiary mb-1">Plataforma</p>
+                <p className="type-label text-tertiary mb-1">Plataforma</p>
                 <p className="text-sm font-semibold text-primary truncate" title={dashSystem.platform}>{dashSystem.platform}</p>
               </div>
               <div className="p-3 rounded-none glass-subtle">
-                <p className="text-xs text-tertiary mb-1">Arch / CPUs</p>
+                <p className="type-label text-tertiary mb-1">Arch / CPUs</p>
                 <p className="text-sm font-semibold text-primary">{dashSystem.arch} / {dashSystem.cpus} cores</p>
               </div>
               <div className="p-3 rounded-none glass-subtle">
-                <p className="text-xs text-tertiary mb-1">.aios/ Disk</p>
+                <p className="type-label text-tertiary mb-1">.aios/ Disk</p>
                 <p className="text-sm font-semibold text-primary">{dashSystem.aiosDiskUsage}</p>
               </div>
             </>
@@ -141,11 +141,11 @@ export function SystemTab() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3 rounded-none glass-subtle">
-                <p className="text-xs text-tertiary mb-1">Branch</p>
+                <p className="type-label text-tertiary mb-1">Branch</p>
                 <p className="text-sm font-semibold text-primary">{dashSystem.gitBranch}</p>
               </div>
               <div className="p-3 rounded-none glass-subtle">
-                <p className="text-xs text-tertiary mb-1">Status</p>
+                <p className="type-label text-tertiary mb-1">Status</p>
                 <p className="text-sm font-semibold text-primary">{dashSystem.gitDirty ? 'Dirty' : 'Clean'}</p>
               </div>
             </div>
@@ -158,19 +158,19 @@ export function SystemTab() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3 rounded-none glass-subtle">
-                <p className="text-xs text-tertiary mb-1">Heap Used</p>
+                <p className="type-label text-tertiary mb-1">Heap Used</p>
                 <p className="text-sm font-semibold text-primary">{Math.round(dashSystem.memoryUsage.heapUsed / 1024 / 1024)}MB</p>
               </div>
               <div className="p-3 rounded-none glass-subtle">
-                <p className="text-xs text-tertiary mb-1">Heap Total</p>
+                <p className="type-label text-tertiary mb-1">Heap Total</p>
                 <p className="text-sm font-semibold text-primary">{Math.round(dashSystem.memoryUsage.heapTotal / 1024 / 1024)}MB ({dashSystem.memoryUsage.heapPercentage}%)</p>
               </div>
               <div className="p-3 rounded-none glass-subtle">
-                <p className="text-xs text-tertiary mb-1">Total RAM</p>
+                <p className="type-label text-tertiary mb-1">Total RAM</p>
                 <p className="text-sm font-semibold text-primary">{Math.round(dashSystem.totalMemory / 1024 / 1024 / 1024)}GB</p>
               </div>
               <div className="p-3 rounded-none glass-subtle">
-                <p className="text-xs text-tertiary mb-1">Free RAM</p>
+                <p className="type-label text-tertiary mb-1">Free RAM</p>
                 <p className="text-sm font-semibold text-primary">{Math.round(dashSystem.freeMemory / 1024 / 1024 / 1024)}GB</p>
               </div>
             </div>

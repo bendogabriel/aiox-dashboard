@@ -70,10 +70,13 @@ html[data-theme="aiox"] {
   --color-text-disabled: #6D6D6D;
   --color-text-inverse: #050505;
 
-  /* ----- Borders (lime-tinted structure) ----- */
-  --color-border-default: #2a2a2c;
-  --color-border-subtle: rgba(156, 156, 156, 0.12);
-  --color-border-strong: rgba(209, 255, 0, 0.20);
+  /* ----- Borders (brandbook 5-level hierarchy) ----- */
+  --color-border-soft: rgba(156, 156, 156, 0.10);
+  --color-border-default: rgba(156, 156, 156, 0.15);
+  --color-border-subtle: rgba(156, 156, 156, 0.10);
+  --color-border-input: rgba(156, 156, 156, 0.20);
+  --color-border-hover: rgba(156, 156, 156, 0.24);
+  --color-border-strong: rgba(209, 255, 0, 0.25);
   --color-border-focus: rgba(209, 255, 0, 0.50);
 
   /* ----- Accent (lime — NOT blue) ----- */
@@ -353,6 +356,28 @@ html[data-theme="aiox"] {
   --world-status-active: #D1FF00;
   --world-status-completed: #4ADE80;
   --world-status-failed: #EF4444;
+
+  /* ===== shadcn/ui compatibility bridge ===== */
+  --background: var(--aiox-dark);
+  --foreground: var(--aiox-warm-white);
+  --primary: var(--aiox-lime);
+  --primary-foreground: var(--aiox-dark);
+  --secondary: var(--aiox-surface-alt);
+  --secondary-foreground: var(--aiox-cream);
+  --card: var(--aiox-surface);
+  --card-foreground: var(--aiox-warm-white);
+  --muted: var(--aiox-surface-alt);
+  --muted-foreground: var(--aiox-gray-muted);
+  --accent: var(--aiox-lime);
+  --accent-foreground: var(--aiox-dark);
+  --destructive: var(--color-status-error);
+  --destructive-foreground: #ffffff;
+  --border: var(--color-border-default);
+  --input: var(--color-border-input);
+  --ring: var(--color-border-focus);
+  --radius: 0px;
+  --popover: var(--aiox-surface);
+  --popover-foreground: var(--aiox-warm-white);
 }
 
 /* ============================================

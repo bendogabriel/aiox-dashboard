@@ -190,7 +190,7 @@ export function LineChart({
       {showLabels && labels && (
         <div className="flex justify-between mt-2 px-2">
           {labels.map((label, index) => (
-            <span key={index} className="text-[11px] text-tertiary">
+            <span key={index} className="type-label text-tertiary">
               {label}
             </span>
           ))}
@@ -239,7 +239,7 @@ export function BarChart({
                 {showValues && (
                   <span className="text-primary font-medium">
                     {item.value}
-                    <span className="text-tertiary ml-1 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-tertiary ml-1 type-micro opacity-0 group-hover:opacity-100 transition-opacity">
                       ({pct}%)
                     </span>
                   </span>
@@ -390,7 +390,7 @@ export function DonutChart({
             {centerText ?? total}
           </span>
           {centerSubtext && (
-            <span className="text-[10px] text-tertiary">{centerSubtext}</span>
+            <span className="type-micro text-tertiary">{centerSubtext}</span>
           )}
         </div>
       )}

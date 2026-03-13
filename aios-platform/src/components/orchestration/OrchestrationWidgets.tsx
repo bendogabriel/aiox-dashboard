@@ -224,7 +224,7 @@ export const SquadCard = memo(function SquadCard({ selection, isActive }: { sele
               <div className="flex flex-wrap gap-2 pt-3 border-t border-white/10">
                 {selection.agents.map((agent) => (
                   <span
-                    key={agent.id}
+                    key={`${agent.squad}-${agent.id}`}
                     className="px-3 py-1.5 text-xs font-medium bg-black/20 text-white/80"
                   >
                     {agent.name || agent.id}

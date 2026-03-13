@@ -151,7 +151,7 @@ function MatrixView({
 
             return (
               <tr
-                key={agent.id}
+                key={`${agent.squad}-${agent.id}`}
                 onClick={() => onSelectAgent(isSelected ? null : agent.id)}
                 className={cn(
                   'border-b border-white/5 cursor-pointer transition-colors duration-150',
@@ -463,7 +463,7 @@ function GraphView({
 
           return (
             <g
-              key={node.agent.id}
+              key={`${node.agent.squad || i}-${node.agent.id}`}
               className="cursor-pointer"
               onMouseEnter={() => setHoveredAgent(node.agent.id)}
               onMouseLeave={() => setHoveredAgent(null)}

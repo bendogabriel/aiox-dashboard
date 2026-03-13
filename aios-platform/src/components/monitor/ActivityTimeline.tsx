@@ -155,7 +155,7 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Activity size={22} className="text-[var(--aiox-blue)]" />
-          <h1 className="heading-display text-xl font-semibold text-primary">Monitor</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary type-h2">Monitor</h1>
           {viewToggle}
           <span className="text-xs text-tertiary">({items.length} eventos)</span>
           {isActivityLoading && (

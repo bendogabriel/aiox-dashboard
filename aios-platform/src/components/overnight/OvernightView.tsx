@@ -33,7 +33,7 @@ export default function OvernightView() {
           {level === 1 && (
             <div className="flex items-center gap-3">
               <Moon size={22} className="text-[var(--aiox-blue)]" />
-              <h1 className="heading-display text-xl font-semibold text-primary">Overnight Programs</h1>
+              <h1 className="heading-display text-xl font-semibold text-primary type-h2">Overnight Programs</h1>
             </div>
           )}
 

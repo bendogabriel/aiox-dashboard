@@ -262,7 +262,7 @@ export default function KnowledgeView() {
             <Database size={18} className="text-[var(--bb-warning)]" />
           </div>
           <div>
-            <h1 className="heading-display text-xl font-semibold text-primary">Knowledge Base</h1>
+            <h1 className="heading-display text-xl font-semibold text-primary type-h2">Knowledge Base</h1>
             <p className="text-xs text-tertiary">Explorar e visualizar a base de conhecimento</p>
           </div>
         </div>

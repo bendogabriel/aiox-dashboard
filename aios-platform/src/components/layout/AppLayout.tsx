@@ -6,6 +6,7 @@ import { MobileNav } from './MobileNav';
 import { AgentExplorer } from '../agents/AgentExplorer';
 import { GlobalSearch, useGlobalSearch } from '../search';
 import { ToastContainer, KeyboardShortcuts, PWAUpdatePrompt, SkipLinks } from '../ui';
+import { IntegrationSetupModal } from '../integrations';
 import { OnboardingTour } from '../onboarding';
 import { StatusBar } from '../status-bar/StatusBar';
 import { ProjectTabs } from '../project-tabs/ProjectTabs';
@@ -125,7 +126,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           {!focusMode && <ProjectTabs />}
 
           {/* Main Content */}
-          <main id="main-content" className="flex-1 overflow-hidden p-4 pb-20 md:p-6 md:pb-6" aria-label="Conteúdo principal">
+          <main id="main-content" className="flex-1 overflow-hidden p-4 pb-20 md:p-6 md:pb-10" aria-label="Conteúdo principal">
             {/* Degradation Banner — shows limited capabilities for current view */}
             <DegradationBanner />
             <div
@@ -177,6 +178,9 @@ export function AppLayout({ children }: AppLayoutProps) {
       <Suspense fallback={null}>
         <SetupWizard />
       </Suspense>
+
+      {/* Integration Setup Modal — accessible from any view via DegradationBanner */}
+      <IntegrationSetupModal />
 
       {/* Mobile Bottom Navigation */}
       {!focusMode && <MobileNav />}

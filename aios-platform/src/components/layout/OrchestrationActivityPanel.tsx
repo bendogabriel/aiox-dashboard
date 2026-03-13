@@ -49,7 +49,7 @@ export function OrchestrationActivityPanel() {
   const isAwaitingApproval = liveTask?.status === 'awaiting_approval';
 
   return (
-    <aside aria-label="Painel de atividade - Orquestração" className="h-screen glass-panel border-l border-glass-border flex flex-col w-[320px]">
+    <aside aria-label="Painel de atividade - Orquestração" className="h-screen surface-panel border-l border-[var(--color-border-default)] flex flex-col w-[320px]">
       {/* Header */}
       <div className="h-16 px-4 flex items-center justify-between border-b border-glass-border">
         <h2 className="text-primary font-semibold">Orquestração</h2>
@@ -255,7 +255,7 @@ function OrchStatusTab({
                       const hasOutput = task.agentOutputs.some(o => o.agent.id === agent.id);
                       const isStreaming = task.streamingAgents.some(a => a.agentId === agent.id);
                       return (
-                        <div key={agent.id} className="flex items-center gap-2 text-[10px]">
+                        <div key={`${agent.id}-${index}`} className="flex items-center gap-2 text-[10px]">
                           <span className={`h-1.5 w-1.5 rounded-full ${isStreaming ? 'bg-[var(--bb-flare)] animate-pulse' : hasOutput ? 'bg-[var(--color-status-success)]' : 'bg-white/20'}`} />
                           <span className={isStreaming ? 'text-[var(--bb-flare)]' : hasOutput ? 'text-[var(--color-status-success)]' : 'text-tertiary'}>
                             {agent.name}

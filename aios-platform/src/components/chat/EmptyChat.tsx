@@ -81,7 +81,7 @@ export function EmptyChat() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {tierAgents.map((agent, index) => (
                       <div
-                        key={agent.id}
+                        key={`${agent.squad}-${agent.id}`}
                       >
                         <AgentExplorerCard
                           agent={agent}

@@ -145,11 +145,11 @@ export function StoryDetailModal({ story, isOpen, onClose }: StoryDetailModalPro
         {/* Timestamps */}
         <div className="flex items-center gap-4 pt-2 border-t border-glass-border">
           <div>
-            <span className="text-[10px] font-semibold text-tertiary uppercase tracking-wider">Criado em</span>
+            <span className="type-micro font-semibold text-tertiary">Criado em</span>
             <p className="text-xs text-secondary">{formatDate(story.createdAt)}</p>
           </div>
           <div>
-            <span className="text-[10px] font-semibold text-tertiary uppercase tracking-wider">Atualizado em</span>
+            <span className="type-micro font-semibold text-tertiary">Atualizado em</span>
             <p className="text-xs text-secondary">{formatDate(story.updatedAt)}</p>
           </div>
         </div>

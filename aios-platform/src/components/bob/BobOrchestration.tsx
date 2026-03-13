@@ -110,7 +110,7 @@ function ActiveState({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {pipeline.agents.map((agent) => (
             <div
-              key={agent.id}
+              key={`${agent.squad}-${agent.id}`}
             >
               <AgentActivityCard agent={agent} isCurrent={agent.id === currentAgentId} />
             </div>
@@ -229,7 +229,7 @@ export default function BobOrchestration() {
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div className="flex items-center gap-3">
             <Cpu className="h-5 w-5 text-[var(--aiox-lime)]" />
-            <h1 className="heading-display text-xl font-semibold text-primary">Bob Orchestration</h1>
+            <h1 className="heading-display text-xl font-semibold text-primary type-h2">Bob Orchestration</h1>
             <Badge
               variant="status"
               status={

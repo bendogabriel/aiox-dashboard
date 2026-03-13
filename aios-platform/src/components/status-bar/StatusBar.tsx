@@ -78,7 +78,7 @@ export function StatusBar() {
       className={cn(
         'fixed bottom-0 left-0 right-0 z-30',
         'h-7 px-3 flex items-center justify-between',
-        'glass-subtle border-t border-glass-border',
+        'bg-[var(--color-background-primary,#050505)] border-t border-glass-border',
         'text-[10px] select-none'
       )}
       role="contentinfo"

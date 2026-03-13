@@ -47,7 +47,7 @@ export function ActivityPanel() {
   }
 
   return (
-    <aside aria-label="Painel de atividade" className="h-screen glass-panel border-l border-glass-border flex flex-col w-[320px]">
+    <aside aria-label="Painel de atividade" className="h-screen surface-panel border-l border-[var(--color-border-default)] flex flex-col w-[320px]">
       {/* Header */}
       <div className="h-16 px-4 flex items-center justify-between border-b border-glass-border">
         <h2 className="text-primary font-semibold">Atividade</h2>

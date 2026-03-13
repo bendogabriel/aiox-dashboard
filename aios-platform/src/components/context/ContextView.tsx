@@ -97,7 +97,7 @@ export default function ContextView() {
       <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-4">
         <div className="flex items-center gap-3">
           <Brain size={22} className="text-[var(--aiox-gray-muted)]" />
-          <h1 className="heading-display text-xl font-semibold text-primary">Context</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary type-h2">Context</h1>
           <Loader2 size={16} className="text-tertiary animate-spin" />
         </div>
         <SectionSkeleton />
@@ -113,7 +113,7 @@ export default function ContextView() {
       <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-4">
         <div className="flex items-center gap-3">
           <Brain size={22} className="text-[var(--aiox-gray-muted)]" />
-          <h1 className="heading-display text-xl font-semibold text-primary">Context</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary type-h2">Context</h1>
         </div>
         <CockpitCard padding="md">
           <div className="flex items-center gap-3 text-[var(--bb-error)]">
@@ -138,7 +138,7 @@ export default function ContextView() {
       {/* Header */}
       <div className="flex items-center gap-3">
         <Brain size={22} className="text-[var(--aiox-gray-muted)]" />
-        <h1 className="heading-display text-xl font-semibold text-primary">Context</h1>
+        <h1 className="heading-display text-xl font-semibold text-primary type-h2">Context</h1>
         <Badge variant="default" size="sm">aios-platform</Badge>
       </div>
 
@@ -179,8 +179,8 @@ export default function ContextView() {
       {/* Agent Definitions */}
       {agents.length > 0 && (
         <CollapsibleSection title="Agent Definitions" icon={<Bot size={16} />} count={agents.length}>
-          {agents.map((agent) => (
-            <div key={agent.id ?? agent.name} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
+          {agents.map((agent, idx) => (
+            <div key={`${idx}-${agent.id ?? agent.name}`} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
               <div className="flex items-center gap-2.5">
                 <div className={cn(
                   'w-6 h-6 rounded-md flex items-center justify-center',

@@ -102,7 +102,7 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
                   {favorites.map((agent, index) => {
                     return (
                       <div
-                        key={agent.id}
+                        key={`${agent.squad}-${agent.id}`}
                         className="group flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-white/5 cursor-pointer transition-colors"
                         onClick={() => handleSelectAgent(agent)}
                       >
@@ -155,7 +155,7 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
                   {recents.map((agent, index) => {
                     return (
                       <div
-                        key={agent.id}
+                        key={`${agent.squad}-${agent.id}`}
                         className="group flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-white/5 cursor-pointer transition-colors"
                         onClick={() => handleSelectAgent(agent)}
                       >

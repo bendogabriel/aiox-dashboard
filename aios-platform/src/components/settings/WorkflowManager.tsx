@@ -603,7 +603,7 @@ export function CreateWorkflowModal({
                           >
                             <option value="">Selecione um agent</option>
                             {getAgentsForSquad(step.squadId).map(agent => (
-                              <option key={agent.id} value={agent.id}>
+                              <option key={`${agent.squad}-${agent.id}`} value={agent.id}>
                                 {agent.name}
                               </option>
                             ))}

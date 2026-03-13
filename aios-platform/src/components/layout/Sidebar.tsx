@@ -19,6 +19,7 @@ import {
   X,
   BookOpen,
   Database,
+  DollarSign,
   Lock,
   Lightbulb,
   Eye,
@@ -29,8 +30,10 @@ import {
   Gauge,
   ListChecks,
   Zap,
+  Image,
   ZapOff,
   RefreshCw,
+  Megaphone,
   type LucideIcon,
 } from 'lucide-react';
 import { CockpitCard, CockpitButton, AioxLogo } from '../ui';
@@ -130,6 +133,8 @@ NAV_GROUPS.forEach((group) => {
 
 // Extra items at the bottom (plugins / marketplace)
 const EXTRA_ITEMS: { id: string; label: string; icon: LucideIcon; shortcut: string }[] = [
+  { id: 'marketing-hub', label: 'Marketing', icon: Megaphone, shortcut: 'P' },
+  { id: 'sales-dashboard', label: 'Sales', icon: DollarSign, shortcut: 'J' },
   { id: 'sales-room', label: 'Sales Room', icon: Eye, shortcut: 'L' },
   { id: 'overnight', label: 'Overnight', icon: Moon, shortcut: 'O' },
   { id: 'marketplace', label: 'Marketplace', icon: Store, shortcut: 'K' },
@@ -331,6 +336,10 @@ function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
   }, [activeGroupId]);
 
   const handleNavigate = (viewId: string) => {
+    // Clear squad/agent selection when entering squads view from another view
+    if (viewId === 'squads' && currentView !== 'squads') {
+      useUIStore.getState().setSelectedSquadId(null);
+    }
     setCurrentView(viewId as Parameters<typeof setCurrentView>[0]);
     if (viewId === 'bob' && badgeCount > 0) {
       clearPending();
@@ -528,7 +537,7 @@ function DesktopSidebar() {
     <aside
       aria-label="Barra lateral principal"
       className={cn(
-        'hidden md:flex h-screen glass-panel border-r border-glass-border flex-col transition-all duration-300 ease-out',
+        'hidden md:flex h-screen surface-panel border-r border-[var(--color-border-default)] flex-col transition-all duration-300 ease-out',
         sidebarCollapsed ? 'w-[72px]' : 'w-[220px]'
       )}
     >
@@ -537,6 +546,12 @@ function DesktopSidebar() {
         {sidebarCollapsed ? (
             <div
               key="small"
+              onClick={toggleSidebar}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter') toggleSidebar(); }}
+              aria-label="Expandir sidebar"
+              style={{ cursor: 'pointer' }}
             >
               <LogoSmall />
             </div>
@@ -565,15 +580,6 @@ function DesktopSidebar() {
       {/* Navigation */}
       {sidebarCollapsed ? (
         <div className="flex flex-col items-center pt-2">
-          <CockpitButton
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            className="h-10 w-10 mb-2"
-            aria-label="Expandir sidebar"
-          >
-            <Menu size={18} />
-          </CockpitButton>
           <ViewNavigation collapsed />
         </div>
       ) : (

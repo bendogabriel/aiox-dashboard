@@ -343,7 +343,7 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-glass-border flex-shrink-0">
         <div className="flex items-center gap-3">
           <BookOpen size={20} className="text-secondary" />
-          <h1 className="heading-display text-xl font-semibold text-primary">Stories</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary type-h2">Stories</h1>
           <span className="inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full bg-white/10 text-[10px] font-medium text-tertiary">
             {hasActiveFilters ? `${filteredTotal}/${totalStories}` : totalStories}
           </span>

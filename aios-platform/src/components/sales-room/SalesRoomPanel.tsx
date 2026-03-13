@@ -442,7 +442,7 @@ export default memo(function SalesRoomPanel() {
           <div className="overflow-y-auto">
             {salesAgents.map((agent) => (
               <AgentRow
-                key={agent.id}
+                key={`${agent.squad}-${agent.id}`}
                 agent={agent}
                 isSelected={agent.id === selectedAgentId}
                 onClick={() => selectAgent(agent.id)}
@@ -461,7 +461,7 @@ export default memo(function SalesRoomPanel() {
           <div className="overflow-y-auto">
             {supportAgents.map((agent) => (
               <AgentRow
-                key={agent.id}
+                key={`${agent.squad}-${agent.id}`}
                 agent={agent}
                 isSelected={agent.id === selectedAgentId}
                 onClick={() => selectAgent(agent.id)}

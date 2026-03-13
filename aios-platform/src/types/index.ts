@@ -1,3 +1,6 @@
+// Re-export agent tech sheet types
+export type * from './agent-tech-sheet';
+
 // Re-export marketplace types
 export type * from './marketplace';
 
@@ -18,7 +21,7 @@ export type SquadType =
   | 'advisory'       // yellow
   | 'default';       // gray
 
-// Map squad IDs to SquadTypes for UI styling (updated 2026-02-24)
+// Map squad IDs to SquadTypes for UI styling (updated 2026-03-13)
 export const squadTypeMap: Record<string, SquadType> = {
   // Marketing & Copy (orange)
   'copywriting': 'copywriting',
@@ -33,41 +36,58 @@ export const squadTypeMap: Record<string, SquadType> = {
   // Engineering (indigo)
   'full-stack-dev': 'engineering',
   'aios-core-dev': 'engineering',
+  'etl-ops': 'engineering',
+  'skill-tester': 'engineering',
+  'technical-documentation': 'engineering',
   // Content & YouTube (red)
   'content-ecosystem': 'content',
   'youtube-lives': 'content',
+  'media-production': 'content',
+  'video-production': 'content',
+  'asmr-shorts': 'content',
   // Data & Research (teal)
   'data-analytics': 'analytics',
+  'market-research': 'analytics',
+  'academic-research': 'analytics',
   // Scraping & Outreach (pink)
   'deep-scraper': 'marketing',
+  'seo': 'marketing',
+  'traffic-squad': 'marketing',
+  'agora-direct-response': 'marketing',
+  'marketing-automation': 'marketing',
   // Strategy & Advisory (yellow)
   'conselho': 'advisory',
   'infoproduct-creation': 'advisory',
+  'erico-rocha': 'advisory',
+  'hormozi': 'advisory',
+  'strategy-natalia-tanaka': 'advisory',
   // System & Orchestration (cyan)
   'project-management-clickup': 'orchestrator',
   'orquestrador-global': 'orchestrator',
   'squad-creator': 'orchestrator',
-  'operations-hub': 'orchestrator',
-  'docs': 'orchestrator',
-  // Natalia Tanaka (orange)
+  'squad-creator-pro': 'orchestrator',
+  'navigator': 'orchestrator',
+  'support': 'orchestrator',
+  'sop-factory': 'orchestrator',
+  // Natalia Tanaka
   'communication-natalia-tanaka': 'copywriting',
   'community-natalia-tanaka': 'copywriting',
-  'strategy-natalia-tanaka': 'copywriting',
 };
 
 // Pattern-based squad type mapping (for sub-squads and new squads)
 const squadTypePatterns: Array<{ pattern: RegExp; type: SquadType }> = [
-  { pattern: /natalia-tanaka/i, type: 'copywriting' },
-  { pattern: /youtube/i, type: 'content' },
+  { pattern: /youtube|video|media-production|asmr/i, type: 'content' },
   { pattern: /copywriting|copy/i, type: 'copywriting' },
   { pattern: /media-buy|funnel/i, type: 'development' },
   { pattern: /design|ui|ux|creative|studio/i, type: 'design' },
-  { pattern: /dev|full-stack|frontend|backend|aios-core/i, type: 'engineering' },
+  { pattern: /dev|full-stack|frontend|backend|aios-core|etl|documentation/i, type: 'engineering' },
   { pattern: /content|ecosystem/i, type: 'content' },
-  { pattern: /data|analytics/i, type: 'analytics' },
-  { pattern: /scraper|deep-/i, type: 'marketing' },
-  { pattern: /conselho|advisor|infoproduct/i, type: 'advisory' },
-  { pattern: /orquestrador|orchestrator|system|project-management/i, type: 'orchestrator' },
+  { pattern: /data|analytics|research/i, type: 'analytics' },
+  { pattern: /scraper|deep-|seo|traffic|marketing|agora/i, type: 'marketing' },
+  { pattern: /conselho|advisor|infoproduct|hormozi|erico/i, type: 'advisory' },
+  { pattern: /strategy.*tanaka/i, type: 'advisory' },
+  { pattern: /natalia-tanaka/i, type: 'copywriting' },
+  { pattern: /orquestrador|orchestrator|system|project-management|navigator|support|sop/i, type: 'orchestrator' },
   { pattern: /comercial|sales|vendas/i, type: 'creator' },
   { pattern: /community|comunidade/i, type: 'orchestrator' },
   { pattern: /communication|comunicacao/i, type: 'copywriting' },
@@ -216,6 +236,15 @@ export interface Agent extends AgentSummary {
     hasAntiPatterns: boolean;
     hasIntegration: boolean;
   };
+  // Tech Sheet fields (parsed from YAML)
+  metadata?: import('./agent-tech-sheet').AgentMetadata;
+  personaProfile?: import('./agent-tech-sheet').AgentPersonaProfile;
+  boundaries?: import('./agent-tech-sheet').AgentBoundaries;
+  gitRestrictions?: import('./agent-tech-sheet').AgentGitRestrictions;
+  agentDependencies?: import('./agent-tech-sheet').AgentDependencies;
+  autoClaude?: import('./agent-tech-sheet').AgentAutoClaude;
+  codeRabbit?: import('./agent-tech-sheet').AgentCodeRabbit;
+  routingMatrix?: import('./agent-tech-sheet').AgentRoutingMatrix;
   // UI-only fields (mapped from backend)
   squadId?: string;
   squadType?: SquadType;
@@ -311,7 +340,7 @@ export interface ExecuteResult {
 
 export interface ExecuteResponse {
   executionId: string;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  status: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
   result?: ExecuteResult;
   statusUrl?: string;
   error?: string;
@@ -321,7 +350,7 @@ export interface ExecutionRecord {
   id: string;
   agentId: string;
   squadId: string;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  status: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
   createdAt: string;
   completedAt?: string;
   input?: {
@@ -613,7 +642,8 @@ export type ViewType =
   | 'brainstorm'
   | 'vault'
   | 'overnight'
-  | 'marketplace' | 'marketplace-listing' | 'marketplace-purchases' | 'marketplace-seller' | 'marketplace-submit' | 'marketplace-review' | 'marketplace-admin';
+  | 'marketplace' | 'marketplace-listing' | 'marketplace-purchases' | 'marketplace-seller' | 'marketplace-submit' | 'marketplace-review' | 'marketplace-admin'
+  | 'sales-dashboard' | 'traffic-dashboard' | 'creative-gallery' | 'marketing' | 'ds-preview';
 export type SettingsSectionType = 'dashboard' | 'categories' | 'memory' | 'workflows' | 'profile' | 'api' | 'appearance' | 'notifications' | 'privacy' | 'about';
 
 export interface UIState {

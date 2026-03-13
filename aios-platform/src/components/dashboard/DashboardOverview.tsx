@@ -46,8 +46,8 @@ export function DashboardOverview({ viewToggle }: { viewToggle?: React.ReactNode
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="heading-display text-xl font-semibold text-primary">Dashboard</h1>
-            <p className="text-secondary text-sm mt-0.5 label-mono">
+            <h1 className="heading-display text-xl font-semibold text-primary type-h2">Dashboard</h1>
+            <p className="text-secondary text-sm mt-0.5 type-label">
               Analytics do AIOS Core Platform
             </p>
           </div>

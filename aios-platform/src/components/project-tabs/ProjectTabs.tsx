@@ -240,7 +240,7 @@ function SortableTab({
         {/* Active indicator (bottom border) */}
         {isActive && (
           <span
-            className="absolute bottom-0 left-1 right-1 h-0.5 bg-[var(--aiox-blue)] rounded-full"
+            className="absolute bottom-0 left-1 right-1 h-0.5 bg-[var(--aiox-lime)] rounded-full"
             aria-hidden="true"
           />
         )}

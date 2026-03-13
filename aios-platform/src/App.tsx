@@ -162,6 +162,22 @@ const MarketplaceAdminAnalytics = lazy(() =>
 
 // CockpitDashboard removed — consolidated into DashboardWorkspace
 
+const SalesDashboard = lazy(() =>
+  import('./components/sales-dashboard/SalesDashboard')
+);
+
+const TrafficDashboard = lazy(() =>
+  import('./components/traffic-dashboard/TrafficDashboard')
+);
+
+const MarketingHub = lazy(() =>
+  import('./components/marketing/MarketingHub')
+);
+
+const CreativeGallery = lazy(() =>
+  import('./components/creative-gallery/CreativeGallery')
+);
+
 // View map — maps ViewType to lazy component
 const viewMap: Record<string, ComponentType> = {
   dashboard: DashboardWorkspace,
@@ -204,6 +220,12 @@ const viewMap: Record<string, ComponentType> = {
   'marketplace-submit': MarketplaceSubmitWizard,
   'marketplace-review': MarketplaceReviewQueue,
   'marketplace-admin': MarketplaceAdminAnalytics,
+  // Business dashboards
+  'sales-dashboard': SalesDashboard,
+  'traffic-dashboard': TrafficDashboard,
+  'creative-gallery': CreativeGallery,
+  // Marketing Hub
+  'marketing-hub': MarketingHub,
 };
 
 // Loading messages per view
@@ -248,6 +270,12 @@ const viewLoaderMessages: Record<string, string> = {
   'marketplace-submit': 'Carregando submissão...',
   'marketplace-review': 'Carregando review queue...',
   'marketplace-admin': 'Carregando analytics...',
+  // Business dashboards
+  'sales-dashboard': 'Carregando sales intelligence...',
+  'traffic-dashboard': 'Carregando traffic dashboard...',
+  'creative-gallery': 'Carregando galeria de criativos...',
+  // Marketing Hub
+  'marketing-hub': 'Carregando Marketing Hub...',
 };
 
 // Create a client

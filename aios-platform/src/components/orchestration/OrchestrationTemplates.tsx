@@ -19,7 +19,7 @@ const CURATED_TEMPLATES: OrchestrationTemplate[] = [
     title: 'Campanha de Lancamento',
     description: 'Copy + design + conteudo social para lancamento de produto',
     demand: 'Criar uma campanha completa de lancamento incluindo headlines, body copy, design visual e conteudo para redes sociais',
-    squads: ['copywriting', 'design', 'creator'],
+    squads: ['copywriting', 'design-system', 'creative-studio'],
   },
   {
     id: 'tech-audit',
@@ -27,7 +27,7 @@ const CURATED_TEMPLATES: OrchestrationTemplate[] = [
     title: 'Auditoria Tecnica',
     description: 'Analise completa de divida tecnica e recomendacoes',
     demand: 'Realizar auditoria tecnica completa do sistema, identificar divida tecnica, vulnerabilidades de seguranca e propor plano de melhoria',
-    squads: ['engineering', 'development'],
+    squads: ['aios-core-dev', 'full-stack-dev'],
   },
   {
     id: 'content-calendar',
@@ -35,7 +35,7 @@ const CURATED_TEMPLATES: OrchestrationTemplate[] = [
     title: 'Calendario de Conteudo',
     description: '30 dias de conteudo para multiplas plataformas',
     demand: 'Criar calendario editorial de 30 dias com posts para Instagram, LinkedIn e TikTok, incluindo copies e briefings visuais',
-    squads: ['creator', 'copywriting'],
+    squads: ['content-ecosystem', 'copywriting'],
   },
   {
     id: 'market-research',
@@ -43,7 +43,7 @@ const CURATED_TEMPLATES: OrchestrationTemplate[] = [
     title: 'Pesquisa de Mercado',
     description: 'Analise competitiva e identificacao de oportunidades',
     demand: 'Realizar pesquisa de mercado completa: analise de concorrentes, identificacao de gaps, definicao de personas e proposta de posicionamento',
-    squads: ['copywriting', 'analytics'],
+    squads: ['copywriting', 'data-analytics'],
   },
   {
     id: 'brand-strategy',
@@ -51,7 +51,7 @@ const CURATED_TEMPLATES: OrchestrationTemplate[] = [
     title: 'Estrategia de Marca',
     description: 'Posicionamento, tom de voz e identidade visual',
     demand: 'Desenvolver estrategia de marca completa: proposta de valor, manifesto, tom de voz, guidelines de comunicacao e identidade visual',
-    squads: ['copywriting', 'design'],
+    squads: ['copywriting', 'design-system'],
   },
   {
     id: 'full-product',
@@ -59,7 +59,7 @@ const CURATED_TEMPLATES: OrchestrationTemplate[] = [
     title: 'Produto Completo',
     description: 'Spec + arquitetura + implementacao + QA',
     demand: 'Especificar, arquitetar e implementar uma nova feature completa com testes automatizados e documentacao',
-    squads: ['engineering', 'development'],
+    squads: ['aios-core-dev', 'full-stack-dev'],
   },
 ];
 

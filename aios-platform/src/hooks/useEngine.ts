@@ -247,3 +247,45 @@ export function useStoreMemory() {
     },
   });
 }
+
+// --- Registry hooks for Tech Sheet ---
+
+export function useRegistryTasks(squad?: string) {
+  return useQuery({
+    queryKey: ['engine', 'registry', 'tasks', squad],
+    queryFn: () => engineApi.getRegistryTasks(squad),
+    enabled: engineAvailable(),
+    staleTime: 60_000,
+    retry: 1,
+  });
+}
+
+export function useRegistryWorkflows(squad?: string) {
+  return useQuery({
+    queryKey: ['engine', 'registry', 'workflows', squad],
+    queryFn: () => engineApi.getRegistryWorkflows(squad),
+    enabled: engineAvailable(),
+    staleTime: 60_000,
+    retry: 1,
+  });
+}
+
+export function useRegistryCommands(squad?: string) {
+  return useQuery({
+    queryKey: ['engine', 'registry', 'commands', squad],
+    queryFn: () => engineApi.getRegistryCommands(squad),
+    enabled: engineAvailable(),
+    staleTime: 60_000,
+    retry: 1,
+  });
+}
+
+export function useRegistryResources(squad?: string) {
+  return useQuery({
+    queryKey: ['engine', 'registry', 'resources', squad],
+    queryFn: () => engineApi.getRegistryResources(undefined, squad),
+    enabled: engineAvailable(),
+    staleTime: 60_000,
+    retry: 1,
+  });
+}

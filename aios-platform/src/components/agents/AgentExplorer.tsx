@@ -154,7 +154,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                     </svg>
                   </div>
                   <div>
-                    <h1 className="heading-display text-xl font-semibold text-white">Agent Explorer</h1>
+                    <h1 className="heading-display text-xl font-semibold text-white type-h2">Agent Explorer</h1>
                     <p className="text-white/50 text-sm">
                       {filteredAgents.length} agents encontrados
                     </p>

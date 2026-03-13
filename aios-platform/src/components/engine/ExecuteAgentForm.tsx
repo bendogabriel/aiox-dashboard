@@ -19,8 +19,8 @@ export default function ExecuteAgentForm({ isOpen, onClose }: ExecuteAgentFormPr
   const execute = useExecuteOnEngine();
   const toast = useToast();
 
-  const [squadId, setSquadId] = useState('development');
-  const [agentId, setAgentId] = useState('dev');
+  const [squadId, setSquadId] = useState('full-stack-dev');
+  const [agentId, setAgentId] = useState('dev-chief');
   const [message, setMessage] = useState('');
   const [priority, setPriority] = useState(2);
   const [errors, setErrors] = useState<Record<string, string>>({});

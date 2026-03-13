@@ -41,7 +41,7 @@ export function AgentList({ onAgentSelect }: AgentListProps) {
       <div className="space-y-2">
         {agents.map((agent, index) => (
             <div
-              key={agent.id}
+              key={`${agent.squad}-${agent.id}`}
             >
               <AgentCard
                 agent={agent}
@@ -154,7 +154,7 @@ function AgentGroup({ title, count, agents, selectedId, onSelect, defaultExpande
             <div className="space-y-2">
               {agents.map((agent, index) => (
                 <div
-                  key={agent.id}
+                  key={`${agent.squad}-${agent.id}`}
                 >
                   <AgentCard
                     agent={agent}

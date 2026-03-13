@@ -1,4 +1,4 @@
-import type { VaultWorkspace, VaultDocument, VaultActivity } from '../types/vault';
+import type { VaultWorkspace, VaultDocument, VaultActivity, VaultSpace, DataSource } from '../types/vault';
 
 // ── Mock Documents ──
 
@@ -7,6 +7,16 @@ export const MOCK_DOCUMENTS: VaultDocument[] = [
     id: 'doc-dna-founder',
     name: 'DNA do Founder',
     type: 'diagnostic',
+    spaceId: 'sp-aex-pro',
+    sourceId: null,
+    contentHash: 'a1b2c3d4',
+    summary: 'Perfil do founder Alan Nicolas com valores, estilo de lideranca e background tecnico.',
+    language: 'pt-BR',
+    tags: ['founder', 'leadership', 'profile'],
+    sourceMetadata: {},
+    quality: { completeness: 95, freshness: 85, consistency: 90 },
+    validatedAt: '2026-03-08T14:00:00Z',
+    createdAt: '2026-02-15T10:00:00Z',
     content: `# DNA do Founder — Alan Nicolas
 
 ## Perfil
@@ -43,6 +53,16 @@ Fundador da AIOX Academy e criador do framework AIOS.
     id: 'doc-credentials',
     name: 'Credenciais da Empresa',
     type: 'generic',
+    spaceId: 'sp-aex-pro',
+    sourceId: 'src-gdrive',
+    contentHash: 'b2c3d4e5',
+    summary: 'Numeros, reconhecimentos e clientes notaveis da AIOX.',
+    language: 'pt-BR',
+    tags: ['credentials', 'social-proof'],
+    sourceMetadata: {},
+    quality: { completeness: 80, freshness: 70, consistency: 85 },
+    validatedAt: '2026-03-05T10:00:00Z',
+    createdAt: '2026-02-10T10:00:00Z',
     content: `# Credenciais — AIOX
 
 ## Números
@@ -73,6 +93,16 @@ Fundador da AIOX Academy e criador do framework AIOS.
     id: 'doc-offerbook-aex',
     name: 'Offerbook — AEX Pro',
     type: 'offerbook',
+    spaceId: 'sp-aex-pro',
+    sourceId: null,
+    contentHash: 'c3d4e5f6',
+    summary: 'Proposta de valor, publico-alvo, pricing e diferenciacao do AEX Pro.',
+    language: 'pt-BR',
+    tags: ['offerbook', 'aex-pro', 'pricing'],
+    sourceMetadata: {},
+    quality: { completeness: 95, freshness: 90, consistency: 95 },
+    validatedAt: '2026-03-09T16:30:00Z',
+    createdAt: '2026-02-01T10:00:00Z',
     content: `# AEX Pro — Offerbook
 
 ## Proposta de Valor
@@ -113,6 +143,16 @@ O AEX Pro é a plataforma definitiva para empresários que querem escalar opera�
     id: 'doc-proofs-aex',
     name: 'Provas — AEX Pro',
     type: 'proof',
+    spaceId: 'sp-aex-pro',
+    sourceId: 'src-gdrive',
+    contentHash: 'd4e5f6g7',
+    summary: 'Depoimentos selecionados e metricas compiladas do AEX Pro.',
+    language: 'pt-BR',
+    tags: ['proof', 'testimonials', 'aex-pro'],
+    sourceMetadata: {},
+    quality: { completeness: 85, freshness: 80, consistency: 90 },
+    validatedAt: '2026-03-07T11:00:00Z',
+    createdAt: '2026-02-05T10:00:00Z',
     content: `# Provas de Autoridade — AEX Pro
 
 ## Depoimentos Selecionados
@@ -149,6 +189,16 @@ O AEX Pro é a plataforma definitiva para empresários que querem escalar opera�
     id: 'doc-brand-book',
     name: 'Brand Book',
     type: 'brand',
+    spaceId: null,
+    sourceId: null,
+    contentHash: 'e5f6g7h8',
+    summary: 'Identidade visual, tom de voz e personalidade da marca AIOX.',
+    language: 'pt-BR',
+    tags: ['brand', 'identity', 'guidelines'],
+    sourceMetadata: {},
+    quality: { completeness: 90, freshness: 75, consistency: 95 },
+    validatedAt: '2026-03-01T09:00:00Z',
+    createdAt: '2026-01-20T10:00:00Z',
     content: `# AIOX Brand Book
 
 ## Identidade Visual
@@ -185,6 +235,7 @@ Nunca usar: fácil, simples, mágico, revolucionário, garantido`,
     id: 'doc-msg-hierarchy',
     name: 'Hierarquia de Mensagens',
     type: 'strategy',
+    spaceId: null, sourceId: null, contentHash: 'f6g7h8i9', summary: 'Posicionamento, promessas, prova e CTAs da AIOX.', language: 'pt-BR', tags: ['messaging', 'brand'], sourceMetadata: {}, quality: { completeness: 85, freshness: 80, consistency: 90 }, validatedAt: '2026-03-02T14:00:00Z', createdAt: '2026-01-25T10:00:00Z',
     content: `# Hierarquia de Mensagens — AIOX
 
 ## Nível 1: Posicionamento
@@ -217,6 +268,7 @@ Nunca usar: fácil, simples, mágico, revolucionário, garantido`,
     id: 'doc-ai-strategy',
     name: 'AI Strategy',
     type: 'strategy',
+    spaceId: null, sourceId: null, contentHash: 'g7h8i9j0', summary: 'Politica de modelos, framework de avaliacao e stack atual.', language: 'pt-BR', tags: ['ai', 'strategy', 'models'], sourceMetadata: {}, quality: { completeness: 70, freshness: 85, consistency: 80 }, validatedAt: null, createdAt: '2026-02-01T10:00:00Z',
     content: `# Estratégia de AI — AIOX
 
 ## Política de Modelos
@@ -251,6 +303,7 @@ Cada modelo é avaliado em 5 dimensões:
     id: 'doc-kpis',
     name: 'KPIs Operacionais',
     type: 'generic',
+    spaceId: null, sourceId: 'src-gdrive', contentHash: 'h8i9j0k1', summary: 'KPIs de growth, product, engineering e marketing.', language: 'pt-BR', tags: ['kpis', 'operations'], sourceMetadata: {}, quality: { completeness: 50, freshness: 60, consistency: 75 }, validatedAt: null, createdAt: '2026-02-10T10:00:00Z',
     content: `# KPIs — AIOX Operations
 
 ## Growth
@@ -289,6 +342,7 @@ Cada modelo é avaliado em 5 dimensões:
     id: 'doc-campaign-ativacao',
     name: 'Campaign Brief — Ativação Q1',
     type: 'strategy',
+    spaceId: 'sp-aex-pro', sourceId: null, contentHash: 'i9j0k1l2', summary: 'Brief de campanha de ativacao enterprise Q1.', language: 'pt-BR', tags: ['campaign', 'enterprise', 'Q1'], sourceMetadata: {}, quality: { completeness: 90, freshness: 90, consistency: 85 }, validatedAt: '2026-03-10T10:00:00Z', createdAt: '2026-02-20T10:00:00Z',
     content: `# Campaign Brief — Ativação Q1 2025
 
 ## Objetivo
@@ -329,6 +383,7 @@ Lançar campanha de ativação para novos leads enterprise no Q1.
     id: 'doc-dcp',
     name: 'DCP — Diagnóstico de Competências',
     type: 'diagnostic',
+    spaceId: null, sourceId: null, contentHash: 'j0k1l2m3', summary: 'Diagnostico de competencias em 5 areas com gaps e recomendacoes.', language: 'pt-BR', tags: ['diagnostic', 'competencies'], sourceMetadata: {}, quality: { completeness: 85, freshness: 65, consistency: 90 }, validatedAt: '2026-02-28T12:00:00Z', createdAt: '2026-02-01T10:00:00Z',
     content: `# DCP — Diagnóstico de Competências e Processos
 
 ## Áreas Avaliadas
@@ -364,12 +419,19 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
   {
     id: 'ws-aiox',
     name: 'AIOX',
+    slug: 'aiox',
     icon: 'Landmark',
+    description: 'Workspace principal da AIOX — dados de negocio, produtos, campanhas e brand.',
     status: 'active',
+    settings: { aiModel: 'claude-sonnet-4-6', freshnessThresholdDays: 30, autoClassify: true, contextPackageMaxTokens: 8000 },
+    spacesCount: 3,
+    sourcesCount: 3,
     documentsCount: 23,
     templatesCount: 18,
+    totalTokens: 5763,
     healthPercent: 89,
     lastUpdated: '2026-03-10T10:00:00Z',
+    createdAt: '2026-01-15T10:00:00Z',
     categories: [
       {
         id: 'company',
@@ -572,12 +634,19 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
   {
     id: 'ws-academia',
     name: 'Academia IOX',
+    slug: 'academia-iox',
     icon: 'BookOpen',
+    description: 'Workspace da Academia IOX — cursos, conteudo e comunidade.',
     status: 'setup',
+    settings: { aiModel: 'claude-sonnet-4-6', freshnessThresholdDays: 30, autoClassify: true, contextPackageMaxTokens: 8000 },
+    spacesCount: 0,
+    sourcesCount: 0,
     documentsCount: 12,
     templatesCount: 8,
+    totalTokens: 2091,
     healthPercent: 45,
     lastUpdated: '2026-03-08T09:00:00Z',
+    createdAt: '2026-03-08T09:00:00Z',
     categories: [
       { id: 'company', name: 'Company', icon: 'Landmark', color: 'purple', status: 'partial', items: [
         { id: 'i-acad-dna', name: 'DNA Academia', type: 'diagnostic', status: 'validated', tokenCount: 567, lastUpdated: '2026-03-07T10:00:00Z', documentId: '' },
@@ -612,6 +681,94 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
     ],
     taxonomySections: [],
     csuitePersonas: [],
+  },
+];
+
+// ── Mock Spaces ──
+
+export const MOCK_SPACES: VaultSpace[] = [
+  {
+    id: 'sp-aex-pro',
+    workspaceId: 'ws-aiox',
+    name: 'AEX Pro',
+    slug: 'aex-pro',
+    icon: 'Rocket',
+    description: 'Produto principal — plataforma de AI para empresas.',
+    status: 'active',
+    documentsCount: 6,
+    totalTokens: 3780,
+    healthPercent: 92,
+    createdAt: '2026-01-20T10:00:00Z',
+    updatedAt: '2026-03-10T10:00:00Z',
+  },
+  {
+    id: 'sp-academia',
+    workspaceId: 'ws-aiox',
+    name: 'Academia IOX',
+    slug: 'academia-iox',
+    icon: 'GraduationCap',
+    description: 'Cursos e formacoes da AIOX Academy.',
+    status: 'active',
+    documentsCount: 3,
+    totalTokens: 1200,
+    healthPercent: 75,
+    createdAt: '2026-02-01T10:00:00Z',
+    updatedAt: '2026-03-08T09:00:00Z',
+  },
+  {
+    id: 'sp-community',
+    workspaceId: 'ws-aiox',
+    name: 'Community',
+    slug: 'community',
+    icon: 'Users',
+    description: 'Comunidade AIOX — membros, eventos e engajamento.',
+    status: 'active',
+    documentsCount: 2,
+    totalTokens: 783,
+    healthPercent: 60,
+    createdAt: '2026-02-15T10:00:00Z',
+    updatedAt: '2026-03-06T15:00:00Z',
+  },
+];
+
+// ── Mock Sources ──
+
+export const MOCK_SOURCES: DataSource[] = [
+  {
+    id: 'src-manual',
+    workspaceId: 'ws-aiox',
+    name: 'Manual Upload',
+    type: 'manual',
+    status: 'connected',
+    config: {},
+    lastSyncAt: null,
+    documentsCount: 7,
+    createdAt: '2026-01-15T10:00:00Z',
+    updatedAt: '2026-03-10T10:00:00Z',
+  },
+  {
+    id: 'src-gdrive',
+    workspaceId: 'ws-aiox',
+    name: 'Google Drive — Marketing',
+    type: 'google_drive',
+    status: 'disconnected',
+    config: { folderId: 'example-folder-id' },
+    lastSyncAt: '2026-03-01T09:00:00Z',
+    documentsCount: 3,
+    createdAt: '2026-02-01T10:00:00Z',
+    updatedAt: '2026-03-01T09:00:00Z',
+  },
+  {
+    id: 'src-claude',
+    workspaceId: 'ws-aiox',
+    name: 'Claude Memory',
+    type: 'claude_memory',
+    status: 'connected',
+    config: { containerTag: 'aios-master' },
+    lastSyncAt: '2026-03-10T08:00:00Z',
+    documentsCount: 0,
+    createdAt: '2026-02-15T10:00:00Z',
+    updatedAt: '2026-03-10T08:00:00Z',
   },
 ];
 

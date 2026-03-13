@@ -2,9 +2,10 @@ import { CockpitCard, Badge } from '../ui';
 import { useAgentAnalytics, useCommandAnalytics } from '../../hooks/useDashboard';
 import { useDashboardOverview } from '../../hooks/useDashboardOverview';
 import { useUIStore } from '../../stores/uiStore';
-import { cn } from '../../lib/utils';
+import { cn, formatRelativeTime } from '../../lib/utils';
 import { BarChart, ProgressRing } from './Charts';
 import { TerminalIcon } from './dashboard-icons';
+import { Activity, Zap, Clock, Terminal } from 'lucide-react';
 
 export function AgentsTab() {
   const { data: rawAgentAnalytics } = useAgentAnalytics();
@@ -40,7 +41,7 @@ export function AgentsTab() {
         <div className="space-y-3">
           {agentAnalytics?.slice(0, 8).map((agent, index) => (
             <div
-              key={agent.agentId}
+              key={`${agent.squad || index}-${agent.agentId}`}
               onClick={() => handleAgentClick(agent.agentId)}
               className="flex items-center justify-between p-3 rounded-none glass-subtle hover:bg-white/10 transition-colors cursor-pointer"
             >
@@ -48,13 +49,13 @@ export function AgentsTab() {
                 <span className="text-lg font-bold text-tertiary w-6">#{index + 1}</span>
                 <div className="min-w-0">
                   <p className="text-primary font-medium truncate">{agent.agentName}</p>
-                  <p className="text-xs text-tertiary">{agent.squad}</p>
+                  <p className="type-label text-tertiary">{agent.squad}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 flex-shrink-0">
                 <div className="text-right">
                   <p className="text-primary font-semibold">{agent.totalExecutions}</p>
-                  <p className="text-[10px] text-tertiary">execuções</p>
+                  <p className="type-micro text-tertiary">execuções</p>
                 </div>
                 <div className="text-right">
                   <p className={cn(
@@ -63,11 +64,11 @@ export function AgentsTab() {
                   )}>
                     {agent.successRate.toFixed(0)}%
                   </p>
-                  <p className="text-[10px] text-tertiary">sucesso</p>
+                  <p className="type-micro text-tertiary">sucesso</p>
                 </div>
                 <div className="text-right hidden sm:block">
                   <p className="text-secondary font-medium">{agent.avgResponseTime.toFixed(1)}s</p>
-                  <p className="text-[10px] text-tertiary">avg time</p>
+                  <p className="type-micro text-tertiary">avg time</p>
                 </div>
               </div>
             </div>
@@ -78,32 +79,85 @@ export function AgentsTab() {
         </div>
       </CockpitCard>
 
-      {/* Agent Definitions (from filesystem) */}
+      {/* Agent Cards (enriched with analytics) */}
       {dashAgents && dashAgents.length > 0 && (
         <CockpitCard>
-          <h2 className="font-semibold text-primary mb-4">Agent Definitions</h2>
+          <h2 className="font-semibold text-primary mb-4">Agent Roster</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {dashAgents.map((agent) => (
-              <div
-                key={agent.agentId}
-                className="p-3 rounded-none glass-subtle flex items-center justify-between"
-              >
-                <div className="min-w-0">
-                  <p className="text-primary font-medium truncate">{agent.agentName}</p>
-                  <p className="text-xs text-tertiary truncate">{agent.role}</p>
+            {dashAgents.map((agent) => {
+              const analytics = agentAnalytics?.find(a => a.agentId === agent.agentId);
+              const topCmd = analytics && 'topCommands' in analytics
+                ? (analytics as { topCommands?: { command: string; count: number }[] }).topCommands?.[0]
+                : undefined;
+              const tokens = analytics && 'avgTokens' in analytics
+                ? (analytics as { avgTokens?: number }).avgTokens
+                : undefined;
+
+              return (
+                <div
+                  key={`${agent.squad || 'def'}-${agent.agentId}`}
+                  onClick={() => handleAgentClick(agent.agentId)}
+                  className={cn(
+                    'p-3 rounded-none glass-subtle cursor-pointer hover:bg-white/10 transition-colors',
+                    'border-l-2',
+                    agent.status === 'active' ? 'border-l-[var(--color-status-success)]' : agent.status === 'idle' ? 'border-l-[var(--bb-warning)]' : 'border-l-[var(--aiox-gray-dim)]',
+                  )}
+                >
+                  {/* Row 1: Name + Status + Model */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className={cn(
+                        'inline-block w-1.5 h-1.5 rounded-full flex-shrink-0',
+                        agent.status === 'active' ? 'bg-[var(--color-status-success)] shadow-[0_0_4px_var(--color-status-success)]' : agent.status === 'idle' ? 'bg-[var(--bb-warning)]' : 'bg-[var(--aiox-gray-dim)]',
+                      )} />
+                      <span className="text-sm font-medium text-primary truncate">{agent.agentName}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <Badge variant="count" size="sm">{agent.model}</Badge>
+                      <span className={cn(
+                        'text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5',
+                        agent.status === 'active' ? 'text-[var(--color-status-success)] bg-[var(--color-status-success)]/10' : agent.status === 'idle' ? 'text-[var(--bb-warning)] bg-[var(--bb-warning)]/10' : 'text-[var(--aiox-gray-dim)] bg-white/5',
+                      )}>
+                        {agent.status === 'active' ? 'ATIVO' : agent.status === 'idle' ? 'IDLE' : 'OFF'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Role */}
+                  <p className="type-label text-tertiary truncate mb-2">{agent.role}</p>
+
+                  {/* Row 3: Metrics bar */}
+                  <div className="flex items-center gap-3 text-[10px] font-mono text-secondary">
+                    {analytics?.totalExecutions != null && analytics.totalExecutions > 0 && (
+                      <span className="flex items-center gap-1" title="Execuções">
+                        <Zap size={10} className="text-tertiary" />
+                        {analytics.totalExecutions}
+                      </span>
+                    )}
+                    {tokens != null && tokens > 0 && (
+                      <span className="flex items-center gap-1" title="Avg tokens">
+                        <Activity size={10} className="text-tertiary" />
+                        {tokens > 1000 ? `${(tokens / 1000).toFixed(1)}k` : tokens}
+                      </span>
+                    )}
+                    {topCmd && (
+                      <span className="flex items-center gap-1 truncate" title="Top command">
+                        <Terminal size={10} className="text-tertiary" />
+                        <span className="truncate">{topCmd.command}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Row 4: Last active */}
+                  {agent.lastActive && (
+                    <div className="flex items-center gap-1 mt-2 text-[10px] font-mono text-tertiary">
+                      <Clock size={9} />
+                      <span>{formatRelativeTime(agent.lastActive)}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <Badge variant="count" size="sm">{agent.model}</Badge>
-                  <Badge
-                    variant="status"
-                    status={agent.status === 'active' ? 'online' : agent.status === 'idle' ? 'warning' : 'offline'}
-                    size="sm"
-                  >
-                    {agent.status === 'active' ? 'Ativo' : agent.status === 'idle' ? 'Idle' : 'Off'}
-                  </Badge>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CockpitCard>
       )}
@@ -136,7 +190,7 @@ export function AgentsTab() {
                   <span className="text-sm text-primary">{cmd.command}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-tertiary">{cmd.avgDuration.toFixed(1)}s</span>
+                  <span className="type-label text-tertiary">{cmd.avgDuration.toFixed(1)}s</span>
                   <ProgressRing value={cmd.successRate} size={32} thickness={3} />
                 </div>
               </div>

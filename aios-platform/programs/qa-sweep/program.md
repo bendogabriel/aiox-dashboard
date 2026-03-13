@@ -2,8 +2,8 @@
 name: "QA Sweep"
 version: "1.0.0"
 type: "qa-sweep"
-squad_id: "engineering"
-agent_id: "qa"
+squad_id: "full-stack-dev"
+agent_id: "qa-chief"
 
 editable_scope:
   - "src/**/*.ts"
@@ -49,20 +49,20 @@ enabled: true
 
 Eliminar todos os erros de tipo TypeScript do codebase, um por vez.
 
-## Estrategia
+## Estratégia
 
 1. Execute `npx tsc --noEmit` para listar erros atuais
 2. Identifique o erro MAIS SIMPLES de corrigir
-3. Corrija apenas AQUELE erro (uma mudanca atomica)
-4. Verifique que a correcao nao introduz novos erros
+3. Corrija apenas AQUELE erro (uma mudança atomica)
+4. Verifique que a correcao não introduz novos erros
 
 ## Prioridade de Correcao
 
 1. **Missing types** — adicionar tipo onde esta faltando
 2. **Incorrect types** — corrigir tipo errado
-3. **Unused variables** — remover variaveis nao usadas
+3. **Unused variables** — remover variaveis não usadas
 4. **Implicit any** — adicionar tipos explicitos
-5. **Null checks** — adicionar null guards onde necessario
+5. **Null checks** — adicionar null guards onde necessário
 
 ## Regras
 
@@ -70,7 +70,7 @@ Eliminar todos os erros de tipo TypeScript do codebase, um por vez.
 - NUNCA use `@ts-ignore` ou `@ts-nocheck`
 - NUNCA use `as any` para esconder erros
 - Prefira correcoes que melhoram a type safety real
-- Consulte o Experiment History para nao repetir tentativas
+- Consulte o Experiment History para não repetir tentativas
 
 ## Formato
 

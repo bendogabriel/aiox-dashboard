@@ -29,7 +29,6 @@ export const CockpitButton = forwardRef<HTMLButtonElement, CockpitButtonProps>(
     const [focused, setFocused] = useState(false)
 
     const base: React.CSSProperties = {
-      display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
       gap: '0.5rem',
@@ -64,7 +63,7 @@ export const CockpitButton = forwardRef<HTMLButtonElement, CockpitButtonProps>(
     return (
       <button
         ref={ref}
-        className={cn(className)}
+        className={cn('inline-flex', className)}
         style={{ ...base, ...sizes[size], ...variants[variant] }}
         disabled={isDisabled}
         onFocus={(e) => { setFocused(true); props.onFocus?.(e) }}

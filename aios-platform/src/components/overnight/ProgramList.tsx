@@ -128,7 +128,7 @@ export default function ProgramList({ programs, searchQuery, onSelectProgram }: 
                     <span className="text-lg font-mono font-bold text-[var(--color-status-success)]">
                       -{improvement.toFixed(1)}%
                     </span>
-                    <p className="text-[10px] text-tertiary uppercase tracking-wide">improvement</p>
+                    <p className="type-micro text-tertiary">improvement</p>
                   </div>
                 )}
               </div>

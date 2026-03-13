@@ -43,7 +43,7 @@ export function Header() {
   const globalSearch = useGlobalSearch();
 
   return (
-    <header aria-label="Cabecalho principal" className="h-16 px-4 md:px-6 flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-primary)] gap-4 relative z-50">
+    <header aria-label="Cabecalho principal" className="h-16 px-4 md:px-6 flex items-center justify-between border-b border-[var(--color-border-default)] surface-base gap-4 relative z-50">
       {/* Mobile Menu Button */}
       <MobileMenuButton />
 

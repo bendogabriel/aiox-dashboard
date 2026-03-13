@@ -69,7 +69,7 @@ export function DashboardSettings() {
         <div className="grid grid-cols-2 gap-3">
           {agentColors.map((agent) => (
             <div
-              key={agent.id}
+              key={`${agent.squad}-${agent.id}`}
               className="flex items-center gap-3 p-3 rounded-none glass-subtle"
             >
               <input

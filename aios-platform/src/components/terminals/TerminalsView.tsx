@@ -117,7 +117,7 @@ export default function TerminalsView() {
       <div className="flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
           <Terminal className="h-5 w-5 text-primary" />
-          <h1 className="heading-display text-xl font-semibold text-primary">Terminals</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary type-h2">Terminals</h1>
           <Badge variant="default" size="sm">
             {sessionCount} sessions
           </Badge>

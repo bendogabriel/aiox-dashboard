@@ -63,7 +63,7 @@ export default function GitHubView() {
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="heading-display text-xl font-semibold text-primary">GitHub</h1>
+            <h1 className="heading-display text-xl font-semibold text-primary type-h2">GitHub</h1>
             <SourceBadge source={data.source} />
           </div>
           <p className="text-secondary text-sm mt-0.5">

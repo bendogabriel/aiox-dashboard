@@ -1,23 +1,112 @@
-// ── Vault Types ──
+// ── Vault SSOT Types — Phase 1 ──
 
-// Workspace
+// ── Workspace ──
+
+export interface WorkspaceSettings {
+  aiModel: string;
+  freshnessThresholdDays: number;
+  autoClassify: boolean;
+  contextPackageMaxTokens: number;
+}
+
 export interface VaultWorkspace {
   id: string;
   name: string;
+  slug: string;
   icon: string;
+  description: string;
   status: 'active' | 'setup' | 'inactive';
+  settings: WorkspaceSettings;
+  spacesCount: number;
+  sourcesCount: number;
   documentsCount: number;
   templatesCount: number;
+  totalTokens: number;
   healthPercent: number;
   lastUpdated: string;
+  createdAt: string;
+  // Legacy embedded data (kept for backward compat with existing UI)
   categories: DataCategory[];
   templateGroups: TemplateGroup[];
   taxonomySections: TaxonomySection[];
   csuitePersonas: CSuitePersona[];
 }
 
-// Data Categories (Company, Products, Campaigns, Brand, Tech, Operations)
-export type DataCategoryId = 'company' | 'products' | 'campaigns' | 'brand' | 'tech' | 'operations';
+// ── Space ──
+
+export interface VaultSpace {
+  id: string;
+  workspaceId: string;
+  name: string;
+  slug: string;
+  icon: string;
+  description: string;
+  status: 'active' | 'archived';
+  documentsCount: number;
+  totalTokens: number;
+  healthPercent: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ── Source ──
+
+export type SourceType = 'manual' | 'google_drive' | 'notion' | 'claude_memory' | 'api' | 'file_upload';
+export type SourceStatus = 'connected' | 'disconnected' | 'syncing' | 'error';
+
+export interface DataSource {
+  id: string;
+  workspaceId: string;
+  name: string;
+  type: SourceType;
+  status: SourceStatus;
+  config: Record<string, unknown>;
+  lastSyncAt: string | null;
+  documentsCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ── Document ──
+
+export type DocumentStatus = 'raw' | 'draft' | 'validated' | 'stale' | 'archived';
+export type DocumentType = 'offerbook' | 'brand' | 'narrative' | 'strategy' | 'diagnostic' | 'proof' | 'template' | 'generic' | 'sop' | 'reference' | 'raw';
+
+export interface DocumentQuality {
+  completeness: number;    // 0-100
+  freshness: number;       // 0-100
+  consistency: number;     // 0-100
+}
+
+export interface VaultDocument {
+  id: string;
+  workspaceId: string;
+  spaceId: string | null;
+  sourceId: string | null;
+  name: string;
+  type: DocumentType;
+  content: string;
+  contentHash: string;
+  summary: string;
+  language: string;
+  status: DocumentStatus;
+  tokenCount: number;
+  tags: string[];
+  sourceMetadata: Record<string, unknown>;
+  quality: DocumentQuality;
+  validatedAt: string | null;
+  lastUpdated: string;
+  createdAt: string;
+  // Legacy fields (backward compat)
+  source: string;
+  taxonomy: string;
+  consumers: string[];
+  categoryId: string;
+}
+
+// ── Data Categories ──
+
+export type DataCategoryId = 'company' | 'products' | 'campaigns' | 'brand' | 'tech' | 'operations' | 'market' | 'finance' | 'legal' | 'people';
 
 export interface DataCategory {
   id: DataCategoryId;
@@ -44,7 +133,8 @@ export interface CampaignItem extends DataItem {
   operationNotes?: string;
 }
 
-// Templates
+// ── Templates ──
+
 export interface TemplateGroup {
   id: string;
   name: string;
@@ -61,7 +151,8 @@ export interface TemplateItem {
   lastUpdated?: string;
 }
 
-// Taxonomies
+// ── Taxonomy ──
+
 export interface TaxonomyNode {
   id: string;
   name: string;
@@ -78,7 +169,8 @@ export interface TaxonomySection {
   nodes: TaxonomyNode[];
 }
 
-// C-Suite Cerebral
+// ── C-Suite ──
+
 export interface CSuitePersona {
   id: string;
   name: string;
@@ -89,24 +181,56 @@ export interface CSuitePersona {
   isActive: boolean;
 }
 
-// Documents
-export interface VaultDocument {
+// ── Sync ──
+
+export interface SyncJob {
   id: string;
-  name: string;
-  type: 'offerbook' | 'brand' | 'narrative' | 'strategy' | 'diagnostic' | 'proof' | 'template' | 'generic';
-  content: string;
-  status: 'validated' | 'draft' | 'outdated';
-  tokenCount: number;
-  source: string;
-  taxonomy: string;
-  consumers: string[];
-  lastUpdated: string;
-  categoryId: string;
-  workspaceId: string;
+  sourceId: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  documentsProcessed: number;
+  documentsTotal: number;
+  startedAt: string | null;
+  completedAt: string | null;
+  error: string | null;
+  createdAt: string;
 }
 
-// Activity Feed
-export type VaultActivityType = 'taxonomy_updated' | 'template_created' | 'document_ingested' | 'workspace_created' | 'document_validated' | 'csuite_activated';
+export interface FieldMapping {
+  id: string;
+  sourceId: string;
+  sourceField: string;
+  targetField: string;
+  transform: string | null;
+}
+
+// ── Context Package ──
+
+export interface ContextPackage {
+  id: string;
+  workspaceId: string;
+  name: string;
+  slug: string;
+  description: string;
+  documentIds: string[];
+  totalTokens: number;
+  maxTokens: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ── Activity Feed ──
+
+export type VaultActivityType =
+  | 'taxonomy_updated'
+  | 'template_created'
+  | 'document_ingested'
+  | 'workspace_created'
+  | 'document_validated'
+  | 'csuite_activated'
+  | 'space_created'
+  | 'source_connected'
+  | 'document_uploaded'
+  | 'sync_completed';
 
 export interface VaultActivity {
   id: string;
@@ -116,21 +240,29 @@ export interface VaultActivity {
   workspaceId: string;
 }
 
-// Store State
-export type VaultTab = 'dados' | 'templates' | 'taxonomias' | 'csuite';
+// ── Store State ──
+
+export type VaultTab = 'overview' | 'spaces' | 'sources' | 'documents' | 'taxonomy' | 'packages' | 'templates';
 
 export interface VaultState {
   workspaces: VaultWorkspace[];
   documents: VaultDocument[];
+  spaces: VaultSpace[];
+  sources: DataSource[];
   activities: VaultActivity[];
   selectedWorkspaceId: string | null;
   selectedDocumentId: string | null;
+  selectedSpaceId: string | null;
   activeTab: VaultTab;
   level: 1 | 2 | 3;
   // Actions
   selectWorkspace: (id: string) => void;
   selectDocument: (id: string) => void;
+  selectSpace: (id: string | null) => void;
   setActiveTab: (tab: VaultTab) => void;
   goBack: () => void;
   updateDocument: (id: string, content: string) => void;
+  createDocument: (data: Partial<VaultDocument>) => Promise<void>;
+  uploadDocuments: (files: File[], workspaceId: string) => Promise<void>;
+  pasteContent: (data: { content: string; name: string; workspaceId: string; spaceId?: string; category?: string }) => Promise<void>;
 }

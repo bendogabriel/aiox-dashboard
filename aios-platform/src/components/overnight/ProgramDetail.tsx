@@ -274,19 +274,19 @@ export default function ProgramDetail({ program }: ProgramDetailProps) {
       <CockpitCard padding="sm" variant="subtle">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-tertiary">
           <div>
-            <span className="block text-[10px] uppercase tracking-wide mb-0.5">Created</span>
+            <span className="block type-micro mb-0.5">Created</span>
             <span className="text-secondary">{formatDate(program.createdAt)}</span>
           </div>
           <div>
-            <span className="block text-[10px] uppercase tracking-wide mb-0.5">Started</span>
+            <span className="block type-micro mb-0.5">Started</span>
             <span className="text-secondary">{formatDate(program.startedAt)}</span>
           </div>
           <div>
-            <span className="block text-[10px] uppercase tracking-wide mb-0.5">Completed</span>
+            <span className="block type-micro mb-0.5">Completed</span>
             <span className="text-secondary">{formatDate(program.completedAt)}</span>
           </div>
           <div>
-            <span className="block text-[10px] uppercase tracking-wide mb-0.5">Convergence</span>
+            <span className="block type-micro mb-0.5">Convergence</span>
             <span className="text-secondary">
               {program.convergenceReason?.replace(/_/g, ' ') ?? '--'}
             </span>

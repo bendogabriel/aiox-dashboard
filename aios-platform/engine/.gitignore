@@ -1,0 +1,6 @@
+node_modules/
+dist/
+engine.db
+engine.db-wal
+engine.db-shm
+*.log

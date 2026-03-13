@@ -134,7 +134,7 @@ export const LiveMetricCard = memo(function LiveMetricCard({
             >
               {icon}
             </div>
-            <span className="text-[11px] text-secondary font-medium truncate">{label}</span>
+            <span className="type-label text-secondary font-medium truncate">{label}</span>
             {isLive && (
               <div
                 className="w-1.5 h-1.5 rounded-full flex-shrink-0"
@@ -149,21 +149,19 @@ export const LiveMetricCard = memo(function LiveMetricCard({
             <AnimatedNumber value={value} format={format} prefix={prefix} suffix={suffix} />
           </div>
 
-          {/* Trend */}
-          {(trend || trendValue) && (
-            <div className="flex items-center gap-1 mt-1.5">
-              {trend && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={trendColor} strokeWidth="2.5">
-                  <path d={trendIcon} />
-                </svg>
-              )}
-              {trendValue && (
-                <span className="text-[10px] font-medium" style={{ color: trendColor }}>
-                  {trendValue}
-                </span>
-              )}
-            </div>
-          )}
+          {/* Trend — always render row for consistent height */}
+          <div className="flex items-center gap-1 mt-1.5 min-h-[16px]">
+            {trend && (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={trendColor} strokeWidth="2.5">
+                <path d={trendIcon} />
+              </svg>
+            )}
+            {trendValue && (
+              <span className="text-[10px] font-medium" style={{ color: trendColor }}>
+                {trendValue}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Sparkline */}

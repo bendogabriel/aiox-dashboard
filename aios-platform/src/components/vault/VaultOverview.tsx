@@ -1,4 +1,4 @@
-import { Shield, FileText, Layout, Plus } from 'lucide-react';
+import { Shield, FileText, Layout, Plus, Cloud } from 'lucide-react';
 import { CockpitCard, CockpitButton, Badge, ProgressBar } from '../ui';
 import { cn } from '../../lib/utils';
 import { getIconComponent } from '../../lib/icons';
@@ -30,6 +30,10 @@ const activityTypeColors: Record<VaultActivityType, string> = {
   document_validated: 'text-[var(--color-status-success)]',
   workspace_created: 'text-[var(--bb-warning)]',
   csuite_activated: 'text-[var(--bb-flare)]',
+  space_created: 'text-[var(--aiox-blue)]',
+  source_connected: 'text-[var(--color-status-success)]',
+  document_uploaded: 'text-[var(--aiox-gray-muted)]',
+  sync_completed: 'text-[var(--color-status-success)]',
 };
 
 const activityDotBg: Record<VaultActivityType, string> = {
@@ -39,6 +43,10 @@ const activityDotBg: Record<VaultActivityType, string> = {
   document_validated: 'bg-[var(--color-status-success)]',
   workspace_created: 'bg-[var(--bb-warning)]',
   csuite_activated: 'bg-[var(--bb-flare)]',
+  space_created: 'bg-[var(--aiox-blue)]',
+  source_connected: 'bg-[var(--color-status-success)]',
+  document_uploaded: 'bg-[var(--aiox-gray-muted)]',
+  sync_completed: 'bg-[var(--color-status-success)]',
 };
 
 const statusBadge: Record<VaultWorkspace['status'], { label: string; status: 'success' | 'warning' | 'offline' }> = {
@@ -56,7 +64,7 @@ const healthVariant = (percent: number): 'success' | 'warning' | 'error' => {
 // ── Component ──
 
 export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: VaultOverviewProps) {
-  const { workspaces, activities } = useVaultStore();
+  const { workspaces, activities, sources } = useVaultStore();
 
   const filteredWorkspaces = searchQuery
     ? workspaces.filter((w) => w.name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -65,12 +73,13 @@ export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: V
   const hasEnterprise = workspaces.some((w) => w.status === 'active');
   const totalDocs = workspaces.reduce((sum, w) => sum + w.documentsCount, 0);
   const totalTemplates = workspaces.reduce((sum, w) => sum + w.templatesCount, 0);
+  const totalSources = sources.length;
   const recentActivities = activities.slice(0, 6);
 
   return (
     <div className="space-y-6">
       {/* ── KPI Cards ── */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <CockpitCard padding="sm" aria-label="Enterprise status">
           <div className="flex items-center gap-3">
             <div className={cn(
@@ -114,6 +123,18 @@ export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: V
             </div>
           </div>
         </CockpitCard>
+
+        <CockpitCard padding="sm" aria-label="Data sources">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--bb-flare)]/15 text-[var(--bb-flare)]">
+              <Cloud className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-tertiary truncate">Sources</p>
+              <p className="text-sm font-semibold text-primary">{totalSources}</p>
+            </div>
+          </div>
+        </CockpitCard>
       </div>
 
       {/* ── Workspaces ── */}
@@ -148,7 +169,7 @@ export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: V
                 </div>
 
                 <p className="text-xs text-tertiary mb-2">
-                  {ws.documentsCount} docs
+                  {ws.documentsCount} docs{ws.spacesCount ? ` · ${ws.spacesCount} spaces` : ''}{ws.sourcesCount ? ` · ${ws.sourcesCount} sources` : ''}
                 </p>
 
                 <ProgressBar

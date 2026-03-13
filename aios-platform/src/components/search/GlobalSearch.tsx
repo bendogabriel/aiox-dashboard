@@ -348,7 +348,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
 
                             return (
                               <button
-                                key={agent.id}
+                                key={`${agent.squad}-${agent.id}`}
                                 data-index={globalIndex}
                                 onClick={() => handleSelectAgent(agent)}
                                 className={cn(

@@ -34,7 +34,7 @@ export function CostsTab() {
       {/* Cost Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <CockpitCard className="bg-gradient-to-br from-[var(--color-status-success)]/10 to-transparent border-[var(--color-status-success)]/20">
-          <p className="text-sm text-secondary mb-1">Hoje</p>
+          <p className="type-label text-secondary mb-1">Hoje</p>
           <p className="text-lg font-bold text-primary">${(costSummary?.today ?? 0).toFixed(2)}</p>
           <div className="flex items-center gap-1 mt-2 text-xs text-[var(--color-status-success)]">
             <TrendUpIcon />
@@ -43,12 +43,12 @@ export function CostsTab() {
         </CockpitCard>
 
         <CockpitCard className="bg-gradient-to-br from-[var(--aiox-blue)]/10 to-transparent border-[var(--aiox-blue)]/20">
-          <p className="text-sm text-secondary mb-1">Esta Semana</p>
+          <p className="type-label text-secondary mb-1">Esta Semana</p>
           <p className="text-lg font-bold text-primary">${(costSummary?.thisWeek ?? 0).toFixed(2)}</p>
         </CockpitCard>
 
         <CockpitCard className="bg-gradient-to-br from-[var(--aiox-gray-muted)]/10 to-transparent border-[var(--aiox-gray-muted)]/20">
-          <p className="text-sm text-secondary mb-1">Este Mês</p>
+          <p className="type-label text-secondary mb-1">Este Mês</p>
           <p className="text-lg font-bold text-primary">${(costSummary?.thisMonth ?? 0).toFixed(2)}</p>
         </CockpitCard>
       </div>
