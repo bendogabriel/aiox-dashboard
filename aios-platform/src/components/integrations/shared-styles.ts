@@ -40,9 +40,9 @@ export const primaryBtnStyle: React.CSSProperties = {
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
   fontWeight: 600,
-  background: 'var(--aiox-lime, #D1FF00)',
-  color: 'var(--aiox-dark, #050505)',
-  border: '1px solid var(--aiox-lime, #D1FF00)',
+  background: 'rgba(255, 255, 255, 0.06)',
+  color: 'var(--aiox-cream, #E5E5E5)',
+  border: '1px solid rgba(255, 255, 255, 0.15)',
   cursor: 'pointer',
 };
 
@@ -57,7 +57,7 @@ export const statusBoxStyle = (ok: boolean): React.CSSProperties => ({
   padding: '10px 12px',
   fontSize: '12px',
   fontFamily: 'var(--font-family-mono)',
-  background: ok ? 'rgba(209,255,0,0.06)' : 'rgba(239,68,68,0.06)',
-  border: `1px solid ${ok ? 'rgba(209,255,0,0.2)' : 'rgba(239,68,68,0.2)'}`,
-  color: ok ? 'var(--aiox-lime)' : 'var(--color-status-error)',
+  background: ok ? 'rgba(74, 222, 128, 0.06)' : 'rgba(239,68,68,0.06)',
+  border: `1px solid ${ok ? 'rgba(74, 222, 128, 0.15)' : 'rgba(239,68,68,0.2)'}`,
+  color: ok ? 'var(--color-status-success, #4ADE80)' : 'var(--color-status-error)',
 });

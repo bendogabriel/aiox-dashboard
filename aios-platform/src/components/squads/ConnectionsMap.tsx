@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import type { AgentSummary, AgentTier } from '../../types';
 
 interface Connection {
@@ -71,10 +70,7 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
   const nodeMap = new Map(layout.map((n) => [n.agent.id, n]));
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
+    <div
       className="w-full overflow-x-auto"
     >
       <svg
@@ -126,7 +122,7 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
           const endY = to.y - (dy / dist) * (nodeRadius + 8);
 
           return (
-            <motion.line
+            <line
               key={`${conn.from}-${conn.to}-${i}`}
               x1={startX}
               y1={startY}
@@ -136,9 +132,6 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
               strokeWidth={isHandoff ? 1.5 : 1}
               strokeDasharray={isHandoff ? 'none' : '4 4'}
               markerEnd={isHandoff ? 'url(#arrow-solid)' : 'url(#arrow-dashed)'}
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ delay: 0.3 + i * 0.05, duration: 0.4 }}
             />
           );
         })}
@@ -154,11 +147,8 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
             .toUpperCase();
 
           return (
-            <motion.g
+            <g
               key={node.agent.id}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.06, duration: 0.3 }}
               style={{ transformOrigin: `${node.x}px ${node.y}px` }}
             >
               <circle
@@ -190,7 +180,7 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
               >
                 {node.agent.name}
               </text>
-            </motion.g>
+            </g>
           );
         })}
       </svg>
@@ -206,18 +196,18 @@ export function ConnectionsMap({ agents, connections }: ConnectionsMapProps) {
           <span>Receives</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-purple-500/30 border border-purple-500" />
+          <div className="w-3 h-3 rounded-full bg-[var(--aiox-gray-muted)]/30 border border-[var(--aiox-gray-muted)]" />
           <span>T0</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-blue-500/30 border border-blue-500" />
+          <div className="w-3 h-3 rounded-full bg-[var(--aiox-blue)]/30 border border-[var(--aiox-blue)]" />
           <span>T1</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-green-500/30 border border-green-500" />
+          <div className="w-3 h-3 rounded-full bg-[var(--color-status-success)]/30 border border-[var(--color-status-success)]" />
           <span>T2</span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

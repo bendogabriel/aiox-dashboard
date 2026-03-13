@@ -1,40 +1,24 @@
 import { useQuery } from '@tanstack/react-query';
 import { squadsApi } from '../services/api';
-import type { Squad, SquadDetail, SquadStats, EcosystemOverview, SquadType } from '../types';
+import { useEngineStore } from '../stores/engineStore';
+import type { Squad, SquadDetail, SquadStats, EcosystemOverview } from '../types';
+import { getSquadType } from '../types';
 import type { AgentConnection } from '../mocks/squads';
 import { mockConnections } from '../mocks/squads';
 
-// Map squad ID or domain to UI SquadType (updated 2026-02-06)
-function inferSquadType(squad: Squad): SquadType {
-  const id = squad.id.toLowerCase();
-  const domain = squad.domain?.toLowerCase() || '';
-
-  // Check by ID first
-  if (id.includes('copy') || id.includes('sales') || id.includes('media-buy') || id.includes('funnel')) return 'copywriting';
-  if (id.includes('design') || id.includes('creative-studio')) return 'design';
-  if (id.includes('content-ecosystem') || id.includes('youtube') || id.includes('dev') || id.includes('full-stack')) return 'creator';
-  if (id.includes('orquest') || id.includes('analytics') || id.includes('project') || id.includes('squad-creator') || id.includes('operations')) return 'orchestrator';
-
-  // Check by domain
-  if (domain.includes('copy') || domain.includes('sales') || domain.includes('communication') || domain.includes('advertising')) return 'copywriting';
-  if (domain.includes('design') || domain.includes('visual')) return 'design';
-  if (domain.includes('engineering') || domain.includes('video') || domain.includes('content')) return 'creator';
-  if (domain.includes('orchestration') || domain.includes('analytics') || domain.includes('project') || domain.includes('operations')) return 'orchestrator';
-
-  return 'default';
-}
-
-// Enrich squad with UI type
+// Enrich squad with UI type — delegates to centralized getSquadType() with domain fallback
 function enrichSquad(squad: Squad): Squad {
   return {
     ...squad,
-    type: squad.type || inferSquadType(squad),
+    type: squad.type || getSquadType(squad.id, squad.domain),
   };
 }
 
 export function useSquads() {
+  // Include engine status in queryKey so squads refetch when engine comes online
+  const engineStatus = useEngineStore((s) => s.status);
   return useQuery<Squad[]>({
-    queryKey: ['squads'],
+    queryKey: ['squads', engineStatus],
     queryFn: async () => {
       const squads = await squadsApi.getSquads();
       return squads.map(enrichSquad);

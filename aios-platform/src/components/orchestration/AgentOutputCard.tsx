@@ -1,5 +1,4 @@
 import { useState, useEffect, memo, lazy, Suspense, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Loader2,
   Bot,
@@ -15,6 +14,7 @@ import type { AgentOutput, StreamingOutput, TaskArtifact } from './orchestration
 import { getSquadColor } from './orchestration-types';
 import { parseArtifacts } from '../../lib/artifact-parser';
 import { ArtifactCard } from './ArtifactCard';
+import { getAgentAvatarUrl } from '../../lib/agent-avatars';
 
 const MarkdownRenderer = lazy(() => import('../chat/MarkdownRenderer'));
 
@@ -95,28 +95,24 @@ export const AgentOutputCard = memo(function AgentOutputCard({
     : '0';
 
   return (
-    <motion.div
-      layout
-      initial={{ y: 20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className={`relative rounded-2xl border backdrop-blur-xl overflow-hidden ${
+    <div
+
+      className={`relative rounded-none border backdrop-blur-xl overflow-hidden ${
         isReviewer
-          ? 'bg-gradient-to-br from-yellow-500/10 via-amber-500/5 to-orange-500/10 border-yellow-500/30'
+          ? 'bg-gradient-to-br from-[var(--bb-warning)]/10 via-[var(--bb-warning)]/5 to-[var(--bb-flare)]/10 border-[var(--bb-warning)]/30'
           : isStreaming
-          ? 'bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-purple-500/10 border-cyan-500/30'
+          ? 'bg-gradient-to-br from-[var(--aiox-blue)]/10 via-[var(--aiox-blue)]/5 to-[var(--aiox-gray-muted)]/10 border-[var(--aiox-blue)]/30'
           : 'bg-white/5 border-white/10'
       }`}
     >
       {/* Streaming glow effect */}
       {isStreaming && (
-        <motion.div
+        <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background: `radial-gradient(circle at 50% 50%, ${color.glow}, transparent 70%)`,
           }}
-          animate={{ opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity }}
+
         />
       )}
 
@@ -124,28 +120,34 @@ export const AgentOutputCard = memo(function AgentOutputCard({
       <div className="relative flex items-center justify-between p-4">
         <div className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer" onClick={() => setExpanded(!expanded)}>
           <div className="relative">
-            <motion.div
-              className="w-12 h-12 rounded-xl flex items-center justify-center"
-              style={{ backgroundColor: color.bg, border: `2px solid ${color.border}` }}
-              animate={isStreaming ? { scale: [1, 1.05, 1] } : {}}
-              transition={{ duration: 1, repeat: Infinity }}
-            >
-              <Bot className="w-6 h-6" style={{ color: color.text }} />
-            </motion.div>
+            {getAgentAvatarUrl(data.agent.name) || getAgentAvatarUrl(data.agent.id) ? (
+              <img
+                src={getAgentAvatarUrl(data.agent.name) || getAgentAvatarUrl(data.agent.id)}
+                alt={data.agent.name}
+                className="w-12 h-12 rounded-none object-cover"
+                style={{ border: `2px solid ${color.border}` }}
+              />
+            ) : (
+              <div
+                className="w-12 h-12 rounded-none flex items-center justify-center"
+                style={{ backgroundColor: color.bg, border: `2px solid ${color.border}` }}
+              >
+                <Bot className="w-6 h-6" style={{ color: color.text }} />
+              </div>
+            )}
             {isStreaming && (
-              <motion.div
-                className="absolute -top-1 -right-1 w-4 h-4 bg-cyan-400 rounded-full"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.5, repeat: Infinity }}
+              <div
+                className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--aiox-blue)] rounded-full"
+
               />
             )}
             {data.role === 'reviewer' && (
-              <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
-                <Crown className="w-3 h-3 text-yellow-900" />
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--bb-warning)] rounded-full flex items-center justify-center">
+                <Crown className="w-3 h-3 text-black" />
               </div>
             )}
             {data.role === 'chief' && !isReviewer && (
-              <div className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--aiox-blue)] rounded-full flex items-center justify-center">
                 <Target className="w-3 h-3 text-white" />
               </div>
             )}
@@ -155,22 +157,21 @@ export const AgentOutputCard = memo(function AgentOutputCard({
             <div className="flex items-center gap-2">
               <h2 className="font-semibold text-white">{data.agent.name || data.agent.id}</h2>
               {isStreaming && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="px-2 py-0.5 rounded-full text-xs bg-cyan-500/20 text-cyan-400 flex items-center gap-1"
+                <span
+
+                  className="px-2 py-0.5 rounded-full text-xs bg-[var(--aiox-blue)]/20 text-[var(--aiox-blue)] flex items-center gap-1"
                 >
                   <Loader2 className="w-3 h-3 animate-spin" />
                   Gerando...
-                </motion.span>
+                </span>
               )}
               {isReviewer && (
-                <span className="px-2 py-0.5 rounded-full text-xs bg-yellow-500/20 text-yellow-400">
+                <span className="px-2 py-0.5 rounded-full text-xs bg-[var(--bb-warning)]/20 text-[var(--bb-warning)]">
                   Resultado Final
                 </span>
               )}
               {!isStreaming && hasNonProseArtifacts && (
-                <span className="px-2 py-0.5 rounded-full text-xs bg-cyan-500/10 text-cyan-400/70 flex items-center gap-1">
+                <span className="px-2 py-0.5 rounded-full text-xs bg-[var(--aiox-blue)]/10 text-[var(--aiox-blue)]/70 flex items-center gap-1">
                   <Package className="w-3 h-3" />
                   {artifacts.filter(a => a.type !== 'markdown').length} artefatos
                 </span>
@@ -194,20 +195,18 @@ export const AgentOutputCard = memo(function AgentOutputCard({
 
         <div className="flex items-center gap-2">
           {!isStreaming && (
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+            <button
+
               onClick={() => onCopy(response)}
               className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all"
               aria-label="Copiar tudo"
             >
-              {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-            </motion.button>
+              {copied ? <Check className="w-4 h-4 text-[var(--color-status-success)]" /> : <Copy className="w-4 h-4" />}
+            </button>
           )}
           {!isStreaming && hasNonProseArtifacts && (
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+            <button
+
               onClick={() => {
                 // Download all non-markdown artifacts
                 artifacts.filter(a => a.type !== 'markdown').forEach((a, i) => {
@@ -221,43 +220,39 @@ export const AgentOutputCard = memo(function AgentOutputCard({
               aria-label="Download artefatos"
             >
               <Download className="w-4 h-4" />
-            </motion.button>
+            </button>
           )}
           <button
             onClick={() => setExpanded(!expanded)}
             className="p-2 rounded-lg bg-white/5 text-white/50 hover:bg-white/10 transition-all"
             aria-label={expanded ? 'Recolher' : 'Expandir'}
           >
-            <motion.span animate={{ rotate: expanded ? 180 : 0 }} className="block">
+            <span className="block">
               <ChevronDown className="w-4 h-4" />
-            </motion.span>
+            </span>
           </button>
         </div>
       </div>
 
       {/* Content */}
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0 }}
-            animate={{ height: 'auto' }}
-            exit={{ height: 0 }}
+      {expanded && (
+          <div
+
             className="overflow-hidden"
           >
             <div className="px-4 pb-4 space-y-2">
               {isStreaming ? (
                 /* Streaming: show raw text with cursor */
                 <div
-                  className={`p-4 rounded-xl ${
+                  className={`p-4 rounded-none ${
                     isReviewer ? 'bg-black/30' : 'bg-black/20'
                   } border border-white/5`}
                 >
                   <div className="text-sm text-white/90 whitespace-pre-wrap leading-relaxed">
                     {response}
-                    <motion.span
-                      className="inline-block w-2 h-5 bg-cyan-400 ml-1"
-                      animate={{ opacity: [1, 0] }}
-                      transition={{ duration: 0.5, repeat: Infinity }}
+                    <span
+                      className="inline-block w-2 h-5 bg-[var(--aiox-blue)] ml-1"
+
                     />
                   </div>
                 </div>
@@ -277,7 +272,7 @@ export const AgentOutputCard = memo(function AgentOutputCard({
               ) : (
                 /* Fallback: plain markdown render */
                 <div
-                  className={`p-4 rounded-xl ${
+                  className={`p-4 rounded-none ${
                     isReviewer ? 'bg-black/30' : 'bg-black/20'
                   } border border-white/5`}
                 >
@@ -287,9 +282,8 @@ export const AgentOutputCard = memo(function AgentOutputCard({
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </motion.div>
+</div>
   );
 });

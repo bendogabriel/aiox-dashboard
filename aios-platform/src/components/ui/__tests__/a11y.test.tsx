@@ -13,32 +13,32 @@ import * as matchers from 'vitest-axe/matchers';
 expect.extend(matchers);
 
 // Components
-import { GlassButton } from '../GlassButton';
-import { GlassInput, GlassTextarea } from '../GlassInput';
-import { GlassCard } from '../GlassCard';
+import { CockpitButton } from '../cockpit/CockpitButton';
+import { CockpitInput, CockpitTextarea } from '../cockpit/CockpitInput';
+import { CockpitCard } from '../cockpit/CockpitCard';
 import { Badge } from '../Badge';
 import { Avatar } from '../Avatar';
 import { ToastContainer } from '../Toast';
 
 describe('Accessibility Tests', () => {
-  describe('GlassButton', () => {
+  describe('CockpitButton', () => {
     it('should have no accessibility violations', async () => {
-      const { container } = render(<GlassButton>Click me</GlassButton>);
+      const { container } = render(<CockpitButton>Click me</CockpitButton>);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
     it('should have no violations with loading state', async () => {
-      const { container } = render(<GlassButton loading>Loading</GlassButton>);
+      const { container } = render(<CockpitButton loading>Loading</CockpitButton>);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
     it('should have no violations with left icon', async () => {
       const { container } = render(
-        <GlassButton leftIcon={<span aria-hidden="true">+</span>}>
+        <CockpitButton leftIcon={<span aria-hidden="true">+</span>}>
           Add Item
-        </GlassButton>
+        </CockpitButton>
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -46,17 +46,17 @@ describe('Accessibility Tests', () => {
 
     it('should have no violations when disabled', async () => {
       const { container } = render(
-        <GlassButton disabled>Disabled Button</GlassButton>
+        <CockpitButton disabled>Disabled Button</CockpitButton>
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
   });
 
-  describe('GlassInput', () => {
+  describe('CockpitInput', () => {
     it('should have no accessibility violations', async () => {
       const { container } = render(
-        <GlassInput label="Email" placeholder="Enter your email" />
+        <CockpitInput label="Email" placeholder="Enter your email" />
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -64,7 +64,7 @@ describe('Accessibility Tests', () => {
 
     it('should have no violations with error state', async () => {
       const { container } = render(
-        <GlassInput label="Email" error="Invalid email address" />
+        <CockpitInput label="Email" error="Invalid email address" />
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -72,7 +72,7 @@ describe('Accessibility Tests', () => {
 
     it('should have no violations with hint text', async () => {
       const { container } = render(
-        <GlassInput label="Password" hint="Must be at least 8 characters" type="password" />
+        <CockpitInput label="Password" hint="Must be at least 8 characters" type="password" />
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -80,17 +80,17 @@ describe('Accessibility Tests', () => {
 
     it('should have no violations with required field', async () => {
       const { container } = render(
-        <GlassInput label="Username" required />
+        <CockpitInput label="Username" required />
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
   });
 
-  describe('GlassTextarea', () => {
+  describe('CockpitTextarea', () => {
     it('should have no accessibility violations', async () => {
       const { container } = render(
-        <GlassTextarea label="Description" placeholder="Enter description" />
+        <CockpitTextarea label="Description" placeholder="Enter description" />
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -98,20 +98,20 @@ describe('Accessibility Tests', () => {
 
     it('should have no violations with character count', async () => {
       const { container } = render(
-        <GlassTextarea label="Bio" showCharacterCount maxLength={200} />
+        <CockpitTextarea label="Bio" showCharacterCount maxLength={200} />
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
   });
 
-  describe('GlassCard', () => {
+  describe('CockpitCard', () => {
     it('should have no accessibility violations', async () => {
       const { container } = render(
-        <GlassCard animate={false}>
+        <CockpitCard animate={false}>
           <h2>Card Title</h2>
           <p>Card content goes here</p>
-        </GlassCard>
+        </CockpitCard>
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -119,9 +119,9 @@ describe('Accessibility Tests', () => {
 
     it('should have no violations with aria-label', async () => {
       const { container } = render(
-        <GlassCard animate={false} aria-label="Feature card">
+        <CockpitCard animate={false} aria-label="Feature card">
           <p>Content</p>
-        </GlassCard>
+        </CockpitCard>
       );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -170,20 +170,20 @@ describe('Accessibility Tests', () => {
 });
 
 describe('Color Contrast', () => {
-  it('GlassButton text should have sufficient contrast', async () => {
+  it('CockpitButton text should have sufficient contrast', async () => {
     const { container } = render(
       <div style={{ backgroundColor: '#ddd6cc' }}>
-        <GlassButton>Primary Button</GlassButton>
+        <CockpitButton>Primary Button</CockpitButton>
       </div>
     );
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
 
-  it('GlassInput label should have sufficient contrast', async () => {
+  it('CockpitInput label should have sufficient contrast', async () => {
     const { container } = render(
       <div style={{ backgroundColor: '#ddd6cc' }}>
-        <GlassInput label="Form Field" />
+        <CockpitInput label="Form Field" />
       </div>
     );
     const results = await axe(container);
@@ -192,46 +192,46 @@ describe('Color Contrast', () => {
 });
 
 describe('Keyboard Navigation', () => {
-  it('GlassButton should be focusable', () => {
-    const { getByRole } = render(<GlassButton>Click me</GlassButton>);
+  it('CockpitButton should be focusable', () => {
+    const { getByRole } = render(<CockpitButton>Click me</CockpitButton>);
     const button = getByRole('button');
     button.focus();
     expect(document.activeElement).toBe(button);
   });
 
-  it('GlassInput should be focusable', () => {
-    const { getByRole } = render(<GlassInput label="Test" />);
+  it('CockpitInput should be focusable', () => {
+    const { getByRole } = render(<CockpitInput label="Test" />);
     const input = getByRole('textbox');
     input.focus();
     expect(document.activeElement).toBe(input);
   });
 
-  it('disabled GlassButton should not be focusable via click', () => {
-    const { getByRole } = render(<GlassButton disabled>Disabled</GlassButton>);
+  it('disabled CockpitButton should not be focusable via click', () => {
+    const { getByRole } = render(<CockpitButton disabled>Disabled</CockpitButton>);
     const button = getByRole('button');
     expect(button).toHaveAttribute('disabled');
   });
 });
 
 describe('ARIA Attributes', () => {
-  it('GlassInput with error should have aria-invalid', () => {
+  it('CockpitInput with error should have aria-invalid', () => {
     const { getByRole } = render(
-      <GlassInput label="Email" error="Invalid email" />
+      <CockpitInput label="Email" error="Invalid email" />
     );
     const input = getByRole('textbox');
     expect(input).toHaveAttribute('aria-invalid', 'true');
   });
 
-  it('GlassInput with error should have aria-describedby', () => {
+  it('CockpitInput with error should have aria-describedby', () => {
     const { getByRole } = render(
-      <GlassInput label="Email" error="Invalid email" />
+      <CockpitInput label="Email" error="Invalid email" />
     );
     const input = getByRole('textbox');
     expect(input).toHaveAttribute('aria-describedby');
   });
 
-  it('required GlassInput should have required attribute', () => {
-    const { getByRole } = render(<GlassInput label="Name" required />);
+  it('required CockpitInput should have required attribute', () => {
+    const { getByRole } = render(<CockpitInput label="Name" required />);
     const input = getByRole('textbox');
     expect(input).toHaveAttribute('required');
   });

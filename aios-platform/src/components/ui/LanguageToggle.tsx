@@ -1,4 +1,5 @@
 import { useI18nStore } from '../../hooks/useI18n';
+import { Globe } from 'lucide-react';
 
 export function LanguageToggle() {
   const { locale, toggleLocale } = useI18nStore();
@@ -10,7 +11,7 @@ export function LanguageToggle() {
       aria-label={`Idioma: ${locale === 'pt' ? 'Português' : 'English'}`}
       title={locale === 'pt' ? 'Switch to English' : 'Mudar para Português'}
     >
-      {locale === 'pt' ? '🇧🇷' : '🇺🇸'}
+      <Globe size={12} />
       <span className="ml-0.5">{locale.toUpperCase()}</span>
     </button>
   );

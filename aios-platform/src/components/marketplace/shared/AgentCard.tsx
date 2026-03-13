@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Download } from 'lucide-react';
+import { Download, Bot } from 'lucide-react';
 import type { MarketplaceListing } from '../../../types/marketplace';
 import { RatingStars } from './RatingStars';
 import { PriceBadge } from './PriceBadge';
@@ -37,7 +37,7 @@ export const AgentCard = memo(function AgentCard({ listing, onClick }: AgentCard
           border border-[var(--color-border-default,#333)]
           text-[var(--aiox-lime,#D1FF00)]
         ">
-          {IconComponent ? <IconComponent size={20} /> : <span className="text-lg">🤖</span>}
+          {IconComponent ? <IconComponent size={20} /> : <Bot size={20} />}
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-mono text-sm font-semibold text-[var(--color-text-primary,#fff)] truncate">

@@ -1,7 +1,6 @@
 import { useRef, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ZoomIn, ZoomOut, Maximize2, Lightbulb, Type, Mic, Link2, Image } from 'lucide-react';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
 import { cn } from '../../lib/utils';
 import { IdeaCard } from './IdeaCard';
 import type { BrainstormIdea } from '../../stores/brainstormStore';
@@ -111,18 +110,18 @@ export function IdeaCanvas({
           </span>
         )}
         <div className="flex items-center gap-1 glass-panel border border-glass-border rounded-lg p-1">
-          <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={zoomOut} aria-label="Zoom out">
+          <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={zoomOut} aria-label="Zoom out">
             <ZoomOut size={14} />
-          </GlassButton>
+          </CockpitButton>
           <span className="text-[10px] text-tertiary font-mono w-10 text-center">
             {Math.round(zoom * 100)}%
           </span>
-          <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={zoomIn} aria-label="Zoom in">
+          <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={zoomIn} aria-label="Zoom in">
             <ZoomIn size={14} />
-          </GlassButton>
-          <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={resetView} aria-label="Reset zoom">
+          </CockpitButton>
+          <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={resetView} aria-label="Reset zoom">
             <Maximize2 size={14} />
-          </GlassButton>
+          </CockpitButton>
         </div>
       </div>
 
@@ -151,8 +150,7 @@ export function IdeaCanvas({
             minHeight: '100%',
           }}
         >
-          <AnimatePresence>
-            {ideas.map((idea) => (
+          {ideas.map((idea) => (
               <div
                 key={idea.id}
                 className="absolute"
@@ -168,19 +166,13 @@ export function IdeaCanvas({
                   onUpdate={(id, updates) => onUpdateIdea(id, updates)}
                   onRemove={onRemoveIdea}
                   onTagIdea={onTagIdea}
-                  onDragStart={handleDragStart}
                 />
               </div>
             ))}
-          </AnimatePresence>
-
-          {/* Empty state */}
+{/* Empty state */}
           {ideas.length === 0 && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+              <div
                 className="text-center space-y-4"
               >
                 <div className="flex items-center justify-center gap-3 text-tertiary/40">
@@ -199,7 +191,7 @@ export function IdeaCanvas({
                   <span>Mic = gravar voz</span>
                   <span>URL = auto-link</span>
                 </div>
-              </motion.div>
+              </div>
             </div>
           )}
         </div>

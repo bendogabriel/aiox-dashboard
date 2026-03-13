@@ -1,6 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, AlertTriangle, Info, XCircle, Zap } from 'lucide-react';
-import { GlassCard, Badge } from '../ui';
+import { CockpitCard, Badge } from '../ui';
 import { cn } from '../../lib/utils';
 
 // ── Types (mirrors engine alert-dispatcher) ──
@@ -29,10 +28,10 @@ const severityConfig: Record<AlertSeverity, {
   bg: string;
   border: string;
 }> = {
-  info: { icon: Info, color: 'text-cyan-400', bg: 'bg-cyan-400/5', border: 'border-cyan-400/20' },
-  warning: { icon: AlertTriangle, color: 'text-yellow-400', bg: 'bg-yellow-400/5', border: 'border-yellow-400/20' },
-  error: { icon: XCircle, color: 'text-red-400', bg: 'bg-red-400/5', border: 'border-red-400/20' },
-  critical: { icon: Zap, color: 'text-red-500', bg: 'bg-red-500/10', border: 'border-red-500/30' },
+  info: { icon: Info, color: 'text-[var(--aiox-blue)]', bg: 'bg-[var(--aiox-blue)]/5', border: 'border-[var(--aiox-blue)]/20' },
+  warning: { icon: AlertTriangle, color: 'text-[var(--bb-warning)]', bg: 'bg-[var(--bb-warning)]/5', border: 'border-[var(--bb-warning)]/20' },
+  error: { icon: XCircle, color: 'text-[var(--bb-error)]', bg: 'bg-[var(--bb-error)]/5', border: 'border-[var(--bb-error)]/20' },
+  critical: { icon: Zap, color: 'text-[var(--bb-error)]', bg: 'bg-[var(--bb-error)]/10', border: 'border-[var(--bb-error)]/30' },
 };
 
 function formatTimestamp(ts: string): string {
@@ -53,18 +52,18 @@ export default function AlertsPanel({ alerts, maxVisible = 10 }: AlertsPanelProp
 
   if (visibleAlerts.length === 0) {
     return (
-      <GlassCard padding="md">
+      <CockpitCard padding="md">
         <div className="flex items-center gap-2 mb-3">
           <Bell size={14} className="text-tertiary" />
           <h3 className="text-sm font-medium text-primary">Alerts</h3>
         </div>
         <p className="text-xs text-tertiary text-center py-4">No alerts</p>
-      </GlassCard>
+      </CockpitCard>
     );
   }
 
   return (
-    <GlassCard padding="md">
+    <CockpitCard padding="md">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Bell size={14} className="text-tertiary" />
@@ -74,18 +73,13 @@ export default function AlertsPanel({ alerts, maxVisible = 10 }: AlertsPanelProp
       </div>
 
       <div className="space-y-2 max-h-[300px] overflow-y-auto glass-scrollbar">
-        <AnimatePresence initial={false}>
-          {visibleAlerts.map((alert) => {
+        {visibleAlerts.map((alert) => {
             const config = severityConfig[alert.severity];
             const Icon = config.icon;
 
             return (
-              <motion.div
+              <div
                 key={alert.id}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}
               >
                 <div className={cn(
                   'p-2.5 rounded-lg border',
@@ -106,11 +100,10 @@ export default function AlertsPanel({ alerts, maxVisible = 10 }: AlertsPanelProp
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
-        </AnimatePresence>
-      </div>
-    </GlassCard>
+</div>
+    </CockpitCard>
   );
 }

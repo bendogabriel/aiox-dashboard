@@ -16,41 +16,42 @@ describe('Badge', () => {
   });
 
   it('should apply squad variant with squad type', () => {
-    const { rerender, container } = render(
+    const { rerender } = render(
       <Badge variant="squad" squadType="copywriting">Copy</Badge>
     );
-    expect(container.querySelector('.bg-orange-500\\/15')).toBeInTheDocument();
+    expect(screen.getByText('Copy')).toHaveClass('bg-squad-copywriting-10');
 
     rerender(<Badge variant="squad" squadType="design">Design</Badge>);
-    expect(container.querySelector('.bg-purple-500\\/15')).toBeInTheDocument();
+    expect(screen.getByText('Design')).toHaveClass('bg-squad-design-10');
 
     rerender(<Badge variant="squad" squadType="creator">Creator</Badge>);
-    expect(container.querySelector('.bg-green-500\\/15')).toBeInTheDocument();
+    expect(screen.getByText('Creator')).toHaveClass('bg-squad-creator-10');
 
     rerender(<Badge variant="squad" squadType="orchestrator">Orch</Badge>);
-    expect(container.querySelector('.bg-cyan-500\\/15')).toBeInTheDocument();
+    expect(screen.getByText('Orch')).toHaveClass('bg-squad-orchestrator-10');
   });
 
   it('should apply status variant styles', () => {
-    const { rerender, container } = render(
+    const { rerender } = render(
       <Badge variant="status" status="online">Online</Badge>
     );
-    expect(container.querySelector('.text-green-500')).toBeInTheDocument();
+    expect(screen.getByText('Online')).toHaveClass('text-status-success-muted');
 
     rerender(<Badge variant="status" status="busy">Busy</Badge>);
-    expect(container.querySelector('.text-orange-500')).toBeInTheDocument();
+    expect(screen.getByText('Busy')).toHaveClass('text-status-warning-muted');
 
     rerender(<Badge variant="status" status="offline">Offline</Badge>);
-    expect(container.querySelector('.text-gray-500')).toBeInTheDocument();
+    expect(screen.getByText('Offline')).toHaveClass('text-squad-default-muted');
 
     rerender(<Badge variant="status" status="success">Success</Badge>);
-    expect(container.querySelector('.text-green-500')).toBeInTheDocument();
+    expect(screen.getByText('Success')).toHaveClass('text-status-success-muted');
 
     rerender(<Badge variant="status" status="error">Error</Badge>);
-    expect(container.querySelector('.text-red-500')).toBeInTheDocument();
+    expect(screen.getByText('Error')).toHaveClass('text-status-error-muted');
 
     rerender(<Badge variant="status" status="warning">Warning</Badge>);
-    expect(container.querySelector('.text-yellow-500, .text-yellow-600')).toBeInTheDocument();
+    // 'warning' is not in statusThemes, falls back to 'offline' theme
+    expect(screen.getByText('Warning')).toHaveClass('text-squad-default-muted');
   });
 
   it('should apply count variant style', () => {

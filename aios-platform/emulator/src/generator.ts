@@ -7,21 +7,6 @@ import type { ProjectSpec, GenerateResult, AgentSpec, SquadSpec, TaskSpec, Workf
 
 const OUTPUT_DIR = join(import.meta.dir, '..', 'output');
 
-// ── Template Rendering ──
-
-function render(template: string, vars: Record<string, string>): string {
-  let result = template;
-  for (const [key, value] of Object.entries(vars)) {
-    result = result.replaceAll(`{{${key}}}`, value);
-  }
-  return result;
-}
-
-async function loadTemplate(name: string): Promise<string> {
-  const path = join(import.meta.dir, '..', 'templates', name);
-  return Bun.file(path).text();
-}
-
 // ── File Writers ──
 
 async function writeProjectFile(projectPath: string, relativePath: string, content: string): Promise<void> {
@@ -90,7 +75,7 @@ function generateSquadConfig(squad: SquadSpec): string {
 version: ${squad.version || '1.0.0'}
 title: ${squad.displayName}
 description: ${squad.description}
-icon: ${squad.icon || '🔧'}
+icon: ${squad.icon || 'Wrench'}
 type: specialist
 entry_agent: ${squad.agents[0]?.id || squad.id}
 
@@ -121,7 +106,7 @@ agent:
   name: ${agent.name}
   id: ${agent.id}
   title: ${agent.role}
-  icon: ${agent.icon || '🤖'}
+  icon: ${agent.icon || 'Bot'}
   tier: ${agent.tier}
 
 persona:
@@ -195,7 +180,7 @@ export async function generate(spec: ProjectSpec, outputDir?: string): Promise<G
   // Clean previous output
   try {
     await rm(projectPath, { recursive: true, force: true });
-  } catch {}
+  } catch { /* no-op */ }
 
   await mkdir(projectPath, { recursive: true });
   dirsCreated++;

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { GlassCard, GlassButton, GlassInput, Badge } from '../ui';
+import { CockpitCard, CockpitButton, CockpitInput, Badge } from '../ui';
 import { apiClient } from '../../services/api/client';
 import { useToast } from '../ui/Toast';
 import { cn, getSquadTheme, squadThemes } from '../../lib/utils';
@@ -213,36 +212,36 @@ export function WorkflowManager() {
     <div className="space-y-6">
       {/* Header Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <GlassCard className="text-center py-3">
-          <div className="text-2xl font-bold text-purple-500">{workflows.length}</div>
+        <CockpitCard className="text-center py-3">
+          <div className="text-lg font-bold text-[var(--aiox-gray-muted)]">{workflows.length}</div>
           <p className="text-xs text-tertiary">Workflows</p>
-        </GlassCard>
-        <GlassCard className="text-center py-3">
-          <div className="text-2xl font-bold text-green-500">
+        </CockpitCard>
+        <CockpitCard className="text-center py-3">
+          <div className="text-lg font-bold text-[var(--color-status-success)]">
             {workflows.filter(w => w.status === 'active').length}
           </div>
           <p className="text-xs text-tertiary">Ativos</p>
-        </GlassCard>
-        <GlassCard className="text-center py-3">
-          <div className="text-2xl font-bold text-blue-500">
+        </CockpitCard>
+        <CockpitCard className="text-center py-3">
+          <div className="text-lg font-bold text-[var(--aiox-blue)]">
             {workflows.reduce((sum, w) => sum + (w.stepCount || 0), 0)}
           </div>
           <p className="text-xs text-tertiary">Total de Steps</p>
-        </GlassCard>
+        </CockpitCard>
       </div>
 
       {/* Workflows List */}
-      <GlassCard>
+      <CockpitCard>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-primary">Workflows Disponíveis</h2>
           <div className="flex items-center gap-2">
-            <GlassButton variant="primary" size="sm" onClick={() => setShowCreateModal(true)}>
+            <CockpitButton variant="primary" size="sm" onClick={() => setShowCreateModal(true)}>
               <PlusIcon />
               <span className="ml-1">Criar Workflow</span>
-            </GlassButton>
-            <GlassButton variant="ghost" size="icon" onClick={() => refetch()} title="Atualizar" aria-label="Atualizar">
+            </CockpitButton>
+            <CockpitButton variant="ghost" size="icon" onClick={() => refetch()} title="Atualizar" aria-label="Atualizar">
               <RefreshIcon />
-            </GlassButton>
+            </CockpitButton>
           </div>
         </div>
 
@@ -263,14 +262,14 @@ export function WorkflowManager() {
               return (
                 <div
                   key={workflow.id}
-                  className="rounded-xl border border-white/10 bg-white/5 overflow-hidden"
+                  className="rounded-none border border-white/10 bg-white/5 overflow-hidden"
                 >
                   {/* Workflow Header */}
                   <button
                     onClick={() => toggleWorkflow(workflow.id)}
                     className="w-full flex items-center gap-4 p-4 text-left hover:bg-white/5 transition-colors"
                   >
-                    <div className="h-12 w-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                    <div className="h-12 w-12 rounded-none bg-[var(--aiox-gray-muted)]/20 flex items-center justify-center">
                       <WorkflowIcon />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -296,12 +295,8 @@ export function WorkflowManager() {
                   </button>
 
                   {/* Workflow Details */}
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
+                  {isExpanded && (
+                      <div
                         className="border-t border-white/10"
                       >
                         <div className="p-4 space-y-4">
@@ -317,7 +312,7 @@ export function WorkflowManager() {
                               <ul className="space-y-1">
                                 {details.output.expected.map((output: string, idx: number) => (
                                   <li key={idx} className="text-xs text-tertiary flex items-start gap-2">
-                                    <span className="text-green-400 mt-0.5">{'\u2713'}</span>
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-[var(--color-status-success)] mt-0.5 inline-block"><polyline points="20 6 9 17 4 12" /></svg>
                                     {output}
                                   </li>
                                 ))}
@@ -327,36 +322,33 @@ export function WorkflowManager() {
 
                           {/* Actions */}
                           <div className="flex gap-2 pt-2">
-                            <GlassButton variant="primary" size="sm" className="flex-1">
+                            <CockpitButton variant="primary" size="sm" className="flex-1">
                               <PlayIcon />
                               <span className="ml-1">Executar</span>
-                            </GlassButton>
-                            <GlassButton variant="ghost" size="sm">
+                            </CockpitButton>
+                            <CockpitButton variant="ghost" size="sm">
                               Editar
-                            </GlassButton>
+                            </CockpitButton>
                           </div>
                         </div>
-                      </motion.div>
+                      </div>
                     )}
-                  </AnimatePresence>
-                </div>
+</div>
               );
             })}
           </div>
         )}
-      </GlassCard>
+      </CockpitCard>
 
       {/* Create Workflow Modal */}
-      <AnimatePresence>
-        {showCreateModal && (
+      {showCreateModal && (
           <CreateWorkflowModal
             onClose={() => setShowCreateModal(false)}
             onSubmit={(data) => createWorkflowMutation.mutate(data)}
             isLoading={createWorkflowMutation.isPending}
           />
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }
 
@@ -485,32 +477,26 @@ export function CreateWorkflowModal({
   return createPortal(
     <>
       {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <div
         className="fixed inset-0 bg-black/90 z-[9998]"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
+      <div
         className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none"
       >
         <div className="w-full max-w-2xl max-h-[85vh] overflow-hidden pointer-events-auto">
-        <GlassCard className="flex flex-col max-h-[90vh] !bg-gray-900 border border-white/10 shadow-2xl">
+        <CockpitCard className="flex flex-col max-h-[90vh] !bg-[var(--aiox-surface-alt,#111)] border border-white/10 shadow-2xl">
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-white/10">
             <div>
               <h2 className="text-lg font-semibold text-primary">Criar Novo Workflow</h2>
               <p className="text-xs text-tertiary">Configure os steps e agents do workflow</p>
             </div>
-            <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
+            <CockpitButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
               <CloseIcon />
-            </GlassButton>
+            </CockpitButton>
           </div>
 
           {/* Content */}
@@ -519,7 +505,7 @@ export function CreateWorkflowModal({
             <div className="space-y-3">
               <div>
                 <label className="block text-sm text-secondary mb-1.5">Nome do Workflow</label>
-                <GlassInput
+                <CockpitInput
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ex: Criação de Campanha"
@@ -527,7 +513,7 @@ export function CreateWorkflowModal({
               </div>
               <div>
                 <label className="block text-sm text-secondary mb-1.5">Descrição</label>
-                <GlassInput
+                <CockpitInput
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Descreva o objetivo do workflow"
@@ -539,14 +525,14 @@ export function CreateWorkflowModal({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <label className="text-sm font-medium text-secondary">Steps</label>
-                <GlassButton variant="ghost" size="sm" onClick={addStep}>
+                <CockpitButton variant="ghost" size="sm" onClick={addStep}>
                   <PlusIcon />
                   <span className="ml-1">Adicionar Step</span>
-                </GlassButton>
+                </CockpitButton>
               </div>
 
               {steps.length === 0 ? (
-                <div className="text-center py-6 rounded-xl border border-dashed border-white/20">
+                <div className="text-center py-6 rounded-none border border-dashed border-white/20">
                   <p className="text-sm text-tertiary">Nenhum step adicionado</p>
                   <p className="text-xs text-tertiary mt-1">Clique em "Adicionar Step" para começar</p>
                 </div>
@@ -555,25 +541,25 @@ export function CreateWorkflowModal({
                   {steps.map((step, index) => (
                     <div
                       key={step.id}
-                      className="p-4 rounded-xl border border-white/10 bg-white/5 space-y-3"
+                      className="p-4 rounded-none border border-white/10 bg-white/5 space-y-3"
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-primary">Step {index + 1}</span>
-                        <GlassButton
+                        <CockpitButton
                           variant="ghost"
                           size="icon"
                           onClick={() => removeStep(index)}
-                          className="text-red-400 hover:bg-red-500/10 h-7 w-7"
+                          className="text-[var(--bb-error)] hover:bg-[var(--bb-error)]/10 h-7 w-7"
                           aria-label="Remover step"
                         >
                           <TrashIcon />
-                        </GlassButton>
+                        </CockpitButton>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-xs text-tertiary mb-1">Nome</label>
-                          <GlassInput
+                          <CockpitInput
                             value={step.name}
                             onChange={(e) => updateStep(index, 'name', e.target.value)}
                             placeholder="Nome do step"
@@ -581,7 +567,7 @@ export function CreateWorkflowModal({
                         </div>
                         <div>
                           <label className="block text-xs text-tertiary mb-1">Role</label>
-                          <GlassInput
+                          <CockpitInput
                             value={step.role}
                             onChange={(e) => updateStep(index, 'role', e.target.value)}
                             placeholder="Ex: Estrategista"
@@ -595,12 +581,12 @@ export function CreateWorkflowModal({
                           <select
                             value={step.squadId}
                             onChange={(e) => updateStep(index, 'squadId', e.target.value)}
-                            className="w-full p-2.5 rounded-xl text-sm border border-white/10 bg-[#1a1a1a] text-white appearance-none cursor-pointer"
+                            className="w-full p-2.5 rounded-none text-sm border border-white/10 bg-[#1a1a1a] text-white appearance-none cursor-pointer"
                             style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23999\' stroke-width=\'2\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
                           >
                             <option value="">Selecione um squad</option>
                             {squads.map(squad => (
-                              <option key={squad.id} value={squad.id}>
+                              <option key={squad.id}>
                                 {squad.name} ({squad.agentCount} agents)
                               </option>
                             ))}
@@ -611,7 +597,7 @@ export function CreateWorkflowModal({
                           <select
                             value={step.agentId}
                             onChange={(e) => updateStep(index, 'agentId', e.target.value)}
-                            className="w-full p-2.5 rounded-xl text-sm border border-white/10 bg-[#1a1a1a] text-white appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="w-full p-2.5 rounded-none text-sm border border-white/10 bg-[#1a1a1a] text-white appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                             style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23999\' stroke-width=\'2\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
                             disabled={!step.squadId}
                           >
@@ -627,9 +613,9 @@ export function CreateWorkflowModal({
 
                       <div>
                         <label className="block text-xs text-tertiary mb-1">
-                          Mensagem <span className="text-blue-400">(use {'{{demand}}'} para a demanda)</span>
+                          Mensagem <span className="text-[var(--aiox-blue)]">(use {'{{demand}}'} para a demanda)</span>
                         </label>
-                        <GlassInput
+                        <CockpitInput
                           value={step.message}
                           onChange={(e) => updateStep(index, 'message', e.target.value)}
                           placeholder="{{demand}}"
@@ -652,7 +638,7 @@ export function CreateWorkflowModal({
                                 className={cn(
                                   'px-2 py-1 rounded-lg text-xs border transition-colors',
                                   step.dependsOn.includes(prevStep.id)
-                                    ? 'bg-blue-500/20 border-blue-500/30 text-blue-400'
+                                    ? 'bg-[var(--aiox-lime)]/20 border-[var(--aiox-lime)]/30 text-[var(--aiox-lime)]'
                                     : 'bg-white/5 border-white/10 text-tertiary hover:text-primary'
                                 )}
                               >
@@ -671,21 +657,21 @@ export function CreateWorkflowModal({
 
           {/* Footer */}
           <div className="flex gap-3 pt-4 border-t border-white/10">
-            <GlassButton variant="ghost" onClick={onClose} className="flex-1">
+            <CockpitButton variant="ghost" onClick={onClose} className="flex-1">
               Cancelar
-            </GlassButton>
-            <GlassButton
+            </CockpitButton>
+            <CockpitButton
               variant="primary"
               onClick={handleSubmit}
               disabled={!name || steps.length === 0 || isLoading}
               className="flex-1"
             >
               {isLoading ? 'Criando...' : 'Criar Workflow'}
-            </GlassButton>
+            </CockpitButton>
           </div>
-        </GlassCard>
+        </CockpitCard>
         </div>
-      </motion.div>
+      </div>
     </>,
     document.body
   );
@@ -753,7 +739,7 @@ function WorkflowVisualizer({ steps }: { steps: WorkflowStep[] }) {
                   <div
                     key={step.id}
                     className={cn(
-                      'relative p-3 rounded-xl border min-w-[200px] max-w-[280px]',
+                      'relative p-3 rounded-none border min-w-[200px] max-w-[280px]',
                       getStepColors(step.config?.squadId || 'default')
                     )}
                   >

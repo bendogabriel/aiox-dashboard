@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useUIStore } from '../../stores/uiStore';
 import { cn } from '../../lib/utils';
 
@@ -60,16 +59,20 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
   const isMatrix = theme === 'matrix';
   const isGlass = theme === 'glass';
   const isAiox = theme === 'aiox';
-  const effectiveTheme = theme === 'system' ? getSystemTheme() : ((theme === 'matrix' || theme === 'glass' || theme === 'aiox') ? 'dark' : theme);
+  const isAioxGold = theme === 'aiox-gold';
+  const isAnyAiox = isAiox || isAioxGold;
+  const effectiveTheme = theme === 'system' ? getSystemTheme() : ((theme === 'matrix' || theme === 'glass' || theme === 'aiox' || theme === 'aiox-gold') ? 'dark' : theme);
   const isDark = effectiveTheme === 'dark';
 
   const handleToggle = () => {
     if (showDropdown) {
       setIsOpen(!isOpen);
     } else {
-      // Cycle: light -> dark -> glass -> matrix -> aiox -> light
-      if (isAiox) {
+      // Cycle: light -> dark -> glass -> matrix -> aiox -> aiox-gold -> light
+      if (isAioxGold) {
         setTheme('light');
+      } else if (isAiox) {
+        setTheme('aiox-gold');
       } else if (isMatrix) {
         setTheme('aiox');
       } else if (isGlass) {
@@ -82,7 +85,7 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
     }
   };
 
-  const handleSelectTheme = (newTheme: 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox') => {
+  const handleSelectTheme = (newTheme: 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox' | 'aiox-gold') => {
     setTheme(newTheme);
     setIsOpen(false);
   };
@@ -92,122 +95,96 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <motion.button
+      <button
         onClick={handleToggle}
         className={cn(
           buttonSize,
-          'relative rounded-xl flex items-center justify-center',
+          'relative rounded-none flex items-center justify-center',
           'bg-white/5 hover:bg-white/10 border border-glass-border',
           'transition-colors overflow-hidden'
         )}
-        whileTap={{ scale: 0.95 }}
         aria-label={`Tema atual: ${theme === 'system' ? 'Sistema' : isDark ? 'Escuro' : 'Claro'}`}
       >
         {/* Animated icon container */}
         <div className="relative w-full h-full flex items-center justify-center">
-          <AnimatePresence mode="wait">
-            {isAiox ? (
-              <motion.div
+          {isAioxGold ? (
+              <div
+                key="aiox-gold"
+                className="text-[#DDD1BB]"
+              >
+                <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
+              </div>
+            ) : isAiox ? (
+              <div
                 key="aiox"
-                initial={{ scale: 0, rotate: -180, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                exit={{ scale: 0, rotate: 180, opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="text-[#D1FF00]"
+                className="text-[var(--aiox-lime)]"
               >
                 <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                 </svg>
-              </motion.div>
+              </div>
             ) : isMatrix ? (
-              <motion.div
+              <div
                 key="matrix"
-                initial={{ scale: 0, rotate: -180, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                exit={{ scale: 0, rotate: 180, opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="text-green-400"
+                className="text-[var(--color-status-success)]"
               >
                 <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="4 17 10 11 4 5" />
                   <line x1="12" y1="19" x2="20" y2="19" />
                 </svg>
-              </motion.div>
+              </div>
             ) : isGlass ? (
-              <motion.div
+              <div
                 key="glass"
-                initial={{ scale: 0, rotate: -180, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                exit={{ scale: 0, rotate: 180, opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="text-purple-400"
+                className="text-[var(--aiox-gray-muted)]"
               >
                 <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
                   <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
                 </svg>
-              </motion.div>
+              </div>
             ) : theme === 'system' ? (
-              <motion.div
+              <div
                 key="system"
-                initial={{ scale: 0, rotate: -180, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                exit={{ scale: 0, rotate: 180, opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 className="text-primary"
               >
                 <SystemIcon />
-              </motion.div>
+              </div>
             ) : isDark ? (
-              <motion.div
+              <div
                 key="moon"
-                initial={{ scale: 0, rotate: 90, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                exit={{ scale: 0, rotate: -90, opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="text-blue-400"
+                className="text-[var(--aiox-blue)]"
               >
                 <MoonIcon />
-              </motion.div>
+              </div>
             ) : (
-              <motion.div
+              <div
                 key="sun"
-                initial={{ scale: 0, rotate: -90, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                exit={{ scale: 0, rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="text-amber-500"
+                className="text-[var(--bb-warning)]"
               >
                 <SunIcon />
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
-        </div>
+</div>
 
         {/* Background glow effect */}
-        <motion.div
+        <div
           className={cn(
-            'absolute inset-0 rounded-xl opacity-20 pointer-events-none',
-            isAiox ? 'bg-[#D1FF00]' : isMatrix ? 'bg-green-500' : isGlass ? 'bg-purple-500' : isDark ? 'bg-blue-500' : 'bg-amber-500'
+            'absolute inset-0 rounded-none opacity-20 pointer-events-none',
+            isAioxGold ? 'bg-[#DDD1BB]' : isAiox ? 'bg-[var(--aiox-lime)]' : isMatrix ? 'bg-[var(--color-status-success)]' : isGlass ? 'bg-[var(--aiox-gray-muted)]' : isDark ? 'bg-[var(--aiox-blue)]' : 'bg-[var(--bb-warning)]'
           )}
-          initial={false}
-          animate={{
-            opacity: [0, 0.15, 0],
-          }}
-          transition={{ duration: 0.6 }}
           key={effectiveTheme}
         />
-      </motion.button>
+      </button>
 
       {/* Dropdown menu */}
-      <AnimatePresence>
-        {showDropdown && isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
-            className="absolute top-full right-0 mt-2 w-44 glass-lg rounded-xl overflow-hidden z-[999] p-1.5"
+      {showDropdown && isOpen && (
+          <div
+            className="absolute top-full right-0 mt-2 w-44 glass-lg rounded-none overflow-hidden z-[999] p-1.5"
           >
             <ThemeOption
               icon={<SunIcon />}
@@ -259,6 +236,20 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
               onClick={() => handleSelectTheme('aiox')}
               accentColor="lime"
             />
+            <ThemeOption
+              icon={
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
+              }
+              label="AIOX Gold"
+              description="Dark cockpit, champagne gold"
+              isSelected={theme === 'aiox-gold'}
+              onClick={() => handleSelectTheme('aiox-gold')}
+              accentColor="gold"
+            />
             <div className="h-px bg-white/10 my-1" />
             <ThemeOption
               icon={<SystemIcon />}
@@ -267,10 +258,9 @@ export function ThemeToggle({ showDropdown = false, size = 'md' }: ThemeTogglePr
               isSelected={theme === 'system'}
               onClick={() => handleSelectTheme('system')}
             />
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }
 
@@ -280,15 +270,16 @@ interface ThemeOptionProps {
   description?: string;
   isSelected: boolean;
   onClick: () => void;
-  accentColor?: 'blue' | 'green' | 'purple' | 'lime';
+  accentColor?: 'blue' | 'green' | 'purple' | 'lime' | 'gold';
 }
 
 function ThemeOption({ icon, label, description, isSelected, onClick, accentColor = 'blue' }: ThemeOptionProps) {
   const colorMap = {
-    green: { bg: 'bg-green-500/15', text: 'text-green-500' },
-    purple: { bg: 'bg-purple-500/15', text: 'text-purple-500' },
-    blue: { bg: 'bg-blue-500/15', text: 'text-blue-500' },
-    lime: { bg: 'bg-[#D1FF00]/15', text: 'text-[#D1FF00]' },
+    green: { bg: 'bg-[var(--color-status-success)]/15', text: 'text-[var(--color-status-success)]' },
+    purple: { bg: 'bg-[var(--aiox-gray-muted)]/15', text: 'text-[var(--aiox-gray-muted)]' },
+    blue: { bg: 'bg-[var(--aiox-blue)]/15', text: 'text-[var(--aiox-blue)]' },
+    lime: { bg: 'bg-[var(--aiox-lime)]/15', text: 'text-[var(--aiox-lime)]' },
+    gold: { bg: 'bg-[#DDD1BB]/15', text: 'text-[#DDD1BB]' },
   };
   const colorClasses = colorMap[accentColor];
 
@@ -315,13 +306,11 @@ function ThemeOption({ icon, label, description, isSelected, onClick, accentColo
         )}
       </div>
       {isSelected && (
-        <motion.span
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
+        <span
           className={colorClasses.text}
         >
           <CheckIcon />
-        </motion.span>
+        </span>
       )}
     </button>
   );
@@ -337,112 +326,73 @@ export function ThemeToggleSwitch() {
   };
 
   const effectiveTheme = theme === 'system' ? getSystemTheme() : theme;
-  const isDark = effectiveTheme === 'dark' || effectiveTheme === 'matrix' || effectiveTheme === 'glass' || effectiveTheme === 'aiox';
+  const isDark = effectiveTheme === 'dark' || effectiveTheme === 'matrix' || effectiveTheme === 'glass' || effectiveTheme === 'aiox' || effectiveTheme === 'aiox-gold';
 
   const handleToggle = () => {
     setTheme(isDark ? 'light' : 'dark');
   };
 
   return (
-    <motion.button
+    <button
       onClick={handleToggle}
       className="relative h-8 w-16 rounded-full bg-white/10 border border-glass-border overflow-hidden"
-      whileTap={{ scale: 0.95 }}
       aria-label={`Alternar tema - atual: ${isDark ? 'Escuro' : 'Claro'}`}
     >
       {/* Track background */}
-      <motion.div
+      <div
         className="absolute inset-0 rounded-full"
-        initial={false}
-        animate={{
-          background: isDark
-            ? 'linear-gradient(135deg, rgba(30, 58, 138, 0.3), rgba(76, 29, 149, 0.3))'
-            : 'linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(251, 146, 60, 0.3))'
-        }}
-        transition={{ duration: 0.3 }}
       />
 
       {/* Sun icon */}
-      <motion.div
-        className="absolute left-1.5 top-1/2 -translate-y-1/2 text-amber-400"
-        initial={false}
-        animate={{
-          opacity: isDark ? 0.3 : 1,
-          scale: isDark ? 0.8 : 1
-        }}
-        transition={{ duration: 0.2 }}
+      <div
+        className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[var(--bb-warning)]"
       >
         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
           <circle cx="12" cy="12" r="5" />
         </svg>
-      </motion.div>
+      </div>
 
       {/* Moon icon */}
-      <motion.div
-        className="absolute right-1.5 top-1/2 -translate-y-1/2 text-blue-400"
-        initial={false}
-        animate={{
-          opacity: isDark ? 1 : 0.3,
-          scale: isDark ? 1 : 0.8
-        }}
-        transition={{ duration: 0.2 }}
+      <div
+        className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[var(--aiox-blue)]"
       >
         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
           <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
         </svg>
-      </motion.div>
+      </div>
 
       {/* Thumb */}
-      <motion.div
+      <div
         className={cn(
           'absolute top-1 h-6 w-6 rounded-full shadow-md',
           'flex items-center justify-center',
           isDark
-            ? 'bg-gradient-to-br from-blue-500 to-purple-600'
-            : 'bg-gradient-to-br from-amber-400 to-orange-500'
+            ? 'bg-gradient-to-br from-[var(--aiox-blue)] to-[var(--aiox-gray-muted)]'
+            : 'bg-gradient-to-br from-[var(--bb-warning)] to-[var(--bb-flare)]'
         )}
-        initial={false}
-        animate={{
-          x: isDark ? 34 : 2
-        }}
-        transition={{
-          type: 'spring',
-          stiffness: 500,
-          damping: 30
-        }}
       >
-        <AnimatePresence mode="wait">
-          {isDark ? (
-            <motion.svg
+        {isDark ? (
+            <svg
               key="moon"
               width="12"
               height="12"
               viewBox="0 0 24 24"
               fill="white"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
             >
               <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-            </motion.svg>
+            </svg>
           ) : (
-            <motion.svg
+            <svg
               key="sun"
               width="12"
               height="12"
               viewBox="0 0 24 24"
               fill="white"
-              initial={{ rotate: 90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
             >
               <circle cx="12" cy="12" r="5" />
-            </motion.svg>
+            </svg>
           )}
-        </AnimatePresence>
-      </motion.div>
-    </motion.button>
+</div>
+    </button>
   );
 }

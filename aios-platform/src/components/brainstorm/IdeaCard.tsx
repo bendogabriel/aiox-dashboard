@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
 import {
   Type,
   Mic,
@@ -14,7 +13,7 @@ import {
   Trash2,
   Check,
 } from 'lucide-react';
-import { GlassCard, GlassButton, GlassInput, Badge } from '../ui';
+import { CockpitCard, CockpitButton, CockpitInput, Badge } from '../ui';
 import { cn } from '../../lib/utils';
 import type { BrainstormIdea, IdeaType } from '../../stores/brainstormStore';
 
@@ -82,15 +81,10 @@ export function IdeaCard({
   const accentColor = idea.color || 'var(--color-primary)';
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.2 }}
+    <div
       className="group"
     >
-      <GlassCard
+      <CockpitCard
         variant="default"
         padding={compact ? 'sm' : 'md'}
         className={cn(
@@ -122,7 +116,7 @@ export function IdeaCard({
           <div className="flex-1" />
 
           <div className="relative" ref={menuRef}>
-            <GlassButton
+            <CockpitButton
               variant="ghost"
               size="icon"
               className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -130,7 +124,7 @@ export function IdeaCard({
               aria-label="Menu da ideia"
             >
               <MoreVertical size={12} />
-            </GlassButton>
+            </CockpitButton>
 
             {showMenu && (
               <div className="absolute right-0 top-7 z-50 glass-panel border border-glass-border rounded-lg shadow-lg py-1 min-w-[140px]">
@@ -147,7 +141,7 @@ export function IdeaCard({
                   <Tag size={12} /> Tags
                 </button>
                 <button
-                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-white/5 text-red-400"
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-white/5 text-[var(--bb-error)]"
                   onClick={() => { onRemove(idea.id); setShowMenu(false); }}
                 >
                   <Trash2 size={12} /> Remover
@@ -161,7 +155,7 @@ export function IdeaCard({
         {isEditing ? (
           <div className="space-y-2">
             <textarea
-              className="w-full bg-transparent border border-glass-border rounded p-2 text-sm text-primary resize-none focus:outline-none focus:border-primary/50"
+              className="w-full bg-transparent border border-glass-border rounded p-2 text-sm text-primary resize-none focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--aiox-lime)]/50"
               rows={3}
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
@@ -172,12 +166,12 @@ export function IdeaCard({
               }}
             />
             <div className="flex gap-1 justify-end">
-              <GlassButton variant="ghost" size="sm" onClick={() => setIsEditing(false)}>
+              <CockpitButton variant="ghost" size="sm" onClick={() => setIsEditing(false)}>
                 <X size={12} />
-              </GlassButton>
-              <GlassButton variant="default" size="sm" onClick={handleSaveEdit}>
+              </CockpitButton>
+              <CockpitButton variant="secondary" size="sm" onClick={handleSaveEdit}>
                 <Check size={12} />
-              </GlassButton>
+              </CockpitButton>
             </div>
           </div>
         ) : (
@@ -187,7 +181,7 @@ export function IdeaCard({
                 href={idea.rawContent || idea.content}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-400 hover:underline break-all"
+                className="text-[var(--aiox-blue)] hover:underline break-all"
               >
                 {idea.content}
               </a>
@@ -220,7 +214,7 @@ export function IdeaCard({
             ))}
             {showTagInput && (
               <div className="flex items-center gap-1">
-                <GlassInput
+                <CockpitInput
                   className="h-5 text-[10px] w-20 px-1"
                   placeholder="tag..."
                   value={tagInput}
@@ -231,14 +225,14 @@ export function IdeaCard({
                   }}
                   autoFocus
                 />
-                <GlassButton variant="ghost" size="icon" className="h-5 w-5" onClick={() => setShowTagInput(false)}>
+                <CockpitButton variant="ghost" size="icon" className="h-5 w-5" onClick={() => setShowTagInput(false)}>
                   <X size={10} />
-                </GlassButton>
+                </CockpitButton>
               </div>
             )}
           </div>
         )}
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }

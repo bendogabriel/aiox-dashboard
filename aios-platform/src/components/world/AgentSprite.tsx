@@ -1,5 +1,4 @@
 import { useMemo, useState, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { agentSpriteRects, getAgentIdentity, domainSpriteColors, statusColors, tierBadge } from './pixel-sprites';
 import type { DomainId } from './world-layout';
@@ -54,7 +53,7 @@ export const AgentSprite = memo(function AgentSprite({
   const flipX = facing === 'left';
 
   return (
-    <motion.div
+    <div
       role="button"
       aria-label={`Agent ${name}, ${status}`}
       tabIndex={0}
@@ -63,18 +62,7 @@ export const AgentSprite = memo(function AgentSprite({
         // Z-ordering: agents sort by Y position, selected always on top
         zIndex: selected ? 50 : Math.floor(y / 56) + 2,
       }}
-      animate={{
-        left: x,
-        top: y,
-      }}
-      transition={{
-        type: 'spring',
-        damping: 30,
-        stiffness: 60,
-        mass: 1.5,
-      }}
-      whileHover={{ scale: 1.15 }}
-      whileTap={{ scale: 0.95 }}
+
       onClick={onClick}
       onContextMenu={(e) => {
         e.preventDefault();
@@ -85,7 +73,7 @@ export const AgentSprite = memo(function AgentSprite({
     >
       {/* Live activity glow — pulsing ring when agent is doing real work */}
       {liveActive && !selected && (
-        <motion.div
+        <div
           className="absolute rounded-full"
           style={{
             width: SPRITE_W + 16,
@@ -94,17 +82,13 @@ export const AgentSprite = memo(function AgentSprite({
             left: -8,
             background: `radial-gradient(circle, ${colors.head}33 0%, transparent 70%)`,
           }}
-          animate={{
-            opacity: [0.4, 0.8, 0.4],
-            scale: [0.95, 1.05, 0.95],
-          }}
-          transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+
         />
       )}
 
       {/* Selection ring */}
       {selected && (
-        <motion.div
+        <div
           className="absolute rounded-full"
           style={{
             width: SPRITE_W + 12,
@@ -114,8 +98,7 @@ export const AgentSprite = memo(function AgentSprite({
             border: `2px solid ${colors.head}`,
             opacity: 0.6,
           }}
-          animate={{ opacity: [0.3, 0.7, 0.3] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+
         />
       )}
 
@@ -130,7 +113,7 @@ export const AgentSprite = memo(function AgentSprite({
       )}
 
       {/* Pixel art character with facing direction + walk bob + idle breathing */}
-      <motion.svg
+      <svg
         width={SPRITE_W}
         height={SPRITE_H}
         viewBox="0 0 16 16"
@@ -138,16 +121,7 @@ export const AgentSprite = memo(function AgentSprite({
           imageRendering: 'pixelated',
           transform: flipX ? 'scaleX(-1)' : undefined,
         }}
-        animate={
-          isWalking
-            ? { y: [0, -2, 0] }
-            : { y: [0, -0.8, 0], scale: [1, 1.01, 1] }
-        }
-        transition={
-          isWalking
-            ? { duration: 0.3, repeat: Infinity, ease: 'easeInOut' }
-            : { duration: 2.5 + (identity.bodyHue % 3) * 0.4, repeat: Infinity, ease: 'easeInOut' }
-        }
+
       >
         {rects.map((r, i) => (
           <rect
@@ -161,10 +135,10 @@ export const AgentSprite = memo(function AgentSprite({
             rx={r.rx}
           />
         ))}
-      </motion.svg>
+      </svg>
 
       {/* Status dot — reflects live activity */}
-      <motion.div
+      <div
         className="absolute rounded-full"
         style={{
           width: 7,
@@ -175,32 +149,28 @@ export const AgentSprite = memo(function AgentSprite({
           border: '1.5px solid rgba(0,0,0,0.3)',
           boxShadow: liveActive ? '0 0 6px #10B98188' : `0 0 4px ${statusColor}88`,
         }}
-        animate={liveActive ? { scale: [1, 1.3, 1] } : {}}
-        transition={liveActive ? { duration: 1, repeat: Infinity } : {}}
+
       />
 
       {/* Busy typing animation */}
       {status === 'busy' && (
-        <motion.div
+        <div
           className="absolute"
           style={{ top: -8, right: -4 }}
         >
           <svg width="16" height="10" viewBox="0 0 16 10">
             <rect x="0" y="2" width="16" height="8" fill="white" opacity="0.9" rx="4" />
-            <motion.circle cx="4" cy="6" r="1.5" fill="var(--color-text-tertiary, #636E72)"
-              animate={{ y: [0, -1.5, 0] }}
-              transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+            <circle cx="4" cy="6" r="1.5" fill="var(--color-text-tertiary, #636E72)"
+
             />
-            <motion.circle cx="8" cy="6" r="1.5" fill="var(--color-text-tertiary, #636E72)"
-              animate={{ y: [0, -1.5, 0] }}
-              transition={{ duration: 0.6, repeat: Infinity, delay: 0.15 }}
+            <circle cx="8" cy="6" r="1.5" fill="var(--color-text-tertiary, #636E72)"
+
             />
-            <motion.circle cx="12" cy="6" r="1.5" fill="var(--color-text-tertiary, #636E72)"
-              animate={{ y: [0, -1.5, 0] }}
-              transition={{ duration: 0.6, repeat: Infinity, delay: 0.3 }}
+            <circle cx="12" cy="6" r="1.5" fill="var(--color-text-tertiary, #636E72)"
+
             />
           </svg>
-        </motion.div>
+        </div>
       )}
 
       {/* Name label — dark pill bg for contrast on any floor */}
@@ -224,9 +194,8 @@ export const AgentSprite = memo(function AgentSprite({
       </span>
 
       {/* Hover tooltip with agent info + activity */}
-      <AnimatePresence>
-        {hovered && (
-          <motion.div
+      {hovered && (
+          <div
             className="absolute pointer-events-none"
             style={{
               bottom: SPRITE_H + 24,
@@ -234,10 +203,7 @@ export const AgentSprite = memo(function AgentSprite({
               transform: 'translateX(-50%)',
               zIndex: 40,
             }}
-            initial={{ opacity: 0, y: 4, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 4, scale: 0.9 }}
-            transition={{ duration: 0.15 }}
+
           >
             <div
               className="rounded-lg px-2 py-1.5 whitespace-nowrap"
@@ -267,9 +233,8 @@ export const AgentSprite = memo(function AgentSprite({
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </motion.div>
+</div>
   );
 });

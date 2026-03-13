@@ -91,7 +91,7 @@ export function SettingToggle({ label, description, defaultChecked, onChange }: 
         onClick={handleToggle}
         className={cn(
           'w-11 h-6 rounded-full transition-colors relative',
-          checked ? 'bg-blue-500' : 'bg-white/20'
+          checked ? 'bg-[var(--aiox-lime)]' : 'bg-white/20'
         )}
         role="switch"
         aria-checked={checked}

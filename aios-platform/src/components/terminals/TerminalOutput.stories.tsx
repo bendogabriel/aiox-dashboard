@@ -7,14 +7,14 @@ const typecheckOutput = [
   '> aios-platform@0.1.0 typecheck',
   '> tsc --noEmit',
   '',
-  '\u2713 No type errors found',
+  'PASS No type errors found',
   '',
   '$ npm run lint',
   '',
   '> aios-platform@0.1.0 lint',
   '> eslint src/ --ext .ts,.tsx',
   '',
-  '\u2713 All files passed linting',
+  'PASS All files passed linting',
 ];
 
 const errorOutput = [
@@ -31,13 +31,13 @@ const errorOutput = [
 const mixedOutput = [
   '$ npm run test',
   '',
-  'PASS src/components/ui/__tests__/GlassCard.test.tsx',
+  'PASS src/components/ui/__tests__/CockpitCard.test.tsx',
   'PASS src/components/ui/__tests__/Badge.test.tsx',
   'FAIL src/components/ui/__tests__/Dialog.test.tsx',
   '',
-  '  \u2713 renders correctly (12ms)',
-  '  \u2713 handles close event (8ms)',
-  '  \u2717 validates input on submit (23ms)',
+  '  PASS renders correctly (12ms)',
+  '  PASS handles close event (8ms)',
+  '  FAIL validates input on submit (23ms)',
   '',
   'Error: Expected input to be validated',
   '',
@@ -47,7 +47,7 @@ const mixedOutput = [
 
 const longOutput = Array.from({ length: 50 }, (_, i) => {
   if (i === 0) return '$ npm run build';
-  if (i % 10 === 0) return `\u2713 Built module ${i}/50`;
+  if (i % 10 === 0) return `PASS Built module ${i}/50`;
   return `  Processing file_${i}.ts...`;
 });
 

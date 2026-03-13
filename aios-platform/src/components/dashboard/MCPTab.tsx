@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
 import { Monitor as MonitorIcon, Link, Wrench, Zap } from 'lucide-react';
-import { GlassCard, Badge } from '../ui';
+import { CockpitCard, Badge } from '../ui';
 import { useMCPStatus, useMCPStats } from '../../hooks/useDashboard';
 import { useDashboardOverview } from '../../hooks/useDashboardOverview';
 import { cn } from '../../lib/utils';
@@ -28,10 +27,7 @@ export function MCPTab() {
   } : { totalServers: 0, connectedServers: 0, totalTools: 0, totalToolCalls: 0, topTools: [] as Array<{ name: string; calls: number }> });
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+    <div
       className="space-y-6 pb-6"
     >
       {/* MCP Overview */}
@@ -43,24 +39,24 @@ export function MCPTab() {
       </div>
 
       {/* Server List */}
-      <GlassCard>
+      <CockpitCard>
         <h2 className="font-semibold text-primary mb-4">Servidores MCP</h2>
         <div className="space-y-3">
           {mcpServers?.map((server) => (
             <div
               key={server.name}
               className={cn(
-                'p-4 rounded-xl border',
+                'p-4 rounded-none border',
                 server.status === 'connected'
-                  ? 'glass-subtle border-green-500/20'
-                  : 'glass-subtle border-red-500/20'
+                  ? 'glass-subtle border-[var(--color-status-success)]/20'
+                  : 'glass-subtle border-[var(--bb-error)]/20'
               )}
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className={cn(
-                    'h-10 w-10 rounded-xl flex items-center justify-center',
-                    server.status === 'connected' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
+                    'h-10 w-10 rounded-none flex items-center justify-center',
+                    server.status === 'connected' ? 'bg-[var(--color-status-success)]/10 text-[var(--color-status-success)]' : 'bg-[var(--bb-error)]/10 text-[var(--bb-error)]'
                   )}>
                     <PlugIcon />
                   </div>
@@ -95,15 +91,15 @@ export function MCPTab() {
               )}
 
               {server.error && (
-                <p className="text-xs text-red-400 mt-2">{server.error}</p>
+                <p className="text-xs text-[var(--bb-error)] mt-2">{server.error}</p>
               )}
             </div>
           ))}
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       {/* Top Tools */}
-      <GlassCard>
+      <CockpitCard>
         <h2 className="font-semibold text-primary mb-4">Tools Mais Usadas</h2>
         {mcpStats?.topTools && mcpStats.topTools.length > 0 ? (
           <BarChart
@@ -117,7 +113,7 @@ export function MCPTab() {
         ) : (
           <p className="text-center text-tertiary py-8">Nenhuma tool utilizada ainda</p>
         )}
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }

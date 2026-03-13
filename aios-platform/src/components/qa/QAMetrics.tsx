@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import {
   Shield,
   CheckCircle,
@@ -12,7 +11,7 @@ import {
   BookOpen,
   RefreshCw,
 } from 'lucide-react';
-import { GlassCard, Badge, ProgressBar, SectionLabel, StatusDot, Skeleton } from '../ui';
+import { CockpitCard, CockpitSectionDivider, Badge, ProgressBar, SectionLabel, StatusDot, Skeleton, Reveal } from '../ui';
 import { cn } from '../../lib/utils';
 import { useQAMetrics, type QAMetricsData } from '../../hooks/useQAMetrics';
 
@@ -34,7 +33,7 @@ function OverviewSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {Array.from({ length: 4 }).map((_, i) => (
-        <GlassCard key={i} padding="md">
+        <CockpitCard key={i} padding="md">
           <div className="flex items-start justify-between">
             <div className="space-y-2 flex-1">
               <Skeleton variant="text" width="60%" height={12} />
@@ -42,7 +41,7 @@ function OverviewSkeleton() {
             </div>
             <Skeleton variant="circular" width={18} height={18} />
           </div>
-        </GlassCard>
+        </CockpitCard>
       ))}
     </div>
   );
@@ -50,7 +49,7 @@ function OverviewSkeleton() {
 
 function ChartSkeleton() {
   return (
-    <GlassCard padding="md">
+    <CockpitCard padding="md">
       <Skeleton variant="text" width="50%" height={14} />
       <div className="flex items-end justify-between gap-3 h-36 mt-4">
         {Array.from({ length: 7 }).map((_, i) => (
@@ -60,17 +59,17 @@ function ChartSkeleton() {
           </div>
         ))}
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
 function ModulesSkeleton() {
   return (
-    <GlassCard padding="md">
+    <CockpitCard padding="md">
       <Skeleton variant="text" width="50%" height={14} />
       <div className="space-y-3 mt-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="glass-subtle rounded-xl p-3 space-y-2">
+          <div key={i} className="glass-subtle rounded-none p-3 space-y-2">
             <div className="flex items-center justify-between">
               <Skeleton variant="text" width="40%" height={14} />
               <Skeleton variant="rounded" width={80} height={20} />
@@ -80,7 +79,7 @@ function ModulesSkeleton() {
           </div>
         ))}
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
@@ -90,10 +89,10 @@ function ModulesSkeleton() {
 
 function ErrorBanner({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
-    <GlassCard padding="md" className="border border-red-500/20">
+    <CockpitCard padding="md" className="border border-[var(--bb-error)]/20">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <AlertTriangle size={18} className="text-red-400 flex-shrink-0" />
+          <AlertTriangle size={18} className="text-[var(--bb-error)] flex-shrink-0" />
           <div>
             <p className="text-sm font-medium text-primary">Failed to load metrics</p>
             <p className="text-xs text-tertiary mt-0.5">{message}</p>
@@ -110,7 +109,7 @@ function ErrorBanner({ message, onRetry }: { message: string; onRetry: () => voi
           Retry
         </button>
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
@@ -123,7 +122,7 @@ function DataSourceBadge({ source }: { source: QAMetricsData['source'] }) {
     return (
       <Badge variant="status" status="success" size="sm">
         <span className="flex items-center gap-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-status-success)] animate-pulse" />
           LIVE
         </span>
       </Badge>
@@ -144,10 +143,10 @@ export default function QAMetrics() {
   const { data, loading, error, refetch } = useQAMetrics();
 
   const overview = [
-    { label: 'Total Reviews', value: String(data.overview.totalReviews), icon: Shield, color: 'text-blue-400' },
-    { label: 'Pass Rate', value: `${data.overview.passRate}%`, icon: CheckCircle, color: 'text-green-400' },
-    { label: 'Avg Review Time', value: data.overview.avgReviewTime, icon: Clock, color: 'text-cyan-400' },
-    { label: 'Critical Issues', value: String(data.overview.criticalIssues), icon: AlertTriangle, color: 'text-red-400' },
+    { label: 'Total Reviews', value: String(data.overview.totalReviews), icon: Shield, color: 'text-[var(--aiox-blue)]' },
+    { label: 'Pass Rate', value: `${data.overview.passRate}%`, icon: CheckCircle, color: 'text-[var(--color-status-success)]' },
+    { label: 'Avg Review Time', value: data.overview.avgReviewTime, icon: Clock, color: 'text-[var(--aiox-blue)]' },
+    { label: 'Critical Issues', value: String(data.overview.criticalIssues), icon: AlertTriangle, color: 'text-[var(--bb-error)]' },
   ];
 
   const maxDaily = Math.max(...data.dailyTrend.map((d) => d.passed + d.failed), 1);
@@ -156,11 +155,11 @@ export default function QAMetrics() {
   const healthLabel = data.overview.passRate >= 80 ? 'Healthy' : data.overview.passRate >= 60 ? 'Warning' : 'Critical';
 
   return (
-    <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6" tabIndex={0} role="region" aria-label="Metricas de qualidade">
+    <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6 pattern-dot-grid--sparse" tabIndex={0} role="region" aria-label="Metricas de qualidade">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <Shield size={22} className="text-green-400" />
-        <h1 className="text-xl font-semibold text-primary">QA Metrics</h1>
+        <Shield size={22} className="text-[var(--color-status-success)]" />
+        <h1 className="heading-display text-xl font-semibold text-primary">QA Metrics</h1>
         <Badge variant="status" status={healthStatus} size="sm">{healthLabel}</Badge>
         <DataSourceBadge source={data.source} />
         <button
@@ -181,24 +180,30 @@ export default function QAMetrics() {
       {/* Error Banner */}
       {error && <ErrorBanner message={error} onRetry={refetch} />}
 
+      <CockpitSectionDivider num="01" label="Overview" />
+
       {/* Overview Cards */}
       {loading && !error ? (
         <OverviewSkeleton />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {overview.map((metric, i) => (
-            <GlassCard key={metric.label} padding="md" motionProps={{ transition: { delay: i * 0.05 } }}>
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs text-secondary uppercase tracking-wider">{metric.label}</p>
-                  <p className="text-2xl font-bold text-primary mt-1">{metric.value}</p>
+            <Reveal key={metric.label} direction="up" delay={i * 0.04}>
+              <CockpitCard padding="md" className="hud-corner">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="label-mono text-xs text-secondary uppercase tracking-wider">{metric.label}</p>
+                    <p className="text-lg font-bold text-primary mt-1">{metric.value}</p>
+                  </div>
+                  <metric.icon size={18} className={metric.color} />
                 </div>
-                <metric.icon size={18} className={metric.color} />
-              </div>
-            </GlassCard>
+              </CockpitCard>
+            </Reveal>
           ))}
         </div>
       )}
+
+      <CockpitSectionDivider num="02" label="Daily Trend & Validation" />
 
       {/* Daily Trend + Validation Modules */}
       {loading && !error ? (
@@ -209,7 +214,7 @@ export default function QAMetrics() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Daily Trend */}
-          <GlassCard padding="md">
+          <CockpitCard padding="md">
             <SectionLabel>Daily Trend (Last 7 Days)</SectionLabel>
             <div className="flex items-end justify-between gap-3 h-36 mt-4">
               {data.dailyTrend.map((day) => {
@@ -220,19 +225,13 @@ export default function QAMetrics() {
                   <div key={day.day} className="flex flex-col items-center gap-1 flex-1">
                     <span className="text-[10px] text-tertiary">{total}</span>
                     <div className="w-full flex flex-col-reverse gap-px" style={{ height: `${((total) / maxDaily) * 100}%`, minHeight: 4 }}>
-                      <motion.div
-                        className="w-full bg-green-500/70 rounded-b-md"
-                        initial={{ height: 0 }}
-                        animate={{ height: `${passedH / (passedH + failedH || 1) * 100}%` }}
-                        transition={{ duration: 0.4 }}
+                      <div
+                        className="w-full bg-[var(--color-status-success)]/70 rounded-b-md"
                         style={{ minHeight: day.passed > 0 ? 2 : 0 }}
                       />
                       {day.failed > 0 && (
-                        <motion.div
-                          className="w-full bg-red-500/70 rounded-t-md"
-                          initial={{ height: 0 }}
-                          animate={{ height: `${failedH / (passedH + failedH || 1) * 100}%` }}
-                          transition={{ duration: 0.4, delay: 0.1 }}
+                        <div
+                          className="w-full bg-[var(--bb-error)]/70 rounded-t-md"
                           style={{ minHeight: 2 }}
                         />
                       )}
@@ -244,24 +243,24 @@ export default function QAMetrics() {
             </div>
             <div className="flex items-center gap-4 mt-3 justify-center">
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm bg-green-500/70" />
+                <span className="w-2.5 h-2.5 rounded-sm bg-[var(--color-status-success)]/70" />
                 <span className="text-[10px] text-secondary">Passed</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm bg-red-500/70" />
+                <span className="w-2.5 h-2.5 rounded-sm bg-[var(--bb-error)]/70" />
                 <span className="text-[10px] text-secondary">Failed</span>
               </div>
             </div>
-          </GlassCard>
+          </CockpitCard>
 
           {/* Validation Modules */}
-          <GlassCard padding="md">
+          <CockpitCard padding="md">
             <SectionLabel count={data.validationModules.length}>Validation Modules</SectionLabel>
             <div className="space-y-3">
               {data.validationModules.map((mod) => {
                 const ModIcon = MODULE_ICONS[mod.name] || Bug;
                 return (
-                  <div key={mod.name} className="glass-subtle rounded-xl p-3">
+                  <div key={mod.name} className="glass-subtle rounded-none p-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
                         <ModIcon size={16} className="text-secondary" />
@@ -284,14 +283,16 @@ export default function QAMetrics() {
                 );
               })}
             </div>
-          </GlassCard>
+          </CockpitCard>
         </div>
       )}
+
+      <CockpitSectionDivider num="03" label="Learning System" />
 
       {/* Learning System */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Pattern Feedback */}
-        <GlassCard padding="md">
+        <CockpitCard padding="md">
           <SectionLabel>Pattern Feedback</SectionLabel>
           {loading && !error ? (
             <div className="space-y-3 mt-2">
@@ -305,14 +306,14 @@ export default function QAMetrics() {
             <>
               <div className="flex items-center gap-6 mt-2">
                 <div className="flex items-center gap-2">
-                  <ThumbsUp size={18} className="text-green-400" />
+                  <ThumbsUp size={18} className="text-[var(--color-status-success)]" />
                   <div>
                     <p className="text-xl font-bold text-primary">{data.patternFeedback.accepted}</p>
                     <p className="text-xs text-secondary">Accepted</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <ThumbsDown size={18} className="text-red-400" />
+                  <ThumbsDown size={18} className="text-[var(--bb-error)]" />
                   <div>
                     <p className="text-xl font-bold text-primary">{data.patternFeedback.rejected}</p>
                     <p className="text-xs text-secondary">Rejected</p>
@@ -333,10 +334,10 @@ export default function QAMetrics() {
               />
             </>
           )}
-        </GlassCard>
+        </CockpitCard>
 
         {/* Gotchas Registry */}
-        <GlassCard padding="md">
+        <CockpitCard padding="md">
           <SectionLabel count={data.gotchasRegistry.total}>Gotchas Registry</SectionLabel>
           {loading && !error ? (
             <div className="space-y-2 mt-3">
@@ -348,16 +349,16 @@ export default function QAMetrics() {
           ) : (
             <>
               <div className="flex items-center gap-2 mt-1">
-                <BookOpen size={16} className="text-yellow-400" />
+                <BookOpen size={16} className="text-[var(--bb-warning)]" />
                 <span className="text-sm text-secondary">{data.gotchasRegistry.total} gotchas documented</span>
               </div>
               <div className="mt-3 space-y-2">
                 {data.gotchasRegistry.recent.length > 0 ? (
                   <>
-                    <p className="text-[10px] text-tertiary uppercase tracking-wider">Recent Additions</p>
+                    <p className="label-mono text-[10px] text-tertiary uppercase tracking-wider">Recent Additions</p>
                     {data.gotchasRegistry.recent.map((g) => (
                       <div key={g} className="flex items-center gap-2 glass-subtle rounded-lg px-3 py-2">
-                        <AlertTriangle size={12} className="text-yellow-400 flex-shrink-0" />
+                        <AlertTriangle size={12} className="text-[var(--bb-warning)] flex-shrink-0" />
                         <span className="text-xs text-primary truncate">{g}</span>
                       </div>
                     ))}
@@ -368,7 +369,7 @@ export default function QAMetrics() {
               </div>
             </>
           )}
-        </GlassCard>
+        </CockpitCard>
       </div>
     </div>
   );

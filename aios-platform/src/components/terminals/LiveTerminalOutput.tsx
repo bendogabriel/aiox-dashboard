@@ -23,11 +23,11 @@ export function LiveTerminalOutput({ session }: LiveTerminalOutputProps) {
         isActive={session.status === 'working' || session.status === 'connecting'}
       />
       {session.status === 'error' && (
-        <div className="flex items-center justify-between px-3 py-1.5 border-t border-white/5 bg-red-500/10">
-          <span className="text-xs text-red-400">Connection lost</span>
+        <div className="flex items-center justify-between px-3 py-1.5 border-t border-white/5 bg-[var(--bb-error)]/10">
+          <span className="text-xs text-[var(--bb-error)]">Connection lost</span>
           <button
             onClick={reconnect}
-            className="text-xs text-red-400 hover:text-red-300 underline"
+            className="text-xs text-[var(--bb-error)] hover:text-[var(--bb-error)]/80 underline"
           >
             Reconnect
           </button>

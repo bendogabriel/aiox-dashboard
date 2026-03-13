@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Play } from 'lucide-react';
-import { Dialog, GlassButton, GlassInput, GlassTextarea, useToast } from '../ui';
+import { Dialog, CockpitButton, CockpitInput, CockpitTextarea, useToast } from '../ui';
 import { useExecuteOnEngine } from '../../hooks/useEngine';
 
 interface ExecuteAgentFormProps {
@@ -55,17 +55,17 @@ export default function ExecuteAgentForm({ isOpen, onClose }: ExecuteAgentFormPr
 
   const footer = (
     <>
-      <GlassButton variant="ghost" onClick={handleClose}>
+      <CockpitButton variant="ghost" onClick={handleClose}>
         Cancelar
-      </GlassButton>
-      <GlassButton
+      </CockpitButton>
+      <CockpitButton
         variant="primary"
         leftIcon={<Play className="h-3.5 w-3.5" />}
         onClick={handleSubmit}
         loading={execute.isPending}
       >
         Executar
-      </GlassButton>
+      </CockpitButton>
     </>
   );
 
@@ -80,14 +80,14 @@ export default function ExecuteAgentForm({ isOpen, onClose }: ExecuteAgentFormPr
     >
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <GlassInput
+          <CockpitInput
             label="Squad ID"
             value={squadId}
             onChange={(e) => setSquadId(e.target.value)}
             error={errors.squadId}
             placeholder="development"
           />
-          <GlassInput
+          <CockpitInput
             label="Agent ID"
             value={agentId}
             onChange={(e) => setAgentId(e.target.value)}
@@ -96,7 +96,7 @@ export default function ExecuteAgentForm({ isOpen, onClose }: ExecuteAgentFormPr
           />
         </div>
 
-        <GlassTextarea
+        <CockpitTextarea
           label="Mensagem"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -110,7 +110,7 @@ export default function ExecuteAgentForm({ isOpen, onClose }: ExecuteAgentFormPr
           <select
             value={priority}
             onChange={(e) => setPriority(Number(e.target.value))}
-            className="glass-input w-full h-11 px-4 rounded-xl text-sm bg-transparent"
+            className="glass-input w-full h-11 px-4 rounded-none text-sm bg-transparent"
           >
             {PRIORITIES.map((p) => (
               <option key={p.value} value={p.value}>
@@ -121,7 +121,7 @@ export default function ExecuteAgentForm({ isOpen, onClose }: ExecuteAgentFormPr
         </div>
 
         {execute.isError && (
-          <div className="text-sm text-red-400 bg-red-500/10 p-3 rounded-lg">
+          <div className="text-sm text-[var(--bb-error)] bg-[var(--bb-error)]/10 p-3 rounded-lg">
             {(execute.error as Error).message || 'Erro ao executar agente'}
           </div>
         )}

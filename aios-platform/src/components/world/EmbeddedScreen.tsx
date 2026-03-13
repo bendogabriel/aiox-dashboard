@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import type { DomainId } from './world-layout';
 import { useDomains } from './DomainContext';
 
@@ -34,7 +33,7 @@ export function EmbeddedScreen({ domain, type, x, y, tileSize }: EmbeddedScreenP
     >
       <svg width={cfg.w} height={cfg.h} viewBox={`0 0 ${cfg.w} ${cfg.h}`}>
         {/* Screen background */}
-        <rect width={cfg.w} height={cfg.h} fill="#0a0a0a" rx="1" />
+        <rect width={cfg.w} height={cfg.h} fill="var(--aiox-surface)" rx="1" />
 
         {/* Domain-specific content */}
         {domain === 'dev' && <DevScreenContent w={cfg.w} h={cfg.h} color={d.tileColor} />}
@@ -63,9 +62,7 @@ function DevScreenContent({ w, h, color }: { w: number; h: number; color: string
   const lineWidths = [18, 12, 22, 8, 16, 20, 14, 10, 24, 6];
   return (
     <g>
-      <motion.g
-        animate={{ y: [0, -30] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+      <g
       >
         {lineWidths.map((lw, i) => (
           <rect
@@ -92,7 +89,7 @@ function DevScreenContent({ w, h, color }: { w: number; h: number; color: string
             rx="0.5"
           />
         ))}
-      </motion.g>
+      </g>
       {/* Line numbers */}
       <rect x={0} y={0} width={2} height={h} fill={color} opacity={0.15} />
     </g>
@@ -113,23 +110,13 @@ function DataScreenContent({ w, h, color }: { w: number; h: number; color: strin
         const maxH = h - 6;
         const barH = (maxH * (0.3 + Math.sin(i * 1.2) * 0.35 + 0.35));
         return (
-          <motion.rect
+          <rect
             key={i}
             x={3 + i * (barW + 1)}
             width={barW}
             rx="0.5"
             fill={i % 2 === 0 ? color : `${color}88`}
             opacity={0.8}
-            animate={{
-              y: [h - 3 - barH, h - 3 - barH * 0.7, h - 3 - barH],
-              height: [barH, barH * 0.7, barH],
-            }}
-            transition={{
-              duration: 3 + i * 0.5,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: i * 0.3,
-            }}
           />
         );
       })}
@@ -146,12 +133,10 @@ function ContentScreenContent({ w, h, color }: { w: number; h: number; color: st
       {/* Thumbnail background lines */}
       <rect x={2} y={2} width={w - 4} height={h - 4} fill="#1a1a1a" rx="1" />
       {/* Play button circle */}
-      <motion.circle
+      <circle
         cx={cx} cy={cy} r={6}
         fill={color}
         opacity={0.8}
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 2, repeat: Infinity }}
       />
       {/* Play triangle */}
       <polygon
@@ -161,13 +146,11 @@ function ContentScreenContent({ w, h, color }: { w: number; h: number; color: st
       />
       {/* Progress bar */}
       <rect x={3} y={h - 4} width={w - 6} height={1.5} fill="#333" rx="0.5" />
-      <motion.rect
+      <rect
         x={3} y={h - 4}
         height={1.5}
         fill={color}
         rx="0.5"
-        animate={{ width: [0, w - 6] }}
-        transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
       />
     </g>
   );
@@ -184,7 +167,7 @@ function SalesScreenContent({ w, h, color }: { w: number; h: number; color: stri
       <polygon points={`${w / 4},${4} ${w / 4 - 2},${7} ${w / 4 + 2},${7}`} fill="#2ED573" />
       <rect x={w / 4 - 4} y={8} width={8} height={1.5} fill={color} opacity={0.5} rx="0.5" />
       {/* Dollar sign */}
-      <motion.text
+      <text
         x={w * 3 / 4}
         y={9}
         fill={color}
@@ -192,11 +175,9 @@ function SalesScreenContent({ w, h, color }: { w: number; h: number; color: stri
         textAnchor="middle"
         fontFamily="monospace"
         fontWeight="bold"
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 2, repeat: Infinity }}
       >
         $
-      </motion.text>
+      </text>
       {/* Bottom sparkline */}
       <polyline
         points={Array.from({ length: 8 }, (_, i) =>
@@ -220,12 +201,10 @@ function DesignScreenContent({ w, h, color }: { w: number; h: number; color: str
       {/* Canvas area */}
       <rect x={2} y={2} width={w - 4} height={h - 10} fill="#1e1e1e" rx="1" />
       {/* Abstract shape on canvas */}
-      <motion.circle
+      <circle
         cx={w / 2} cy={h / 2 - 3} r={5}
         fill={color}
         opacity={0.6}
-        animate={{ r: [4, 6, 4] }}
-        transition={{ duration: 4, repeat: Infinity }}
       />
       <rect x={w / 3} y={h / 3} width={8} height={5} fill="#FFD93D" opacity={0.4} rx="1" />
       {/* Color palette bar at bottom */}
@@ -254,9 +233,7 @@ function OpsScreenContent({ w, h, color }: { w: number; h: number; color: string
       <circle cx={6} cy={2.5} r={1} fill="#FFBD2E" />
       <circle cx={9} cy={2.5} r={1} fill="#27CA40" />
       {/* Terminal lines */}
-      <motion.g
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 3, repeat: Infinity }}
+      <g
       >
         <rect x={2} y={7} width={4} height={1.5} fill={color} opacity={0.8} />
         <rect x={7} y={7} width={14} height={1.5} fill="#636E72" opacity={0.6} />
@@ -264,14 +241,12 @@ function OpsScreenContent({ w, h, color }: { w: number; h: number; color: string
         <rect x={9} y={10} width={10} height={1.5} fill="#636E72" opacity={0.5} />
         <rect x={2} y={13} width={3} height={1.5} fill={color} opacity={0.8} />
         <rect x={6} y={13} width={18} height={1.5} fill="#636E72" opacity={0.5} />
-      </motion.g>
+      </g>
       {/* Blinking cursor */}
-      <motion.rect
+      <rect
         x={2} y={h - 5}
         width={3} height={1.5}
         fill={color}
-        animate={{ opacity: [1, 0, 1] }}
-        transition={{ duration: 1, repeat: Infinity }}
       />
     </g>
   );

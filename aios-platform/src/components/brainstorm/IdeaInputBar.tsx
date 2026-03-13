@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Send,
   Mic,
@@ -10,7 +9,7 @@ import {
   Plus,
   X,
 } from 'lucide-react';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
 import { cn } from '../../lib/utils';
 
 // SpeechRecognition type declarations for Web Speech API
@@ -186,10 +185,10 @@ export function IdeaInputBar({ onAddIdea, disabled }: IdeaInputBarProps) {
 
   return (
     <div className="sticky bottom-0 z-10 px-4 pb-4 pt-2">
-      <div className="glass-panel border border-glass-border rounded-2xl p-3 shadow-lg">
+      <div className="glass-panel border border-glass-border rounded-none p-3 shadow-lg">
         <div className="flex items-end gap-2">
           {/* Expand actions */}
-          <GlassButton
+          <CockpitButton
             variant="ghost"
             size="icon"
             className="h-9 w-9 flex-shrink-0"
@@ -197,7 +196,7 @@ export function IdeaInputBar({ onAddIdea, disabled }: IdeaInputBarProps) {
             aria-label="Mais opcoes"
           >
             <Plus size={18} className={cn('transition-transform', showActions && 'rotate-45')} />
-          </GlassButton>
+          </CockpitButton>
 
           {/* Text input */}
           <textarea
@@ -210,25 +209,25 @@ export function IdeaInputBar({ onAddIdea, disabled }: IdeaInputBarProps) {
             rows={1}
             className={cn(
               'flex-1 bg-transparent text-sm text-primary placeholder:text-tertiary resize-none',
-              'focus:outline-none min-h-[36px] max-h-[120px] py-2',
+              'focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--aiox-lime)]/50 min-h-[36px] max-h-[120px] py-2',
               isRecording && 'opacity-50'
             )}
           />
 
           {/* Voice toggle */}
-          <GlassButton
+          <CockpitButton
             variant={isRecording ? 'danger' : 'ghost'}
             size="icon"
-            className={cn('h-9 w-9 flex-shrink-0', isRecording && 'animate-pulse bg-red-500/20')}
+            className={cn('h-9 w-9 flex-shrink-0', isRecording && 'animate-pulse bg-[var(--bb-error)]/20')}
             onClick={isRecording ? stopRecording : startRecording}
             aria-label={isRecording ? 'Parar gravacao' : 'Gravar voz'}
           >
             {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
-          </GlassButton>
+          </CockpitButton>
 
           {/* Send */}
-          <GlassButton
-            variant="default"
+          <CockpitButton
+            variant="secondary"
             size="icon"
             className="h-9 w-9 flex-shrink-0"
             onClick={handleSubmit}
@@ -236,20 +235,16 @@ export function IdeaInputBar({ onAddIdea, disabled }: IdeaInputBarProps) {
             aria-label="Adicionar ideia"
           >
             <Send size={16} />
-          </GlassButton>
+          </CockpitButton>
         </div>
 
         {/* Action buttons row */}
-        <AnimatePresence>
-          {showActions && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+        {showActions && (
+            <div
               className="overflow-hidden"
             >
               <div className="flex gap-2 pt-2 mt-2 border-t border-glass-border">
-                <GlassButton
+                <CockpitButton
                   variant="ghost"
                   size="sm"
                   className="text-xs gap-1.5"
@@ -260,8 +255,8 @@ export function IdeaInputBar({ onAddIdea, disabled }: IdeaInputBarProps) {
                   }}
                 >
                   <Link2 size={14} /> Link
-                </GlassButton>
-                <GlassButton
+                </CockpitButton>
+                <CockpitButton
                   variant="ghost"
                   size="sm"
                   className="text-xs gap-1.5"
@@ -274,8 +269,8 @@ export function IdeaInputBar({ onAddIdea, disabled }: IdeaInputBarProps) {
                   }}
                 >
                   <Image size={14} /> Imagem
-                </GlassButton>
-                <GlassButton
+                </CockpitButton>
+                <CockpitButton
                   variant="ghost"
                   size="sm"
                   className="text-xs gap-1.5"
@@ -288,13 +283,11 @@ export function IdeaInputBar({ onAddIdea, disabled }: IdeaInputBarProps) {
                   }}
                 >
                   <Paperclip size={14} /> Arquivo
-                </GlassButton>
+                </CockpitButton>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-
-        <input
+<input
           ref={fileInputRef}
           type="file"
           className="hidden"
@@ -303,19 +296,14 @@ export function IdeaInputBar({ onAddIdea, disabled }: IdeaInputBarProps) {
       </div>
 
       {/* Recording indicator */}
-      <AnimatePresence>
-        {isRecording && (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 5 }}
-            className="flex items-center justify-center gap-2 mt-2 text-xs text-red-400"
+      {isRecording && (
+          <div
+            className="flex items-center justify-center gap-2 mt-2 text-xs text-[var(--bb-error)]"
           >
-            <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-[var(--bb-error)] animate-pulse" />
             Gravando... clique no microfone para parar
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

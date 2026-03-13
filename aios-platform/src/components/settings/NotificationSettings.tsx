@@ -1,4 +1,4 @@
-import { GlassCard } from '../ui';
+import { CockpitCard } from '../ui';
 import { useNotificationPrefsStore } from '../../stores/notificationPrefsStore';
 import { useToastStore } from '../../stores/toastStore';
 import { SettingToggle } from './SettingsHelpers';
@@ -18,7 +18,7 @@ export function NotificationSettings() {
 
   return (
     <div className="space-y-6">
-      <GlassCard>
+      <CockpitCard>
         <h2 className="text-lg font-semibold text-primary mb-4">Notificações Push</h2>
 
         <div className="space-y-4">
@@ -36,9 +36,9 @@ export function NotificationSettings() {
             onChange={(v) => prefs.setPref('soundEnabled', v)}
           />
         </div>
-      </GlassCard>
+      </CockpitCard>
 
-      <GlassCard>
+      <CockpitCard>
         <h2 className="text-lg font-semibold text-primary mb-4">Tipos de Notificação</h2>
 
         <div className="space-y-4">
@@ -70,9 +70,9 @@ export function NotificationSettings() {
             onChange={(v) => prefs.setPref('systemUpdates', v)}
           />
         </div>
-      </GlassCard>
+      </CockpitCard>
 
-      <GlassCard>
+      <CockpitCard>
         <h2 className="text-lg font-semibold text-primary mb-4">Email</h2>
 
         <div className="space-y-4">
@@ -90,7 +90,7 @@ export function NotificationSettings() {
             onChange={(v) => prefs.setPref('criticalAlerts', v)}
           />
         </div>
-      </GlassCard>
+      </CockpitCard>
     </div>
   );
 }

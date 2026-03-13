@@ -70,12 +70,12 @@ export function ProfileSwitcher() {
           textAlign: 'left',
         }}
       >
-        <Layers size={14} style={{ color: 'var(--aiox-blue, #0099FF)' }} />
+        <Layers size={14} style={{ color: 'var(--aiox-gray-dim, #696969)' }} />
         <span style={{ flex: 1, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
           Connection Profiles
         </span>
         {activeProfileId && (
-          <span style={{ fontSize: '10px', color: 'var(--aiox-lime, #D1FF00)' }}>
+          <span style={{ fontSize: '10px', color: 'var(--aiox-cream, #E5E5E5)' }}>
             {profiles.find((p) => p.id === activeProfileId)?.name || ''}
           </span>
         )}
@@ -202,7 +202,7 @@ function ProfileRow({
         <div style={{
           fontSize: '11px',
           fontWeight: 500,
-          color: isActive ? 'var(--aiox-lime, #D1FF00)' : 'var(--aiox-cream, #E5E5E5)',
+          color: 'var(--aiox-cream, #E5E5E5)',
         }}>
           {profile.name}
         </div>
@@ -222,8 +222,8 @@ function ProfileRow({
           cursor: 'pointer',
           padding: '2px',
           color: isApplied
-            ? 'var(--aiox-lime, #D1FF00)'
-            : 'var(--aiox-blue, #0099FF)',
+            ? 'var(--color-status-success, #4ADE80)'
+            : 'var(--aiox-gray-muted, #999)',
         }}
         title={isApplied ? 'Applied!' : 'Apply profile'}
         aria-label={`Apply ${profile.name} profile`}

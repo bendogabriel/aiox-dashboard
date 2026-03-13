@@ -33,14 +33,14 @@ const MermaidDiagram = memo(function MermaidDiagram({ code }: MermaidDiagramProp
           securityLevel: 'loose',
           themeVariables: {
             primaryColor: '#2a2a3e',
-            primaryTextColor: '#D1FF00',
-            primaryBorderColor: '#D1FF00',
-            lineColor: '#D1FF00',
+            primaryTextColor: 'var(--aiox-lime)',
+            primaryBorderColor: 'var(--aiox-lime)',
+            lineColor: 'var(--aiox-lime)',
             secondaryColor: '#1a1a2e',
             tertiaryColor: '#151520',
             fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
             fontSize: '12px',
-            nodeBorder: '#D1FF00',
+            nodeBorder: 'var(--aiox-lime)',
             mainBkg: '#1e1e2e',
             clusterBkg: '#15151f',
             edgeLabelBackground: '#0d0d14',
@@ -84,7 +84,7 @@ const MermaidDiagram = memo(function MermaidDiagram({ code }: MermaidDiagramProp
       <div className="my-3 rounded-lg overflow-hidden border border-white/10">
         <div className="flex items-center justify-between px-3 py-1.5 bg-black/30">
           <span className="text-[10px] uppercase tracking-wider text-white/50 font-mono">mermaid</span>
-          <span className="text-[10px] text-amber-400">Diagrama em texto</span>
+          <span className="text-[10px] text-[var(--bb-warning)]">Diagrama em texto</span>
         </div>
         <pre className="p-4 text-[13px] text-white/70 bg-black/40 overflow-x-auto font-mono leading-relaxed">
           <code>{code}</code>
@@ -97,7 +97,7 @@ const MermaidDiagram = memo(function MermaidDiagram({ code }: MermaidDiagramProp
     return (
       <div className="my-3 rounded-lg bg-white/5 border border-white/10 h-40 flex items-center justify-center">
         <div className="flex items-center gap-2 text-white/40 text-sm">
-          <div className="animate-spin h-4 w-4 border-2 border-[#D1FF00] border-t-transparent rounded-full" />
+          <div className="animate-spin h-4 w-4 border-2 border-[var(--aiox-lime)] border-t-transparent rounded-full" />
           Renderizando diagrama...
         </div>
       </div>
@@ -107,8 +107,8 @@ const MermaidDiagram = memo(function MermaidDiagram({ code }: MermaidDiagramProp
   return (
     <div ref={containerRef} className="my-3 rounded-lg overflow-hidden border border-white/10 bg-[#0d0d14]">
       <div className="flex items-center justify-between px-3 py-1.5 bg-black/30 border-b border-white/5">
-        <span className="text-[10px] uppercase tracking-wider text-[#D1FF00]/60 font-mono flex items-center gap-1.5">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#D1FF00]/50">
+        <span className="text-[10px] uppercase tracking-wider text-[var(--aiox-lime)]/60 font-mono flex items-center gap-1.5">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--aiox-lime)]/50">
             <circle cx="12" cy="12" r="10" />
             <path d="M12 6v6l4 2" />
           </svg>

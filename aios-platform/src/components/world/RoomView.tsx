@@ -1,5 +1,4 @@
 import { useMemo, useRef, useCallback, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ICON_SIZES } from '../../lib/icons';
 import { useAgents } from '../../hooks/useAgents';
 import { useUIStore } from '../../stores/uiStore';
@@ -165,17 +164,15 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
     <div className="h-full flex flex-col">
       {/* Room header */}
       <div className="flex-shrink-0 px-4 py-3 border-b border-glass-border flex items-center gap-3">
-        <motion.button
+        <button
           onClick={onBack}
           className="h-8 w-8 flex items-center justify-center rounded-lg glass-subtle hover:bg-white/10 transition-colors"
-          whileHover={{ x: -2 }}
-          whileTap={{ scale: 0.9 }}
           aria-label="Voltar"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <polyline points="15 18 9 12 15 6" />
           </svg>
-        </motion.button>
+        </button>
 
         <div className="flex items-center gap-2">
           {roomConfig?.icon && <roomConfig.icon size={ICON_SIZES.lg} />}
@@ -205,17 +202,14 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
         <div className="min-h-full flex items-center justify-center p-6">
-          <motion.div
-            className="relative rounded-2xl overflow-hidden"
+          <div
+            className="relative rounded-none overflow-hidden"
             style={{
               width: ROOM_W,
               height: ROOM_H,
               background: domainCfg.floorColor,
               boxShadow: `inset 0 0 60px ${domainCfg.tileColor}15, 0 8px 32px rgba(0,0,0,0.1)`,
             }}
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: zoom, opacity: 1, x: cameraOffset.x, y: cameraOffset.y }}
-            transition={{ type: 'spring', damping: 20, stiffness: 200 }}
           >
             {/* Floor grid */}
             <svg
@@ -248,7 +242,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
 
             {/* Room border */}
             <div
-              className="absolute inset-0 rounded-2xl pointer-events-none"
+              className="absolute inset-0 rounded-none pointer-events-none"
               style={{
                 border: `3px solid ${domainCfg.tileColor}44`,
               }}
@@ -302,11 +296,10 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
             ))}
 
             {/* Door / exit indicator */}
-            <motion.div
+            <div
               className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer pb-1"
               onClick={onBack}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onBack?.(); } }}
-              whileHover={{ y: 2 }}
               role="button"
               tabIndex={0}
               aria-label="Sair da sala"
@@ -319,16 +312,14 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
               <span className="text-[7px] mt-0.5" style={{ fontFamily: 'monospace', color: 'var(--color-text-tertiary)' }}>
                 EXIT
               </span>
-            </motion.div>
+            </div>
 
             {/* Loading state */}
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <motion.div
+                <div
                   className="h-6 w-6 border-2 rounded-full"
                   style={{ borderColor: `${domainCfg.tileColor} transparent` }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 />
               </div>
             )}
@@ -405,8 +396,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
             })}
 
             {/* Emote ring (right-click on agent) */}
-            <AnimatePresence>
-              {emoteAgent && (
+            {emoteAgent && (
                 <AgentEmotes
                   x={emoteAgent.x}
                   y={emoteAgent.y}
@@ -414,9 +404,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
                   onClose={() => setEmoteAgent(null)}
                 />
               )}
-            </AnimatePresence>
-
-            {/* Floating emotes */}
+{/* Floating emotes */}
             {floatingEmotes.map((fe) => (
               <FloatingEmote key={fe.id} emoteKey={fe.emoteKey} x={fe.x} y={fe.y} />
             ))}
@@ -430,7 +418,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
 
             {/* Day/night ambient overlay */}
             <div
-              className="absolute inset-0 pointer-events-none rounded-2xl"
+              className="absolute inset-0 pointer-events-none rounded-none"
               style={{
                 background: dayNight.overlayColor,
                 opacity: dayNight.overlayOpacity,
@@ -439,7 +427,7 @@ export function RoomView({ roomId, onBack, zoom, onZoomChange }: RoomViewProps) 
                 zIndex: 48,
               }}
             />
-          </motion.div>
+          </div>
         </div>
       </div>
 

@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import {
   TrendingUp,
   TrendingDown,
@@ -14,7 +13,7 @@ import {
   Lightbulb,
   ArrowRight,
 } from 'lucide-react';
-import { GlassCard, Badge, ProgressBar, SectionLabel, GlassButton } from '../ui';
+import { CockpitCard, CockpitSectionDivider, Badge, ProgressBar, SectionLabel, CockpitButton, Reveal } from '../ui';
 import { useAgentAnalytics } from '../../hooks/useDashboard';
 import { useExecutionHistory } from '../../hooks/useExecute';
 import { useStories } from '../../hooks/useStories';
@@ -33,7 +32,7 @@ const keyMetrics = [
     trend: 'up' as const,
     trendValue: '+18%',
     icon: Zap,
-    color: 'text-blue-400',
+    color: 'text-[var(--aiox-blue)]',
   },
   {
     label: 'Cycle Time',
@@ -42,7 +41,7 @@ const keyMetrics = [
     trend: 'down' as const,
     trendValue: '-12%',
     icon: Timer,
-    color: 'text-green-400',
+    color: 'text-[var(--color-status-success)]',
   },
   {
     label: 'Error Rate',
@@ -51,7 +50,7 @@ const keyMetrics = [
     trend: 'up' as const,
     trendValue: '+0.8%',
     icon: AlertTriangle,
-    color: 'text-yellow-400',
+    color: 'text-[var(--bb-warning)]',
     sparkline: [2, 3, 4, 3, 5, 4, 4],
   },
   {
@@ -61,7 +60,7 @@ const keyMetrics = [
     trend: 'up' as const,
     trendValue: '+23%',
     icon: CheckCircle,
-    color: 'text-emerald-400',
+    color: 'text-[var(--color-status-success)]',
   },
 ];
 
@@ -170,10 +169,10 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
   // Use real data when available, fallback to mock
   const metrics = realMetrics
     ? [
-        { label: 'Velocity', value: String(realMetrics.velocity), unit: 'stories/week', trend: 'up' as const, trendValue: 'Live', icon: Zap, color: 'text-blue-400', sparkline: undefined as number[] | undefined },
-        { label: 'Cycle Time', value: realMetrics.cycleTime, unit: 'hours avg', trend: 'down' as const, trendValue: 'Live', icon: Timer, color: 'text-green-400', sparkline: undefined as number[] | undefined },
-        { label: 'Error Rate', value: realMetrics.errorRate, unit: '%', trend: Number(realMetrics.errorRate) > 5 ? 'up' as const : 'down' as const, trendValue: `${realMetrics.total} total`, icon: AlertTriangle, color: 'text-yellow-400', sparkline: undefined as number[] | undefined },
-        { label: 'Completed', value: String(realMetrics.completed), unit: `of ${realMetrics.total}`, trend: 'up' as const, trendValue: 'Live', icon: CheckCircle, color: 'text-emerald-400', sparkline: undefined as number[] | undefined },
+        { label: 'Velocity', value: String(realMetrics.velocity), unit: 'stories/week', trend: 'up' as const, trendValue: 'Live', icon: Zap, color: 'text-[var(--aiox-blue)]', sparkline: undefined as number[] | undefined },
+        { label: 'Cycle Time', value: realMetrics.cycleTime, unit: 'hours avg', trend: 'down' as const, trendValue: 'Live', icon: Timer, color: 'text-[var(--color-status-success)]', sparkline: undefined as number[] | undefined },
+        { label: 'Error Rate', value: realMetrics.errorRate, unit: '%', trend: Number(realMetrics.errorRate) > 5 ? 'up' as const : 'down' as const, trendValue: `${realMetrics.total} total`, icon: AlertTriangle, color: 'text-[var(--bb-warning)]', sparkline: undefined as number[] | undefined },
+        { label: 'Completed', value: String(realMetrics.completed), unit: `of ${realMetrics.total}`, trend: 'up' as const, trendValue: 'Live', icon: CheckCircle, color: 'text-[var(--color-status-success)]', sparkline: undefined as number[] | undefined },
       ]
     : keyMetrics;
   const agents = realAgentPerf || agentPerformance;
@@ -221,19 +220,19 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
   const hasLiveData = !!realMetrics;
 
   return (
-    <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6" tabIndex={0} role="region" aria-label="Painel de insights">
+    <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6 pattern-dot-grid--sparse" tabIndex={0} role="region" aria-label="Painel de insights">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <BarChart3 size={22} className="text-blue-400" />
-          <h1 className="text-xl font-semibold text-primary">Dashboard</h1>
+          <BarChart3 size={22} className="text-[var(--aiox-blue)]" />
+          <h1 className="heading-display text-xl font-semibold text-primary">Dashboard</h1>
           <Badge variant="status" status={hasLiveData ? 'success' : 'warning'} size="sm">
             {hasLiveData ? 'Live' : 'Mock'}
           </Badge>
           {viewToggle}
         </div>
         <div className="flex items-center gap-2">
-          <GlassButton
+          <CockpitButton
             variant="ghost"
             size="sm"
             leftIcon={<Download size={14} />}
@@ -244,68 +243,74 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
             )}
           >
             Export
-          </GlassButton>
-          <GlassButton
+          </CockpitButton>
+          <CockpitButton
             variant="ghost"
             size="sm"
             leftIcon={<Share2 size={14} />}
             onClick={() => shareUrl('AIOS Insights')}
           >
             Share
-          </GlassButton>
+          </CockpitButton>
         </div>
       </div>
+
+      <CockpitSectionDivider num="01" label="Key Metrics" />
 
       {/* Key Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {metrics.map((metric, i) => (
-          <GlassCard key={metric.label} padding="md" motionProps={{ transition: { delay: i * 0.05 } }}>
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs text-secondary uppercase tracking-wider">{metric.label}</p>
-                <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="text-2xl font-bold text-primary">{metric.value}</span>
-                  <span className="text-xs text-tertiary">{metric.unit}</span>
+          <Reveal key={metric.label} direction="up" delay={i * 0.04}>
+            <CockpitCard padding="md" className="hud-corner">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="label-mono text-xs text-secondary uppercase tracking-wider">{metric.label}</p>
+                  <div className="flex items-baseline gap-1.5 mt-1">
+                    <span className="text-lg font-bold text-primary">{metric.value}</span>
+                    <span className="text-xs text-tertiary">{metric.unit}</span>
+                  </div>
                 </div>
+                <metric.icon size={18} className={metric.color} />
               </div>
-              <metric.icon size={18} className={metric.color} />
-            </div>
-            <div className="flex items-center gap-1.5 mt-2">
-              {metric.trend === 'up' ? (
-                <TrendingUp size={14} className={metric.label === 'Error Rate' ? 'text-red-400' : 'text-green-400'} />
-              ) : (
-                <TrendingDown size={14} className="text-green-400" />
-              )}
-              <span className={cn(
-                'text-xs font-medium',
-                metric.label === 'Error Rate' && metric.trend === 'up' ? 'text-red-400' : 'text-green-400',
-              )}>
-                {metric.trendValue}
-              </span>
-              {metric.sparkline && (
-                <div className="flex items-end gap-px ml-auto h-4">
-                  {metric.sparkline.map((v: number, j: number) => (
-                    <div
-                      key={j}
-                      className="w-1 bg-yellow-400/60 rounded-full"
-                      style={{ height: `${(v / Math.max(...metric.sparkline!)) * 100}%` }}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </GlassCard>
+              <div className="flex items-center gap-1.5 mt-2">
+                {metric.trend === 'up' ? (
+                  <TrendingUp size={14} className={metric.label === 'Error Rate' ? 'text-[var(--bb-error)]' : 'text-[var(--color-status-success)]'} />
+                ) : (
+                  <TrendingDown size={14} className="text-[var(--color-status-success)]" />
+                )}
+                <span className={cn(
+                  'text-xs font-medium',
+                  metric.label === 'Error Rate' && metric.trend === 'up' ? 'text-[var(--bb-error)]' : 'text-[var(--color-status-success)]',
+                )}>
+                  {metric.trendValue}
+                </span>
+                {metric.sparkline && (
+                  <div className="flex items-end gap-px ml-auto h-4">
+                    {metric.sparkline.map((v: number, j: number) => (
+                      <div
+                        key={j}
+                        className="w-1 bg-[var(--bb-warning)]/60 rounded-full"
+                        style={{ height: `${(v / Math.max(...metric.sparkline!)) * 100}%` }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CockpitCard>
+          </Reveal>
         ))}
       </div>
+
+      <CockpitSectionDivider num="02" label="Agent Performance" />
 
       {/* Agent Performance + Weekly Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Agent Performance (2 cols) */}
-        <GlassCard padding="md" className="lg:col-span-2">
+        <CockpitCard padding="md" className="lg:col-span-2">
           <SectionLabel count={agents.length}>Agent Performance</SectionLabel>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {agents.map((agent) => (
-              <div key={'agentId' in agent ? String((agent as Record<string, unknown>).agentId) : agent.name} className="glass-subtle rounded-xl p-3 space-y-2">
+              <div key={'agentId' in agent ? String((agent as Record<string, unknown>).agentId) : agent.name} className="glass-subtle rounded-none p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-primary">{agent.name}</span>
                   <Badge variant="status" status="success" size="sm">
@@ -324,45 +329,41 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
               </div>
             ))}
           </div>
-        </GlassCard>
+        </CockpitCard>
 
         {/* Weekly Activity */}
-        <GlassCard padding="md">
+        <CockpitCard padding="md">
           <SectionLabel>Weekly Activity</SectionLabel>
           <div className="flex items-end justify-between gap-2 h-40 mt-4">
             {weekly.map((day, idx) => (
               <div key={day.day} className="flex flex-col items-center gap-1 flex-1 group">
                 <span className="text-[10px] text-tertiary mb-1 opacity-0 group-hover:opacity-100 transition-opacity">{day.count}</span>
-                <motion.div
-                  className="w-full bg-blue-500/60 rounded-t-md group-hover:bg-blue-500/80 transition-colors"
-                  initial={{ height: 0 }}
-                  animate={{ height: `${(day.count / maxWeek) * 100}%` }}
-                  transition={{ duration: 0.5, delay: idx * 0.06 }}
+                <div
+                  className="w-full bg-[var(--aiox-blue)]/60 rounded-t-md group-hover:bg-[var(--aiox-blue)]/80 transition-colors"
                   style={{ minHeight: 4 }}
                 />
                 <span className="text-[10px] text-secondary">{day.day}</span>
               </div>
             ))}
           </div>
-        </GlassCard>
+        </CockpitCard>
       </div>
 
+      <CockpitSectionDivider num="03" label="Bottlenecks" />
+
       {/* Bottlenecks */}
-      <GlassCard padding="md">
+      <CockpitCard padding="md">
         <SectionLabel count={bots.length}>
           Bottlenecks
         </SectionLabel>
         <div className="space-y-3">
           {bots.map((b, idx) => (
-            <motion.div
+            <div
               key={b.status}
-              initial={{ opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: idx * 0.06 }}
-              className="flex items-center justify-between glass-subtle rounded-xl p-3 group hover:bg-white/[0.03] transition-colors"
+              className="flex items-center justify-between glass-subtle rounded-none p-3 group hover:bg-white/[0.03] transition-colors"
             >
               <div className="flex items-center gap-3">
-                <AlertTriangle size={16} className="text-yellow-400" />
+                <AlertTriangle size={16} className="text-[var(--bb-warning)]" />
                 <div>
                   <p className="text-sm font-medium text-primary">{b.status}</p>
                   <p className="text-xs text-secondary">{b.count} stories stuck</p>
@@ -372,28 +373,27 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
                 <Clock size={14} className="text-tertiary" />
                 <span className="text-sm text-secondary">avg {b.avgTime}</span>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
-      </GlassCard>
+      </CockpitCard>
+
+      <CockpitSectionDivider num="04" label="AI Recommendations" />
 
       {/* AI Recommendations */}
-      <GlassCard padding="md">
+      <CockpitCard padding="md">
         <div className="flex items-center gap-2 mb-4">
-          <Lightbulb size={18} className="text-amber-400" />
+          <Lightbulb size={18} className="text-[var(--bb-warning)]" />
           <SectionLabel count={recommendations.length}>AI Recommendations</SectionLabel>
         </div>
         <div className="space-y-3">
           {recommendations.map((rec, idx) => {
-            const colorMap = { warning: 'border-yellow-500/30 bg-yellow-500/5', success: 'border-green-500/30 bg-green-500/5', info: 'border-blue-500/30 bg-blue-500/5' };
-            const iconColorMap = { warning: 'text-yellow-400', success: 'text-green-400', info: 'text-blue-400' };
+            const colorMap = { warning: 'border-[var(--bb-warning)]/30 bg-[var(--bb-warning)]/5', success: 'border-[var(--color-status-success)]/30 bg-[var(--color-status-success)]/5', info: 'border-[var(--aiox-blue)]/30 bg-[var(--aiox-blue)]/5' };
+            const iconColorMap = { warning: 'text-[var(--bb-warning)]', success: 'text-[var(--color-status-success)]', info: 'text-[var(--aiox-blue)]' };
             return (
-              <motion.div
+              <div
                 key={idx}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: idx * 0.08 }}
-                className={cn('rounded-xl p-3 border', colorMap[rec.type])}
+                className={cn('rounded-none p-3 border', colorMap[rec.type])}
               >
                 <div className="flex items-start gap-3">
                   <ArrowRight size={14} className={cn('mt-0.5 flex-shrink-0', iconColorMap[rec.type])} />
@@ -402,11 +402,11 @@ export default function InsightsView({ viewToggle }: { viewToggle?: React.ReactN
                     <p className="text-xs text-secondary mt-0.5">{rec.description}</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
-      </GlassCard>
+      </CockpitCard>
     </div>
   );
 }

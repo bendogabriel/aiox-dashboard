@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles,
   BookOpen,
@@ -11,7 +10,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import { GlassButton, GlassCard, ProgressBar, Badge } from '../ui';
+import { CockpitButton, CockpitCard, ProgressBar, Badge } from '../ui';
 import { cn } from '../../lib/utils';
 import type { OutputType, BrainstormIdea } from '../../stores/brainstormStore';
 
@@ -58,7 +57,7 @@ export function OrganizePanel({
 
   if (isOrganizing) {
     return (
-      <GlassCard padding="md" className="border border-primary/20">
+      <CockpitCard padding="md" className="border border-primary/20">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Loader2 size={16} className="animate-spin text-primary" />
@@ -69,7 +68,7 @@ export function OrganizePanel({
             Analisando {ideaCount} ideias e gerando estrutura AIOS
           </p>
         </div>
-      </GlassCard>
+      </CockpitCard>
     );
   }
 
@@ -102,12 +101,8 @@ export function OrganizePanel({
           Tipo de output ({selectedTypes.length} selecionados)
         </button>
 
-        <AnimatePresence>
-          {expanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+        {expanded && (
+            <div
               className="overflow-hidden space-y-1"
             >
               {outputOptions.map((opt) => {
@@ -135,21 +130,20 @@ export function OrganizePanel({
                   </button>
                 );
               })}
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-      </div>
+</div>
 
       {/* Organize CTA */}
-      <GlassButton
-        variant="default"
+      <CockpitButton
+        variant="secondary"
         className="w-full gap-2 font-medium"
         onClick={handleOrganize}
         disabled={disabled || ideaCount === 0 || selectedTypes.length === 0}
       >
         <Sparkles size={16} />
         Organizar com IA
-      </GlassButton>
+      </CockpitButton>
 
       {ideaCount === 0 && (
         <p className="text-[10px] text-tertiary text-center">

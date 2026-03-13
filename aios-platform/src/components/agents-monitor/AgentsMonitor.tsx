@@ -1,7 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Play, Pause, RefreshCw, Moon, FlaskConical, Radio } from 'lucide-react';
-import { GlassButton, Badge, StatusDot, SectionLabel } from '../ui';
+import { CockpitButton, Badge, StatusDot, SectionLabel } from '../ui';
 import { AgentMonitorCard, type AgentMonitorData } from './AgentMonitorCard';
 import { AgentActivityTimeline } from './AgentActivityTimeline';
 import { AgentPerformanceStats } from './AgentPerformanceStats';
@@ -56,7 +55,7 @@ const DEMO_ACTIONS: Array<{ action: string; status: 'success' | 'error'; duratio
   { action: 'QA Gate — accessibility check failed (missing aria-labels)', status: 'error', duration: 8700 },
   { action: 'Created draft for Story 3.3: Agent Performance Dashboard', status: 'success', duration: 3200 },
   { action: 'Refactored useAgents hook to support polling interval', status: 'success', duration: 6100 },
-  { action: 'Auditing GlassCard component for token compliance', status: 'success', duration: 5400 },
+  { action: 'Auditing CockpitCard component for token compliance', status: 'success', duration: 5400 },
   { action: 'Approved architecture for analytics service layer', status: 'success', duration: 15200 },
   { action: 'QA Gate — Story 3.1 lint & typecheck passed', status: 'success', duration: 9800 },
   { action: 'Updated Epic 3 execution plan with revised estimates', status: 'success', duration: 4100 },
@@ -200,7 +199,7 @@ export default function AgentsMonitor() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-bold text-primary">Agent Activity</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary">Agent Activity</h1>
           <Badge variant="status" status="online" size="sm">
             {activeAgents.length}/{agents.length} active
           </Badge>
@@ -208,7 +207,7 @@ export default function AgentsMonitor() {
             <Badge
               variant="default"
               size="sm"
-              className="flex items-center gap-1 text-green-400 bg-green-500/10"
+              className="flex items-center gap-1 text-[var(--color-status-success)] bg-[var(--color-status-success)]/10"
             >
               <Radio className="h-3 w-3" />
               Live
@@ -218,7 +217,7 @@ export default function AgentsMonitor() {
             <Badge
               variant="default"
               size="sm"
-              className="flex items-center gap-1 text-yellow-400 bg-yellow-500/10"
+              className="flex items-center gap-1 text-[var(--bb-warning)] bg-[var(--bb-warning)]/10"
             >
               <FlaskConical className="h-3 w-3" />
               Demo
@@ -226,7 +225,7 @@ export default function AgentsMonitor() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <GlassButton
+          <CockpitButton
             size="sm"
             variant={isLive ? 'primary' : 'default'}
             leftIcon={
@@ -239,8 +238,8 @@ export default function AgentsMonitor() {
             onClick={() => setIsLive(!isLive)}
           >
             {isLive ? 'Live' : 'Paused'}
-          </GlassButton>
-          <GlassButton
+          </CockpitButton>
+          <CockpitButton
             size="sm"
             variant="ghost"
             leftIcon={
@@ -251,7 +250,7 @@ export default function AgentsMonitor() {
             onClick={handleRefresh}
           >
             Refresh
-          </GlassButton>
+          </CockpitButton>
         </div>
       </div>
 
@@ -261,29 +260,21 @@ export default function AgentsMonitor() {
       {/* Active Section */}
       <section>
         <SectionLabel count={activeAgents.length}>Active Agents</SectionLabel>
-        <AnimatePresence mode="popLayout">
-          {activeAgents.length > 0 ? (
+        {activeAgents.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               {activeAgents.map((agent, i) => (
-                <motion.div
+                <div
                   key={`${agent.squad}-${agent.id}`}
-                  layout
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ delay: i * 0.05, duration: 0.25 }}
                 >
                   <AgentMonitorCard
                     agent={agent}
                     onClick={() => handleCardClick(agent.id)}
                   />
-                </motion.div>
+                </div>
               ))}
             </div>
           ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+            <div
               className="glass-subtle rounded-glass p-8 text-center"
             >
               <Moon className="h-8 w-8 text-tertiary mx-auto mb-2" />
@@ -293,10 +284,9 @@ export default function AgentsMonitor() {
               <p className="text-[10px] text-tertiary mt-1">
                 Ative via CLI: @agent-name
               </p>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-      </section>
+</section>
 
       {/* Standby Section */}
       <section>
@@ -304,17 +294,15 @@ export default function AgentsMonitor() {
         {standbyAgents.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {standbyAgents.map((agent) => (
-              <motion.button
+              <button
                 key={`${agent.squad}-${agent.id}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
                 onClick={() => handleCardClick(agent.id)}
                 className={cn(
-                  'glass-subtle rounded-xl px-3 py-2 flex items-center gap-2',
+                  'glass-subtle rounded-none px-3 py-2 flex items-center gap-2',
                   'text-xs text-secondary transition-all duration-150',
                   'hover:bg-white/[0.03] hover:text-primary',
                   selectedAgentId === agent.id &&
-                    'ring-1 ring-cyan-500/30 bg-white/[0.03]',
+                    'ring-1 ring-[var(--aiox-lime)]/30 bg-white/[0.03]',
                 )}
               >
                 <StatusDot status="idle" size="sm" />
@@ -324,7 +312,7 @@ export default function AgentsMonitor() {
                     ({agent.model})
                   </span>
                 )}
-              </motion.button>
+              </button>
             ))}
           </div>
         ) : (
@@ -366,14 +354,14 @@ export default function AgentsMonitor() {
               <span
                 className={cn(
                   'h-1.5 w-1.5 rounded-full animate-pulse',
-                  hasLiveData ? 'bg-green-500' : 'bg-yellow-500',
+                  hasLiveData ? 'bg-[var(--color-status-success)]' : 'bg-[var(--bb-warning)]',
                 )}
               />
               polling a cada {POLLING_INTERVAL / 1000}s
             </span>
           )}
           {!isLive && (
-            <span className="ml-2 text-yellow-500">pausado</span>
+            <span className="ml-2 text-[var(--bb-warning)]">pausado</span>
           )}
           <span className="ml-2 text-tertiary/60">
             [{sourceLabel}]

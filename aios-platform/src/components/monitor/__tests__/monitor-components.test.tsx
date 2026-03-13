@@ -5,7 +5,7 @@ import { render, screen } from '../../../test/test-utils';
 // Mocks — UI primitives (shallow rendering)
 // ---------------------------------------------------------------------------
 vi.mock('../../ui', () => ({
-  GlassCard: ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  CockpitCard: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div data-testid="glass-card" className={className}>{children}</div>
   ),
   ProgressBar: ({ value, variant }: { value: number; variant?: string }) => (
@@ -17,7 +17,7 @@ vi.mock('../../ui', () => ({
   Badge: ({ children }: { children: React.ReactNode }) => (
     <span data-testid="badge">{children}</span>
   ),
-  GlassButton: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
+  CockpitButton: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
     <button data-testid="glass-button" onClick={onClick}>{children}</button>
   ),
   SectionLabel: ({ children, count }: { children: React.ReactNode; count?: number }) => (

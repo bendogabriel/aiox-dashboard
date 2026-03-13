@@ -1,5 +1,4 @@
 import { useState, lazy, Suspense } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Server,
   Cpu,
@@ -22,7 +21,7 @@ import {
   Minus,
   ChevronRight,
 } from 'lucide-react';
-import { GlassCard, GlassButton, StatusDot, Badge, Skeleton, useToast } from '../ui';
+import { CockpitCard, CockpitButton, CockpitSectionDivider, StatusDot, Badge, Skeleton, useToast } from '../ui';
 import { cn } from '../../lib/utils';
 import {
   useEngineHealth,
@@ -78,13 +77,13 @@ function formatDate(iso: string | null | undefined): string {
 }
 
 const statusColors: Record<string, string> = {
-  done: 'text-green-400',
-  running: 'text-blue-400',
-  pending: 'text-yellow-400',
-  failed: 'text-red-400',
-  rejected: 'text-orange-400',
-  cancelled: 'text-gray-400',
-  timeout: 'text-red-300',
+  done: 'text-[var(--color-status-success)]',
+  running: 'text-[var(--aiox-blue)]',
+  pending: 'text-[var(--bb-warning)]',
+  failed: 'text-[var(--bb-error)]',
+  rejected: 'text-[var(--bb-flare)]',
+  cancelled: 'text-tertiary',
+  timeout: 'text-[var(--bb-error)]',
 };
 
 const statusIcons: Record<string, typeof CheckCircle2> = {
@@ -103,7 +102,7 @@ function ListSkeleton({ rows = 4 }: { rows?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }, (_, i) => (
-        <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02]">
+        <div key={i} className="flex items-center gap-3 p-3 rounded-none bg-white/[0.02]">
           <Skeleton variant="circular" width={16} height={16} />
           <div className="flex-1 space-y-1.5">
             <Skeleton width="40%" height={14} />
@@ -120,7 +119,7 @@ function GridSkeleton({ cols = 5 }: { cols?: number }) {
   return (
     <div className={`grid grid-cols-${cols} gap-3`}>
       {Array.from({ length: cols }, (_, i) => (
-        <div key={i} className="p-3 rounded-xl bg-white/[0.02] text-center space-y-2">
+        <div key={i} className="p-3 rounded-none bg-white/[0.02] text-center space-y-2">
           <Skeleton width="60%" height={10} className="mx-auto" />
           <Skeleton variant="circular" width={12} height={12} className="mx-auto" />
         </div>
@@ -153,13 +152,13 @@ function PoolTab() {
       {/* Slot grid */}
       <div className="grid grid-cols-5 gap-3">
         {pool.slots.map((slot) => (
-          <GlassCard
+          <CockpitCard
             key={slot.id}
             padding="sm"
             variant={slot.status === 'running' ? 'default' : 'subtle'}
             className={cn(
-              'text-center transition-all',
-              slot.status === 'running' && 'ring-1 ring-blue-500/30'
+              'text-center transition-all hud-corner',
+              slot.status === 'running' && 'ring-1 ring-[var(--aiox-lime)]/30'
             )}
           >
             <div className="text-xs text-tertiary mb-1">Slot {slot.id}</div>
@@ -182,12 +181,12 @@ function PoolTab() {
                 </div>
               </div>
             )}
-          </GlassCard>
+          </CockpitCard>
         ))}
       </div>
 
       {/* Summary bar + Resize */}
-      <GlassCard padding="sm" variant="subtle">
+      <CockpitCard padding="sm" variant="subtle">
         <div className="flex items-center justify-between text-sm">
           <span className="text-secondary">
             <span className="text-primary font-semibold">{pool.occupied}</span> / {pool.total} slots ocupados
@@ -197,7 +196,7 @@ function PoolTab() {
               Queue: <span className="text-primary font-semibold">{pool.queue_depth}</span>
             </span>
             <div className="flex items-center gap-1 border-l border-white/10 pl-3">
-              <GlassButton
+              <CockpitButton
                 size="sm"
                 variant="ghost"
                 onClick={() => handleResize(-1)}
@@ -205,11 +204,11 @@ function PoolTab() {
                 aria-label="Reduzir pool"
               >
                 <Minus className="h-3 w-3" />
-              </GlassButton>
+              </CockpitButton>
               <span className="text-xs text-primary font-mono w-6 text-center">
                 {pool.total}
               </span>
-              <GlassButton
+              <CockpitButton
                 size="sm"
                 variant="ghost"
                 onClick={() => handleResize(1)}
@@ -217,11 +216,11 @@ function PoolTab() {
                 aria-label="Aumentar pool"
               >
                 <Plus className="h-3 w-3" />
-              </GlassButton>
+              </CockpitButton>
             </div>
           </div>
         </div>
-      </GlassCard>
+      </CockpitCard>
     </div>
   );
 }
@@ -264,7 +263,7 @@ function JobsTab({ onSelectJob }: { onSelectJob: (id: string) => void }) {
             const StatusIcon = statusIcons[job.status] || Circle;
             const canCancel = job.status === 'running' || job.status === 'pending';
             return (
-              <GlassCard
+              <CockpitCard
                 key={job.id}
                 padding="sm"
                 variant="subtle"
@@ -275,7 +274,7 @@ function JobsTab({ onSelectJob }: { onSelectJob: (id: string) => void }) {
                   <StatusIcon
                     className={cn(
                       'h-4 w-4 flex-shrink-0',
-                      statusColors[job.status] || 'text-gray-400',
+                      statusColors[job.status] || 'text-tertiary',
                       job.status === 'running' && 'animate-spin'
                     )}
                   />
@@ -292,7 +291,7 @@ function JobsTab({ onSelectJob }: { onSelectJob: (id: string) => void }) {
                     <div className="text-[10px] text-tertiary truncate">
                       {job.id.slice(0, 16)}... | {job.trigger_type} | {formatDate(job.created_at)}
                       {job.error_message && (
-                        <span className="text-red-400 ml-2">{job.error_message.slice(0, 60)}</span>
+                        <span className="text-[var(--bb-error)] ml-2">{job.error_message.slice(0, 60)}</span>
                       )}
                     </div>
                   </div>
@@ -301,9 +300,9 @@ function JobsTab({ onSelectJob }: { onSelectJob: (id: string) => void }) {
                       {job.status}
                     </span>
                     {canCancel && (
-                      <GlassButton
+                      <CockpitButton
                         size="sm"
-                        variant="danger"
+                        variant="destructive"
                         className="opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -313,11 +312,11 @@ function JobsTab({ onSelectJob }: { onSelectJob: (id: string) => void }) {
                         aria-label="Cancelar job"
                       >
                         <XCircle className="h-3 w-3" />
-                      </GlassButton>
+                      </CockpitButton>
                     )}
                   </div>
                 </div>
-              </GlassCard>
+              </CockpitCard>
             );
           })}
         </div>
@@ -327,10 +326,10 @@ function JobsTab({ onSelectJob }: { onSelectJob: (id: string) => void }) {
 }
 
 const workflowPhaseColors: Record<string, string> = {
-  completed: 'bg-green-400',
-  running: 'bg-blue-400 animate-pulse',
+  completed: 'bg-[var(--color-status-success)]',
+  running: 'bg-[var(--aiox-blue)] animate-pulse',
   pending: 'bg-white/20',
-  failed: 'bg-red-400',
+  failed: 'bg-[var(--bb-error)]',
 };
 
 function WorkflowsTab({ onSelectWorkflow }: { onSelectWorkflow: (wf: WorkflowDef) => void }) {
@@ -348,11 +347,9 @@ function WorkflowsTab({ onSelectWorkflow }: { onSelectWorkflow: (wf: WorkflowDef
       {/* Active workflow instances */}
       {activeWorkflows.length > 0 && (
         <div className="space-y-3">
-          <div className="text-xs text-tertiary uppercase tracking-wider font-medium">
-            Em Execução ({activeWorkflows.length})
-          </div>
+          <CockpitSectionDivider num="01" label={`Em Execução (${activeWorkflows.length})`} />
           {activeWorkflows.map((wf) => (
-            <GlassCard key={wf.id} padding="md" variant="default" className="ring-1 ring-blue-500/20">
+            <CockpitCard key={wf.id} padding="md" variant="default" className="ring-1 ring-[var(--aiox-lime)]/20">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="text-sm font-medium text-primary">{wf.definitionId}</div>
@@ -397,24 +394,24 @@ function WorkflowsTab({ onSelectWorkflow }: { onSelectWorkflow: (wf: WorkflowDef
                 Fase atual: <span className="text-primary">{wf.currentPhase}</span>
                 {' | '}Iniciado: {formatDate(wf.createdAt)}
               </div>
-            </GlassCard>
+            </CockpitCard>
           ))}
         </div>
       )}
 
+      {/* Divider between active and available */}
+      {activeWorkflows.length > 0 && (
+        <CockpitSectionDivider num="02" label="Definições Disponíveis" />
+      )}
+
       {/* Available workflow definitions */}
       <div className="space-y-3">
-        {activeWorkflows.length > 0 && (
-          <div className="text-xs text-tertiary uppercase tracking-wider font-medium">
-            Definições Disponíveis
-          </div>
-        )}
         {!data.workflows.length ? (
           <div className="text-tertiary text-sm p-8 text-center">Nenhum workflow definido</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {data.workflows.map((wf) => (
-              <GlassCard key={wf.id} padding="md" variant="subtle" className="group">
+              <CockpitCard key={wf.id} padding="md" variant="subtle" className="group">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-primary">{wf.name}</div>
@@ -422,7 +419,7 @@ function WorkflowsTab({ onSelectWorkflow }: { onSelectWorkflow: (wf: WorkflowDef
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="default">{wf.phases} phases</Badge>
-                    <GlassButton
+                    <CockpitButton
                       size="sm"
                       variant="primary"
                       className="opacity-0 group-hover:opacity-100 transition-opacity"
@@ -430,10 +427,10 @@ function WorkflowsTab({ onSelectWorkflow }: { onSelectWorkflow: (wf: WorkflowDef
                       onClick={() => onSelectWorkflow(wf)}
                     >
                       Start
-                    </GlassButton>
+                    </CockpitButton>
                   </div>
                 </div>
-              </GlassCard>
+              </CockpitCard>
             ))}
           </div>
         )}
@@ -456,14 +453,14 @@ function CronsTab({ onCreateCron }: { onCreateCron: () => void }) {
   return (
     <div className="space-y-3">
       <div className="flex justify-end">
-        <GlassButton
+        <CockpitButton
           size="sm"
           variant="primary"
           leftIcon={<Plus className="h-3.5 w-3.5" />}
           onClick={onCreateCron}
         >
           Novo Cron
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       {!data.crons.length ? (
@@ -473,7 +470,7 @@ function CronsTab({ onCreateCron }: { onCreateCron: () => void }) {
       ) : (
         <div className="space-y-2">
           {data.crons.map((cron) => (
-            <GlassCard key={cron.id} padding="sm" variant="subtle" className="group">
+            <CockpitCard key={cron.id} padding="sm" variant="subtle" className="group">
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-primary">{cron.description || cron.name || cron.id}</div>
@@ -484,7 +481,7 @@ function CronsTab({ onCreateCron }: { onCreateCron: () => void }) {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <GlassButton
+                  <CockpitButton
                     size="sm"
                     variant={cron.enabled ? 'default' : 'ghost'}
                     leftIcon={cron.enabled ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
@@ -495,12 +492,12 @@ function CronsTab({ onCreateCron }: { onCreateCron: () => void }) {
                     loading={toggleCron.isPending}
                   >
                     {cron.enabled ? 'On' : 'Off'}
-                  </GlassButton>
+                  </CockpitButton>
                   {deleteConfirm === cron.id ? (
                     <div className="flex items-center gap-1">
-                      <GlassButton
+                      <CockpitButton
                         size="sm"
-                        variant="danger"
+                        variant="destructive"
                         onClick={() => {
                           deleteCron.mutate(cron.id, {
                             onSuccess: () => {
@@ -512,25 +509,25 @@ function CronsTab({ onCreateCron }: { onCreateCron: () => void }) {
                         loading={deleteCron.isPending}
                       >
                         Sim
-                      </GlassButton>
-                      <GlassButton size="sm" variant="ghost" onClick={() => setDeleteConfirm(null)}>
+                      </CockpitButton>
+                      <CockpitButton size="sm" variant="ghost" onClick={() => setDeleteConfirm(null)}>
                         Não
-                      </GlassButton>
+                      </CockpitButton>
                     </div>
                   ) : (
-                    <GlassButton
+                    <CockpitButton
                       size="sm"
                       variant="ghost"
                       className="opacity-0 group-hover:opacity-100 transition-opacity"
                       onClick={() => setDeleteConfirm(cron.id)}
                       aria-label="Deletar cron"
                     >
-                      <Trash2 className="h-3 w-3 text-red-400" />
-                    </GlassButton>
+                      <Trash2 className="h-3 w-3 text-[var(--bb-error)]" />
+                    </CockpitButton>
                   )}
                 </div>
               </div>
-            </GlassCard>
+            </CockpitCard>
           ))}
         </div>
       )}
@@ -541,6 +538,7 @@ function CronsTab({ onCreateCron }: { onCreateCron: () => void }) {
 function BundlesTab() {
   const { data, isLoading } = useTeamBundles();
   const activateBundle = useActivateBundle();
+  const toast = useToast();
 
   if (isLoading || !data) {
     return <ListSkeleton rows={3} />;
@@ -548,35 +546,66 @@ function BundlesTab() {
 
   return (
     <div className="space-y-2">
+      {/* Active bundle indicator */}
+      <CockpitCard padding="sm" variant="subtle">
+        <div className="flex items-center gap-2 text-sm">
+          <div className={cn(
+            'h-2 w-2 rounded-full',
+            data.active ? 'bg-[var(--color-status-success)] animate-pulse' : 'bg-white/20'
+          )} />
+          <span className="text-tertiary">Bundle ativo:</span>
+          <span className="text-primary font-medium">
+            {data.active
+              ? data.bundles.find(b => b.id === data.active)?.name || data.active
+              : 'Nenhum'}
+          </span>
+        </div>
+      </CockpitCard>
+
       {data.bundles.map((bundle) => {
         const isActive = data.active === bundle.id;
         return (
-          <GlassCard
+          <CockpitCard
             key={bundle.id}
             padding="md"
             variant={isActive ? 'default' : 'subtle'}
-            className={cn(isActive && 'ring-1 ring-lime-500/30')}
+            className={cn(isActive && 'ring-1 ring-[var(--color-status-success)]/30')}
           >
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm font-medium text-primary">
-                  {bundle.name}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-primary">
+                    {bundle.name}
+                  </span>
                   {isActive && (
-                    <span className="ml-2 text-xs text-lime-400 font-normal">active</span>
+                    <Badge variant="default" className="text-[10px] bg-[var(--color-status-success)]/15 text-[var(--color-status-success)] border border-[var(--color-status-success)]/20">
+                      ATIVO
+                    </Badge>
                   )}
                 </div>
-                <div className="text-xs text-tertiary mt-0.5">{bundle.id}</div>
+                <div className="text-xs text-tertiary mt-0.5">
+                  {bundle.id} • {bundle.agentCount} agents
+                  {bundle.description && ` • ${bundle.description}`}
+                </div>
               </div>
-              <GlassButton
+              <CockpitButton
                 size="sm"
                 variant={isActive ? 'danger' : 'primary'}
-                onClick={() => activateBundle.mutate(isActive ? null : bundle.id)}
+                onClick={() => activateBundle.mutate(isActive ? null : bundle.id, {
+                  onSuccess: () => {
+                    if (isActive) {
+                      toast.success('Bundle desativado', bundle.name);
+                    } else {
+                      toast.success('Bundle ativado', `${bundle.name} — ${bundle.agentCount} agents carregados`);
+                    }
+                  },
+                })}
                 loading={activateBundle.isPending}
               >
-                {isActive ? 'Deactivate' : 'Activate'}
-              </GlassButton>
+                {isActive ? 'Desativar' : 'Ativar'}
+              </CockpitButton>
             </div>
-          </GlassCard>
+          </CockpitCard>
         );
       })}
     </div>
@@ -600,12 +629,12 @@ function AuditTab() {
       {auditData.entries.map((entry: Record<string, unknown>, i: number) => {
         const allowed = entry.allowed === true;
         return (
-          <GlassCard key={i} padding="sm" variant="subtle">
+          <CockpitCard key={i} padding="sm" variant="subtle">
             <div className="flex items-center gap-3">
               {allowed ? (
-                <CheckCircle2 className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-[var(--color-status-success)] flex-shrink-0" />
               ) : (
-                <XCircle className="h-3.5 w-3.5 text-red-400 flex-shrink-0" />
+                <XCircle className="h-3.5 w-3.5 text-[var(--bb-error)] flex-shrink-0" />
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
@@ -620,18 +649,18 @@ function AuditTab() {
                   </Badge>
                 </div>
                 <div className="text-[10px] text-tertiary truncate">
-                  {!!entry.reason && <span className={allowed ? 'text-green-400/70' : 'text-red-400/70'}>{String(entry.reason)}</span>}
+                  {!!entry.reason && <span className={allowed ? 'text-[var(--color-status-success)]/70' : 'text-[var(--bb-error)]/70'}>{String(entry.reason)}</span>}
                   {!!entry.timestamp && ` • ${formatDate(String(entry.timestamp))}`}
                   {!!entry.suggestAgent && (
-                    <span className="text-yellow-400 ml-2">Sugestão: @{String(entry.suggestAgent)}</span>
+                    <span className="text-[var(--bb-warning)] ml-2">Sugestão: @{String(entry.suggestAgent)}</span>
                   )}
                 </div>
               </div>
-              <span className={cn('text-xs font-medium', allowed ? 'text-green-400' : 'text-red-400')}>
+              <span className={cn('text-xs font-medium', allowed ? 'text-[var(--color-status-success)]' : 'text-[var(--bb-error)]')}>
                 {allowed ? 'ALLOWED' : 'BLOCKED'}
               </span>
             </div>
-          </GlassCard>
+          </CockpitCard>
         );
       })}
     </div>
@@ -670,7 +699,7 @@ export default function EngineWorkspace() {
         <div className="flex items-center gap-3">
           <Server className="h-5 w-5 text-primary" />
           <div>
-            <h1 className="text-lg font-bold text-primary">Engine</h1>
+            <h1 className="heading-display text-xl font-semibold text-primary">Engine</h1>
             <p className="text-xs text-tertiary">
               AIOS Agent Execution Engine
             </p>
@@ -680,14 +709,14 @@ export default function EngineWorkspace() {
         {/* Status badges + Execute button */}
         <div className="flex items-center gap-3">
           {isEngineUp && (
-            <GlassButton
+            <CockpitButton
               size="sm"
               variant="primary"
               leftIcon={<Plus className="h-3.5 w-3.5" />}
               onClick={() => setShowExecuteForm(true)}
             >
               Executar
-            </GlassButton>
+            </CockpitButton>
           )}
           {health && (
             <>
@@ -718,17 +747,17 @@ export default function EngineWorkspace() {
 
       {/* Engine offline warning */}
       {!isEngineUp && (
-        <GlassCard padding="md" variant="subtle" className="mb-4 border border-yellow-500/20">
-          <div className="flex items-center gap-3 text-yellow-400">
+        <CockpitCard padding="md" variant="subtle" className="mb-4 border border-[var(--bb-warning)]/20">
+          <div className="flex items-center gap-3 text-[var(--bb-warning)]">
             <AlertTriangle className="h-5 w-5 flex-shrink-0" />
             <div>
               <div className="text-sm font-medium">Engine offline</div>
-              <div className="text-xs text-yellow-400/70">
+              <div className="text-xs text-[var(--bb-warning)]/70">
                 Inicie com: <code className="bg-white/5 px-1 rounded">cd engine && bun run src/index.ts</code>
               </div>
             </div>
           </div>
-        </GlassCard>
+        </CockpitCard>
       )}
 
       {/* Tabs */}
@@ -765,14 +794,9 @@ export default function EngineWorkspace() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto">
-        <AnimatePresence mode="wait">
-          <motion.div
+      <div className="flex-1 overflow-auto pattern-dot-grid--sparse">
+        <div
             key={activeTab}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15 }}
           >
             {activeTab === 'pool' && <PoolTab />}
             {activeTab === 'jobs' && <JobsTab onSelectJob={setSelectedJobId} />}
@@ -790,9 +814,8 @@ export default function EngineWorkspace() {
                 <MemoryBrowser />
               </Suspense>
             )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+          </div>
+</div>
 
       {/* Modals */}
       <Suspense fallback={null}>

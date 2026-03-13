@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Map as MapIcon,
   Plus,
@@ -10,16 +9,16 @@ import {
   LayoutGrid,
   GanttChart,
 } from 'lucide-react';
-import { GlassCard, GlassButton, Badge, SectionLabel } from '../ui';
+import { CockpitCard, CockpitButton, Badge, SectionLabel } from '../ui';
 import { useRoadmapStore, type RoadmapFeature, type Quarter } from '../../stores/roadmapStore';
 import { cn } from '../../lib/utils';
 
 // --- Priority Config ---
 
 const priorityConfig = {
-  must: { label: 'Must Have', borderColor: 'border-l-red-500', textColor: 'text-red-400' },
-  should: { label: 'Should Have', borderColor: 'border-l-yellow-500', textColor: 'text-yellow-400' },
-  could: { label: 'Could Have', borderColor: 'border-l-blue-500', textColor: 'text-blue-400' },
+  must: { label: 'Must Have', borderColor: 'border-l-[var(--bb-error)]', textColor: 'text-[var(--bb-error)]' },
+  should: { label: 'Should Have', borderColor: 'border-l-[var(--bb-warning)]', textColor: 'text-[var(--bb-warning)]' },
+  could: { label: 'Could Have', borderColor: 'border-l-[var(--aiox-blue)]', textColor: 'text-[var(--aiox-blue)]' },
   wont: { label: "Won't Have", borderColor: 'border-l-gray-500', textColor: 'text-gray-400' },
 } as const;
 
@@ -55,18 +54,16 @@ function RoadmapCard({ feature }: { feature: RoadmapFeature }) {
   const StatusIcon = statusIcons[feature.status];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="glass-subtle rounded-xl p-3 space-y-2"
+    <div
+      className="glass-subtle rounded-none p-3 space-y-2"
     >
       <div className="flex items-start justify-between gap-2">
         <h2 className="text-sm font-medium text-primary leading-tight">{feature.title}</h2>
         <StatusIcon
           size={14}
           className={cn(
-            feature.status === 'done' ? 'text-green-400' :
-            feature.status === 'in_progress' ? 'text-blue-400 animate-spin' :
+            feature.status === 'done' ? 'text-[var(--color-status-success)]' :
+            feature.status === 'in_progress' ? 'text-[var(--aiox-blue)] animate-spin' :
             'text-tertiary',
           )}
         />
@@ -95,7 +92,7 @@ function RoadmapCard({ feature }: { feature: RoadmapFeature }) {
           ))}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 
@@ -105,7 +102,7 @@ function PrioritySection({ priority, features }: { priority: keyof typeof priori
   const config = priorityConfig[priority];
 
   return (
-    <GlassCard padding="md" className={cn('border-l-4', config.borderColor)}>
+    <CockpitCard padding="md" className={cn('border-l-4', config.borderColor)}>
       <SectionLabel count={features.length}>
         <span className={config.textColor}>{config.label}</span>
       </SectionLabel>
@@ -116,7 +113,7 @@ function PrioritySection({ priority, features }: { priority: keyof typeof priori
           features.map((f) => <RoadmapCard key={f.id} feature={f} />)
         )}
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
@@ -152,16 +149,13 @@ function AddFeatureForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: 
     onClose();
   };
 
-  const selectClass = 'w-full glass-subtle rounded-lg px-3 py-2 text-sm text-primary bg-transparent border border-white/10 focus:border-indigo-500/50 focus:outline-none appearance-none';
+  const selectClass = 'w-full glass-subtle rounded-lg px-3 py-2 text-sm text-primary bg-transparent border border-white/10 focus:border-[var(--aiox-lime)]/50 focus:outline-none appearance-none';
   const labelClass = 'text-xs font-medium text-secondary';
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
+    <div
     >
-      <GlassCard padding="md" className="border border-indigo-500/20">
+      <CockpitCard padding="md" className="border border-[var(--aiox-blue)]/20">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-primary">New Feature</h2>
@@ -178,7 +172,7 @@ function AddFeatureForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: 
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                 placeholder="Feature name..."
-                className="w-full glass-subtle rounded-lg px-3 py-2 text-sm text-primary placeholder:text-tertiary bg-transparent border border-white/10 focus:border-indigo-500/50 focus:outline-none"
+                className="w-full glass-subtle rounded-lg px-3 py-2 text-sm text-primary placeholder:text-tertiary bg-transparent border border-white/10 focus:border-[var(--aiox-lime)]/50 focus:outline-none"
                 autoFocus
               />
             </div>
@@ -190,7 +184,7 @@ function AddFeatureForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: 
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="Brief description..."
                 rows={2}
-                className="w-full glass-subtle rounded-lg px-3 py-2 text-sm text-primary placeholder:text-tertiary bg-transparent border border-white/10 focus:border-indigo-500/50 focus:outline-none resize-none"
+                className="w-full glass-subtle rounded-lg px-3 py-2 text-sm text-primary placeholder:text-tertiary bg-transparent border border-white/10 focus:border-[var(--aiox-lime)]/50 focus:outline-none resize-none"
               />
             </div>
 
@@ -229,32 +223,32 @@ function AddFeatureForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: 
                 value={form.tags}
                 onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))}
                 placeholder="ui, api, performance..."
-                className="w-full glass-subtle rounded-lg px-3 py-2 text-sm text-primary placeholder:text-tertiary bg-transparent border border-white/10 focus:border-indigo-500/50 focus:outline-none"
+                className="w-full glass-subtle rounded-lg px-3 py-2 text-sm text-primary placeholder:text-tertiary bg-transparent border border-white/10 focus:border-[var(--aiox-lime)]/50 focus:outline-none"
               />
             </div>
           </div>
 
           <div className="flex items-center justify-end gap-2">
-            <GlassButton type="button" size="sm" variant="ghost" onClick={onClose}>
+            <CockpitButton type="button" size="sm" variant="ghost" onClick={onClose}>
               Cancel
-            </GlassButton>
-            <GlassButton type="submit" size="sm" variant="primary" disabled={!form.title.trim()}>
+            </CockpitButton>
+            <CockpitButton type="submit" size="sm" variant="primary" disabled={!form.title.trim()}>
               Add Feature
-            </GlassButton>
+            </CockpitButton>
           </div>
         </form>
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }
 
 // --- Timeline View ---
 
 const quarterColors: Record<Quarter, string> = {
-  Q1: '#22C55E',
-  Q2: '#3B82F6',
-  Q3: '#A855F7',
-  Q4: '#F59E0B',
+  Q1: 'var(--color-status-success)',
+  Q2: 'var(--aiox-blue)',
+  Q3: 'var(--aiox-gray-muted)',
+  Q4: 'var(--bb-warning)',
 };
 
 const statusBarStyle = {
@@ -298,11 +292,8 @@ function TimelineView({ features }: { features: RoadmapFeature[] }) {
 
       {/* Swim lanes by squad */}
       {squads.map(([squad, squadFeatures], si) => (
-        <motion.div
+        <div
           key={squad}
-          initial={{ opacity: 0, x: -12 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: si * 0.06 }}
           className="flex border-t border-white/5"
         >
           {/* Squad label */}
@@ -321,11 +312,8 @@ function TimelineView({ features }: { features: RoadmapFeature[] }) {
                   {items.map((feature, fi) => {
                     const pConfig = priorityConfig[feature.priority];
                     return (
-                      <motion.div
+                      <div
                         key={feature.id}
-                        initial={{ scaleX: 0, opacity: 0 }}
-                        animate={{ scaleX: 1, opacity: 1 }}
-                        transition={{ delay: si * 0.06 + fi * 0.04 + 0.2, duration: 0.4, ease: [0, 0, 0.2, 1] }}
                         style={{ transformOrigin: 'left' }}
                         className="group relative"
                       >
@@ -338,8 +326,8 @@ function TimelineView({ features }: { features: RoadmapFeature[] }) {
                           style={{ background: `${quarterColors[q]}25`, borderLeft: `3px solid ${quarterColors[q]}` }}
                           title={`${feature.title} — ${statusLabels[feature.status]}`}
                         >
-                          {feature.status === 'done' && <CheckCircle size={10} className="text-green-400 flex-shrink-0" />}
-                          {feature.status === 'in_progress' && <Loader size={10} className="text-blue-400 flex-shrink-0 animate-spin" />}
+                          {feature.status === 'done' && <CheckCircle size={10} className="text-[var(--color-status-success)] flex-shrink-0" />}
+                          {feature.status === 'in_progress' && <Loader size={10} className="text-[var(--aiox-blue)] flex-shrink-0 animate-spin" />}
                           <span className="text-[10px] text-primary truncate font-medium">{feature.title}</span>
                         </div>
 
@@ -354,14 +342,14 @@ function TimelineView({ features }: { features: RoadmapFeature[] }) {
                             </div>
                           </div>
                         </div>
-                      </motion.div>
+                      </div>
                     );
                   })}
                 </div>
               );
             })}
           </div>
-        </motion.div>
+        </div>
       ))}
 
       {/* Legend */}
@@ -369,7 +357,7 @@ function TimelineView({ features }: { features: RoadmapFeature[] }) {
         <span className="text-[10px] text-tertiary">Status:</span>
         {Object.entries(statusLabels).map(([key, label]) => (
           <div key={key} className="flex items-center gap-1.5">
-            <div className={cn('w-3 h-3 rounded bg-blue-500/50', statusBarStyle[key as keyof typeof statusBarStyle])} />
+            <div className={cn('w-3 h-3 rounded bg-[var(--aiox-blue)]/50', statusBarStyle[key as keyof typeof statusBarStyle])} />
             <span className="text-[10px] text-secondary">{label}</span>
           </div>
         ))}
@@ -398,8 +386,8 @@ export default function RoadmapView() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <MapIcon size={22} className="text-indigo-400" />
-          <h1 className="text-xl font-semibold text-primary">Product Roadmap</h1>
+          <MapIcon size={22} className="text-[var(--aiox-blue)]" />
+          <h1 className="heading-display text-xl font-semibold text-primary">Product Roadmap</h1>
           <Badge variant="count" size="sm">{features.length}</Badge>
         </div>
         <div className="flex items-center gap-2">
@@ -418,52 +406,47 @@ export default function RoadmapView() {
               <LayoutGrid size={13} /> Cards
             </button>
           </div>
-          <GlassButton size="sm" leftIcon={<Plus size={14} />} onClick={() => setShowAddForm(true)}>
+          <CockpitButton size="sm" leftIcon={<Plus size={14} />} onClick={() => setShowAddForm(true)}>
             Add Feature
-          </GlassButton>
+          </CockpitButton>
         </div>
       </div>
 
       {/* Add Feature Form */}
-      <AnimatePresence>
-        {showAddForm && (
+      {showAddForm && (
           <AddFeatureForm onClose={() => setShowAddForm(false)} onSubmit={addFeature} />
         )}
-      </AnimatePresence>
-
-      {/* Filter Bar */}
+{/* Filter Bar */}
       <div className="flex items-center gap-2 flex-wrap">
         {filterOptions.map((opt) => (
-          <GlassButton
+          <CockpitButton
             key={opt}
             size="sm"
             variant={filter === opt ? 'primary' : 'ghost'}
             onClick={() => setFilter(opt)}
           >
             {opt === 'all' ? 'All' : priorityConfig[opt].label}
-          </GlassButton>
+          </CockpitButton>
         ))}
       </div>
 
       {/* Content */}
-      <AnimatePresence mode="wait">
-        {viewMode === 'timeline' ? (
-          <motion.div key="timeline" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      {viewMode === 'timeline' ? (
+          <div key="timeline">
             <TimelineView features={filtered} />
-          </motion.div>
+          </div>
         ) : filter === 'all' ? (
-          <motion.div key="cards-all" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div key="cards-all" className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <PrioritySection priority="must" features={grouped.must} />
             <PrioritySection priority="should" features={grouped.should} />
             <PrioritySection priority="could" features={grouped.could} />
             <PrioritySection priority="wont" features={grouped.wont} />
-          </motion.div>
+          </div>
         ) : (
-          <motion.div key={`cards-${filter}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <div key={`cards-${filter}`}>
             <PrioritySection priority={filter as keyof typeof priorityConfig} features={filtered} />
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

@@ -1,5 +1,4 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { ICON_SIZES } from '../../lib/icons';
 import { useSquads } from '../../hooks/useSquads';
@@ -249,23 +248,21 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
         <div className="min-h-full flex items-center justify-center p-8">
-          <motion.div
+          <div
             className="relative"
             style={{
               width: bounds.width,
               height: bounds.height,
               transformOrigin: 'center center',
             }}
-            animate={{ scale: zoom, x: panOffset.x, y: panOffset.y }}
-            transition={{ type: 'spring', damping: 20, stiffness: 200 }}
           >
             {/* Domain zone backgrounds */}
             {!filterDomain && domainZones.map((zone) => {
               const d = themedDomains[zone.domain];
               return (
-                <motion.div
+                <div
                   key={zone.domain}
-                  className="absolute rounded-2xl pointer-events-none"
+                  className="absolute rounded-none pointer-events-none"
                   style={{
                     left: zone.x + bounds.offsetX,
                     top: zone.y + bounds.offsetY,
@@ -274,9 +271,6 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                     background: `radial-gradient(ellipse at center, ${d.tileColor}08 0%, transparent 70%)`,
                     border: `1px solid ${d.tileColor}12`,
                   }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
                 />
               );
             })}
@@ -322,19 +316,13 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                     {isActive && (
                       <div className="flex gap-0.5 mt-0.5">
                         {Array.from({ length: Math.min(agentCount, 5) }).map((_, di) => (
-                          <motion.div
+                          <div
                             key={di}
                             className="rounded-full"
                             style={{
                               width: 3,
                               height: 3,
                               backgroundColor: domainCfg.tileColor,
-                            }}
-                            animate={{ opacity: [0.3, 1, 0.3] }}
-                            transition={{
-                              duration: 2,
-                              repeat: Infinity,
-                              delay: di * 0.4,
                             }}
                           />
                         ))}
@@ -343,15 +331,13 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                   </IsometricTile>
 
                   {/* Room label + info (below tile) */}
-                  <motion.div
+                  <div
                     className="absolute pointer-events-none text-center"
                     style={{
                       left: (room.gridX - room.gridY) * (TILE_WIDTH / 2) + bounds.offsetX - 20,
                       top: (room.gridX + room.gridY) * (TILE_HEIGHT / 2) + bounds.offsetY + TILE_HEIGHT + 2,
                       width: TILE_WIDTH + 40,
                     }}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: isHovered ? 1 : 0.7 }}
                   >
                     <span
                       className={cn(
@@ -373,22 +359,17 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                         {agentCount} agents
                       </span>
                     )}
-                  </motion.div>
+                  </div>
 
                   {/* Hover tooltip with room details */}
-                  <AnimatePresence>
-                    {isHovered && (
-                      <motion.div
+                  {isHovered && (
+                      <div
                         className="absolute pointer-events-none z-30"
                         style={{
                           left: (room.gridX - room.gridY) * (TILE_WIDTH / 2) + bounds.offsetX - 30,
                           top: (room.gridX + room.gridY) * (TILE_HEIGHT / 2) + bounds.offsetY - 60,
                           width: TILE_WIDTH + 60,
                         }}
-                        initial={{ opacity: 0, y: 6, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 6, scale: 0.9 }}
-                        transition={{ duration: 0.15 }}
                       >
                         <div
                           className="rounded-lg px-3 py-2 text-center"
@@ -417,13 +398,12 @@ export function WorldMap({ onRoomClick, zoom, onZoomChange, highlightedRooms = [
                             Click to enter
                           </div>
                         </div>
-                      </motion.div>
+                      </div>
                     )}
-                  </AnimatePresence>
-                </div>
+</div>
               );
             })}
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '../ui';
 import { useUIStore } from '../../stores/uiStore';
 import { useChatStore } from '../../stores/chatStore';
@@ -69,7 +68,7 @@ export function ActivityPanel() {
 
       {/* Tabs */}
       <div className="px-4 py-3 border-b border-glass-border">
-        <div className="flex gap-1 p-1 glass-subtle rounded-xl" role="tablist" aria-label="Abas do painel de atividade">
+        <div className="flex gap-1 p-1 glass-subtle rounded-none" role="tablist" aria-label="Abas do painel de atividade">
           {[
             { id: 'activity', label: 'Status' },
             { id: 'history', label: 'Histórico' },
@@ -95,13 +94,9 @@ export function ActivityPanel() {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto glass-scrollbar p-4 space-y-4" tabIndex={0} role="region" aria-label="Conteudo do painel de atividade">
-        <AnimatePresence mode="wait">
-          {activeTab === 'activity' && (
-            <motion.div
+        {activeTab === 'activity' && (
+            <div
               key="activity"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
               className="space-y-4"
             >
               {hasAgent ? (
@@ -158,15 +153,12 @@ export function ActivityPanel() {
                   description="Escolha um agent na sidebar para ver informações de atividade aqui"
                 />
               )}
-            </motion.div>
+            </div>
           )}
 
           {activeTab === 'history' && (
-            <motion.div
+            <div
               key="history"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
               className="space-y-4"
             >
               {hasMessages ? (
@@ -181,22 +173,18 @@ export function ActivityPanel() {
                   }
                 />
               )}
-            </motion.div>
+            </div>
           )}
 
           {activeTab === 'metrics' && (
-            <motion.div
+            <div
               key="metrics"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
               className="space-y-4"
             >
               <MetricsPanel expandedSections={expandedSections} toggleSection={toggleSection} />
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-      </div>
+</div>
     </aside>
   );
 }

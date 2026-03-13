@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Bot, Clock, AlertTriangle } from 'lucide-react';
-import { GlassCard, Badge, ProgressBar, Avatar } from '../ui';
+import { CockpitCard, Badge, ProgressBar, Avatar } from '../ui';
 import type { StatusType } from '../ui/StatusDot';
 import { cn, formatRelativeTime } from '../../lib/utils';
 
@@ -20,24 +20,24 @@ export interface AgentMonitorData {
 }
 
 const phaseColors: Record<string, string> = {
-  coding: 'text-green-400',
-  testing: 'text-purple-400',
-  reviewing: 'text-orange-400',
-  planning: 'text-blue-400',
-  deploying: 'text-yellow-400',
+  coding: 'text-[var(--color-status-success)]',
+  testing: 'text-[var(--aiox-gray-muted)]',
+  reviewing: 'text-[var(--bb-flare)]',
+  planning: 'text-[var(--aiox-blue)]',
+  deploying: 'text-[var(--bb-warning)]',
 };
 
 const modelBadgeStyle: Record<string, string> = {
-  opus: 'bg-purple-500/15 text-purple-400',
-  sonnet: 'bg-blue-500/15 text-blue-400',
-  haiku: 'bg-green-500/15 text-green-400',
+  opus: 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]',
+  sonnet: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  haiku: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
 };
 
 const statusBorderColor: Record<AgentMonitorData['status'], string> = {
-  working: 'border-l-green-500',
-  waiting: 'border-l-blue-500',
-  idle: 'border-l-gray-500/30',
-  error: 'border-l-red-500',
+  working: 'border-l-[var(--color-status-success)]',
+  waiting: 'border-l-[var(--aiox-blue)]',
+  idle: 'border-l-[var(--aiox-gray-dim)]/30',
+  error: 'border-l-[var(--bb-error)]',
 };
 
 function mapStatus(status: AgentMonitorData['status']): StatusType {
@@ -75,13 +75,13 @@ export const AgentMonitorCard = memo(function AgentMonitorCard({
       : '-';
 
   return (
-    <GlassCard
+    <CockpitCard
       padding="md"
       className={cn(
         'relative overflow-hidden border-l-[3px] transition-all duration-200',
         statusBorderColor[agent.status],
-        isActive && 'ring-1 ring-green-500/20',
-        isError && 'ring-1 ring-red-500/20',
+        isActive && 'ring-1 ring-[var(--color-status-success)]/20',
+        isError && 'ring-1 ring-[var(--bb-error)]/20',
         onClick && 'cursor-pointer hover:bg-white/[0.03]',
       )}
       onClick={onClick}
@@ -100,13 +100,13 @@ export const AgentMonitorCard = memo(function AgentMonitorCard({
             {agent.name}
           </span>
           {stale && (
-            <AlertTriangle className="h-3.5 w-3.5 text-yellow-500 flex-shrink-0" />
+            <AlertTriangle className="h-3.5 w-3.5 text-[var(--bb-warning)] flex-shrink-0" />
           )}
         </div>
         <span
           className={cn(
             'inline-flex items-center px-2 py-0.5 text-[10px] font-medium rounded-md flex-shrink-0',
-            modelBadgeStyle[agent.model] ?? 'bg-gray-500/15 text-gray-400',
+            modelBadgeStyle[agent.model] ?? 'bg-[var(--aiox-gray-dim)]/15 text-tertiary',
           )}
         >
           {agent.model}
@@ -150,10 +150,10 @@ export const AgentMonitorCard = memo(function AgentMonitorCard({
             <span
               className={cn(
                 agent.successRate >= 95
-                  ? 'text-green-400'
+                  ? 'text-[var(--color-status-success)]'
                   : agent.successRate >= 80
-                    ? 'text-yellow-400'
-                    : 'text-red-400',
+                    ? 'text-[var(--bb-warning)]'
+                    : 'text-[var(--bb-error)]',
               )}
             >
               {agent.successRate}% success
@@ -177,13 +177,13 @@ export const AgentMonitorCard = memo(function AgentMonitorCard({
         <span
           className={cn(
             'inline-flex items-center gap-1 text-[10px]',
-            stale ? 'text-yellow-500' : 'text-tertiary',
+            stale ? 'text-[var(--bb-warning)]' : 'text-tertiary',
           )}
         >
           <Clock className="h-3 w-3" />
           {relativeTime}
         </span>
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 });

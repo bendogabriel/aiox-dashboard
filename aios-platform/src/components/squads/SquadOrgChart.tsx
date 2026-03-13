@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { GlassCard, Badge } from '../ui';
+import { CockpitCard, Badge } from '../ui';
 import { cn } from '../../lib/utils';
 import { getIconComponent } from '../../lib/icons';
 import type { AgentSummary, AgentTier } from '../../types';
@@ -10,9 +9,9 @@ interface SquadOrgChartProps {
 }
 
 const tierConfig: Record<AgentTier, { label: string; color: string; bg: string; borderColor: string }> = {
-  0: { label: 'Orchestrator', color: 'text-purple-400', bg: 'bg-purple-500/15', borderColor: 'border-purple-500/30' },
-  1: { label: 'Master', color: 'text-blue-400', bg: 'bg-blue-500/15', borderColor: 'border-blue-500/30' },
-  2: { label: 'Specialist', color: 'text-green-400', bg: 'bg-green-500/15', borderColor: 'border-green-500/30' },
+  0: { label: 'Orchestrator', color: 'text-[var(--aiox-gray-muted)]', bg: 'bg-[var(--aiox-gray-muted)]/15', borderColor: 'border-[var(--aiox-gray-muted)]/30' },
+  1: { label: 'Master', color: 'text-[var(--aiox-blue)]', bg: 'bg-[var(--aiox-blue)]/15', borderColor: 'border-[var(--aiox-blue)]/30' },
+  2: { label: 'Specialist', color: 'text-[var(--color-status-success)]', bg: 'bg-[var(--color-status-success)]/15', borderColor: 'border-[var(--color-status-success)]/30' },
 };
 
 function AgentNode({ agent, index }: { agent: AgentSummary; index: number }) {
@@ -25,12 +24,9 @@ function AgentNode({ agent, index }: { agent: AgentSummary; index: number }) {
   /* eslint-enable react-hooks/static-components */
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.05, duration: 0.3 }}
+    <div
     >
-      <GlassCard padding="sm" className="w-36 text-center">
+      <CockpitCard padding="sm" className="w-36 text-center">
         <div className={cn('w-8 h-8 rounded-lg mx-auto flex items-center justify-center', tier.bg)}>
           {iconElement}
         </div>
@@ -38,8 +34,8 @@ function AgentNode({ agent, index }: { agent: AgentSummary; index: number }) {
         <Badge variant="default" size="sm" className={cn('mt-1', tier.bg)}>
           <span className={tier.color}>{tier.label}</span>
         </Badge>
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }
 

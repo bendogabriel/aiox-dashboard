@@ -5,7 +5,7 @@ import { playSound } from '../hooks/useSound';
 import { supabaseSettingsService } from '../services/supabase/settings';
 import type { UIState } from '../types';
 
-type ThemeType = 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox';
+type ThemeType = 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox' | 'aiox-gold';
 
 type ViewType =
   | 'chat' | 'dashboard' | 'cockpit' | 'settings' | 'orchestrator' | 'world'
@@ -76,6 +76,9 @@ const applyTheme = (theme: ThemeType) => {
   } else if (theme === 'aiox') {
     html.classList.add('dark');
     html.setAttribute('data-theme', 'aiox');
+  } else if (theme === 'aiox-gold') {
+    html.classList.add('dark');
+    html.setAttribute('data-theme', 'aiox-gold');
   } else {
     const effectiveTheme = theme === 'system' ? getSystemTheme() : theme;
     if (effectiveTheme === 'dark') {
@@ -126,11 +129,13 @@ export const useUIStore = create<UIState & UIActions>()(
 
       toggleTheme: () => {
         const currentTheme = get().theme;
-        // Cycle: light -> dark -> glass -> matrix -> aiox -> light
+        // Cycle: light -> dark -> glass -> matrix -> aiox -> aiox-gold -> light
         // (system resolves to its effective theme first)
         let newTheme: ThemeType;
-        if (currentTheme === 'aiox') {
+        if (currentTheme === 'aiox-gold') {
           newTheme = 'light';
+        } else if (currentTheme === 'aiox') {
+          newTheme = 'aiox-gold';
         } else if (currentTheme === 'matrix') {
           newTheme = 'aiox';
         } else if (currentTheme === 'glass') {
@@ -298,7 +303,7 @@ if (typeof window !== 'undefined') {
       if (remote?.theme) {
         const currentState = useUIStore.getState();
         // Only apply remote theme if local hasn't been changed since page load
-        if (currentState.theme === 'aiox' && remote.theme !== 'aiox') {
+        if ((currentState.theme === 'aiox' || currentState.theme === 'aiox-gold') && remote.theme !== currentState.theme) {
           applyTheme(remote.theme as ThemeType);
           useUIStore.setState({ theme: remote.theme as ThemeType });
         }

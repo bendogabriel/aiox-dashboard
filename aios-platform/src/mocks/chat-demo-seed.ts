@@ -346,8 +346,8 @@ O @dev implementou as mudancas e o @qa aprovou apos 2 rounds de review. Aqui est
 +function DiffBlock({ value }) {
 +  const lines = value.split('\\n');
 +  return lines.map(line => {
-+    if (line.startsWith('+')) return <span className="text-green-400">{line}</span>;
-+    if (line.startsWith('-')) return <span className="text-red-400">{line}</span>;
++    if (line.startsWith('+')) return <span className="text-[var(--color-status-success)]">{line}</span>;
++    if (line.startsWith('-')) return <span className="text-[var(--bb-error)]">{line}</span>;
 +    return <span>{line}</span>;
 +  });
 +}

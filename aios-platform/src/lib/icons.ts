@@ -252,14 +252,15 @@ export function getIconComponent(name: string): LucideIcon {
 // ── Semantic icon aliases (replace emojis across the app) ──
 
 /** Theme selector icons */
-export const ThemeIcons = {
+export const ThemeIcons: Record<string, LucideIcon> = {
   light: Sun,
   dark: Moon,
   system: Laptop,
   matrix: CircleDot,
   glass: Sparkles,
   aiox: Zap,
-} as const;
+  'aiox-gold': Gem,
+};
 
 /** Category default icon */
 export const CategoryIcon = FolderOpen;

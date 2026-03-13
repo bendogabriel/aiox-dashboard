@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   type LucideIcon,
   Clapperboard,
@@ -164,11 +163,8 @@ export function WorldWorkflowPanel({
   };
 
   return (
-    <motion.div
+    <div
       className="absolute bottom-0 left-0 right-0 z-20"
-      initial={false}
-      animate={{ height: expanded ? 220 : 44 }}
-      transition={{ type: 'spring', damping: 25, stiffness: 300 }}
     >
       {/* Toggle bar */}
       <button
@@ -183,23 +179,19 @@ export function WorldWorkflowPanel({
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-semibold text-white/90">Workflows</span>
           {activeCount > 0 && (
-            <motion.span
+            <span
               className="px-1.5 py-0.5 rounded text-[9px] font-bold"
               style={{ background: 'color-mix(in srgb, var(--color-status-info) 20%, transparent)', color: 'var(--color-status-info)' }}
-              animate={{ opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2, repeat: Infinity }}
             >
               {activeCount} active
-            </motion.span>
+            </span>
           )}
           {/* Live monitor indicator */}
           {monitorConnected && (
             <div className="flex items-center gap-1 ml-2">
-              <motion.div
+              <div
                 className="w-1.5 h-1.5 rounded-full"
                 style={{ backgroundColor: '#10B981' }}
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
               />
               <span className="text-[8px] text-white/40 font-mono">LIVE</span>
               {eventCount > 0 && (
@@ -208,36 +200,30 @@ export function WorldWorkflowPanel({
             </div>
           )}
         </div>
-        <motion.svg
+        <svg
           width="14" height="14" viewBox="0 0 24 24"
           fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2"
-          animate={{ rotate: expanded ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
         >
           <polyline points="6 9 12 15 18 9" />
-        </motion.svg>
+        </svg>
       </button>
 
       {/* Panel content */}
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
+      {expanded && (
+          <div
             className="overflow-y-auto"
             style={{
               height: 176,
               background: 'rgba(0,0,0,0.8)',
               backdropFilter: 'blur(12px)',
             }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
           >
             <div className="px-4 py-2 flex gap-3 overflow-x-auto glass-scrollbar">
               {businessWorkflows.map((wf) => (
-                <motion.div
+                <div
                   key={wf.id}
                   className={cn(
-                    'flex-shrink-0 rounded-xl p-3 cursor-pointer transition-colors',
+                    'flex-shrink-0 rounded-none p-3 cursor-pointer transition-colors',
                     selectedWorkflow === wf.id ? 'ring-1 ring-white/20' : '',
                   )}
                   style={{
@@ -250,8 +236,6 @@ export function WorldWorkflowPanel({
                   onClick={() => setSelectedWorkflow(wf.id === selectedWorkflow ? null : wf.id)}
                   onMouseEnter={() => handleWorkflowHover(wf)}
                   onMouseLeave={() => handleWorkflowHover(null)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
                 >
                   {/* Workflow header */}
                   <div className="flex items-center gap-2 mb-2.5">
@@ -278,7 +262,7 @@ export function WorldWorkflowPanel({
                       return (
                         <div key={step.squadId} className="flex items-center">
                           {/* Step node */}
-                          <motion.div
+                          <div
                             className="flex flex-col items-center cursor-pointer"
                             onMouseEnter={() => setHoveredStep(`${wf.id}-${step.squadId}`)}
                             onMouseLeave={() => setHoveredStep(null)}
@@ -286,7 +270,6 @@ export function WorldWorkflowPanel({
                               e.stopPropagation();
                               onRoomClick(step.squadId);
                             }}
-                            whileHover={{ y: -2 }}
                           >
                             {/* Node circle */}
                             <div className="relative">
@@ -307,10 +290,8 @@ export function WorldWorkflowPanel({
                                   </svg>
                                 )}
                                 {step.status === 'active' && (
-                                  <motion.div
+                                  <div
                                     className="w-2 h-2 rounded-full bg-white"
-                                    animate={{ scale: [1, 1.3, 1] }}
-                                    transition={{ duration: 1.5, repeat: Infinity }}
                                   />
                                 )}
                                 {step.status === 'failed' && (
@@ -323,11 +304,9 @@ export function WorldWorkflowPanel({
 
                               {/* Active pulse */}
                               {step.status === 'active' && (
-                                <motion.div
+                                <div
                                   className="absolute inset-0 rounded-full"
                                   style={{ border: `2px solid ${domainCfg.tileColor}` }}
-                                  animate={{ scale: [1, 1.5], opacity: [0.6, 0] }}
-                                  transition={{ duration: 1.5, repeat: Infinity }}
                                 />
                               )}
                             </div>
@@ -340,39 +319,31 @@ export function WorldWorkflowPanel({
                             {/* Progress bar for active steps */}
                             {step.status === 'active' && step.progress !== undefined && (
                               <div className="w-full h-0.5 rounded mt-0.5 overflow-hidden" style={{ background: 'var(--glass-border-color)' }}>
-                                <motion.div
+                                <div
                                   className="h-full rounded"
                                   style={{ background: domainCfg.tileColor }}
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${step.progress}%` }}
-                                  transition={{ duration: 0.5 }}
                                 />
                               </div>
                             )}
 
                             {/* Hover tooltip */}
-                            <AnimatePresence>
-                              {hoveredStep === `${wf.id}-${step.squadId}` && (
-                                <motion.div
+                            {hoveredStep === `${wf.id}-${step.squadId}` && (
+                                <div
                                   className="absolute bottom-full mb-1 px-2 py-1 rounded pointer-events-none z-50"
                                   style={{
                                     background: 'rgba(0,0,0,0.9)',
                                     border: `1px solid ${domainCfg.tileColor}44`,
                                     whiteSpace: 'nowrap',
                                   }}
-                                  initial={{ opacity: 0, y: 4 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  exit={{ opacity: 0, y: 4 }}
                                 >
                                   <div className="text-[9px] text-white font-semibold">{step.label}</div>
                                   {step.agentName && (
                                     <div className="text-[8px] text-white/50">{step.agentName}</div>
                                   )}
                                   <div className="text-[7px] text-white/30 mt-0.5">Click to enter room</div>
-                                </motion.div>
+                                </div>
                               )}
-                            </AnimatePresence>
-                          </motion.div>
+</div>
 
                           {/* Arrow connector with data flow animation */}
                           {!isLast && (() => {
@@ -396,23 +367,13 @@ export function WorldWorkflowPanel({
                                 />
                                 {/* Data flow pulse — animated dot traveling along connector */}
                                 {isFlowing && (
-                                  <motion.div
+                                  <div
                                     className="absolute top-1/2 -translate-y-1/2 rounded-full"
                                     style={{
                                       width: 4,
                                       height: 4,
                                       background: statusColorMap.completed,
                                       boxShadow: `0 0 6px ${statusColorMap.completed}`,
-                                    }}
-                                    animate={{
-                                      left: [-2, 18],
-                                      opacity: [0, 1, 1, 0],
-                                    }}
-                                    transition={{
-                                      duration: 1.2,
-                                      repeat: Infinity,
-                                      ease: 'linear',
-                                      repeatDelay: 0.5,
                                     }}
                                   />
                                 )}
@@ -433,25 +394,19 @@ export function WorldWorkflowPanel({
                   </div>
 
                   {/* Workflow description (when selected) */}
-                  <AnimatePresence>
-                    {selectedWorkflow === wf.id && (
-                      <motion.div
+                  {selectedWorkflow === wf.id && (
+                      <div
                         className="mt-2 pt-2"
                         style={{ borderTop: '1px solid var(--glass-border-color-subtle)' }}
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
                       >
                         <p className="text-[9px] text-white/40">{wf.description}</p>
-                      </motion.div>
+                      </div>
                     )}
-                  </AnimatePresence>
-                </motion.div>
+</div>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </motion.div>
+</div>
   );
 }

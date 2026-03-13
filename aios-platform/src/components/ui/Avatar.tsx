@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { cn } from '../../lib/utils';
 import { getAgentAvatarUrl } from '../../lib/agent-avatars';
 import { getSquadTheme } from '../../lib/theme';
@@ -54,16 +55,18 @@ export function Avatar({
   className,
 }: AvatarProps) {
   const showStatus = status !== undefined;
+  const [imgError, setImgError] = useState(false);
 
   // Resolve avatar: explicit src > agent avatar > initials fallback
   const resolvedSrc = src || (agentId ? getAgentAvatarUrl(agentId) : undefined) || (name ? getAgentAvatarUrl(name) : undefined);
 
   return (
     <div className={cn('relative inline-flex', className)}>
-      {resolvedSrc ? (
+      {resolvedSrc && !imgError ? (
         <img
           src={resolvedSrc}
           alt={alt || name || 'Avatar'}
+          onError={() => setImgError(true)}
           className={cn(
             'rounded-full object-cover',
             'ring-2 ring-white/20',

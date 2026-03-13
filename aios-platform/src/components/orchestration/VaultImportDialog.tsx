@@ -2,7 +2,6 @@
  * VaultImportDialog — Modal to save an artifact or entire task output to the Vault.
  */
 import { useState, useEffect, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   Vault,
@@ -108,26 +107,20 @@ export const VaultImportDialog = memo(function VaultImportDialog({
   };
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+    <>
+    {visible && (
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={onClose}
         >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
+          <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md mx-4 rounded-2xl bg-[#0a0a0a] border border-white/10 shadow-2xl overflow-hidden"
+            className="w-full max-w-md mx-4 rounded-none bg-[var(--aiox-surface)] border border-white/10 shadow-2xl overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <Vault className="w-5 h-5 text-cyan-400" />
+                <Vault className="w-5 h-5 text-[var(--aiox-blue)]" />
                 <h3 className="text-sm font-semibold text-white">Salvar no Vault</h3>
               </div>
               <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 text-white/40">
@@ -139,9 +132,9 @@ export const VaultImportDialog = memo(function VaultImportDialog({
             <div className="p-4 space-y-4">
               {/* Artifact preview */}
               {artifact && (
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                <div className="p-3 rounded-none bg-white/5 border border-white/10">
                   <div className="flex items-center gap-2 text-xs text-white/50 mb-1">
-                    <span className="px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400">
+                    <span className="px-1.5 py-0.5 rounded bg-[var(--aiox-blue)]/10 text-[var(--aiox-blue)]">
                       {getArtifactLabel(artifact.type)}
                     </span>
                     {artifact.language && (
@@ -162,7 +155,7 @@ export const VaultImportDialog = memo(function VaultImportDialog({
                   type="text"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-cyan-500/50"
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--aiox-lime)]/50"
                   placeholder="Nome do documento..."
                 />
               </div>
@@ -176,7 +169,7 @@ export const VaultImportDialog = memo(function VaultImportDialog({
                   <select
                     value={selectedWorkspace}
                     onChange={e => setSelectedWorkspace(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500/50"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[var(--aiox-lime)]/50"
                   >
                     <option value="">Selecione...</option>
                     {workspaces.map(ws => (
@@ -193,7 +186,7 @@ export const VaultImportDialog = memo(function VaultImportDialog({
                   <select
                     value={docType}
                     onChange={e => setDocType(e.target.value as VaultDocument['type'])}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500/50"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[var(--aiox-lime)]/50"
                   >
                     {DOC_TYPES.map(dt => (
                       <option key={dt.value} value={dt.value}>{dt.label}</option>
@@ -203,9 +196,8 @@ export const VaultImportDialog = memo(function VaultImportDialog({
                 <div>
                   <label className="text-xs text-white/50 mb-1 block">Categoria</label>
                   <select
-                    value={category}
                     onChange={e => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500/50"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-[var(--aiox-lime)]/50"
                   >
                     {CATEGORIES.map(c => (
                       <option key={c.value} value={c.value}>{c.label}</option>
@@ -223,7 +215,7 @@ export const VaultImportDialog = memo(function VaultImportDialog({
                   type="text"
                   value={tags}
                   onChange={e => setTags(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-cyan-500/50"
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--aiox-lime)]/50"
                   placeholder="api, auth, backend..."
                 />
               </div>
@@ -242,8 +234,8 @@ export const VaultImportDialog = memo(function VaultImportDialog({
                 disabled={saving || saved || !name.trim()}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                   saved
-                    ? 'bg-green-500/20 text-green-400'
-                    : 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'
+                    ? 'bg-[var(--color-status-success)]/20 text-[var(--color-status-success)]'
+                    : 'bg-[var(--aiox-blue)]/20 text-[var(--aiox-blue)] hover:bg-[var(--aiox-blue)]/30'
                 } disabled:opacity-50`}
               >
                 {saving ? (
@@ -255,9 +247,9 @@ export const VaultImportDialog = memo(function VaultImportDialog({
                 )}
               </button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 });

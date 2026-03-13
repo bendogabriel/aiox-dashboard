@@ -11,9 +11,11 @@ export type EmulatorFixture = {
 };
 
 export const test = base.extend<EmulatorFixture>({
+  /* eslint-disable no-empty-pattern, react-hooks/rules-of-hooks */
   engineUrl: async ({}, use) => {
     await use(`http://localhost:${ENGINE_PORT}`);
   },
+  /* eslint-enable no-empty-pattern, react-hooks/rules-of-hooks */
 });
 
 export { expect };

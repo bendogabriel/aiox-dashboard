@@ -1,5 +1,4 @@
 import { useEffect, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Eye,
   Headphones,
@@ -39,9 +38,9 @@ const STATUS_LABEL: Record<string, string> = {
 const ACTIVITY_DOT: Record<string, string> = {
   'message-sent': '#555',
   'message-received': '#555',
-  'cart-recovered': '#D1FF00',
+  'cart-recovered': 'var(--aiox-lime)',
   'lead-qualified': '#4ADE80',
-  'sale-closed': '#D1FF00',
+  'sale-closed': 'var(--aiox-lime)',
   'follow-up-scheduled': '#f59e0b',
   'lead-lost': '#EF4444',
 };
@@ -123,8 +122,17 @@ function AgentRow({ agent, isSelected, onClick }: {
   );
 }
 
-function ConversationView({ agent }: { agent: SalesAgent }) {
-  if (!agent.currentLead) {
+function ConversationView({ agent, selectedConvIndex, onSelectConv }: {
+  agent: SalesAgent;
+  selectedConvIndex: number;
+  onSelectConv: (index: number) => void;
+}) {
+  const hasConversations = agent.conversations.length > 0;
+  const activeConv = hasConversations ? agent.conversations[selectedConvIndex] || agent.conversations[0] : null;
+  const lead = activeConv?.lead || agent.currentLead;
+  const messages = activeConv?.messages || agent.messages;
+
+  if (!lead) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-2">
         <Headphones className="h-8 w-8 text-white/10" />
@@ -133,12 +141,47 @@ function ConversationView({ agent }: { agent: SalesAgent }) {
     );
   }
 
-  const lead = agent.currentLead;
-  const insight = getConversationInsight(agent);
+  const insightAgent = activeConv
+    ? { ...agent, currentLead: activeConv.lead, messages: activeConv.messages }
+    : agent;
+  const insight = getConversationInsight(insightAgent);
   const sentimentCfg = SENTIMENT_INDICATOR[insight.sentiment];
 
   return (
     <div className="flex flex-col h-full">
+      {/* Conversation tabs — show when agent has multiple conversations */}
+      {agent.conversations.length > 1 && (
+        <div className="flex items-center border-b border-white/[0.04] overflow-x-auto flex-shrink-0">
+          {agent.conversations.map((conv, idx) => {
+            const isActive = idx === (selectedConvIndex < agent.conversations.length ? selectedConvIndex : 0);
+            return (
+              <button
+                key={conv.id}
+                onClick={() => onSelectConv(idx)}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-2 text-[11px] border-b-2 transition-colors flex-shrink-0 whitespace-nowrap',
+                  isActive
+                    ? 'border-[var(--aiox-blue)] text-white/80 bg-white/[0.03]'
+                    : 'border-transparent text-white/30 hover:text-white/50 hover:bg-white/[0.02]'
+                )}
+              >
+                <span
+                  className="h-1.5 w-1.5 rounded-full flex-shrink-0"
+                  style={{
+                    backgroundColor: conv.lead.temperature === 'hot' ? '#4ADE80'
+                      : conv.lead.temperature === 'warm' ? '#f59e0b' : '#666',
+                  }}
+                />
+                <span className="truncate max-w-[100px]">{conv.lead.name}</span>
+                {conv.messages.length > 0 && (
+                  <span className="text-[9px] text-white/15 tabular-nums">{conv.messages.length}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.04]">
         <div className="flex-1 min-w-0">
@@ -161,8 +204,8 @@ function ConversationView({ agent }: { agent: SalesAgent }) {
             <p className="text-[10px] text-white/20">chance</p>
             <p className={cn(
               'text-sm tabular-nums font-medium',
-              insight.closeProbability >= 60 ? 'text-emerald-400/80' :
-              insight.closeProbability >= 35 ? 'text-amber-400/70' : 'text-white/30'
+              insight.closeProbability >= 60 ? 'text-[var(--color-status-success)]/80' :
+              insight.closeProbability >= 35 ? 'text-[var(--bb-warning)]/70' : 'text-white/30'
             )}>
               {insight.closeProbability}%
             </p>
@@ -187,9 +230,9 @@ function ConversationView({ agent }: { agent: SalesAgent }) {
 
       {/* Stale alert */}
       {insight.isStale && (
-        <div className="flex items-center gap-2 px-5 py-1.5 bg-amber-500/[0.05] border-b border-amber-500/10">
-          <AlertTriangle className="h-3 w-3 text-amber-400/50" />
-          <span className="text-[11px] text-amber-400/50">
+        <div className="flex items-center gap-2 px-5 py-1.5 bg-[var(--bb-warning)]/[0.05] border-b border-[var(--bb-warning)]/10">
+          <AlertTriangle className="h-3 w-3 text-[var(--bb-warning)]/50" />
+          <span className="text-[11px] text-[var(--bb-warning)]/50">
             Conversa parada ha {insight.staleMinutes}min
           </span>
         </div>
@@ -197,37 +240,33 @@ function ConversationView({ agent }: { agent: SalesAgent }) {
 
       {/* Suggested response */}
       {insight.suggestedResponse && (
-        <div className="flex items-center gap-2 px-5 py-1.5 bg-blue-500/[0.03] border-b border-blue-500/[0.06]">
-          <Lightbulb className="h-3 w-3 text-blue-400/40" />
-          <span className="text-[11px] text-blue-400/40">{insight.suggestedResponse}</span>
+        <div className="flex items-center gap-2 px-5 py-1.5 bg-[var(--aiox-blue)]/[0.03] border-b border-[var(--aiox-blue)]/[0.06]">
+          <Lightbulb className="h-3 w-3 text-[var(--aiox-blue)]/40" />
+          <span className="text-[11px] text-[var(--aiox-blue)]/40">{insight.suggestedResponse}</span>
         </div>
       )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-        <AnimatePresence initial={false}>
-          {agent.messages.map((msg) => {
+        {messages.map((msg) => {
             const isAgent = msg.direction === 'agent';
             const msgSentiment = msg.direction === 'lead' ? getSentimentForMessage(msg.text) : null;
             return (
-              <motion.div
+              <div
                 key={msg.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.15 }}
                 className={cn('flex gap-3 max-w-[80%]', isAgent && 'ml-auto flex-row-reverse')}
               >
                 <div className={cn(
                   'h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-medium',
-                  isAgent ? 'bg-blue-500/10 text-blue-400/60' : 'bg-white/5 text-white/30'
+                  isAgent ? 'bg-[var(--aiox-blue)]/10 text-[var(--aiox-blue)]/60' : 'bg-white/5 text-white/30'
                 )}>
                   {isAgent ? agent.avatar : lead.name[0]}
                 </div>
                 <div className="min-w-0">
                   <div className={cn(
-                    'px-3.5 py-2.5 text-[13px] leading-relaxed rounded-xl',
+                    'px-3.5 py-2.5 text-[13px] leading-relaxed rounded-none',
                     isAgent
-                      ? 'bg-blue-500/8 text-white/80 rounded-tr-sm'
+                      ? 'bg-[var(--aiox-blue)]/8 text-white/80 rounded-tr-sm'
                       : 'bg-white/[0.04] text-white/70 rounded-tl-sm'
                   )}>
                     {msg.text}
@@ -251,22 +290,19 @@ function ConversationView({ agent }: { agent: SalesAgent }) {
                     )}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
-        </AnimatePresence>
-      </div>
+</div>
 
       {/* Typing indicator */}
       {agent.status === 'atendendo' && (
         <div className="px-5 py-2.5 border-t border-white/[0.04] flex items-center gap-2">
           <div className="flex items-center gap-1">
             {[0, 0.15, 0.3].map((delay) => (
-              <motion.span
+              <span
                 key={delay}
-                className="h-1 w-1 rounded-full bg-blue-400/40"
-                animate={{ opacity: [0.3, 1, 0.3] }}
-                transition={{ repeat: Infinity, duration: 1, delay }}
+                className="h-1 w-1 rounded-full bg-[var(--aiox-blue)]/40"
               />
             ))}
           </div>
@@ -280,15 +316,11 @@ function ConversationView({ agent }: { agent: SalesAgent }) {
 function ActivityFeed({ activities }: { activities: ActivityEvent[] }) {
   return (
     <div>
-      <AnimatePresence initial={false}>
-        {activities.map((activity) => {
+      {activities.map((activity) => {
           const dotColor = ACTIVITY_DOT[activity.type] || '#555';
           return (
-            <motion.div
+            <div
               key={activity.id}
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              transition={{ duration: 0.2 }}
               className="flex items-start gap-2.5 px-3 py-1.5 hover:bg-white/[0.02] transition-colors"
             >
               <span
@@ -310,11 +342,10 @@ function ActivityFeed({ activities }: { activities: ActivityEvent[] }) {
               <span className="text-[10px] tabular-nums text-white/15 flex-shrink-0">
                 {timeAgo(activity.timestamp)}
               </span>
-            </motion.div>
+            </div>
           );
         })}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }
 
@@ -322,9 +353,9 @@ function WhatsAppBadge({ status }: { status: ConnectionStatus }) {
   if (status === 'disconnected') return null;
 
   const cfg = {
-    connecting: { icon: Wifi, text: 'Conectando...', color: 'text-amber-400/40' },
-    connected: { icon: Wifi, text: 'WhatsApp', color: 'text-emerald-400/50' },
-    error: { icon: WifiOff, text: 'WA offline', color: 'text-red-400/40' },
+    connecting: { icon: Wifi, text: 'Conectando...', color: 'text-[var(--bb-warning)]/40' },
+    connected: { icon: Wifi, text: 'WhatsApp', color: 'text-[var(--color-status-success)]/50' },
+    error: { icon: WifiOff, text: 'WA offline', color: 'text-[var(--bb-error)]/40' },
   }[status] || { icon: WifiOff, text: '', color: '' };
 
   const Icon = cfg.icon;
@@ -348,7 +379,9 @@ export default memo(function SalesRoomPanel() {
   const activities = useSalesStore((s) => s.activities);
   const metrics = useSalesStore((s) => s.metrics);
   const selectedAgentId = useSalesStore((s) => s.selectedAgentId);
+  const selectedConvIndex = useSalesStore((s) => s.selectedConvIndex);
   const selectAgent = useSalesStore((s) => s.selectAgent);
+  const selectConversation = useSalesStore((s) => s.selectConversation);
   const waStatus = useSalesStore((s) => s.whatsappStatus);
   const simEnabled = useSalesStore((s) => s.simulationEnabled);
 
@@ -365,7 +398,7 @@ export default memo(function SalesRoomPanel() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-[#0a0a0a]">
+    <div className="flex flex-col h-full bg-[var(--aiox-surface)]">
       {/* ── Header + KPIs ── */}
       <div className="flex items-center border-b border-white/[0.04] overflow-x-auto">
         <div className="flex items-center gap-2.5 px-4 py-2.5 border-r border-white/[0.04] flex-shrink-0">
@@ -374,12 +407,10 @@ export default memo(function SalesRoomPanel() {
           <div className="flex items-center gap-1.5 ml-1">
             {hasLiveData && !simEnabled ? (
               <>
-                <motion.span
-                  className="h-1.5 w-1.5 rounded-full bg-emerald-400"
-                  animate={{ opacity: [1, 0.3, 1] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
+                <span
+                  className="h-1.5 w-1.5 rounded-full bg-[var(--color-status-success)]"
                 />
-                <span className="text-[10px] text-emerald-400/50 uppercase tracking-wider">live</span>
+                <span className="text-[10px] text-[var(--color-status-success)]/50 uppercase tracking-wider">live</span>
               </>
             ) : (
               <span className="text-[10px] text-white/20 uppercase tracking-wider">
@@ -402,8 +433,8 @@ export default memo(function SalesRoomPanel() {
         <div className="w-60 flex-shrink-0 border-r border-white/[0.04] flex flex-col">
           {/* Sales Pipeline */}
           <div className="px-3 py-2 flex items-center gap-1.5 border-b border-white/[0.04]">
-            <PhoneCall className="h-3 w-3 text-blue-400/40" />
-            <p className="text-[10px] text-blue-400/40 uppercase tracking-wider">Vendas</p>
+            <PhoneCall className="h-3 w-3 text-[var(--aiox-blue)]/40" />
+            <p className="text-[10px] text-[var(--aiox-blue)]/40 uppercase tracking-wider">Vendas</p>
             <span className="text-[10px] text-white/20 ml-auto tabular-nums">
               {salesAgents.filter((a) => a.status !== 'ocioso' && a.status !== 'pausado').length}/{salesAgents.length}
             </span>
@@ -421,8 +452,8 @@ export default memo(function SalesRoomPanel() {
 
           {/* Support Pipeline */}
           <div className="px-3 py-2 flex items-center gap-1.5 border-b border-white/[0.04] border-t border-white/[0.04]">
-            <HeartHandshake className="h-3 w-3 text-purple-400/40" />
-            <p className="text-[10px] text-purple-400/40 uppercase tracking-wider">Suporte</p>
+            <HeartHandshake className="h-3 w-3 text-[var(--aiox-gray-muted)]/40" />
+            <p className="text-[10px] text-[var(--aiox-gray-muted)]/40 uppercase tracking-wider">Suporte</p>
             <span className="text-[10px] text-white/20 ml-auto tabular-nums">
               {supportAgents.filter((a) => a.status !== 'ocioso' && a.status !== 'pausado').length}/{supportAgents.length}
             </span>
@@ -441,7 +472,7 @@ export default memo(function SalesRoomPanel() {
 
         {/* Center — Conversation */}
         <div className="flex-1 flex flex-col min-w-0">
-          <ConversationView agent={selectedAgent} />
+          <ConversationView agent={selectedAgent} selectedConvIndex={selectedConvIndex} onSelectConv={selectConversation} />
         </div>
 
         {/* Right — Activity */}
@@ -458,12 +489,12 @@ export default memo(function SalesRoomPanel() {
       {/* ── Footer ── */}
       <div className="px-4 py-1.5 border-t border-white/[0.04] flex items-center gap-4 text-[10px] text-white/20">
         <span>
-          <span className="text-emerald-400/50">
+          <span className="text-[var(--color-status-success)]/50">
             {agents.filter((a) => a.status === 'atendendo' || a.status === 'recuperando-carrinho').length}
           </span> atendendo
         </span>
         <span>
-          <span className="text-amber-400/50">
+          <span className="text-[var(--bb-warning)]/50">
             {agents.filter((a) => a.status === 'follow-up').length}
           </span> follow-up
         </span>
@@ -474,7 +505,7 @@ export default memo(function SalesRoomPanel() {
         </span>
         <span className="ml-auto tabular-nums flex items-center gap-2">
           {hasLiveData && (
-            <span className="text-[9px] text-emerald-400/30">WAHA</span>
+            <span className="text-[9px] text-[var(--color-status-success)]/30">WAHA</span>
           )}
           {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
         </span>

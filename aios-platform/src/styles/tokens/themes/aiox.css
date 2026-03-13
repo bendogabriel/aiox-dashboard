@@ -82,12 +82,12 @@ html[data-theme="aiox"] {
   --color-selection-bg: rgba(209, 255, 0, 0.25);
   --color-selection-text: #ffffed;
 
-  /* ----- Status (brandbook palette) ----- */
-  --color-status-success: #4ADE80;
+  /* ----- Status (brandbook palette — lime-primary) ----- */
+  --color-status-success: #D1FF00;
   --color-status-warning: #f59e0b;
   --color-status-error: #EF4444;
   --color-status-info: #0099FF;
-  --color-status-success-muted: rgba(74, 222, 128, 0.60);
+  --color-status-success-muted: rgba(209, 255, 0, 0.60);
   --color-status-warning-muted: rgba(245, 158, 11, 0.60);
   --color-status-error-muted: rgba(239, 68, 68, 0.60);
   --color-status-info-muted: rgba(0, 153, 255, 0.60);
@@ -196,17 +196,17 @@ html[data-theme="aiox"] {
   --toast-info-border: rgba(0, 153, 255, 0.20);
   --toast-info-text: #0099FF;
 
-  /* ----- Component: Status dot (brandbook palette) ----- */
+  /* ----- Component: Status dot (lime-primary — no competing green) ----- */
   --status-dot-idle: #3D3D3D;
   --status-dot-working: #D1FF00;
   --status-dot-waiting: #f59e0b;
   --status-dot-error: #EF4444;
-  --status-dot-success: #4ADE80;
+  --status-dot-success: #D1FF00;
   --status-dot-offline: #3D3D3D;
   --status-dot-working-glow: rgba(209, 255, 0, 0.40);
   --status-dot-waiting-glow: rgba(245, 158, 11, 0.40);
   --status-dot-error-glow: rgba(239, 68, 68, 0.50);
-  --status-dot-success-glow: rgba(74, 222, 128, 0.40);
+  --status-dot-success-glow: rgba(209, 255, 0, 0.40);
 
   /* ----- Squads: Brandbook palette (lime / blue / flare / gray families) ----- */
   --squad-orchestrator-default: #D1FF00;

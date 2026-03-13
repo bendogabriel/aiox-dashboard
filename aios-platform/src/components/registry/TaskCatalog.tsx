@@ -1,5 +1,4 @@
 import { useState, useMemo, memo } from 'react';
-import { motion } from 'framer-motion';
 import { Search, Filter, Terminal, Zap } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { getAgentColor } from '../../lib/agent-colors';
@@ -12,9 +11,7 @@ const TaskRow = memo(function TaskRow({ task }: { task: TaskDefinition }) {
   const color = getAgentColor(task.agent);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className="flex items-center gap-3 px-4 py-3 border-b border-white/5 hover:bg-white/[0.03] transition-colors"
     >
       <code className="text-xs font-mono text-primary flex-shrink-0 w-48 truncate" title={task.id}>
@@ -34,12 +31,12 @@ const TaskRow = memo(function TaskRow({ task }: { task: TaskDefinition }) {
         {task.agent}
       </span>
       {task.hasElicitation && (
-        <span className="text-[10px] text-yellow-400 flex-shrink-0 flex items-center gap-1">
+        <span className="text-[10px] text-[var(--bb-warning)] flex-shrink-0 flex items-center gap-1">
           <Zap className="w-3 h-3" />
           interactive
         </span>
       )}
-    </motion.div>
+    </div>
   );
 });
 
@@ -112,9 +109,7 @@ export default function TaskCatalog() {
   const totalCount = aiosRegistry.tasks.length;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+    <div
       className="flex flex-col h-full"
     >
       {/* Header */}
@@ -184,6 +179,6 @@ export default function TaskCatalog() {
           filtered.map((task) => <TaskRow key={task.id} task={task} />)
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -14,10 +14,10 @@ import { useToastStore, type NotificationItem, type ToastType } from '../../stor
 type FilterType = 'all' | ToastType;
 
 const TYPE_COLORS: Record<ToastType, string> = {
-  success: 'var(--aiox-lime, #D1FF00)',
+  success: 'var(--color-status-success, #4ADE80)',
   error: 'var(--color-status-error, #EF4444)',
   warning: 'var(--aiox-warning, #f59e0b)',
-  info: 'var(--aiox-blue, #0099FF)',
+  info: 'var(--aiox-gray-muted, #999)',
 };
 
 const TYPE_LABELS: Record<FilterType, string> = {
@@ -103,7 +103,7 @@ export function NotificationCenter() {
           textAlign: 'left',
         }}
       >
-        <Bell size={14} style={{ color: unreadCount > 0 ? 'var(--aiox-lime, #D1FF00)' : 'var(--aiox-gray-dim)' }} />
+        <Bell size={14} style={{ color: 'var(--aiox-gray-dim, #696969)' }} />
         <span style={{
           flex: 1,
           textTransform: 'uppercase',
@@ -117,8 +117,8 @@ export function NotificationCenter() {
             padding: '1px 6px',
             fontSize: '9px',
             fontWeight: 700,
-            background: 'var(--aiox-lime, #D1FF00)',
-            color: 'var(--aiox-dark, #050505)',
+            background: 'rgba(255, 255, 255, 0.12)',
+            color: 'var(--aiox-cream, #E5E5E5)',
           }}>
             {unreadCount}
           </span>
@@ -150,9 +150,9 @@ export function NotificationCenter() {
                     fontFamily: 'inherit',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
-                    border: `1px solid ${filter === f ? 'rgba(209,255,0,0.2)' : 'rgba(255,255,255,0.06)'}`,
-                    background: filter === f ? 'rgba(209,255,0,0.08)' : 'transparent',
-                    color: filter === f ? 'var(--aiox-lime)' : 'var(--aiox-gray-muted)',
+                    border: `1px solid ${filter === f ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.06)'}`,
+                    background: filter === f ? 'rgba(255,255,255,0.06)' : 'transparent',
+                    color: filter === f ? 'var(--aiox-cream, #E5E5E5)' : 'var(--aiox-gray-muted)',
                     cursor: 'pointer',
                   }}
                 >
@@ -170,7 +170,7 @@ export function NotificationCenter() {
                   border: 'none',
                   cursor: 'pointer',
                   padding: '2px',
-                  color: desktopEnabled ? 'var(--aiox-lime)' : 'var(--aiox-gray-dim)',
+                  color: desktopEnabled ? 'var(--aiox-cream, #E5E5E5)' : 'var(--aiox-gray-dim)',
                 }}
                 title={desktopEnabled ? 'Disable desktop notifications' : 'Enable desktop notifications'}
                 aria-label="Toggle desktop notifications"
@@ -184,7 +184,7 @@ export function NotificationCenter() {
                   border: 'none',
                   cursor: 'pointer',
                   padding: '2px',
-                  color: 'var(--aiox-blue, #0099FF)',
+                  color: 'var(--aiox-gray-muted, #999)',
                 }}
                 title="Mark all read"
                 aria-label="Mark all read"

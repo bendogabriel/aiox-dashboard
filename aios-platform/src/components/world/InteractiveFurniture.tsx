@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import type { FurnitureItem, DomainId } from './world-layout';
 import { useDomains } from './DomainContext';
 
@@ -78,23 +77,18 @@ export function InteractiveFurniture({ item, domain, tileSize }: InteractiveFurn
       onMouseLeave={() => setHovered(false)}
     >
       {/* Hover highlight overlay */}
-      <AnimatePresence>
-        {hovered && (
+      {hovered && (
           <>
-            <motion.div
+            <div
               className="absolute inset-0 rounded-md pointer-events-none"
               style={{
                 border: `1.5px solid ${d.tileColor}66`,
                 background: `${d.tileColor}11`,
               }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
             />
 
             {/* Tooltip */}
-            <motion.div
+            <div
               className="absolute pointer-events-none"
               style={{
                 bottom: size.h + 6,
@@ -102,10 +96,6 @@ export function InteractiveFurniture({ item, domain, tileSize }: InteractiveFurn
                 transform: 'translateX(-50%)',
                 zIndex: 45,
               }}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 4 }}
-              transition={{ duration: 0.12 }}
             >
               <div
                 className="rounded-md px-2 py-1 whitespace-nowrap"
@@ -121,10 +111,9 @@ export function InteractiveFurniture({ item, domain, tileSize }: InteractiveFurn
                   {info.description}
                 </div>
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

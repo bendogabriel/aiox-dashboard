@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import {
   Play,
   Pause,
@@ -11,7 +10,7 @@ import {
   Timer,
   Coins,
 } from 'lucide-react';
-import { GlassCard, Badge, ProgressBar, StatusDot } from '../ui';
+import { CockpitCard, Badge, ProgressBar, StatusDot } from '../ui';
 import { cn } from '../../lib/utils';
 import type { OvernightProgram } from '../../types/overnight';
 
@@ -28,11 +27,11 @@ const statusConfig: Record<string, {
   color: string;
 }> = {
   idle: { label: 'Idle', dotStatus: 'idle', icon: Clock, color: 'text-white/40' },
-  running: { label: 'Running', dotStatus: 'working', icon: Play, color: 'text-cyan-400' },
-  paused: { label: 'Paused', dotStatus: 'waiting', icon: Pause, color: 'text-yellow-400' },
-  completed: { label: 'Completed', dotStatus: 'success', icon: CheckCircle2, color: 'text-green-400' },
-  failed: { label: 'Failed', dotStatus: 'error', icon: AlertTriangle, color: 'text-red-400' },
-  exhausted: { label: 'Exhausted', dotStatus: 'offline', icon: Zap, color: 'text-orange-400' },
+  running: { label: 'Running', dotStatus: 'working', icon: Play, color: 'text-[var(--aiox-blue)]' },
+  paused: { label: 'Paused', dotStatus: 'waiting', icon: Pause, color: 'text-[var(--bb-warning)]' },
+  completed: { label: 'Completed', dotStatus: 'success', icon: CheckCircle2, color: 'text-[var(--color-status-success)]' },
+  failed: { label: 'Failed', dotStatus: 'error', icon: AlertTriangle, color: 'text-[var(--bb-error)]' },
+  exhausted: { label: 'Exhausted', dotStatus: 'offline', icon: Zap, color: 'text-[var(--bb-flare)]' },
 };
 
 const typeLabels: Record<string, string> = {
@@ -97,13 +96,10 @@ export default function ProgramList({ programs, searchQuery, onSelectProgram }: 
           : null;
 
         return (
-          <motion.div
+          <div
             key={program.id}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05, duration: 0.2 }}
           >
-            <GlassCard
+            <CockpitCard
               interactive
               padding="md"
               className="cursor-pointer group"
@@ -129,7 +125,7 @@ export default function ProgramList({ programs, searchQuery, onSelectProgram }: 
 
                 {improvement !== null && improvement > 0 && (
                   <div className="flex-shrink-0 text-right">
-                    <span className="text-lg font-mono font-bold text-green-400">
+                    <span className="text-lg font-mono font-bold text-[var(--color-status-success)]">
                       -{improvement.toFixed(1)}%
                     </span>
                     <p className="text-[10px] text-tertiary uppercase tracking-wide">improvement</p>
@@ -187,8 +183,8 @@ export default function ProgramList({ programs, searchQuery, onSelectProgram }: 
                   </Badge>
                 )}
               </div>
-            </GlassCard>
-          </motion.div>
+            </CockpitCard>
+          </div>
         );
       })}
     </div>

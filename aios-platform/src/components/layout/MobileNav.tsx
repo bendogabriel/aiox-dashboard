@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useUIStore } from '../../stores/uiStore';
 
@@ -76,7 +75,7 @@ export function MobileNav() {
           {/* Agents/Sidebar button */}
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-colors text-secondary hover:text-primary"
+            className="flex flex-col items-center gap-1 px-4 py-2 rounded-none transition-colors text-secondary hover:text-primary"
             aria-label="Agents"
           >
             <AgentsIcon />
@@ -91,17 +90,16 @@ export function MobileNav() {
                 key={item.id}
                 onClick={() => setCurrentView(item.id)}
                 className={cn(
-                  'relative flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-colors',
-                  isActive ? 'text-blue-500' : 'text-secondary hover:text-primary'
+                  'relative flex flex-col items-center gap-1 px-4 py-2 rounded-none transition-colors',
+                  isActive ? 'text-[var(--aiox-blue)]' : 'text-secondary hover:text-primary'
                 )}
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
               >
                 {isActive && (
-                  <motion.div
-                    layoutId="mobile-nav-indicator"
-                    className="absolute inset-0 bg-blue-500/10 rounded-xl"
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                  <div
+                    className="absolute inset-0 bg-[var(--aiox-blue)]/10 rounded-none"
+
                   />
                 )}
                 <span className="relative z-10">{item.icon}</span>
@@ -129,7 +127,7 @@ export function MobileHeader({ title, onBack, actions }: MobileHeaderProps) {
         {onBack && (
           <button
             onClick={onBack}
-            className="h-10 w-10 flex items-center justify-center rounded-xl glass-button"
+            className="h-10 w-10 flex items-center justify-center rounded-none glass-button"
             aria-label="Voltar"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -211,16 +209,15 @@ export function PullToRefresh({ onRefresh, children, threshold = 80 }: PullToRef
       aria-label="Conteudo com pull to refresh"
     >
       {/* Pull indicator */}
-      <motion.div
+      <div
         className="absolute top-0 left-0 right-0 flex items-center justify-center pointer-events-none z-10"
         style={{ height: pullDistance || (isRefreshing ? 60 : 0) }}
-        animate={{ height: isRefreshing ? 60 : pullDistance }}
-        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+
       >
-        <motion.div
+        <div
           className={cn(
             'flex items-center justify-center rounded-full',
-            shouldTrigger || isRefreshing ? 'text-blue-500' : 'text-tertiary'
+            shouldTrigger || isRefreshing ? 'text-[var(--aiox-blue)]' : 'text-tertiary'
           )}
           style={{
             transform: `scale(${0.5 + progress * 0.5})`,
@@ -228,42 +225,40 @@ export function PullToRefresh({ onRefresh, children, threshold = 80 }: PullToRef
           }}
         >
           {isRefreshing ? (
-            <motion.svg
+            <svg
               width="24"
               height="24"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+
             >
               <path d="M21 12a9 9 0 11-6.219-8.56" />
-            </motion.svg>
+            </svg>
           ) : (
-            <motion.svg
+            <svg
               width="24"
               height="24"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              style={{ rotate: progress * 180 }}
+              style={{ transform: `rotate(${progress * 180}deg)` }}
             >
               <polyline points="23 4 23 10 17 10" />
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-            </motion.svg>
+            </svg>
           )}
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       {/* Content */}
-      <motion.div
-        animate={{ y: isRefreshing ? 60 : pullDistance }}
-        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+      <div
+
       >
         {children}
-      </motion.div>
+      </div>
     </div>
   );
 }

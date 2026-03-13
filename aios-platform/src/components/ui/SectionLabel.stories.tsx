@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SectionLabel } from './SectionLabel';
-import { GlassButton } from './GlassButton';
+import { CockpitButton } from './cockpit/CockpitButton';
 
 const meta: Meta<typeof SectionLabel> = {
   title: 'UI/SectionLabel',
@@ -67,7 +67,7 @@ export const WithCount: Story = {
 export const WithAction: Story = {
   render: () => (
     <div className="w-80">
-      <SectionLabel action={<GlassButton size="sm" variant="ghost">View All</GlassButton>}>
+      <SectionLabel action={<CockpitButton size="sm" variant="ghost">View All</CockpitButton>}>
         Recent Activity
       </SectionLabel>
     </div>
@@ -79,7 +79,7 @@ export const Complete: Story = {
     <div className="w-80">
       <SectionLabel
         count={5}
-        action={<GlassButton size="sm" variant="ghost">Manage</GlassButton>}
+        action={<CockpitButton size="sm" variant="ghost">Manage</CockpitButton>}
       >
         Squad Members
       </SectionLabel>

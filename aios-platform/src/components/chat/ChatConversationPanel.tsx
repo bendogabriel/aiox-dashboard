@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Avatar, GlassButton } from '../ui';
+import { Avatar, CockpitButton } from '../ui';
 import { cn } from '../../lib/utils';
 import type { ChatSession } from '../../types';
 
@@ -65,7 +65,7 @@ export function ChatConversationPanel({
                 className={cn(
                   'w-full text-left px-3 py-2.5 rounded-lg transition-all group relative',
                   isActive
-                    ? 'bg-[#D1FF00]/10 border border-[#D1FF00]/20'
+                    ? 'bg-[var(--aiox-lime)]/10 border border-[var(--aiox-lime)]/20'
                     : 'hover:bg-white/5 border border-transparent'
                 )}
               >
@@ -89,7 +89,7 @@ export function ChatConversationPanel({
                   <div className="flex-1 min-w-0">
                     <p className={cn(
                       'text-sm font-medium truncate',
-                      isActive ? 'text-[#D1FF00]' : 'text-primary'
+                      isActive ? 'text-[var(--aiox-lime)]' : 'text-primary'
                     )}>
                       {session.agentName}
                     </p>
@@ -111,7 +111,7 @@ export function ChatConversationPanel({
                       e.stopPropagation();
                       onDeleteSession(session.id);
                     }}
-                    className="absolute top-1.5 right-1.5 p-1 rounded-md hover:bg-red-500/20 text-tertiary hover:text-red-400 transition-colors"
+                    className="absolute top-1.5 right-1.5 p-1 rounded-md hover:bg-[var(--bb-error)]/20 text-tertiary hover:text-[var(--bb-error)] transition-colors"
                     title="Excluir conversa"
                     aria-label={`Excluir conversa com ${session.agentName}`}
                   >
@@ -135,7 +135,7 @@ export function ChatConversationPanel({
       <div className="px-3 py-3 border-b border-glass-border flex items-center justify-between">
         <span className="text-sm font-semibold text-primary">Conversas</span>
         <div className="flex items-center gap-1">
-          <GlassButton
+          <CockpitButton
             variant="ghost"
             size="icon"
             onClick={onNewChat}
@@ -147,8 +147,8 @@ export function ChatConversationPanel({
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-          </GlassButton>
-          <GlassButton
+          </CockpitButton>
+          <CockpitButton
             variant="ghost"
             size="icon"
             onClick={onToggle}
@@ -160,7 +160,7 @@ export function ChatConversationPanel({
               <rect x="3" y="3" width="18" height="18" rx="2" />
               <line x1="9" y1="3" x2="9" y2="21" />
             </svg>
-          </GlassButton>
+          </CockpitButton>
         </div>
       </div>
 

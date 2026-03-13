@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Badge, Avatar } from '../ui';
 import { cn, formatRelativeTime } from '../../lib/utils';
 import type { WorkflowMission, WorkflowOperation } from './types';
@@ -94,14 +93,14 @@ export function WorkflowSidebar({
         </div>
 
         <div
-          className="relative rounded-xl p-3 cursor-pointer transition-all hover:scale-[1.02] group"
+          className="relative rounded-none p-3 cursor-pointer transition-all hover:scale-[1.02] group"
           onClick={onViewMission}
           style={{
             background: `linear-gradient(135deg, color-mix(in srgb, var(--color-accent, #D1FF00) 10%, transparent) 0%, color-mix(in srgb, var(--color-accent, #D1FF00) 5%, transparent) 100%)`,
             border: `1px solid color-mix(in srgb, var(--color-accent, #D1FF00) 20%, transparent)`
           }}
         >
-          <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(to right, color-mix(in srgb, var(--color-accent, #D1FF00) 10%, transparent), color-mix(in srgb, var(--color-accent, #D1FF00) 5%, transparent))` }} />
+          <div className="absolute inset-0 rounded-none opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(to right, color-mix(in srgb, var(--color-accent, #D1FF00) 10%, transparent), color-mix(in srgb, var(--color-accent, #D1FF00) 5%, transparent))` }} />
 
           <div className="relative">
             <div className="flex items-center justify-between mb-2">
@@ -117,11 +116,8 @@ export function WorkflowSidebar({
                 <span className="text-white font-semibold">{mission.progress}%</span>
               </div>
               <div className="h-2 rounded-full bg-black/30 overflow-hidden">
-                <motion.div
+                <div
                   className="h-full rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${mission.progress}%` }}
-                  transition={{ duration: 0.5 }}
                   style={{
                     background: `linear-gradient(to right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent))`,
                     boxShadow: `0 0 10px color-mix(in srgb, var(--color-accent, #D1FF00) 50%, transparent)`
@@ -160,13 +156,10 @@ export function WorkflowSidebar({
             };
 
             return (
-              <motion.div
+              <div
                 key={agent.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
                 className={cn(
-                  'flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all',
+                  'flex items-center gap-3 p-2.5 rounded-none cursor-pointer transition-all',
                   `bg-gradient-to-r ${squadGradients[agent.squadType] || 'from-gray-500/20 to-gray-400/20'}`,
                   'border border-transparent hover:border-white/10',
                   isSelected && 'ring-1 ring-white/30 border-white/20'
@@ -201,7 +194,7 @@ export function WorkflowSidebar({
                     </span>
                   )}
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
@@ -265,10 +258,7 @@ function OperationItem({ operation, index }: { operation: WorkflowOperation; ind
   const style = squadStyles[operation.squadType] || { border: 'border-l-gray-500', bg: 'from-gray-500/10' };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.03 }}
+    <div
       className={cn(
         'rounded-lg p-3 border-l-2 transition-all hover:translate-x-1',
         style.border,
@@ -294,7 +284,7 @@ function OperationItem({ operation, index }: { operation: WorkflowOperation; ind
         <span>{formatRelativeTime(operation.startedAt)}</span>
         {operation.duration && <span>{operation.duration}s</span>}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -333,7 +323,7 @@ function StatBox({ label, value, color }: { label: string; value: number; color:
 
   return (
     <div
-      className={cn('rounded-xl p-2.5 bg-gradient-to-b to-transparent', style.bg)}
+      className={cn('rounded-none p-2.5 bg-gradient-to-b to-transparent', style.bg)}
       style={{
         border: '1px solid rgba(255,255,255,0.05)',
         boxShadow: value > 0 ? `0 0 15px ${style.glow}` : 'none'

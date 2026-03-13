@@ -1,5 +1,5 @@
 import { Bot } from 'lucide-react';
-import { GlassCard, Badge, ProgressBar } from '../ui';
+import { CockpitCard, Badge, ProgressBar } from '../ui';
 import { cn } from '../../lib/utils';
 import type { Story } from '../../stores/storyStore';
 
@@ -9,10 +9,10 @@ interface StoryCardProps {
 }
 
 const categoryColors: Record<Story['category'], string> = {
-  feature: 'bg-blue-500/15 text-blue-500',
-  fix: 'bg-red-500/15 text-red-500',
-  refactor: 'bg-yellow-500/15 text-yellow-600 dark:text-yellow-400',
-  docs: 'bg-green-500/15 text-green-500',
+  feature: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  fix: 'bg-[var(--bb-error)]/15 text-[var(--bb-error)]',
+  refactor: 'bg-[var(--bb-warning)]/15 text-[var(--bb-warning)]',
+  docs: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
 };
 
 const categoryLabels: Record<Story['category'], string> = {
@@ -23,34 +23,33 @@ const categoryLabels: Record<Story['category'], string> = {
 };
 
 const complexityColors: Record<Story['complexity'], string> = {
-  simple: 'bg-green-500/15 text-green-500',
-  standard: 'bg-blue-500/15 text-blue-500',
-  complex: 'bg-purple-500/15 text-purple-500',
+  simple: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
+  standard: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  complex: 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]',
 };
 
 const priorityColors: Record<Story['priority'], string> = {
-  low: 'bg-gray-500/15 text-gray-500',
-  medium: 'bg-blue-500/15 text-blue-500',
-  high: 'bg-orange-500/15 text-orange-500',
-  critical: 'bg-red-500/15 text-red-500',
+  low: 'bg-[var(--aiox-gray-dim)]/15 text-tertiary',
+  medium: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  high: 'bg-[var(--bb-flare)]/15 text-[var(--bb-flare)]',
+  critical: 'bg-[var(--bb-error)]/15 text-[var(--bb-error)]',
 };
 
 const statusRing: Record<Story['status'], string> = {
   backlog: '',
-  in_progress: 'ring-1 ring-blue-500/30',
-  ai_review: 'ring-1 ring-purple-500/30',
-  human_review: 'ring-1 ring-orange-500/30',
-  pr_created: 'ring-1 ring-cyan-500/30',
-  done: 'bg-green-500/5',
-  error: 'bg-red-500/5 ring-1 ring-red-500/30',
+  in_progress: 'ring-1 ring-[var(--aiox-lime)]/30',
+  ai_review: 'ring-1 ring-[var(--aiox-gray-muted)]/30',
+  human_review: 'ring-1 ring-[var(--bb-flare)]/30',
+  pr_created: 'ring-1 ring-[var(--aiox-lime)]/30',
+  done: 'bg-[var(--color-status-success)]/5',
+  error: 'bg-[var(--bb-error)]/5 ring-1 ring-[var(--bb-error)]/30',
 };
 
 export function StoryCard({ story, onClick }: StoryCardProps) {
   return (
-    <GlassCard
+    <CockpitCard
       interactive
       padding="sm"
-      radius="lg"
       className={cn(
         'cursor-pointer select-none',
         statusRing[story.status],
@@ -66,7 +65,7 @@ export function StoryCard({ story, onClick }: StoryCardProps) {
           {story.complexity}
         </span>
         {story.bobOrchestrated && (
-          <span className="ml-auto inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-cyan-500/15 text-cyan-500" title="Bob Orchestrated">
+          <span className="ml-auto inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]" title="Bob Orchestrated">
             <Bot size={10} className="mr-0.5" />
             BOB
           </span>
@@ -101,6 +100,6 @@ export function StoryCard({ story, onClick }: StoryCardProps) {
           </div>
         )}
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }

@@ -19,7 +19,7 @@ export function Skeleton({
     text: 'rounded',
     circular: 'rounded-full',
     rectangular: 'rounded-none',
-    rounded: 'rounded-xl',
+    rounded: 'rounded-none',
   };
 
   const animationClasses = {
@@ -119,7 +119,7 @@ export function SkeletonMessage({ isUser = false }: { isUser?: boolean }) {
           className={cn(
             'h-16',
             isUser
-              ? 'bg-blue-500/20 ml-auto w-2/3'
+              ? 'bg-[var(--aiox-blue)]/20 ml-auto w-2/3'
               : 'bg-white/10 w-full'
           )}
         />

@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import type { Experiment } from '../../types/overnight';
 
 interface MetricChartProps {
@@ -72,12 +71,9 @@ export default function MetricChart({ experiments, baseline, bestMetric, height 
       preserveAspectRatio="none"
     >
       {/* Area fill */}
-      <motion.path
+      <path
         d={areaPath}
         fill="url(#metricGradient)"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.3 }}
-        transition={{ duration: 0.6 }}
       />
 
       {/* Baseline */}
@@ -109,21 +105,18 @@ export default function MetricChart({ experiments, baseline, bestMetric, height 
       )}
 
       {/* Main line */}
-      <motion.path
+      <path
         d={linePath}
         fill="none"
         stroke="var(--color-primary, #D1FF00)"
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
       />
 
       {/* Data points */}
       {points.map((p, i) => (
-        <motion.circle
+        <circle
           key={p.iteration}
           cx={i * xStep}
           cy={yScale(p.value)}
@@ -137,9 +130,6 @@ export default function MetricChart({ experiments, baseline, bestMetric, height 
           }
           stroke="var(--color-bg-primary, #050505)"
           strokeWidth={1.5}
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: i * 0.05, duration: 0.2 }}
         />
       ))}
 

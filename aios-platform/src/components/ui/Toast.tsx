@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { useToastStore, type Toast, type ToastType } from '../../stores/toastStore';
 import { cn } from '../../lib/utils';
 
@@ -79,59 +79,61 @@ interface ToastItemProps {
 function ToastItem({ toast, onDismiss }: ToastItemProps) {
   const Icon = iconMap[toast.type];
   const styles = styleMap[toast.type];
+  const [visible, setVisible] = useState(false);
+  const [exiting, setExiting] = useState(false);
+  const [progress, setProgress] = useState(100);
 
-  // Icon animation variants based on toast type
-  const iconAnimations = {
-    success: {
-      initial: { scale: 0, rotate: -180 },
-      animate: { scale: 1, rotate: 0 },
-      transition: { type: 'spring', damping: 15, stiffness: 300, delay: 0.1 },
-    },
-    error: {
-      initial: { scale: 0 },
-      animate: { scale: [0, 1.2, 1] },
-      transition: { duration: 0.4, delay: 0.1 },
-    },
-    warning: {
-      initial: { y: -20, opacity: 0 },
-      animate: { y: 0, opacity: 1 },
-      transition: { type: 'spring', damping: 15, stiffness: 300, delay: 0.1 },
-    },
-    info: {
-      initial: { scale: 0, opacity: 0 },
-      animate: { scale: 1, opacity: 1 },
-      transition: { type: 'spring', damping: 20, stiffness: 300, delay: 0.1 },
-    },
+  // Enter animation
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  // Progress bar countdown
+  useEffect(() => {
+    if (!toast.duration || toast.duration <= 0) return;
+
+    const startTime = Date.now();
+    const duration = toast.duration;
+    let rafId: number;
+
+    const tick = () => {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 100 - (elapsed / duration) * 100);
+      setProgress(remaining);
+      if (remaining > 0) {
+        rafId = requestAnimationFrame(tick);
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [toast.duration]);
+
+  const handleDismiss = () => {
+    setExiting(true);
+    setTimeout(onDismiss, 200);
   };
 
-  const iconAnim = iconAnimations[toast.type];
-
   return (
-    <motion.div
-      layout
+    <div
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
-      initial={{ opacity: 0, y: 50, scale: 0.9 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 100, scale: 0.9 }}
-      transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       className={cn(
-        'relative flex items-start gap-3 p-4 rounded-xl border backdrop-blur-xl shadow-lg',
+        'relative flex items-start gap-3 p-4 rounded-none border',
         'min-w-[280px] max-w-[420px] sm:min-w-[320px]',
+        'transition-all duration-200 ease-out',
         styles.bg,
-        styles.border
+        styles.border,
+        visible && !exiting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4',
+        exiting && 'opacity-0 translate-x-8'
       )}
     >
-      {/* Animated Icon */}
-      <motion.div
-        className={cn('flex-shrink-0 mt-0.5', styles.icon)}
-        initial={iconAnim.initial}
-        animate={iconAnim.animate}
-        transition={iconAnim.transition}
-      >
+      {/* Icon */}
+      <div className={cn('flex-shrink-0 mt-0.5', styles.icon)}>
         <Icon />
-      </motion.div>
+      </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
@@ -143,7 +145,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
           <button
             onClick={() => {
               toast.action?.onClick();
-              onDismiss();
+              handleDismiss();
             }}
             className={cn(
               'mt-2 text-xs font-medium transition-colors',
@@ -158,23 +160,24 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
 
       {/* Close button */}
       <button
-        onClick={onDismiss}
+        onClick={handleDismiss}
         aria-label="Fechar notificacao"
-        className="flex-shrink-0 p-1 rounded-lg text-tertiary hover:text-primary hover:bg-white/10 transition-colors"
+        className="flex-shrink-0 p-1 rounded-none text-tertiary hover:text-primary hover:bg-[var(--color-bg-tertiary)] transition-colors"
       >
         <CloseIcon aria-hidden="true" />
       </button>
 
       {/* Progress bar for auto-dismiss */}
       {toast.duration && toast.duration > 0 && (
-        <motion.div
-          className={cn('absolute bottom-0 left-0 h-0.5 rounded-full', styles.icon.replace('text-', 'bg-'))}
-          initial={{ width: '100%' }}
-          animate={{ width: '0%' }}
-          transition={{ duration: toast.duration / 1000, ease: 'linear' }}
+        <div
+          className={cn('absolute bottom-0 left-0 h-0.5', styles.icon.replace('text-', 'bg-'))}
+          style={{
+            width: `${progress}%`,
+            transition: 'width 100ms linear',
+          }}
         />
       )}
-    </motion.div>
+    </div>
   );
 }
 
@@ -183,13 +186,11 @@ export function ToastContainer() {
 
   return (
     <div className="fixed bottom-20 md:bottom-4 right-4 left-4 md:left-auto z-[100] flex flex-col items-center md:items-end gap-2 pointer-events-none">
-      <AnimatePresence mode="popLayout">
-        {toasts.map((toast) => (
-          <div key={toast.id} className="pointer-events-auto w-full md:w-auto">
-            <ToastItem toast={toast} onDismiss={() => removeToast(toast.id)} />
-          </div>
-        ))}
-      </AnimatePresence>
+      {toasts.map((toast) => (
+        <div key={toast.id} className="pointer-events-auto w-full md:w-auto">
+          <ToastItem toast={toast} onDismiss={() => removeToast(toast.id)} />
+        </div>
+      ))}
     </div>
   );
 }

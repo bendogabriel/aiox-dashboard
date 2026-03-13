@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
 import { useChat } from '../../hooks/useChat';
-import { apiClient } from '../../services/api/client';
+import { engineApi } from '../../services/api/engine';
 import { cn } from '../../lib/utils';
+import { useEngineStore } from '../../stores/engineStore';
 import type { AgentCommand } from '../../types';
 import type { AgentAction, ChatAgent } from './chat-types';
 
@@ -27,14 +27,35 @@ interface CommandsModalProps {
 
 export function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
   const { sendMessage } = useChat();
-  const [activeTab, setActiveTab] = useState<TabType>('actions');
+  const [activeTab, setActiveTab] = useState<TabType>('commands');
+  const engineStatus = useEngineStore((s) => s.status);
 
-  // Fetch squad tasks and workflows
+  // Fetch squad tasks and workflows from engine
   const { data: squadCommands, isLoading } = useQuery<{ tasks: SquadCommand[]; workflows: SquadCommand[] }>({
-    queryKey: ['squad-commands', agent.squad],
+    queryKey: ['squad-commands', agent.squad, engineStatus],
     queryFn: async () => {
+      if (engineStatus !== 'online') return { tasks: [], workflows: [] };
       try {
-        return await apiClient.get<{ tasks: SquadCommand[]; workflows: SquadCommand[] }>(`/squads/${agent.squad}/commands`);
+        const [tasksRes, workflowsRes] = await Promise.all([
+          engineApi.getRegistryTasks(agent.squad),
+          engineApi.getRegistryWorkflows(agent.squad),
+        ]);
+        return {
+          tasks: (tasksRes.tasks || []).map(t => ({
+            id: t.id,
+            name: t.name,
+            description: t.purpose || t.name,
+            type: 'task' as const,
+            file: t.file,
+          })),
+          workflows: (workflowsRes.workflows || []).map(w => ({
+            id: w.id,
+            name: w.name,
+            description: w.description || w.name,
+            type: 'workflow' as const,
+            file: w.file,
+          })),
+        };
       } catch {
         return { tasks: [], workflows: [] };
       }
@@ -59,28 +80,21 @@ export function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
   if (!isOpen) return null;
 
   return createPortal(
-    <AnimatePresence>
-      {isOpen && (
+    isOpen ? (
         <>
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 bg-black/90 z-[9998]"
             onClick={onClose}
           />
 
           {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+          <div
             className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none"
           >
             <div className="w-full max-w-2xl max-h-[85vh] overflow-hidden pointer-events-auto">
             <div
-              className="flex flex-col max-h-[85vh] rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
+              className="flex flex-col max-h-[85vh] rounded-none border border-white/10 shadow-2xl overflow-hidden"
               style={{
                 background: 'rgba(20, 20, 30, 1)',
               }}
@@ -91,12 +105,12 @@ export function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
                   <h2 className="text-lg font-semibold text-primary">Ações & Comandos</h2>
                   <p className="text-xs text-tertiary">{agent.name} • {agent.squad}</p>
                 </div>
-                <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
+                <CockpitButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
-                </GlassButton>
+                </CockpitButton>
               </div>
 
               {/* Tabs - Alphabetical order */}
@@ -173,7 +187,7 @@ export function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
               <div className="flex-1 overflow-y-auto glass-scrollbar p-4">
                 {isLoading ? (
                   <div className="text-center py-8 text-tertiary">
-                    <div className="animate-spin h-6 w-6 border-2 border-[#0099FF] border-t-transparent rounded-full mx-auto mb-2" />
+                    <div className="animate-spin h-6 w-6 border-2 border-[var(--aiox-blue)] border-t-transparent rounded-full mx-auto mb-2" />
                     <p className="text-sm">Carregando...</p>
                   </div>
                 ) : (
@@ -284,10 +298,9 @@ export function CommandsModal({ agent, isOpen, onClose }: CommandsModalProps) {
               </div>
             </div>
             </div>
-          </motion.div>
+          </div>
         </>
-      )}
-    </AnimatePresence>,
+    ) : null,
     document.body
   );
 }
@@ -312,7 +325,7 @@ function TabButton({
       className={cn(
         'flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors',
         active
-          ? 'text-[#D1FF00] border-b-2 border-[#D1FF00] bg-[#D1FF00]/5'
+          ? 'text-[var(--aiox-cream,#E5E5E5)] border-b-2 border-[var(--aiox-cream,#E5E5E5)] bg-white/5'
           : 'text-tertiary hover:text-secondary hover:bg-white/5'
       )}
     >
@@ -320,7 +333,7 @@ function TabButton({
       {count > 0 && (
         <span className={cn(
           'px-1.5 py-0.5 rounded-full text-[10px] font-bold',
-          active ? 'bg-[#D1FF00]/20 text-[#D1FF00]' : 'bg-white/10 text-tertiary'
+          active ? 'bg-white/15 text-[var(--aiox-cream,#E5E5E5)]' : 'bg-white/10 text-tertiary'
         )}>
           {count}
         </span>
@@ -341,11 +354,11 @@ function CommandItem({
   onUse: () => void;
 }) {
   const typeColors: Record<string, string> = {
-    action: 'bg-[#D1FF00]/10 border-[#D1FF00]/20 text-[#D1FF00]',
-    command: 'bg-[#0099FF]/10 border-[#0099FF]/20 text-[#0099FF]',
+    action: 'bg-white/10 border-white/20 text-[var(--aiox-cream,#E5E5E5)]',
+    command: 'bg-[var(--aiox-blue)]/10 border-[var(--aiox-blue)]/20 text-[var(--aiox-blue)]',
     prompt: 'bg-[#BDBDBD]/10 border-[#BDBDBD]/20 text-[#BDBDBD]',
     task: 'bg-[#ED4609]/10 border-[#ED4609]/20 text-[#ED4609]',
-    workflow: 'bg-[#0099FF]/10 border-[#0099FF]/20 text-[#0099FF]',
+    workflow: 'bg-[var(--aiox-blue)]/10 border-[var(--aiox-blue)]/20 text-[var(--aiox-blue)]',
   };
 
   const typeLabels: Record<string, string> = {
@@ -359,7 +372,7 @@ function CommandItem({
   return (
     <button
       onClick={onUse}
-      className="w-full flex items-start gap-3 p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-left group"
+      className="w-full flex items-start gap-3 p-3 rounded-none border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-left group"
     >
       <span className={cn(
         'px-2 py-0.5 rounded text-[10px] font-bold border flex-shrink-0 mt-0.5',
@@ -368,7 +381,7 @@ function CommandItem({
         {typeLabels[type]}
       </span>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-mono text-primary group-hover:text-[#D1FF00] transition-colors">
+        <p className="text-sm font-mono text-primary group-hover:text-[var(--aiox-cream,#E5E5E5)] transition-colors">
           {command}
         </p>
         {description && (
@@ -384,7 +397,7 @@ function CommandItem({
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
-        className="text-tertiary group-hover:text-[#D1FF00] flex-shrink-0 mt-1 transition-colors"
+        className="text-tertiary group-hover:text-[var(--aiox-cream,#E5E5E5)] flex-shrink-0 mt-1 transition-colors"
       >
         <polyline points="9 18 15 12 9 6" />
       </svg>

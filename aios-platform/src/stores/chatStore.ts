@@ -169,23 +169,38 @@ export const useChatStore = create<ChatState & ChatActions>()(
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;
-        // Clean up stuck streaming messages from previous sessions.
-        // Messages persisted with isStreaming: true will never receive
-        // more data — mark them as failed so they don't show "..." forever.
+        // Clean up stuck streaming messages and backfill missing agent data
+        // from session-level fields (handles messages persisted before
+        // agentName/agentId/squadType were added to the Message type).
         let dirty = false;
         const cleaned = state.sessions.map(session => {
+          let sessionDirty = false;
           const msgs = session.messages.map(msg => {
-            if (msg.isStreaming) {
-              dirty = true;
-              return {
-                ...msg,
+            let patched = msg;
+            // Fix stuck streaming
+            if (patched.isStreaming) {
+              sessionDirty = true;
+              patched = {
+                ...patched,
                 isStreaming: false,
-                content: msg.content || '*[Resposta não recebida — tente novamente]*',
+                content: patched.content || '*[Resposta não recebida — tente novamente]*',
               };
             }
-            return msg;
+            // Backfill missing agent data on agent messages
+            if (patched.role === 'agent' && !patched.agentName && session.agentName) {
+              sessionDirty = true;
+              patched = {
+                ...patched,
+                agentName: session.agentName,
+                agentId: patched.agentId || session.agentId,
+                squadId: patched.squadId || session.squadId,
+                squadType: patched.squadType || session.squadType,
+              };
+            }
+            return patched;
           });
-          return dirty ? { ...session, messages: msgs } : session;
+          if (sessionDirty) dirty = true;
+          return sessionDirty ? { ...session, messages: msgs } : session;
         });
         if (dirty) {
           useChatStore.setState({ sessions: cleaned });

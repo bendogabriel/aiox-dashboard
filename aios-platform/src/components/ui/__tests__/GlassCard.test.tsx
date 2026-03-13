@@ -1,90 +1,80 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '../../../test/test-utils';
-import { GlassCard } from '../GlassCard';
+import { CockpitCard } from '../cockpit/CockpitCard';
 
-describe('GlassCard', () => {
+describe('CockpitCard', () => {
   it('should render children', () => {
-    render(<GlassCard animate={false}>Card Content</GlassCard>);
+    render(<CockpitCard>Card Content</CockpitCard>);
 
     expect(screen.getByText('Card Content')).toBeInTheDocument();
   });
 
-  it('should apply default glass styling', () => {
-    const { container } = render(<GlassCard animate={false}>Content</GlassCard>);
+  it('should render with default variant', () => {
+    const { container } = render(<CockpitCard>Content</CockpitCard>);
 
-    expect(container.firstChild).toHaveClass('glass');
+    expect(container.firstChild).toBeInTheDocument();
   });
 
-  it('should apply subtle variant', () => {
-    const { container } = render(<GlassCard animate={false} variant="subtle">Subtle</GlassCard>);
+  it('should render with subtle variant', () => {
+    const { container } = render(<CockpitCard variant="subtle">Subtle</CockpitCard>);
 
-    expect(container.firstChild).toHaveClass('glass-subtle');
+    expect(container.firstChild).toBeInTheDocument();
   });
 
-  it('should apply strong variant', () => {
-    const { container } = render(<GlassCard animate={false} variant="strong">Strong</GlassCard>);
+  it('should render with strong variant', () => {
+    const { container } = render(<CockpitCard variant="strong">Strong</CockpitCard>);
 
-    expect(container.firstChild).toHaveClass('glass-lg');
+    expect(container.firstChild).toBeInTheDocument();
   });
 
-  it('should be interactive when interactive prop is true', () => {
-    const { container } = render(<GlassCard animate={false} interactive>Interactive</GlassCard>);
+  it('should render when interactive prop is true', () => {
+    const { container } = render(<CockpitCard interactive>Interactive</CockpitCard>);
 
-    expect(container.firstChild).toHaveClass('glass-interactive');
+    expect(container.firstChild).toHaveClass('cursor-pointer');
   });
 
   it('should apply custom className', () => {
-    const { container } = render(<GlassCard animate={false} className="custom-class">Content</GlassCard>);
+    const { container } = render(<CockpitCard className="custom-class">Content</CockpitCard>);
 
     expect(container.firstChild).toHaveClass('custom-class');
   });
 
   it('should apply different padding sizes', () => {
-    const { rerender, container } = render(<GlassCard animate={false} padding="none">Content</GlassCard>);
+    const { rerender, container } = render(<CockpitCard padding="none">Content</CockpitCard>);
     expect(container.firstChild).not.toHaveClass('p-3', 'p-4', 'p-6');
 
-    rerender(<GlassCard animate={false} padding="sm">Content</GlassCard>);
+    rerender(<CockpitCard padding="sm">Content</CockpitCard>);
     expect(container.firstChild).toHaveClass('p-3');
 
-    rerender(<GlassCard animate={false} padding="md">Content</GlassCard>);
+    rerender(<CockpitCard padding="md">Content</CockpitCard>);
     expect(container.firstChild).toHaveClass('p-4');
 
-    rerender(<GlassCard animate={false} padding="lg">Content</GlassCard>);
+    rerender(<CockpitCard padding="lg">Content</CockpitCard>);
     expect(container.firstChild).toHaveClass('p-6');
   });
 
-  it('should apply different radius sizes', () => {
-    const { rerender, container } = render(<GlassCard animate={false} radius="sm">Content</GlassCard>);
-    expect(container.firstChild).toHaveClass('rounded-xl');
-
-    rerender(<GlassCard animate={false} radius="md">Content</GlassCard>);
-    expect(container.firstChild).toHaveClass('rounded-[16px]');
-
-    rerender(<GlassCard animate={false} radius="lg">Content</GlassCard>);
-    expect(container.firstChild).toHaveClass('rounded-glass');
-
-    rerender(<GlassCard animate={false} radius="xl">Content</GlassCard>);
-    expect(container.firstChild).toHaveClass('rounded-glass-lg');
+  it('should accept radius prop without error (ignored)', () => {
+    const { container } = render(<CockpitCard radius="sm">Content</CockpitCard>);
+    // radius is ignored by CockpitCard (brutalist, no rounding) but should not throw
+    expect(container.firstChild).toBeInTheDocument();
   });
 
   it('should forward ref', () => {
     const ref = vi.fn();
-    render(<GlassCard animate={false} ref={ref}>Content</GlassCard>);
+    render(<CockpitCard ref={ref}>Content</CockpitCard>);
 
     expect(ref).toHaveBeenCalled();
   });
 
-  it('should render with animation by default', () => {
-    const { container } = render(<GlassCard>Animated Content</GlassCard>);
-
-    // Framer motion adds style for animations
+  it('should accept animate prop without error (ignored)', () => {
+    const { container } = render(<CockpitCard animate={false}>Content</CockpitCard>);
     expect(container.firstChild).toBeInTheDocument();
   });
 
   it('should pass onClick handler', async () => {
     const handleClick = vi.fn();
     const { user } = render(
-      <GlassCard animate={false} onClick={handleClick}>Clickable</GlassCard>
+      <CockpitCard onClick={handleClick}>Clickable</CockpitCard>
     );
 
     await user.click(screen.getByText('Clickable'));

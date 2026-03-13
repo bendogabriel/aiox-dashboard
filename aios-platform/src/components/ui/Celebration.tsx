@@ -1,6 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-
 interface Particle {
   id: number;
   x: number;
@@ -19,7 +17,7 @@ const COLORS = [
   '#F59E0B', // amber
   '#EC4899', // pink
   '#06B6D4', // cyan
-  '#D1FF00', // neon lime (AIOX)
+  'var(--aiox-lime)', // neon lime (AIOX)
 ];
 
 function createParticles(count: number, originX: number, originY: number): Particle[] {
@@ -69,8 +67,8 @@ export function Celebration({
   }, [trigger]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <AnimatePresence>
-      {active && (
+    <>
+    {active && (
         <div className="fixed inset-0 pointer-events-none z-[100]">
           {particles.map((p) => {
             const endX = p.x + Math.cos(p.angle) * p.velocity;
@@ -78,7 +76,7 @@ export function Celebration({
             const isSquare = p.id % 3 === 0;
 
             return (
-              <motion.div
+              <div
                 key={p.id}
                 className={isSquare ? 'absolute' : 'absolute rounded-full'}
                 style={{
@@ -88,31 +86,13 @@ export function Celebration({
                   left: p.x,
                   top: p.y,
                 }}
-                initial={{
-                  x: 0,
-                  y: 0,
-                  opacity: 1,
-                  scale: 0,
-                  rotate: 0,
-                }}
-                animate={{
-                  x: endX - p.x,
-                  y: [0, endY - p.y - 60, endY - p.y + 200],
-                  opacity: [1, 1, 0],
-                  scale: [0, 1.2, 0.6],
-                  rotate: p.rotation + 360,
-                }}
-                transition={{
-                  duration: 1.0 + Math.random() * 0.3,
-                  ease: [0.25, 0.46, 0.45, 0.94],
-                }}
               />
             );
           })}
         </div>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 }
 
 // Hook for easy celebration triggering

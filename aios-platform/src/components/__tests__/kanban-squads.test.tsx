@@ -474,7 +474,7 @@ describe('SquadCard', () => {
 
     const { user } = render(<SquadCard squad={squad} onClick={handleClick} />);
 
-    // The GlassCard is interactive, so click on the squad name
+    // The CockpitCard is interactive, so click on the squad name
     await user.click(screen.getByText('Test Squad'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });

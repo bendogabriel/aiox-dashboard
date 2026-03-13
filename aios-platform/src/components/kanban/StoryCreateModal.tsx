@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Dialog, GlassButton, GlassInput, GlassTextarea } from '../ui';
+import { Dialog, CockpitButton, CockpitInput, CockpitTextarea } from '../ui';
 import type { Story, StoryStatus } from '../../stores/storyStore';
 import { generateId } from '../../lib/utils';
 
@@ -130,7 +130,7 @@ export function StoryCreateModal({
   ]);
 
   const selectClasses =
-    'glass-input w-full h-11 px-4 rounded-xl text-sm bg-transparent';
+    'glass-input w-full h-11 px-4 rounded-none text-sm bg-transparent';
 
   return (
     <Dialog
@@ -140,18 +140,18 @@ export function StoryCreateModal({
       size="xl"
       footer={
         <>
-          <GlassButton variant="ghost" onClick={handleClose}>
+          <CockpitButton variant="ghost" onClick={handleClose}>
             Cancel
-          </GlassButton>
-          <GlassButton variant="primary" onClick={handleSubmit}>
+          </CockpitButton>
+          <CockpitButton variant="primary" onClick={handleSubmit}>
             Create Story
-          </GlassButton>
+          </CockpitButton>
         </>
       }
     >
       <div className="flex flex-col gap-4">
         {/* Title */}
-        <GlassInput
+        <CockpitInput
           label="Title"
           placeholder="e.g. Implement SSE streaming for agent responses"
           value={title}
@@ -164,7 +164,7 @@ export function StoryCreateModal({
         />
 
         {/* Description */}
-        <GlassTextarea
+        <CockpitTextarea
           label="Description"
           placeholder="Describe the story in detail..."
           value={description}
@@ -260,7 +260,7 @@ export function StoryCreateModal({
         </div>
 
         {/* Acceptance Criteria */}
-        <GlassTextarea
+        <CockpitTextarea
           label="Acceptance Criteria"
           placeholder="One criterion per line..."
           hint="Each line becomes a separate criterion"
@@ -270,7 +270,7 @@ export function StoryCreateModal({
         />
 
         {/* Technical Notes */}
-        <GlassTextarea
+        <CockpitTextarea
           label="Technical Notes"
           placeholder="Implementation hints, constraints, references..."
           value={technicalNotes}

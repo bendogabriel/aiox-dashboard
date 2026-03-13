@@ -29,7 +29,7 @@ export function TerminalTabs({ sessions, activeId, onSelect, onClose }: Terminal
             key={session.id}
             role="presentation"
             className={cn(
-              'flex items-center gap-2 rounded-xl text-xs font-medium whitespace-nowrap transition-colors min-w-0',
+              'flex items-center gap-2 rounded-none text-xs font-medium whitespace-nowrap transition-colors min-w-0',
               isActive
                 ? 'glass bg-white/10 text-primary'
                 : 'text-tertiary hover:text-secondary hover:bg-white/5',

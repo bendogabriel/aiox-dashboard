@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageSquare,
   BarChart3,
@@ -34,7 +33,7 @@ import {
   RefreshCw,
   type LucideIcon,
 } from 'lucide-react';
-import { GlassCard, GlassButton, AioxLogo } from '../ui';
+import { CockpitCard, CockpitButton, AioxLogo } from '../ui';
 import { useUIStore } from '../../stores/uiStore';
 import { useOrchestrationStore } from '../../stores/orchestrationStore';
 import { useEngineStore } from '../../stores/engineStore';
@@ -180,7 +179,7 @@ function GroupItem({
       {/* Group header */}
       <div
         className={cn(
-          'w-full flex items-center gap-3 rounded-xl transition-all text-left group relative',
+          'w-full flex items-center gap-3 rounded-none transition-all text-left group relative',
           collapsed ? 'justify-center p-2.5' : 'px-3 py-2',
           isGroupActive
             ? 'glass-card border text-primary'
@@ -203,7 +202,7 @@ function GroupItem({
               style={isGroupActive ? { color: 'var(--sidebar-active-text)' } : undefined}
             />
             {showBobPulse && (
-              <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-[var(--aiox-blue)] animate-pulse" />
             )}
           </span>
 
@@ -263,7 +262,7 @@ function GroupItem({
                 >
                   <ChildIcon size={14} className="flex-shrink-0" />
                   <span className="flex-1 truncate">{child.label}</span>
-                  {showChildPulse && <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />}
+                  {showChildPulse && <span className="h-2 w-2 rounded-full bg-[var(--aiox-blue)] animate-pulse" />}
                   {showChildBadge && !showChildPulse && (
                     <span className="min-w-[16px] h-4 px-1 rounded-full bg-primary text-[9px] font-bold text-black flex items-center justify-center">
                       {badgeCount > 9 ? '9+' : badgeCount}
@@ -279,7 +278,7 @@ function GroupItem({
       {/* Collapsed flyout */}
       {collapsed && !isStandalone && showFlyout && (
         <div
-          className="absolute left-full top-0 ml-1 z-50 min-w-[160px] py-1 rounded-xl shadow-lg border border-glass-border glass-lg"
+          className="absolute left-full top-0 ml-1 z-50 min-w-[160px] py-1 rounded-none shadow-lg border border-glass-border glass-lg"
           onMouseEnter={() => setShowFlyout(true)}
           onMouseLeave={() => setShowFlyout(false)}
         >
@@ -385,7 +384,7 @@ function ViewNavigation({ collapsed = false }: { collapsed?: boolean }) {
                 onClick={() => handleNavigate(item.id)}
                 title={collapsed ? `${item.label} (${item.shortcut})` : undefined}
                 className={cn(
-                  'w-full flex items-center gap-3 rounded-xl transition-all text-left group relative',
+                  'w-full flex items-center gap-3 rounded-none transition-all text-left group relative',
                   collapsed ? 'justify-center p-2.5' : 'px-3 py-2',
                   isActive
                     ? 'glass-card border text-primary'
@@ -448,16 +447,16 @@ function EngineStatusFooter({ collapsed }: { collapsed: boolean }) {
           className="relative"
         >
           {isOnline ? (
-            <Zap size={14} className="text-[#D1FF00]" />
+            <Zap size={14} className="text-[var(--aiox-lime)]" />
           ) : isDiscovering ? (
             <RefreshCw size={14} className="text-tertiary animate-spin" />
           ) : (
-            <ZapOff size={14} className="text-red-500" />
+            <ZapOff size={14} className="text-[var(--bb-error)]" />
           )}
           <span
             className={cn(
               'absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full',
-              isOnline ? 'bg-[#D1FF00]' : isDiscovering ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'
+              isOnline ? 'bg-[var(--aiox-lime)]' : isDiscovering ? 'bg-[var(--bb-warning)] animate-pulse' : 'bg-[var(--bb-error)]'
             )}
           />
         </button>
@@ -474,11 +473,11 @@ function EngineStatusFooter({ collapsed }: { collapsed: boolean }) {
       >
         <span className="relative flex-shrink-0">
           {isOnline ? (
-            <Zap size={14} className="text-[#D1FF00]" />
+            <Zap size={14} className="text-[var(--aiox-lime)]" />
           ) : isDiscovering ? (
             <RefreshCw size={14} className="text-tertiary animate-spin" />
           ) : (
-            <ZapOff size={14} className="text-red-500" />
+            <ZapOff size={14} className="text-[var(--bb-error)]" />
           )}
         </span>
 
@@ -487,7 +486,7 @@ function EngineStatusFooter({ collapsed }: { collapsed: boolean }) {
             <span
               className={cn(
                 'h-1.5 w-1.5 rounded-full flex-shrink-0',
-                isOnline ? 'bg-[#D1FF00]' : isDiscovering ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'
+                isOnline ? 'bg-[var(--aiox-lime)]' : isDiscovering ? 'bg-[var(--bb-warning)] animate-pulse' : 'bg-[var(--bb-error)]'
               )}
             />
             <span className={cn(
@@ -506,7 +505,7 @@ function EngineStatusFooter({ collapsed }: { collapsed: boolean }) {
 
         {isOnline && (
           <span className="text-[9px] text-tertiary opacity-0 group-hover:opacity-100 transition-opacity">
-            →
+            &gt;
           </span>
         )}
       </button>
@@ -535,32 +534,23 @@ function DesktopSidebar() {
     >
       {/* Header */}
       <div className="h-16 px-4 flex items-center justify-between border-b border-glass-border">
-        <AnimatePresence mode="wait">
-          {sidebarCollapsed ? (
-            <motion.div
+        {sidebarCollapsed ? (
+            <div
               key="small"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
             >
               <LogoSmall />
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
+            <div
               key="full"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
               className="flex flex-col"
             >
               <Logo />
               <span className="text-[9px] font-semibold tracking-[0.1em] uppercase text-tertiary mt-0.5">{tierLabel}</span>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-
-        {!sidebarCollapsed && (
-          <GlassButton
+{!sidebarCollapsed && (
+          <CockpitButton
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
@@ -568,14 +558,14 @@ function DesktopSidebar() {
             aria-label="Colapsar sidebar"
           >
             <ChevronLeft size={18} />
-          </GlassButton>
+          </CockpitButton>
         )}
       </div>
 
       {/* Navigation */}
       {sidebarCollapsed ? (
         <div className="flex flex-col items-center pt-2">
-          <GlassButton
+          <CockpitButton
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
@@ -583,7 +573,7 @@ function DesktopSidebar() {
             aria-label="Expandir sidebar"
           >
             <Menu size={18} />
-          </GlassButton>
+          </CockpitButton>
           <ViewNavigation collapsed />
         </div>
       ) : (
@@ -623,28 +613,20 @@ function MobileSidebar() {
   }, [mobileMenuOpen]);
 
   return (
-    <AnimatePresence>
-      {mobileMenuOpen && (
+    <>
+    {mobileMenuOpen && (
         <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+          <div
             className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <motion.aside
+          <aside
             aria-label="Menu lateral mobile"
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="md:hidden fixed inset-y-0 left-0 w-[85%] max-w-[280px] glass-panel border-r border-glass-border flex flex-col z-50"
           >
             <div className="h-16 px-4 flex items-center justify-between border-b border-glass-border">
               <Logo />
-              <GlassButton
+              <CockpitButton
                 variant="ghost"
                 size="icon"
                 onClick={() => setMobileMenuOpen(false)}
@@ -652,14 +634,14 @@ function MobileSidebar() {
                 aria-label="Fechar menu"
               >
                 <X size={18} />
-              </GlassButton>
+              </CockpitButton>
             </div>
             <ViewNavigation />
-          </motion.aside>
+          </aside>
         </>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 }
 
 // ── Combined Sidebar ──
@@ -677,7 +659,7 @@ export function MobileMenuButton() {
   const { setMobileMenuOpen } = useUIStore();
 
   return (
-    <GlassButton
+    <CockpitButton
       variant="ghost"
       size="icon"
       onClick={() => setMobileMenuOpen(true)}
@@ -685,6 +667,6 @@ export function MobileMenuButton() {
       aria-label="Abrir menu"
     >
       <Menu size={18} />
-    </GlassButton>
+    </CockpitButton>
   );
 }

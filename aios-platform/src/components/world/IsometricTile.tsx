@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { TILE_WIDTH, TILE_HEIGHT } from './world-layout';
 
@@ -48,7 +47,7 @@ export function IsometricTile({
   const py = (col + row) * (TILE_HEIGHT / 2) + offsetY;
 
   return (
-    <motion.div
+    <div
       className={cn(
         'absolute flex items-center justify-center',
         onClick && 'cursor-pointer',
@@ -60,8 +59,7 @@ export function IsometricTile({
         width: TILE_WIDTH,
         height: TILE_HEIGHT,
       }}
-      whileHover={onClick ? { scale: 1.08, zIndex: 10 } : undefined}
-      whileTap={onClick ? { scale: 0.95 } : undefined}
+
       onClick={onClick}
     >
       {/* Diamond shape via SVG */}
@@ -97,6 +95,6 @@ export function IsometricTile({
       <div className="relative z-10 flex flex-col items-center justify-center pointer-events-none">
         {children}
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -37,6 +37,8 @@ const VIEW_PATHS: Record<string, string> = {
   '/handoff-flows': 'handoff-flows',
   '/integrations': 'integrations',
   '/brainstorm': 'brainstorm',
+  '/vault': 'vault',
+  '/overnight': 'overnight',
   // Marketplace
   '/marketplace': 'marketplace',
   '/marketplace/purchases': 'marketplace-purchases',

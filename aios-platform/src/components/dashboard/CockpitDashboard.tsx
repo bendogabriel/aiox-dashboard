@@ -56,7 +56,7 @@ export default function CockpitDashboard({ viewToggle }: { viewToggle?: React.Re
   const allHealthy = claudeOk && openaiOk
 
   return (
-    <div style={{ height: '100%', overflow: 'auto', padding: '1.5rem' }}>
+    <div className="pattern-dot-grid--sparse" style={{ height: '100%', overflow: 'auto', padding: '1.5rem', position: 'relative' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -111,39 +111,45 @@ export default function CockpitDashboard({ viewToggle }: { viewToggle?: React.Re
 
       <CockpitSectionDivider label="Key Metrics" num="01" style={{ marginBottom: '1rem' }} />
 
-      {/* KPI Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+      {/* KPI Grid — with HUD corner brackets */}
+      <div className="grid-hairline" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', marginBottom: '1.5rem' }}>
         <CockpitKpiCard
+          className="hud-corner"
           label="Squads"
           value={squads?.length || 0}
           change={`${squads?.length || 0} active`}
           trend="neutral"
         />
         <CockpitKpiCard
+          className="hud-corner"
           label="Agents"
           value={agents?.length || 0}
           change="Online"
           trend="up"
         />
         <CockpitKpiCard
+          className="hud-corner"
           label="Executions"
           value={executions.length}
           change={`${successRate}% success`}
           trend={successRate >= 90 ? 'up' : successRate >= 70 ? 'neutral' : 'down'}
         />
         <CockpitKpiCard
+          className="hud-corner"
           label="MCP Tools"
           value={mcpStats?.totalTools || 0}
           change={`${mcpStats?.connectedServers || 0} servers`}
           trend={mcpStats?.connectedServers ? 'up' : 'down'}
         />
         <CockpitKpiCard
+          className="hud-corner"
           label="Cost Today"
           value={`$${costSummary?.today.toFixed(2) || '0.00'}`}
           change={`$${costSummary?.thisMonth.toFixed(2) || '0.00'} this month`}
           trend="neutral"
         />
         <CockpitKpiCard
+          className="hud-corner"
           label="Latency"
           value={metrics ? `${metrics.avgLatency.toFixed(0)}ms` : '—'}
           change={metrics ? `${metrics.requestsPerMinute.toFixed(1)} req/min` : ''}
@@ -153,7 +159,7 @@ export default function CockpitDashboard({ viewToggle }: { viewToggle?: React.Re
 
       {/* Services Grid */}
       <CockpitSectionDivider label="Services" num="02" concept="Health" style={{ marginBottom: '1rem' }} />
-      <div style={{ marginBottom: '1.5rem' }}>
+      <div className="frame-bracket" style={{ marginBottom: '1.5rem', position: 'relative', padding: '1rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
           <ServiceRow name="Claude API" ok={claudeOk} />
           <ServiceRow name="OpenAI API" ok={openaiOk} />
@@ -189,19 +195,22 @@ export default function CockpitDashboard({ viewToggle }: { viewToggle?: React.Re
       {/* Tokens Summary */}
       <CockpitSectionDivider label="Token Usage" num="06" style={{ marginBottom: '1rem' }} />
       <div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+        <div className="grid-hairline" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
           <CockpitKpiCard
+            className="hud-corner"
             label="Total Tokens"
             value={formatNumber((tokenUsage?.total.input ?? 0) + (tokenUsage?.total.output ?? 0))}
             change={`${tokenUsage?.total.requests ?? 0} requests`}
             trend="neutral"
           />
           <CockpitKpiCard
+            className="hud-corner"
             label="Claude Tokens"
             value={formatNumber((tokenUsage?.claude.input ?? 0) + (tokenUsage?.claude.output ?? 0))}
             trend="neutral"
           />
           <CockpitKpiCard
+            className="hud-corner"
             label="OpenAI Tokens"
             value={formatNumber((tokenUsage?.openai.input ?? 0) + (tokenUsage?.openai.output ?? 0))}
             trend="neutral"

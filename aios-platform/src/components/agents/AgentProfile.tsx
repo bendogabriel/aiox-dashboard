@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import { GlassCard, Avatar, Badge, GlassButton } from '../ui';
+import { CockpitCard, Avatar, Badge, CockpitButton } from '../ui';
 import { squadLabels, formatRelativeTime } from '../../lib/utils';
 import type { Agent } from '../../types';
 
@@ -11,13 +10,9 @@ interface AgentProfileProps {
 
 export function AgentProfile({ agent, onStartChat, onClose }: AgentProfileProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+    <div
     >
-      <GlassCard variant="strong" className="max-w-md w-full">
+      <CockpitCard variant="elevated" className="max-w-md w-full">
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-4">
@@ -47,12 +42,12 @@ export function AgentProfile({ agent, onStartChat, onClose }: AgentProfileProps)
           </div>
 
           {onClose && (
-            <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar perfil">
+            <CockpitButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar perfil">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
-            </GlassButton>
+            </CockpitButton>
           )}
         </div>
 
@@ -77,26 +72,26 @@ export function AgentProfile({ agent, onStartChat, onClose }: AgentProfileProps)
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-6 p-4 glass-subtle rounded-xl">
+        <div className="grid grid-cols-3 gap-4 mb-6 p-4 glass-subtle rounded-none">
           <div className="text-center">
-            <p className="text-2xl font-bold text-primary">
+            <p className="text-lg font-bold text-primary">
               {agent.executionCount?.toLocaleString() || '0'}
             </p>
             <p className="text-xs text-tertiary">Execuções</p>
           </div>
           <div className="text-center border-x border-white/10">
-            <p className="text-2xl font-bold text-primary">98%</p>
+            <p className="text-lg font-bold text-primary">98%</p>
             <p className="text-xs text-tertiary">Taxa de Sucesso</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-primary">1.2s</p>
+            <p className="text-lg font-bold text-primary">1.2s</p>
             <p className="text-xs text-tertiary">Tempo Médio</p>
           </div>
         </div>
 
         {/* Model Info */}
         {agent.model && (
-          <div className="mb-6 p-3 glass-subtle rounded-xl flex items-center justify-between">
+          <div className="mb-6 p-3 glass-subtle rounded-none flex items-center justify-between">
             <span className="text-sm text-secondary">Modelo</span>
             <span className="text-sm font-medium text-primary">{agent.model}</span>
           </div>
@@ -111,7 +106,7 @@ export function AgentProfile({ agent, onStartChat, onClose }: AgentProfileProps)
 
         {/* Action */}
         {onStartChat && (
-          <GlassButton
+          <CockpitButton
             variant="primary"
             className="w-full"
             onClick={onStartChat}
@@ -122,9 +117,9 @@ export function AgentProfile({ agent, onStartChat, onClose }: AgentProfileProps)
             }
           >
             Iniciar Conversa
-          </GlassButton>
+          </CockpitButton>
         )}
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }

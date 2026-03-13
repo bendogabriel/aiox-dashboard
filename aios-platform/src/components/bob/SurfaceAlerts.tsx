@@ -1,19 +1,18 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Info } from 'lucide-react';
-import { GlassCard, GlassButton } from '../ui';
+import { CockpitCard, CockpitButton } from '../ui';
 import type { BobDecision } from '../../stores/bobStore';
 import { cn } from '../../lib/utils';
 
 const severityBorder: Record<BobDecision['severity'], string> = {
-  info: 'border-blue-500/30',
-  warning: 'border-yellow-500/40',
-  error: 'border-red-500/40',
+  info: 'border-[var(--aiox-blue)]/30',
+  warning: 'border-[var(--bb-warning)]/40',
+  error: 'border-[var(--bb-error)]/40',
 };
 
 const severityIcon: Record<BobDecision['severity'], React.ReactNode> = {
-  info: <Info className="h-4 w-4 text-blue-400" />,
-  warning: <AlertTriangle className="h-4 w-4 text-yellow-400" />,
-  error: <AlertTriangle className="h-4 w-4 text-red-400" />,
+  info: <Info className="h-4 w-4 text-[var(--aiox-blue)]" />,
+  warning: <AlertTriangle className="h-4 w-4 text-[var(--bb-warning)]" />,
+  error: <AlertTriangle className="h-4 w-4 text-[var(--bb-error)]" />,
 };
 
 export default function SurfaceAlerts({
@@ -35,16 +34,11 @@ export default function SurfaceAlerts({
 
   return (
     <div className="flex flex-col gap-3">
-      <AnimatePresence mode="popLayout">
-        {unresolved.map((decision) => (
-          <motion.div
+      {unresolved.map((decision) => (
+          <div
             key={decision.id}
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            layout
           >
-            <GlassCard
+            <CockpitCard
               padding="sm"
               className={cn('border', severityBorder[decision.severity])}
             >
@@ -53,19 +47,18 @@ export default function SurfaceAlerts({
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-primary">{decision.message}</p>
                   <div className="flex items-center gap-3 mt-2">
-                    <GlassButton size="sm" variant="primary" onClick={() => onResolve(decision.id)}>
+                    <CockpitButton size="sm" variant="primary" onClick={() => onResolve(decision.id)}>
                       Acknowledge
-                    </GlassButton>
+                    </CockpitButton>
                     <span className="text-[10px] text-tertiary">
                       {new Date(decision.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
                 </div>
               </div>
-            </GlassCard>
-          </motion.div>
+            </CockpitCard>
+          </div>
         ))}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

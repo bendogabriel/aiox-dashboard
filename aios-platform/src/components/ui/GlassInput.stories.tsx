@@ -56,7 +56,7 @@ const MailIcon = () => (
 );
 
 const CheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-green-500">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--color-status-success)]">
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );

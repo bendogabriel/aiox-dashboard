@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, memo } from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
 interface LiveMetricCardProps {
@@ -68,22 +67,9 @@ function Sparkline({ data, color, height = 24 }: { data: number[]; color: string
   );
 }
 
-// Animated counting number
+// Display formatted number (no animation)
 function AnimatedNumber({ value, format, prefix, suffix }: { value: number; format?: LiveMetricCardProps['format']; prefix?: string; suffix?: string }) {
-  const spring = useSpring(0, { stiffness: 100, damping: 30 });
-  const display = useTransform(spring, (v) => formatValue(v, format, prefix, suffix));
-  const [text, setText] = useState(formatValue(value, format, prefix, suffix));
-
-  useEffect(() => {
-    spring.set(value);
-  }, [value, spring]);
-
-  useEffect(() => {
-    const unsub = display.on('change', (v) => setText(v));
-    return unsub;
-  }, [display]);
-
-  return <span>{text}</span>;
+  return <span>{formatValue(value, format, prefix, suffix)}</span>;
 }
 
 export const LiveMetricCard = memo(function LiveMetricCard({
@@ -118,26 +104,23 @@ export const LiveMetricCard = memo(function LiveMetricCard({
   const trendIcon = trend === 'up' ? 'M7 17l5-5 5 5' : trend === 'down' ? 'M7 7l5 5 5-5' : 'M5 12h14';
 
   return (
-    <motion.div
+    <div
       className={cn(
-        'relative rounded-xl overflow-hidden p-4 transition-shadow',
+        'relative rounded-none overflow-hidden p-4 transition-shadow',
         pulsing && 'shadow-lg',
       )}
       style={{
         background: 'var(--color-background-raised, rgba(255,255,255,0.03))',
         border: `1px solid ${pulsing ? `${color}44` : 'var(--glass-border-color, rgba(255,255,255,0.06))'}`,
       }}
-      animate={pulsing ? { scale: [1, 1.02, 1] } : undefined}
-      transition={{ duration: 0.3 }}
+
     >
       {/* Pulse glow on value change */}
       {pulsing && (
-        <motion.div
-          className="absolute inset-0 rounded-xl"
+        <div
+          className="absolute inset-0 rounded-none"
           style={{ background: `${color}08` }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 1, 0] }}
-          transition={{ duration: 0.6 }}
+
         />
       )}
 
@@ -153,11 +136,10 @@ export const LiveMetricCard = memo(function LiveMetricCard({
             </div>
             <span className="text-[11px] text-secondary font-medium truncate">{label}</span>
             {isLive && (
-              <motion.div
+              <div
                 className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                 style={{ background: '#10B981' }}
-                animate={{ opacity: [1, 0.4, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+
               />
             )}
           </div>
@@ -191,6 +173,6 @@ export const LiveMetricCard = memo(function LiveMetricCard({
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 });

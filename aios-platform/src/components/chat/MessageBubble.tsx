@@ -1,5 +1,4 @@
 import { lazy, Suspense, memo, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { Avatar, Badge } from '../ui';
 import { cn, formatRelativeTime } from '../../lib/utils';
@@ -29,24 +28,8 @@ export const MessageBubble = memo(function MessageBubble({
     return <SystemMessage content={message.content} />;
   }
 
-  // Different animations for user vs agent messages
-  const messageAnimation = isUser
-    ? {
-        initial: { opacity: 0, y: 10, x: 20, scale: 0.95 },
-        animate: { opacity: 1, y: 0, x: 0, scale: 1 },
-        transition: { type: 'spring', damping: 25, stiffness: 400 },
-      }
-    : {
-        initial: { opacity: 0, y: 10, x: -10 },
-        animate: { opacity: 1, y: 0, x: 0 },
-        transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
-      };
-
   return (
-    <motion.div
-      initial={messageAnimation.initial}
-      animate={messageAnimation.animate}
-      transition={messageAnimation.transition}
+    <div
       className={cn(
         'flex gap-3 max-w-[85%]',
         isUser ? 'ml-auto flex-row-reverse' : 'mr-auto'
@@ -83,10 +66,10 @@ export const MessageBubble = memo(function MessageBubble({
         <div className="relative group/msg">
           <div
             className={cn(
-              'rounded-2xl px-4 py-3 max-w-full',
+              'px-4 py-3 max-w-full',
               isUser
-                ? 'message-bubble-user rounded-br-md'
-                : 'message-bubble-agent glass rounded-bl-md'
+                ? 'message-bubble-user'
+                : 'message-bubble-agent glass'
             )}
           >
             <MessageContent
@@ -128,7 +111,7 @@ export const MessageBubble = memo(function MessageBubble({
           </span>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }, (prevProps, nextProps) => {
   // Custom comparison for better performance
@@ -167,7 +150,7 @@ function CopyMessageButton({ content, isUser }: { content: string; isUser: boole
         'flex items-center gap-1 px-2 py-1 rounded-md text-[10px]',
         'bg-white/10 hover:bg-white/20 text-white/60 hover:text-white/90 backdrop-blur-sm',
         'border border-white/10',
-        copied && 'bg-green-500/15 text-green-400 border-green-500/20',
+        copied && 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)] border-[var(--color-status-success)]/20',
         isUser ? 'right-0' : 'left-0'
       )}
       title="Copiar mensagem"
@@ -206,7 +189,7 @@ function ChecklistProgress({ content }: { content: string }) {
     <div className="flex items-center gap-2 mb-3">
       <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
         <div
-          className="h-full bg-[#D1FF00] rounded-full transition-all duration-500"
+          className="h-full bg-[var(--aiox-lime)] rounded-full transition-all duration-500"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -312,9 +295,7 @@ function ImageAttachment({ attachment }: { attachment: MessageAttachment }) {
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
+      <div
         className="relative group cursor-pointer rounded-lg overflow-hidden border border-white/10"
         onClick={() => setShowLightbox(true)}
       >
@@ -330,15 +311,11 @@ function ImageAttachment({ attachment }: { attachment: MessageAttachment }) {
             Clique para ampliar
           </span>
         </div>
-      </motion.div>
+      </div>
 
       {/* Lightbox */}
       {showLightbox && createPortal(
-        <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+        <div
             className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4"
             onClick={() => setShowLightbox(false)}
           >
@@ -377,16 +354,14 @@ function ImageAttachment({ attachment }: { attachment: MessageAttachment }) {
             </div>
 
             {/* Full image */}
-            <motion.img
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
+            <img
               src={imageUrl}
               alt={attachment.name}
               className="max-w-full max-h-full object-contain"
               onClick={(e) => e.stopPropagation()}
             />
-          </motion.div>
-        </AnimatePresence>,
+          </div>
+,
         document.body
       )}
     </>
@@ -398,9 +373,7 @@ function VideoAttachment({ attachment }: { attachment: MessageAttachment }) {
   const videoUrl = attachment.url || (attachment.data ? `data:${attachment.mimeType};base64,${attachment.data}` : '');
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
+    <div
       className="rounded-lg overflow-hidden border border-white/10"
     >
       <video
@@ -418,7 +391,7 @@ function VideoAttachment({ attachment }: { attachment: MessageAttachment }) {
         <span className="text-xs text-tertiary truncate">{attachment.name}</span>
         <span className="text-[10px] text-tertiary">{formatFileSize(attachment.size)}</span>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -427,13 +400,11 @@ function AudioAttachment({ attachment }: { attachment: MessageAttachment }) {
   const audioUrl = attachment.url || (attachment.data ? `data:${attachment.mimeType};base64,${attachment.data}` : '');
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
+    <div
       className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10"
     >
-      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-purple-500/15 flex items-center justify-center">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-400">
+      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[var(--aiox-gray-muted)]/15 flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--aiox-gray-muted)]">
           <path d="M9 18V5l12-2v13" />
           <circle cx="6" cy="18" r="3" />
           <circle cx="18" cy="16" r="3" />
@@ -445,7 +416,7 @@ function AudioAttachment({ attachment }: { attachment: MessageAttachment }) {
           Seu navegador não suporta o elemento de áudio.
         </audio>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -472,7 +443,7 @@ function FileAttachment({ attachment }: { attachment: MessageAttachment }) {
     const type = attachment.mimeType;
     if (type.includes('pdf')) {
       return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-400">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--bb-error)]">
           <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
           <polyline points="14 2 14 8 20 8" />
           <path d="M9 13h6" />
@@ -482,7 +453,7 @@ function FileAttachment({ attachment }: { attachment: MessageAttachment }) {
     }
     if (type.includes('audio')) {
       return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-400">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--aiox-gray-muted)]">
           <path d="M9 18V5l12-2v13" />
           <circle cx="6" cy="18" r="3" />
           <circle cx="18" cy="16" r="3" />
@@ -491,7 +462,7 @@ function FileAttachment({ attachment }: { attachment: MessageAttachment }) {
     }
     if (type.includes('video')) {
       return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-blue-400">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--aiox-blue)]">
           <polygon points="23 7 16 12 23 17 23 7" />
           <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
         </svg>
@@ -499,7 +470,7 @@ function FileAttachment({ attachment }: { attachment: MessageAttachment }) {
     }
     // Default file icon
     return (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-tertiary">
         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
         <polyline points="14 2 14 8 20 8" />
       </svg>
@@ -507,9 +478,7 @@ function FileAttachment({ attachment }: { attachment: MessageAttachment }) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
+    <div
       className="flex items-center gap-3 p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group"
     >
       <div className="flex-shrink-0 p-2 rounded-lg bg-white/5">
@@ -521,7 +490,7 @@ function FileAttachment({ attachment }: { attachment: MessageAttachment }) {
       </div>
       <button
         onClick={handleDownload}
-        className="flex-shrink-0 p-2 text-tertiary hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
+        className="flex-shrink-0 p-2 text-tertiary hover:text-[var(--aiox-blue)] transition-colors opacity-0 group-hover:opacity-100"
         aria-label="Baixar arquivo"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -530,7 +499,7 @@ function FileAttachment({ attachment }: { attachment: MessageAttachment }) {
           <line x1="12" y1="15" x2="12" y2="3" />
         </svg>
       </button>
-    </motion.div>
+    </div>
   );
 }
 
@@ -555,10 +524,7 @@ function TypingIndicator() {
 
 function StreamingCursor() {
   return (
-    <motion.span
-      initial={{ opacity: 0 }}
-      animate={{ opacity: [0, 1, 0] }}
-      transition={{ duration: 0.8, repeat: Infinity }}
+    <span
       className="inline-block w-0.5 h-4 bg-current ml-0.5 align-middle"
     />
   );
@@ -570,14 +536,12 @@ interface SystemMessageProps {
 
 function SystemMessage({ content }: SystemMessageProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+    <div
       className="flex justify-center py-2"
     >
       <span className="text-xs text-tertiary glass-subtle px-3 py-1 rounded-full">
         {content}
       </span>
-    </motion.div>
+    </div>
   );
 }

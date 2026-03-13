@@ -255,9 +255,9 @@ export function GeminiVoiceControls({
             className={cn(
               'w-10 h-10 rounded-full border flex items-center justify-center',
               'transition-all duration-200',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00C8FF]/50',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--aiox-lime)]/50',
               isMuted
-                ? 'bg-red-500/20 text-red-400 border-red-500/40 hover:bg-red-500/30'
+                ? 'bg-[var(--bb-error)]/20 text-[var(--bb-error)] border-[var(--bb-error)]/40 hover:bg-[var(--bb-error)]/30'
                 : 'bg-white/5 text-white/40 border-white/10 hover:text-white/80 hover:border-white/30',
             )}
             aria-label={isMuted ? 'Ativar microfone' : 'Silenciar microfone'}
@@ -279,14 +279,14 @@ export function GeminiVoiceControls({
               className={cn(
                 'relative z-[1] rounded-full border-2 flex items-center justify-center',
                 'transition-all duration-150 select-none touch-none',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00C8FF]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--aiox-lime)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--aiox-dark)]',
                 'w-[88px] h-[88px]',
                 // Disconnected
                 !isConnected && 'border-[#00C8FF]/60 text-[#00C8FF]/60 hover:border-[#00C8FF] hover:text-[#00C8FF]',
                 // Connected & active
                 isActive && !isMuted && 'border-[#00C8FF] text-[#00C8FF] bg-[#00C8FF]/20',
                 // Muted
-                isMuted && isConnected && 'border-red-500/40 text-red-400 bg-red-500/10',
+                isMuted && isConnected && 'border-[var(--bb-error)]/40 text-[var(--bb-error)] bg-[var(--bb-error)]/10',
               )}
               style={{
                 ...(isActive && !isMuted ? {
@@ -321,7 +321,7 @@ export function GeminiVoiceControls({
             className={cn(
               'w-10 h-10 rounded-full border flex items-center justify-center',
               'transition-all duration-200',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00C8FF]/50',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--aiox-lime)]/50',
               showSettings
                 ? 'bg-[#00C8FF]/15 text-[#00C8FF] border-[#00C8FF]/40'
                 : 'bg-white/5 text-white/40 border-white/10 hover:text-white/80 hover:border-white/30',
@@ -338,7 +338,7 @@ export function GeminiVoiceControls({
           className={cn(
             'flex items-center gap-1.5',
             'text-[10px] uppercase tracking-[0.08em] font-mono text-center',
-            !isConnected ? 'text-white/40' : isMuted ? 'text-red-400/80' : 'text-[#00C8FF]/60',
+            !isConnected ? 'text-white/40' : isMuted ? 'text-[var(--bb-error)]/80' : 'text-[#00C8FF]/60',
           )}
         >
           {showPulsingDot && (

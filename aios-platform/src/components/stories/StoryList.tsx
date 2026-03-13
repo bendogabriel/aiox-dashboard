@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus } from 'lucide-react';
-import { GlassInput, GlassButton, SectionLabel } from '../ui';
+import { CockpitInput, CockpitButton, SectionLabel } from '../ui';
 import { NoSearchResults } from '../ui';
 import { cn } from '../../lib/utils';
 import { useStoryStore } from '../../stores/storyStore';
@@ -24,13 +23,13 @@ const statusFilters: { value: StoryStatus | null; label: string }[] = [
 ];
 
 const statusFilterColors: Record<string, string> = {
-  backlog: 'bg-gray-500/15 text-gray-500',
-  in_progress: 'bg-blue-500/15 text-blue-500',
-  ai_review: 'bg-purple-500/15 text-purple-500',
-  human_review: 'bg-orange-500/15 text-orange-500',
-  pr_created: 'bg-cyan-500/15 text-cyan-500',
-  done: 'bg-green-500/15 text-green-500',
-  error: 'bg-red-500/15 text-red-500',
+  backlog: 'bg-[var(--aiox-gray-dim)]/15 text-tertiary',
+  in_progress: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  ai_review: 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]',
+  human_review: 'bg-[var(--bb-flare)]/15 text-[var(--bb-flare)]',
+  pr_created: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  done: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
+  error: 'bg-[var(--bb-error)]/15 text-[var(--bb-error)]',
 };
 
 export function StoryList({ viewToggle }: { viewToggle?: React.ReactNode } = {}) {
@@ -59,18 +58,18 @@ export function StoryList({ viewToggle }: { viewToggle?: React.ReactNode } = {})
           <SectionLabel count={stories.length}>Stories</SectionLabel>
           {viewToggle}
         </div>
-        <GlassButton
+        <CockpitButton
           variant="primary"
           size="sm"
           leftIcon={<Plus size={14} />}
           onClick={() => setIsCreateOpen(true)}
         >
           Criar Story
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       {/* Search */}
-      <GlassInput
+      <CockpitInput
         placeholder="Buscar por titulo, descricao ou ID..."
         leftIcon={<Search size={16} />}
         value={searchQuery}
@@ -105,24 +104,17 @@ export function StoryList({ viewToggle }: { viewToggle?: React.ReactNode } = {})
       {/* Story Grid */}
       {filteredStories.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          <AnimatePresence mode="popLayout">
-            {filteredStories.map((story) => (
-              <motion.div
+          {filteredStories.map((story) => (
+              <div
                 key={story.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
               >
                 <StoryCard
                   story={story}
                   onClick={() => setSelectedStoryId(story.id)}
                 />
-              </motion.div>
+              </div>
             ))}
-          </AnimatePresence>
-        </div>
+</div>
       ) : (
         <div className="flex-1 flex items-center justify-center py-12">
           <NoSearchResults query={searchQuery} onClear={() => setSearchQuery('')} />

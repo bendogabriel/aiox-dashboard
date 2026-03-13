@@ -22,7 +22,7 @@ function nextId(): string {
 
 const DIAGRAM_LANGS = new Set(['mermaid', 'plantuml', 'd2', 'dot', 'graphviz']);
 const DATA_LANGS = new Set(['json', 'yaml', 'yml', 'csv', 'toml', 'xml']);
-const CODE_LANGS = new Set([
+const _CODE_LANGS = new Set([
   'typescript', 'ts', 'javascript', 'js', 'jsx', 'tsx',
   'python', 'py', 'rust', 'go', 'java', 'kotlin', 'swift',
   'c', 'cpp', 'csharp', 'cs', 'ruby', 'rb', 'php',
@@ -69,7 +69,7 @@ function suggestFilename(lang: string, title?: string, content?: string): string
   // Look for filename hints in content (e.g. "// filename: auth.ts" or "# auth.py")
   if (content) {
     const filenameMatch = content.match(
-      /(?:\/\/|#|--|\/\*)\s*(?:file(?:name)?|path):\s*([^\s*\/]+)/i
+      /(?:\/\/|#|--|\/\*)\s*(?:file(?:name)?|path):\s*([^\s*/]+)/i
     );
     if (filenameMatch) return filenameMatch[1];
   }

@@ -25,6 +25,13 @@ export interface Lead {
   product?: string;
 }
 
+export interface Conversation {
+  id: string;
+  lead: Lead;
+  messages: Message[];
+  startedAt: Date;
+}
+
 export interface SalesAgent {
   id: string;
   name: string;
@@ -32,6 +39,7 @@ export interface SalesAgent {
   status: AgentStatus;
   currentLead: Lead | null;
   messages: Message[];
+  conversations: Conversation[];
   activeConversations: number;
   resolvedToday: number;
   conversionRate: number;

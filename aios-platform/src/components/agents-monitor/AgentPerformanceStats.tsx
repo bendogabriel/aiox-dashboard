@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
 import { Activity, CheckCircle2, Clock, Zap } from 'lucide-react';
-import { GlassCard, ProgressBar } from '../ui';
+import { CockpitCard, ProgressBar } from '../ui';
 import type { AgentMonitorData } from './AgentMonitorCard';
 
 interface AgentPerformanceStatsProps {
@@ -21,22 +20,19 @@ function StatCard({
   delay?: number;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.3 }}
+    <div
     >
-      <GlassCard padding="md" className="h-full">
+      <CockpitCard padding="md" className="h-full">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-cyan-400">{icon}</span>
+          <span className="text-[var(--aiox-blue)]">{icon}</span>
           <span className="text-[10px] font-semibold text-tertiary uppercase tracking-wider">
             {label}
           </span>
         </div>
-        <div className="text-2xl font-bold text-primary">{value}</div>
+        <div className="text-lg font-bold text-primary">{value}</div>
         {sub && <div className="text-[10px] text-tertiary mt-0.5">{sub}</div>}
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }
 

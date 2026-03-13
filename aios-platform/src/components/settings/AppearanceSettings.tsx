@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { GlassCard, ThemeToggleSwitch } from '../ui';
+import { CockpitCard, ThemeToggleSwitch } from '../ui';
 import { useUIStore } from '../../stores/uiStore';
 import { useToast } from '../ui/Toast';
 import { ThemeIcons } from '../../lib/icons';
@@ -12,18 +12,19 @@ const themes = [
   { id: 'glass' as const, label: 'Liquid Glass', description: 'Painéis de vidro fosco sobre fundo colorido vibrante' },
   { id: 'matrix' as const, label: 'Matrix', description: 'Verde neon sobre preto — modo hacker' },
   { id: 'aiox' as const, label: 'AIOX Cockpit', description: 'Dark cockpit com acento neon lime — técnico premium' },
+  { id: 'aiox-gold' as const, label: 'AIOX Gold', description: 'Dark cockpit com acento champagne gold — enterprise premium' },
   { id: 'system' as const, label: 'Sistema', description: 'Segue as preferências do sistema' },
 ];
 
 const accentPresets = [
   { label: 'Blue', value: '#3B82F6' },
-  { label: 'Purple', value: '#8B5CF6' },
-  { label: 'Emerald', value: '#10B981' },
-  { label: 'Rose', value: '#F43F5E' },
-  { label: 'Amber', value: '#F59E0B' },
-  { label: 'Cyan', value: '#06B6D4' },
-  { label: 'Lime', value: '#D1FF00' },
-  { label: 'Orange', value: '#F97316' },
+  { label: 'Purple', value: 'var(--aiox-gray-muted)' },
+  { label: 'Emerald', value: 'var(--color-status-success)' },
+  { label: 'Rose', value: 'var(--bb-flare)' },
+  { label: 'Amber', value: 'var(--bb-warning)' },
+  { label: 'Cyan', value: 'var(--aiox-blue)' },
+  { label: 'Lime', value: 'var(--aiox-lime)' },
+  { label: 'Orange', value: 'var(--bb-flare)' },
 ];
 
 function AccentColorPicker() {
@@ -79,7 +80,7 @@ export function AppearanceSettings() {
 
   return (
     <div className="space-y-6">
-      <GlassCard>
+      <CockpitCard>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-lg font-semibold text-primary">Tema</h2>
@@ -92,25 +93,28 @@ export function AppearanceSettings() {
           {themes.map((t) => {
             const isActive = theme === t.id;
             const isMatrixCard = t.id === 'matrix';
-            const isGlassCard = t.id === 'glass';
+            const isCockpitCard = t.id === 'glass';
             const isAioxCard = t.id === 'aiox';
+            const isAioxGoldCard = t.id === 'aiox-gold';
             return (
               <button
                 key={t.id}
                 onClick={() => {
-                  setTheme(t.id as 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox');
+                  setTheme(t.id as 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox' | 'aiox-gold');
                   success('Tema alterado', `Tema ${t.label} aplicado`);
                 }}
                 className={cn(
-                  'p-4 rounded-xl border-2 transition-all text-center group',
+                  'p-4 rounded-none border-2 transition-all text-center group',
                   isActive && isMatrixCard
-                    ? 'border-green-500 bg-green-500/10'
-                    : isActive && isGlassCard
-                    ? 'border-purple-500 bg-purple-500/10'
+                    ? 'border-[var(--color-status-success)] bg-[var(--color-status-success)]/10'
+                    : isActive && isCockpitCard
+                    ? 'border-[var(--aiox-gray-muted)] bg-[var(--aiox-gray-muted)]/10'
                     : isActive && isAioxCard
-                    ? 'border-[#D1FF00] bg-[#D1FF00]/10'
+                    ? 'border-[var(--aiox-lime)] bg-[var(--aiox-lime)]/10'
+                    : isActive && isAioxGoldCard
+                    ? 'border-[#DDD1BB] bg-[#DDD1BB]/10'
                     : isActive
-                    ? 'border-blue-500 bg-blue-500/10'
+                    ? 'border-[var(--aiox-blue)] bg-[var(--aiox-blue)]/10'
                     : 'border-transparent glass-subtle hover:border-white/20'
                 )}
               >
@@ -122,7 +126,7 @@ export function AppearanceSettings() {
                 {isActive && (
                   <div className={cn(
                     'mt-2',
-                    isMatrixCard ? 'text-green-500' : isGlassCard ? 'text-purple-500' : isAioxCard ? 'text-[#D1FF00]' : 'text-blue-500'
+                    isMatrixCard ? 'text-[var(--color-status-success)]' : isCockpitCard ? 'text-[var(--aiox-gray-muted)]' : isAioxCard ? 'text-[var(--aiox-lime)]' : isAioxGoldCard ? 'text-[#DDD1BB]' : 'text-[var(--aiox-blue)]'
                   )}>
                     <CheckIcon />
                   </div>
@@ -131,9 +135,9 @@ export function AppearanceSettings() {
             );
           })}
         </div>
-      </GlassCard>
+      </CockpitCard>
 
-      <GlassCard>
+      <CockpitCard>
         <h2 className="text-lg font-semibold text-primary mb-4">Interface</h2>
 
         <div className="space-y-4">
@@ -166,15 +170,15 @@ export function AppearanceSettings() {
             }
           />
         </div>
-      </GlassCard>
+      </CockpitCard>
 
-      <GlassCard>
+      <CockpitCard>
         <h2 className="text-lg font-semibold text-primary mb-4">Cor de Acento</h2>
         <p className="text-xs text-tertiary mb-4">Escolha uma cor de destaque para botões e indicadores</p>
         <AccentColorPicker />
-      </GlassCard>
+      </CockpitCard>
 
-      <GlassCard>
+      <CockpitCard>
         <h2 className="text-lg font-semibold text-primary mb-4">Fontes</h2>
 
         <div className="space-y-4">
@@ -202,7 +206,7 @@ export function AppearanceSettings() {
             }
           />
         </div>
-      </GlassCard>
+      </CockpitCard>
     </div>
   );
 }

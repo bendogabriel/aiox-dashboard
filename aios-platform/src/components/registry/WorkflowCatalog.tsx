@@ -1,5 +1,4 @@
 import { useState, useMemo, memo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Layers,
   GitBranch,
@@ -94,14 +93,10 @@ const WorkflowCard = memo(function WorkflowCard({
   const typeColor = getTypeColor(workflow.type);
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.01 }}
+    <div
       onClick={onSelect}
       className={cn(
-        'border rounded-xl p-4 cursor-pointer transition-colors',
+        'border rounded-none p-4 cursor-pointer transition-colors',
         'bg-white/[0.03] backdrop-blur-sm',
         isSelected
           ? 'border-white/20 bg-white/[0.06]'
@@ -145,7 +140,7 @@ const WorkflowCard = memo(function WorkflowCard({
         )}
         <ChevronRight className="w-3 h-3 ml-auto text-white/20" />
       </div>
-    </motion.div>
+    </div>
   );
 });
 
@@ -161,10 +156,7 @@ const WorkflowDetail = memo(function WorkflowDetail({
   const typeColor = getTypeColor(workflow.type);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+    <div
       className="flex flex-col h-full"
     >
       {/* Detail header */}
@@ -255,7 +247,7 @@ const WorkflowDetail = memo(function WorkflowDetail({
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 });
 
@@ -291,24 +283,18 @@ export default function WorkflowCatalog() {
   }, [search]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+    <div
       className="flex flex-col h-full"
     >
-      <AnimatePresence mode="wait">
-        {selectedWorkflow ? (
+      {selectedWorkflow ? (
           <WorkflowDetail
             key="detail"
             workflow={selectedWorkflow}
             onBack={() => setSelectedWorkflow(null)}
           />
         ) : (
-          <motion.div
+          <div
             key="grid"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             className="flex flex-col h-full"
           >
             {/* Header */}
@@ -362,9 +348,8 @@ export default function WorkflowCatalog() {
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </motion.div>
+</div>
   );
 }

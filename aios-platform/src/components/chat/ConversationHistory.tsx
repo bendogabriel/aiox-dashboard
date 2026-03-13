@@ -1,5 +1,4 @@
 import { useState, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useChatStore } from '../../stores/chatStore';
 import { useUIStore } from '../../stores/uiStore';
 import { cn, getSquadTheme } from '../../lib/utils';
@@ -28,18 +27,16 @@ const PlusIcon = () => (
 );
 
 const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
-  <motion.svg
+  <svg
     width="12"
     height="12"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
-    animate={{ rotate: isOpen ? 180 : 0 }}
-    transition={{ duration: 0.2 }}
   >
     <polyline points="6 9 12 15 18 9" />
-  </motion.svg>
+  </svg>
 );
 
 const SearchIcon = () => (
@@ -78,7 +75,7 @@ const ConversationItem = memo(function ConversationItem({ session, isActive, onS
   const messageCount = session.messages.length;
 
   return (
-    <motion.div
+    <div
       className={cn(
         'group relative px-3 py-2 rounded-lg cursor-pointer transition-all duration-200',
         'flex items-start gap-2',
@@ -89,10 +86,6 @@ const ConversationItem = memo(function ConversationItem({ session, isActive, onS
       onClick={onSelect}
       onMouseEnter={() => setShowDelete(true)}
       onMouseLeave={() => setShowDelete(false)}
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -10 }}
-      whileTap={{ scale: 0.98 }}
     >
       {/* Squad color indicator */}
       <div className={cn(
@@ -132,12 +125,8 @@ const ConversationItem = memo(function ConversationItem({ session, isActive, onS
       )}
 
       {/* Delete button */}
-      <AnimatePresence>
-        {showDelete && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
+      {showDelete && (
+          <button
             onClick={(e) => {
               e.stopPropagation();
               onDelete();
@@ -145,16 +134,15 @@ const ConversationItem = memo(function ConversationItem({ session, isActive, onS
             className={cn(
               'absolute right-2 top-1/2 -translate-y-1/2',
               'p-1.5 rounded-md',
-              'bg-red-500/10 text-red-500 hover:bg-red-500/20',
+              'bg-[var(--bb-error)]/10 text-[var(--bb-error)] hover:bg-[var(--bb-error)]/20',
               'transition-colors duration-200'
             )}
             title="Excluir conversa"
           >
             <TrashIcon />
-          </motion.button>
+          </button>
         )}
-      </AnimatePresence>
-    </motion.div>
+</div>
   );
 });
 
@@ -236,7 +224,7 @@ export function ConversationHistory() {
         <div className="flex items-center gap-1">
           {/* Search toggle */}
           {sessions.length > 2 && (
-            <motion.button
+            <button
               onClick={() => {
                 setShowSearch(!showSearch);
                 if (showSearch) setSearchQuery('');
@@ -244,36 +232,28 @@ export function ConversationHistory() {
               className={cn(
                 "p-1.5 rounded-md transition-colors",
                 showSearch
-                  ? "text-[#0099FF] bg-[#0099FF]/10"
+                  ? "text-[var(--aiox-blue)] bg-[var(--aiox-blue)]/10"
                   : "text-secondary hover:text-primary hover:bg-white/5"
               )}
               title="Buscar conversas"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               <SearchIcon />
-            </motion.button>
+            </button>
           )}
 
-          <motion.button
+          <button
             onClick={handleNewConversation}
             className="p-1.5 rounded-md text-secondary hover:text-primary hover:bg-white/5 transition-colors"
             title="Nova conversa"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
           >
             <PlusIcon />
-          </motion.button>
+          </button>
         </div>
       </div>
 
       {/* Search input */}
-      <AnimatePresence>
-        {showSearch && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+      {showSearch && (
+          <div
             className="mb-2 overflow-hidden"
           >
             <div className="relative">
@@ -282,7 +262,7 @@ export function ConversationHistory() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar em conversas..."
-                className="w-full px-3 py-1.5 text-xs bg-white/5 border border-white/10 rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus:border-[#0099FF]/50"
+                className="w-full px-3 py-1.5 text-xs bg-white/5 border border-white/10 rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus:border-[var(--aiox-lime)]/50"
                 autoFocus
                 aria-label="Buscar em conversas"
               />
@@ -300,18 +280,11 @@ export function ConversationHistory() {
                 {filteredSessions.length} resultado(s) para "{searchQuery}"
               </p>
             )}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-
-      {/* Content */}
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+{/* Content */}
+      {isExpanded && (
+          <div
             className="overflow-hidden"
           >
             {sessions.length === 0 ? (
@@ -387,7 +360,7 @@ export function ConversationHistory() {
                   <div className="pt-2 border-t border-white/5">
                     <button
                       onClick={handleClearAll}
-                      className="w-full px-3 py-1.5 text-[10px] text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-md transition-colors"
+                      className="w-full px-3 py-1.5 text-[10px] text-[var(--bb-error)] hover:text-[var(--bb-error)] hover:bg-[var(--bb-error)]/10 rounded-md transition-colors"
                     >
                       Limpar todas as conversas
                     </button>
@@ -395,10 +368,9 @@ export function ConversationHistory() {
                 )}
               </div>
             )}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }
 

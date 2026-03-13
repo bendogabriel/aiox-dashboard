@@ -87,7 +87,7 @@ const OrderCard = memo(function OrderCard({
       <button
         type="button"
         onClick={() => onSelect(order)}
-        className="w-full text-left p-4 focus:outline-none"
+        className="w-full text-left p-4 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--aiox-lime)]/50"
       >
         <div className="flex items-start gap-3">
           {/* Agent icon */}

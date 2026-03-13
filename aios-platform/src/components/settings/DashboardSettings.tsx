@@ -1,4 +1,4 @@
-import { GlassCard, GlassButton } from '../ui';
+import { CockpitCard, CockpitButton } from '../ui';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useToast } from '../ui/Toast';
 import { cn } from '../../lib/utils';
@@ -26,7 +26,7 @@ export function DashboardSettings() {
   return (
     <div className="space-y-6">
       {/* Auto Refresh */}
-      <GlassCard>
+      <CockpitCard>
         <h2 className="text-lg font-semibold text-primary mb-4">Auto Refresh</h2>
         <div className="space-y-4">
           <SettingToggle
@@ -49,7 +49,7 @@ export function DashboardSettings() {
                       className={cn(
                         'px-3 py-1.5 rounded-lg text-xs transition-colors',
                         refreshInterval === opt.value
-                          ? 'bg-blue-500 text-white'
+                          ? 'bg-[var(--aiox-blue)] text-white'
                           : 'bg-white/10 text-secondary hover:bg-white/20'
                       )}
                     >
@@ -61,16 +61,16 @@ export function DashboardSettings() {
             />
           </div>
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       {/* Agent Colors */}
-      <GlassCard>
+      <CockpitCard>
         <h2 className="text-lg font-semibold text-primary mb-4">Cores dos Agentes</h2>
         <div className="grid grid-cols-2 gap-3">
           {agentColors.map((agent) => (
             <div
               key={agent.id}
-              className="flex items-center gap-3 p-3 rounded-xl glass-subtle"
+              className="flex items-center gap-3 p-3 rounded-none glass-subtle"
             >
               <input
                 type="color"
@@ -86,20 +86,20 @@ export function DashboardSettings() {
             </div>
           ))}
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       {/* Reset */}
       <div className="flex justify-end">
-        <GlassButton
+        <CockpitButton
           variant="ghost"
           onClick={() => {
             resetToDefaults();
             success('Restaurado', 'Configurações restauradas ao padrão');
           }}
-          className="text-red-400 hover:bg-red-500/10"
+          className="text-[var(--bb-error)] hover:bg-[var(--bb-error)]/10"
         >
           Restaurar padrões
-        </GlassButton>
+        </CockpitButton>
       </div>
     </div>
   );

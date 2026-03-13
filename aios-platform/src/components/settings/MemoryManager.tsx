@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { GlassCard, GlassButton, Badge } from '../ui';
+import { CockpitCard, CockpitButton, Badge } from '../ui';
 import { apiClient } from '../../services/api/client';
 import { cn, getSquadTheme } from '../../lib/utils';
 import { useSquads } from '../../hooks/useSquads';
@@ -75,11 +74,11 @@ const CloseIcon = () => (
 
 // File type colors
 const fileTypeColors: Record<string, string> = {
-  md: 'text-blue-400',
-  yaml: 'text-yellow-400',
-  yml: 'text-yellow-400',
-  json: 'text-green-400',
-  txt: 'text-gray-400',
+  md: 'text-[var(--aiox-blue)]',
+  yaml: 'text-[var(--bb-warning)]',
+  yml: 'text-[var(--bb-warning)]',
+  json: 'text-[var(--color-status-success)]',
+  txt: 'text-tertiary',
 };
 
 interface FileItem {
@@ -270,7 +269,7 @@ export function MemoryManager() {
   return (
     <div className="space-y-6">
       {/* Tabs */}
-      <div className="flex gap-2 p-1 bg-white/5 rounded-xl">
+      <div className="flex gap-2 p-1 bg-white/5 rounded-none">
         <button
           onClick={() => setActiveTab('global')}
           className={cn(
@@ -308,36 +307,36 @@ export function MemoryManager() {
         <>
           {/* Stats Overview */}
           <div className="grid grid-cols-4 gap-4">
-            <GlassCard className="text-center py-3">
-              <div className="text-2xl font-bold text-cyan-500">{overview?.totalFiles || 0}</div>
+            <CockpitCard className="text-center py-3">
+              <div className="text-lg font-bold text-[var(--aiox-blue)]">{overview?.totalFiles || 0}</div>
               <p className="text-xs text-tertiary">Arquivos</p>
-            </GlassCard>
-            <GlassCard className="text-center py-3">
-              <div className="text-2xl font-bold text-purple-500">{overview?.totalDirectories || 0}</div>
+            </CockpitCard>
+            <CockpitCard className="text-center py-3">
+              <div className="text-lg font-bold text-[var(--aiox-gray-muted)]">{overview?.totalDirectories || 0}</div>
               <p className="text-xs text-tertiary">Pastas</p>
-            </GlassCard>
-            <GlassCard className="text-center py-3">
-              <div className="text-2xl font-bold text-green-500">{formatSize(overview?.totalSize || 0)}</div>
+            </CockpitCard>
+            <CockpitCard className="text-center py-3">
+              <div className="text-lg font-bold text-[var(--color-status-success)]">{formatSize(overview?.totalSize || 0)}</div>
               <p className="text-xs text-tertiary">Tamanho Total</p>
-            </GlassCard>
-            <GlassCard className="text-center py-3">
-              <div className="text-2xl font-bold text-orange-500">
+            </CockpitCard>
+            <CockpitCard className="text-center py-3">
+              <div className="text-lg font-bold text-[var(--bb-flare)]">
                 {Object.keys(overview?.byExtension || {}).length}
               </div>
               <p className="text-xs text-tertiary">Tipos</p>
-            </GlassCard>
+            </CockpitCard>
           </div>
 
           {/* File Browser */}
       <div className="flex gap-4 h-[500px]">
         {/* Directory Tree */}
-        <GlassCard className="w-80 flex-shrink-0 flex flex-col">
+        <CockpitCard className="w-80 flex-shrink-0 flex flex-col">
           {/* Toolbar */}
           <div className="flex items-center gap-2 pb-3 border-b border-white/10 mb-3">
-            <GlassButton variant="ghost" size="icon" onClick={goHome} title="Início" aria-label="Inicio">
+            <CockpitButton variant="ghost" size="icon" onClick={goHome} title="Início" aria-label="Inicio">
               <HomeIcon />
-            </GlassButton>
-            <GlassButton
+            </CockpitButton>
+            <CockpitButton
               variant="ghost"
               size="icon"
               onClick={goUp}
@@ -346,8 +345,8 @@ export function MemoryManager() {
               aria-label="Voltar"
             >
               <ChevronLeftIcon />
-            </GlassButton>
-            <GlassButton
+            </CockpitButton>
+            <CockpitButton
               variant="ghost"
               size="icon"
               onClick={() => {
@@ -358,7 +357,7 @@ export function MemoryManager() {
               aria-label="Atualizar"
             >
               <RefreshIcon />
-            </GlassButton>
+            </CockpitButton>
           </div>
 
           {/* Breadcrumbs */}
@@ -400,21 +399,21 @@ export function MemoryManager() {
                     className={cn(
                       'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all group',
                       isSelected
-                        ? 'bg-blue-500/20 border border-blue-500/30'
+                        ? 'bg-[var(--aiox-lime)]/20 border border-[var(--aiox-lime)]/30'
                         : 'hover:bg-white/5'
                     )}
                   >
                     {item.type === 'directory' ? (
                       <>
                         <ChevronRightIcon expanded={false} />
-                        <span className="text-yellow-500">
+                        <span className="text-[var(--bb-warning)]">
                           <FolderIcon />
                         </span>
                       </>
                     ) : (
                       <>
                         <span className="w-4" />
-                        <span className={fileTypeColors[item.extension || ''] || 'text-gray-400'}>
+                        <span className={fileTypeColors[item.extension || ''] || 'text-tertiary'}>
                           {item.extension === 'md' ? <FileTextIcon /> : <FileIcon />}
                         </span>
                       </>
@@ -430,16 +429,16 @@ export function MemoryManager() {
               })
             )}
           </div>
-        </GlassCard>
+        </CockpitCard>
 
         {/* File Content Viewer */}
-        <GlassCard className="flex-1 flex flex-col">
+        <CockpitCard className="flex-1 flex flex-col">
           {selectedFile ? (
             <>
               {/* File Header */}
               <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
                 <div className="flex items-center gap-2">
-                  <span className={fileTypeColors[fileContent?.extension || ''] || 'text-gray-400'}>
+                  <span className={fileTypeColors[fileContent?.extension || ''] || 'text-tertiary'}>
                     {fileContent?.extension === 'md' ? <FileTextIcon /> : <FileIcon />}
                   </span>
                   <div>
@@ -452,14 +451,14 @@ export function MemoryManager() {
                     </p>
                   </div>
                 </div>
-                <GlassButton
+                <CockpitButton
                   variant="ghost"
                   size="icon"
                   onClick={() => setSelectedFile(null)}
                   aria-label="Fechar"
                 >
                   <CloseIcon />
-                </GlassButton>
+                </CockpitButton>
               </div>
 
               {/* File Content */}
@@ -498,7 +497,7 @@ export function MemoryManager() {
                         onClick={() => setSelectedFile(file.path)}
                         className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-white/5 transition-colors"
                       >
-                        <span className={fileTypeColors[file.extension] || 'text-gray-400'}>
+                        <span className={fileTypeColors[file.extension] || 'text-tertiary'}>
                           <FileTextIcon />
                         </span>
                         <span className="flex-1 truncate text-sm text-primary">{file.name}</span>
@@ -510,12 +509,12 @@ export function MemoryManager() {
               )}
             </div>
           )}
-        </GlassCard>
+        </CockpitCard>
       </div>
 
           {/* File Types Summary */}
           {overview?.byExtension && Object.keys(overview.byExtension).length > 0 && (
-            <GlassCard>
+            <CockpitCard>
               <h3 className="text-sm font-medium text-primary mb-3">Tipos de Arquivo</h3>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(overview.byExtension).map(([ext, count]) => (
@@ -523,14 +522,14 @@ export function MemoryManager() {
                     key={ext}
                     className={cn(
                       'px-3 py-1 rounded-full text-xs border border-white/10',
-                      fileTypeColors[ext] || 'text-gray-400'
+                      fileTypeColors[ext] || 'text-tertiary'
                     )}
                   >
                     .{ext} ({count})
                   </span>
                 ))}
               </div>
-            </GlassCard>
+            </CockpitCard>
           )}
         </>
       ) : (
@@ -538,24 +537,24 @@ export function MemoryManager() {
         <div className="space-y-4">
           {/* Agent Knowledge Stats */}
           <div className="grid grid-cols-3 gap-4">
-            <GlassCard className="text-center py-3">
-              <div className="text-2xl font-bold text-cyan-500">{Object.keys(agentsBySquad).length}</div>
+            <CockpitCard className="text-center py-3">
+              <div className="text-lg font-bold text-[var(--aiox-blue)]">{Object.keys(agentsBySquad).length}</div>
               <p className="text-xs text-tertiary">Squads</p>
-            </GlassCard>
-            <GlassCard className="text-center py-3">
-              <div className="text-2xl font-bold text-purple-500">{agentKnowledge?.length || 0}</div>
+            </CockpitCard>
+            <CockpitCard className="text-center py-3">
+              <div className="text-lg font-bold text-[var(--aiox-gray-muted)]">{agentKnowledge?.length || 0}</div>
               <p className="text-xs text-tertiary">Agentes com Knowledge</p>
-            </GlassCard>
-            <GlassCard className="text-center py-3">
-              <div className="text-2xl font-bold text-green-500">
+            </CockpitCard>
+            <CockpitCard className="text-center py-3">
+              <div className="text-lg font-bold text-[var(--color-status-success)]">
                 {agentKnowledge?.reduce((sum, a) => sum + (a.files || 0), 0) || 0}
               </div>
               <p className="text-xs text-tertiary">Total de Arquivos</p>
-            </GlassCard>
+            </CockpitCard>
           </div>
 
           {/* Agent Knowledge by Squad */}
-          <GlassCard className="max-h-[500px] overflow-y-auto glass-scrollbar">
+          <CockpitCard className="max-h-[500px] overflow-y-auto glass-scrollbar">
             {loadingAgentKnowledge ? (
               <div className="text-center py-8 text-tertiary">Carregando...</div>
             ) : Object.keys(agentsBySquad).length === 0 ? (
@@ -578,7 +577,7 @@ export function MemoryManager() {
                     const totalFiles = agents.reduce((sum, a) => sum + (a.files || 0), 0);
 
                     return (
-                      <div key={squadId} className="rounded-xl overflow-hidden border border-white/10">
+                      <div key={squadId} className="rounded-none overflow-hidden border border-white/10">
                         {/* Squad Header */}
                         <button
                           onClick={() => toggleSquadExpand(squadId)}
@@ -599,13 +598,8 @@ export function MemoryManager() {
                         </button>
 
                         {/* Agents List */}
-                        <AnimatePresence>
-                          {isExpanded && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.2 }}
+                        {isExpanded && (
+                            <div
                               className="overflow-hidden"
                             >
                               <div className="px-3 pb-3 space-y-1">
@@ -623,7 +617,7 @@ export function MemoryManager() {
                                       'hover:bg-white/5 transition-colors group'
                                     )}
                                   >
-                                    <span className="text-yellow-500">
+                                    <span className="text-[var(--bb-warning)]">
                                       <FolderIcon />
                                     </span>
                                     <div className="flex-1 min-w-0">
@@ -647,21 +641,20 @@ export function MemoryManager() {
                                   </button>
                                 ))}
                               </div>
-                            </motion.div>
+                            </div>
                           )}
-                        </AnimatePresence>
-                      </div>
+</div>
                     );
                   })}
               </div>
             )}
-          </GlassCard>
+          </CockpitCard>
 
           {/* Info Card */}
-          <GlassCard className="!bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/20">
+          <CockpitCard className="!bg-gradient-to-r from-[var(--aiox-gray-muted)]/10 to-[var(--aiox-blue)]/10 border-[var(--aiox-gray-muted)]/20">
             <div className="flex items-start gap-3">
-              <div className="h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-400">
+              <div className="h-10 w-10 rounded-none bg-[var(--aiox-gray-muted)]/20 flex items-center justify-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--aiox-gray-muted)]">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="12" y1="16" x2="12" y2="12" />
                   <line x1="12" y1="8" x2="12.01" y2="8" />
@@ -675,7 +668,7 @@ export function MemoryManager() {
                 </p>
               </div>
             </div>
-          </GlassCard>
+          </CockpitCard>
         </div>
       )}
     </div>

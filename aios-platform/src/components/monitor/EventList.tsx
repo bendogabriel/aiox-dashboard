@@ -8,8 +8,7 @@ import {
   AlertCircle,
   Activity,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { GlassCard, GlassButton, SectionLabel } from '../ui';
+import { CockpitCard, CockpitButton, SectionLabel } from '../ui';
 import { useMonitorStore } from '../../stores/monitorStore';
 import type { MonitorEvent } from '../../stores/monitorStore';
 import { cn } from '../../lib/utils';
@@ -21,22 +20,22 @@ const eventTypeConfig: Record<
   tool_call: {
     icon: Terminal,
     label: 'Tool',
-    badgeClass: 'bg-blue-500/15 text-blue-400',
+    badgeClass: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
   },
   message: {
     icon: MessageSquare,
     label: 'Message',
-    badgeClass: 'bg-cyan-500/15 text-cyan-400',
+    badgeClass: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
   },
   error: {
     icon: AlertTriangle,
     label: 'Error',
-    badgeClass: 'bg-red-500/15 text-red-400',
+    badgeClass: 'bg-[var(--bb-error)]/15 text-[var(--bb-error)]',
   },
   system: {
     icon: Settings2,
     label: 'System',
-    badgeClass: 'bg-purple-500/15 text-purple-400',
+    badgeClass: 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]',
   },
 };
 
@@ -44,6 +43,7 @@ const filterTypes: MonitorEvent['type'][] = ['tool_call', 'message', 'error', 's
 
 function formatTime(isoString: string): string {
   const d = new Date(isoString);
+  if (isNaN(d.getTime())) return '--:--:--';
   return d.toLocaleTimeString('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
@@ -62,14 +62,10 @@ function EventRow({ event }: { event: MonitorEvent }) {
   const Icon = config.icon;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 10 }}
-      transition={{ duration: 0.15 }}
+    <div
       className={cn(
         'flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors',
-        event.type === 'error' && 'bg-red-500/5',
+        event.type === 'error' && 'bg-[var(--bb-error)]/5',
       )}
     >
       <span className="text-[10px] text-tertiary font-mono whitespace-nowrap pt-0.5">
@@ -97,11 +93,11 @@ function EventRow({ event }: { event: MonitorEvent }) {
       )}
       {event.success !== undefined &&
         (event.success ? (
-          <CheckCircle2 className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
+          <CheckCircle2 className="h-3.5 w-3.5 text-[var(--color-status-success)] flex-shrink-0" />
         ) : (
-          <AlertCircle className="h-3.5 w-3.5 text-red-400 flex-shrink-0" />
+          <AlertCircle className="h-3.5 w-3.5 text-[var(--bb-error)] flex-shrink-0" />
         ))}
-    </motion.div>
+    </div>
   );
 }
 
@@ -135,7 +131,7 @@ export default function EventList() {
           const isActive = eventFilters.size === 0 || eventFilters.has(type);
 
           return (
-            <GlassButton
+            <CockpitButton
               key={type}
               size="sm"
               variant="ghost"
@@ -147,12 +143,12 @@ export default function EventList() {
               onClick={() => toggleEventFilter(type)}
             >
               {config.label}
-            </GlassButton>
+            </CockpitButton>
           );
         })}
       </div>
 
-      <GlassCard padding="none" className="flex-1 overflow-hidden flex flex-col">
+      <CockpitCard padding="none" className="flex-1 overflow-hidden flex flex-col">
         <div
           ref={feedRef}
           className="flex-1 overflow-y-auto divide-y divide-white/5"
@@ -160,13 +156,10 @@ export default function EventList() {
           role="region"
           aria-label="Feed de eventos"
         >
-          <AnimatePresence initial={false}>
-            {reversedEvents.map((event) => (
+          {reversedEvents.map((event) => (
               <EventRow key={event.id} event={event} />
             ))}
-          </AnimatePresence>
-
-          {filteredEvents.length === 0 && (
+{filteredEvents.length === 0 && (
             <div className="flex items-center justify-center h-32 text-tertiary text-sm">
               {events.length === 0
                 ? 'No events recorded'
@@ -174,7 +167,7 @@ export default function EventList() {
             </div>
           )}
         </div>
-      </GlassCard>
+      </CockpitCard>
     </>
   );
 }

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { usePresenceStore } from '../../stores/presenceStore';
 import { useUIStore } from '../../stores/uiStore';
 import { cn } from '../../lib/utils';
@@ -42,16 +41,14 @@ export function PresenceAvatars() {
         aria-label={`${onlineUsers.length} membros online`}
       >
         {onlineUsers.slice(0, 3).map((user) => (
-          <motion.div
+          <div
             key={user.id}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
             className="h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-semibold text-white border-2 border-[var(--color-bg-primary)]"
             style={{ backgroundColor: user.color }}
             title={user.name}
           >
             {user.avatar}
-          </motion.div>
+          </div>
         ))}
         {onlineUsers.length > 3 && (
           <div className="h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-medium text-secondary bg-white/10 border-2 border-[var(--color-bg-primary)]">
@@ -66,21 +63,14 @@ export function PresenceAvatars() {
         </span>
       )}
 
-      <AnimatePresence>
-        {showDropdown && (
+      {showDropdown && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
               className="fixed inset-0 z-[58]"
               onClick={() => setShowDropdown(false)}
             />
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="absolute top-full right-0 mt-2 w-56 glass-card rounded-xl z-[59] overflow-hidden shadow-xl"
+            <div
+              className="absolute top-full right-0 mt-2 w-56 glass-card rounded-none z-[59] overflow-hidden shadow-xl"
             >
               <div className="px-3 py-2 border-b border-white/10">
                 <p className="text-xs font-semibold text-primary">Equipe Online</p>
@@ -106,16 +96,15 @@ export function PresenceAvatars() {
                     <div
                       className={cn(
                         'h-2 w-2 rounded-full flex-shrink-0',
-                        user.currentView === currentView ? 'bg-green-400' : 'bg-yellow-400'
+                        user.currentView === currentView ? 'bg-[var(--color-status-success)]' : 'bg-[var(--bb-warning)]'
                       )}
                     />
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

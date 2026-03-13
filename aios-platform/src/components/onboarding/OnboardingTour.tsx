@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import {
@@ -13,7 +12,7 @@ import {
   Keyboard,
   Rocket,
 } from 'lucide-react';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
 import { cn } from '../../lib/utils';
 import { CinematicIntro } from './CinematicIntro';
 
@@ -201,25 +200,19 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
   // Show cinematic intro first
   if (showCinematicIntro && !isVisible) {
     return (
-      <AnimatePresence>
-        <CinematicIntro
+      <CinematicIntro
           onComplete={() => {
             setShowCinematicIntro(false);
             setIsVisible(true);
           }}
         />
-      </AnimatePresence>
-    );
+);
   }
 
   if (!isVisible) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+    <div
         className="fixed inset-0 z-[200]"
       >
         {/* Backdrop with spotlight cutout */}
@@ -263,12 +256,8 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
         )}
 
         {/* Tour Card */}
-        <motion.div
+        <div
           key={step.id}
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -20, scale: 0.95 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className={cn(
             'absolute top-1/2 -translate-y-1/2 w-full max-w-md p-1',
             step.position === 'left' && 'left-8 md:left-[320px]',
@@ -276,14 +265,11 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
             step.position === 'center' && 'left-1/2 -translate-x-1/2'
           )}
         >
-          <div className="glass-card rounded-2xl overflow-hidden">
+          <div className="glass-card rounded-none overflow-hidden">
             {/* Progress bar */}
             <div className="h-1 bg-white/10">
-              <motion.div
-                className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.3 }}
+              <div
+                className="h-full bg-gradient-to-r from-[var(--aiox-blue)] to-[var(--aiox-gray-muted)]"
               />
             </div>
 
@@ -291,7 +277,7 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
             <div className="p-6">
               {/* Icon */}
               <div className="mb-4">
-                <step.icon size={48} className="text-blue-400" />
+                <step.icon size={48} className="text-[var(--aiox-blue)]" />
               </div>
 
               {/* Text */}
@@ -316,9 +302,9 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
                     className={cn(
                       'h-1.5 rounded-full transition-all duration-300',
                       index === currentStep
-                        ? 'w-6 bg-blue-500'
+                        ? 'w-6 bg-[var(--aiox-blue)]'
                         : index < currentStep
-                        ? 'w-1.5 bg-blue-500/50'
+                        ? 'w-1.5 bg-[var(--aiox-blue)]/50'
                         : 'w-1.5 bg-white/20'
                     )}
                   />
@@ -329,9 +315,9 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {currentStep > 0 && (
-                    <GlassButton variant="ghost" size="sm" onClick={handlePrev}>
+                    <CockpitButton variant="ghost" size="sm" onClick={handlePrev}>
                       Voltar
-                    </GlassButton>
+                    </CockpitButton>
                   )}
                   <button
                     onClick={handleSkip}
@@ -341,18 +327,18 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
                   </button>
                 </div>
 
-                <GlassButton
+                <CockpitButton
                   variant="primary"
                   size="sm"
                   onClick={handleNext}
                   rightIcon={isLastStep ? <CheckIcon /> : <ArrowRightIcon />}
                 >
                   {isLastStep ? 'Começar' : 'Próximo'}
-                </GlassButton>
+                </CockpitButton>
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Skip button (top right) */}
         <button
@@ -362,9 +348,8 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
         >
           <CloseIcon />
         </button>
-      </motion.div>
-    </AnimatePresence>
-  );
+      </div>
+);
 }
 
 // Hook to manually trigger tour

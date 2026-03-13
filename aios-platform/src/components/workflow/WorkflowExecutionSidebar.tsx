@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Badge, Avatar } from '../ui';
 import type { LiveExecutionState } from '../../hooks/useWorkflows';
 import type { SquadType } from '../../types';
@@ -62,7 +61,7 @@ export function WorkflowExecutionSidebar({
         {/* Orchestration Plan (if available) */}
         {orchestrationPlan && (orchestrationPlan.phase === 'analyzing' || orchestrationPlan.phase === 'planning') && (
           <div
-            className="relative rounded-xl p-3 mb-3 transition-all"
+            className="relative rounded-none p-3 mb-3 transition-all"
             style={{
               background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.08) 0%, rgba(209, 255, 0, 0.04) 100%)',
               border: '1px solid rgba(209, 255, 0, 0.15)'
@@ -83,7 +82,7 @@ export function WorkflowExecutionSidebar({
         {/* Orchestration Analysis */}
         {orchestrationPlan?.analysis && (
           <div
-            className="relative rounded-xl p-3 mb-3 transition-all"
+            className="relative rounded-none p-3 mb-3 transition-all"
             style={{
               background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, transparent 100%)',
               border: '1px solid rgba(209, 255, 0, 0.12)'
@@ -114,7 +113,7 @@ export function WorkflowExecutionSidebar({
 
         {/* Progress Card */}
         <div
-          className="relative rounded-xl p-3 transition-all"
+          className="relative rounded-none p-3 transition-all"
           style={{
             background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, rgba(209, 255, 0, 0.04) 100%)',
             border: '1px solid rgba(209, 255, 0, 0.12)'
@@ -126,11 +125,8 @@ export function WorkflowExecutionSidebar({
               <span className="text-white font-semibold">{Math.round(progress)}%</span>
             </div>
             <div className="h-2 rounded-full bg-black/30 overflow-hidden">
-              <motion.div
+              <div
                 className="h-full rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.5 }}
                 style={{ background: 'linear-gradient(to right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))', boxShadow: '0 0 10px rgba(209, 255, 0, 0.3)' }}
               />
             </div>
@@ -172,14 +168,11 @@ export function WorkflowExecutionSidebar({
                 const isSelected = selectedNodeId === step.id;
 
                 return (
-                  <motion.button
+                  <button
                     key={step.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03 }}
                     onClick={() => setSelectedNodeId(step.id)}
                     className={cn(
-                      'w-full rounded-xl p-3 border-l-2 transition-all text-left hover:translate-x-1',
+                      'w-full rounded-none p-3 border-l-2 transition-all text-left hover:translate-x-1',
                       style.border,
                       `bg-gradient-to-r ${style.bg} to-transparent`,
                       isSelected && 'ring-1 ring-white/30'
@@ -202,8 +195,8 @@ export function WorkflowExecutionSidebar({
                           'flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border',
                           step.status === 'running' && 'bg-[rgba(209,255,0,0.12)] border-[rgba(209,255,0,0.2)]',
                           step.status === 'completed' && 'bg-[rgba(209,255,0,0.08)] border-[rgba(209,255,0,0.15)]',
-                          step.status === 'failed' && 'bg-red-500/20 text-red-400 border-red-500/30',
-                          step.status === 'pending' && 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+                          step.status === 'failed' && 'bg-[var(--bb-error)]/20 text-[var(--bb-error)] border-[var(--bb-error)]/30',
+                          step.status === 'pending' && 'bg-[var(--aiox-gray-dim)]/20 text-tertiary border-[var(--aiox-gray-dim)]/30'
                         )}
                         style={
                           step.status === 'running' ? { color: 'var(--color-accent, #D1FF00)' } :
@@ -231,7 +224,7 @@ export function WorkflowExecutionSidebar({
                       <span>{agent?.squad || squadType}</span>
                       {step.startedAt && <span>{formatDuration(step.startedAt, step.completedAt)}</span>}
                     </div>
-                  </motion.button>
+                  </button>
                 );
               })}
             </div>
@@ -278,7 +271,7 @@ function StatBox({ label, value, color }: { label: string; value: number; color:
 
   return (
     <div
-      className={cn('rounded-xl p-2.5 bg-gradient-to-b to-transparent border border-white/5', style.bg)}
+      className={cn('rounded-none p-2.5 bg-gradient-to-b to-transparent border border-white/5', style.bg)}
       style={{
         boxShadow: value > 0 ? `0 0 15px color-mix(in srgb, ${style.glowVar} 30%, transparent)` : 'none'
       }}

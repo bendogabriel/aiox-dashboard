@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 import { Cpu, RefreshCw } from 'lucide-react';
-import { GlassButton, Badge, SectionLabel } from '../ui';
+import { CockpitButton, Badge, SectionLabel } from '../ui';
 import type { Pipeline, BobAgent } from '../../stores/bobStore';
 import PipelineVisualizer from './PipelineVisualizer';
 import AgentActivityCard from './AgentActivityCard';
@@ -62,7 +62,7 @@ function BobOrchestrationShell({ isActive, pipeline }: { isActive: boolean; pipe
       {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <Cpu className="h-5 w-5 text-blue-400" />
+          <Cpu className="h-5 w-5 text-[var(--aiox-blue)]" />
           <h1 className="text-xl font-bold text-primary">Bob Orchestration</h1>
           <Badge variant="status" status={pipeline.status === 'active' ? 'online' : pipeline.status === 'failed' ? 'error' : 'offline'} size="sm">
             {pipeline.status}
@@ -70,9 +70,9 @@ function BobOrchestrationShell({ isActive, pipeline }: { isActive: boolean; pipe
         </div>
         <div className="flex items-center gap-4">
           <span className="text-xs text-secondary font-mono">Session: 03m 12s | Story: 01m 45s</span>
-          <GlassButton size="sm" variant="ghost" leftIcon={<RefreshCw className="h-3.5 w-3.5" />} onClick={fn()}>
+          <CockpitButton size="sm" variant="ghost" leftIcon={<RefreshCw className="h-3.5 w-3.5" />} onClick={fn()}>
             Reset
-          </GlassButton>
+          </CockpitButton>
         </div>
       </div>
 

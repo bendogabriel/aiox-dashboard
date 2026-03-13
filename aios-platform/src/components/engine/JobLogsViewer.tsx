@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { Terminal, Download } from 'lucide-react';
-import { GlassCard, GlassButton } from '../ui';
+import { CockpitCard, CockpitButton } from '../ui';
 import { cn } from '../../lib/utils';
 import { useJobLogs } from '../../hooks/useEngine';
 
@@ -36,7 +36,7 @@ export default function JobLogsViewer({ jobId, jobStatus }: JobLogsViewerProps) 
   }
 
   return (
-    <GlassCard padding="sm" variant="subtle">
+    <CockpitCard padding="sm" variant="subtle">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Terminal className="h-3.5 w-3.5 text-tertiary" />
@@ -44,15 +44,15 @@ export default function JobLogsViewer({ jobId, jobStatus }: JobLogsViewerProps) 
           {isLive && (
             <span className="flex items-center gap-1">
               <span className={cn(
-                'h-1.5 w-1.5 rounded-full bg-green-400',
+                'h-1.5 w-1.5 rounded-full bg-[var(--color-status-success)]',
                 isFetching && 'animate-pulse',
               )} />
-              <span className="text-[10px] text-green-400">LIVE</span>
+              <span className="text-[10px] text-[var(--color-status-success)]">LIVE</span>
             </span>
           )}
         </div>
         {data?.logs.length ? (
-          <GlassButton
+          <CockpitButton
             size="sm"
             variant="ghost"
             leftIcon={<Download className="h-3 w-3" />}
@@ -60,7 +60,7 @@ export default function JobLogsViewer({ jobId, jobStatus }: JobLogsViewerProps) 
             aria-label="Download logs"
           >
             Download
-          </GlassButton>
+          </CockpitButton>
         ) : null}
       </div>
 
@@ -86,11 +86,11 @@ export default function JobLogsViewer({ jobId, jobStatus }: JobLogsViewerProps) 
                 key={i}
                 className={cn(
                   line.includes('ERROR') || line.includes('[error]')
-                    ? 'text-red-400'
+                    ? 'text-[var(--bb-error)]'
                     : line.includes('WARN') || line.includes('[warn]')
-                    ? 'text-yellow-400'
-                    : line.includes('✓') || line.includes('[success]')
-                    ? 'text-green-400'
+                    ? 'text-[var(--bb-warning)]'
+                    : line.includes('PASS') || line.includes('[success]')
+                    ? 'text-[var(--color-status-success)]'
                     : undefined,
                 )}
               >
@@ -100,6 +100,6 @@ export default function JobLogsViewer({ jobId, jobStatus }: JobLogsViewerProps) 
           </pre>
         </>
       )}
-    </GlassCard>
+    </CockpitCard>
   );
 }

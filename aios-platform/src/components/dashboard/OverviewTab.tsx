@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Bot, Zap, CheckCircle, BookOpen, GitBranch } from 'lucide-react';
-import { GlassCard, Badge } from '../ui';
+import { CockpitCard, Badge, Reveal, RevealGroup, RevealItem } from '../ui';
 import { LiveMetricCard } from './LiveMetricCard';
 import { useSquads } from '../../hooks/useSquads';
 import { useAgents } from '../../hooks/useAgents';
@@ -15,10 +14,7 @@ import { RegistryQuickAccess } from './RegistryQuickAccess';
 // Skeleton for the overview tab
 export function OverviewSkeleton() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       className="space-y-6 pb-6"
     >
       {/* Metric cards skeleton */}
@@ -26,7 +22,7 @@ export function OverviewSkeleton() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="p-4 rounded-xl bg-white/5 space-y-3 shimmer"
+            className="p-4 rounded-none bg-white/5 space-y-3 shimmer"
             style={{ animationDelay: `${i * 100}ms` }}
           >
             <div className="flex items-center gap-2">
@@ -40,11 +36,11 @@ export function OverviewSkeleton() {
       </div>
       {/* Charts skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 p-4 rounded-xl bg-white/5 shimmer" style={{ animationDelay: '400ms' }}>
+        <div className="lg:col-span-2 p-4 rounded-none bg-white/5 shimmer" style={{ animationDelay: '400ms' }}>
           <div className="w-40 h-5 rounded bg-white/10 mb-4" />
           <div className="w-full h-48 rounded bg-white/5" />
         </div>
-        <div className="p-4 rounded-xl bg-white/5 shimmer" style={{ animationDelay: '500ms' }}>
+        <div className="p-4 rounded-none bg-white/5 shimmer" style={{ animationDelay: '500ms' }}>
           <div className="w-32 h-5 rounded bg-white/10 mb-4" />
           <div className="w-full h-48 rounded bg-white/5 flex items-center justify-center">
             <div className="w-32 h-32 rounded-full bg-white/5" />
@@ -54,7 +50,7 @@ export function OverviewSkeleton() {
       {/* Bottom row skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className="p-4 rounded-xl bg-white/5 shimmer" style={{ animationDelay: `${600 + i * 100}ms` }}>
+          <div key={i} className="p-4 rounded-none bg-white/5 shimmer" style={{ animationDelay: `${600 + i * 100}ms` }}>
             <div className="w-36 h-5 rounded bg-white/10 mb-4" />
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, j) => (
@@ -68,7 +64,7 @@ export function OverviewSkeleton() {
           </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -108,99 +104,92 @@ export function OverviewTab() {
   if (isLoading) return <OverviewSkeleton />;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+    <div
       className="space-y-6 pb-6"
     >
       {/* Live Metric Cards — stagger entrance */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[
+      <RevealGroup className="grid grid-cols-2 sm:grid-cols-4 gap-4" stagger={0.04}>
+        <RevealItem direction="up">
           <LiveMetricCard
-            key="agents"
             label="Agents"
             value={dashOverview?.totalAgents || agents?.length || 0}
-            icon={<Bot size={14} className="text-emerald-400" />}
-            color="#10B981"
+            icon={<Bot size={14} className="text-[var(--color-status-success)]" />}
+            color="var(--color-status-success)"
             trend="up"
             trendValue="Online"
             isLive
-          />,
+          />
+        </RevealItem>
+        <RevealItem direction="up">
           <LiveMetricCard
-            key="stories"
             label="Stories"
             value={dashOverview?.totalStories || 0}
-            icon={<BookOpen size={14} className="text-blue-400" />}
-            color="#3B82F6"
+            icon={<BookOpen size={14} className="text-[var(--aiox-blue)]" />}
+            color="var(--aiox-blue)"
             sparkline={executionTrend}
-          />,
+          />
+        </RevealItem>
+        <RevealItem direction="up">
           <LiveMetricCard
-            key="exec"
             label="Execuções"
             value={dashOverview?.totalExecutions || executions.length}
-            icon={<Zap size={14} className="text-purple-400" />}
-            color="#8B5CF6"
+            icon={<Zap size={14} className="text-[var(--aiox-gray-muted)]" />}
+            color="var(--aiox-gray-muted)"
             sparkline={executionTrend}
             trend={executionTrend[6] > executionTrend[5] ? 'up' : executionTrend[6] < executionTrend[5] ? 'down' : 'flat'}
             trendValue={executionTrend[6] > 0 ? `${executionTrend[6]} hoje` : undefined}
-          />,
+          />
+        </RevealItem>
+        <RevealItem direction="up">
           <LiveMetricCard
-            key="success"
             label="Sucesso"
             value={dashOverview?.successRate ?? successRate}
             format="percent"
-            icon={<CheckCircle size={14} style={{ color: (dashOverview?.successRate ?? successRate) >= 90 ? '#10B981' : (dashOverview?.successRate ?? successRate) >= 70 ? '#F59E0B' : '#EF4444' }} />}
-            color={(dashOverview?.successRate ?? successRate) >= 90 ? '#10B981' : (dashOverview?.successRate ?? successRate) >= 70 ? '#F59E0B' : '#EF4444'}
+            icon={<CheckCircle size={14} style={{ color: (dashOverview?.successRate ?? successRate) >= 90 ? 'var(--color-status-success)' : (dashOverview?.successRate ?? successRate) >= 70 ? 'var(--bb-warning)' : 'var(--bb-error)' }} />}
+            color={(dashOverview?.successRate ?? successRate) >= 90 ? 'var(--color-status-success)' : (dashOverview?.successRate ?? successRate) >= 70 ? 'var(--bb-warning)' : 'var(--bb-error)'}
             trend={(dashOverview?.successRate ?? successRate) >= 90 ? 'up' : (dashOverview?.successRate ?? successRate) >= 70 ? 'flat' : 'down'}
-          />,
-        ].map((card, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 16, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.35, delay: i * 0.08, ease: [0, 0, 0.2, 1] }}
-          >
-            {card}
-          </motion.div>
-        ))}
-      </div>
+          />
+        </RevealItem>
+      </RevealGroup>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Execution Trend */}
-        <GlassCard className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-primary">Execuções (7 dias)</h2>
-            <Badge variant="count" size="sm">{executions.length} total</Badge>
-          </div>
-          <LineChart
-            data={executionTrend}
-            labels={trendLabels}
-            height={160}
-            showLabels
-          />
-        </GlassCard>
-
-        {/* Status Distribution */}
-        <GlassCard>
-          <h2 className="font-semibold text-primary mb-4">Status</h2>
-          <div className="flex justify-center py-2">
-            <DonutChart
-              data={[
-                { label: 'Sucesso', value: completedCount },
-                { label: 'Falha', value: executions.length - completedCount },
-              ]}
-              size={120}
-              thickness={16}
-              centerText={`${successRate}%`}
-              centerSubtext="sucesso"
+      <Reveal direction="up" delay={0.15}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Execution Trend */}
+          <CockpitCard className="lg:col-span-2 hud-corner">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-primary">Execuções (7 dias)</h2>
+              <Badge variant="count" size="sm">{executions.length} total</Badge>
+            </div>
+            <LineChart
+              data={executionTrend}
+              labels={trendLabels}
+              height={160}
+              showLabels
             />
-          </div>
-        </GlassCard>
-      </div>
+          </CockpitCard>
+
+          {/* Status Distribution */}
+          <CockpitCard className="hud-corner">
+            <h2 className="font-semibold text-primary mb-4">Status</h2>
+            <div className="flex justify-center py-2">
+              <DonutChart
+                data={[
+                  { label: 'Sucesso', value: completedCount },
+                  { label: 'Falha', value: executions.length - completedCount },
+                ]}
+                size={120}
+                thickness={16}
+                centerText={`${successRate}%`}
+                centerSubtext="sucesso"
+              />
+            </div>
+          </CockpitCard>
+        </div>
+      </Reveal>
 
       {/* Health Row */}
+      <Reveal direction="up" delay={0.25}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <HealthCard
           title="LLMs"
@@ -227,37 +216,38 @@ export function OverviewTab() {
           ]}
         />
       </div>
+      </Reveal>
 
       {/* Git Info */}
       {dashOverview && (
-        <GlassCard>
+        <CockpitCard>
           <div className="flex items-center gap-2 mb-3">
             <GitBranch size={16} className="text-secondary" />
             <h2 className="font-semibold text-primary">Repositório</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-3 rounded-xl glass-subtle">
+            <div className="p-3 rounded-none glass-subtle">
               <p className="text-xs text-tertiary mb-1">Branch</p>
               <p className="text-sm font-semibold text-primary">{dashOverview.gitBranch}</p>
             </div>
-            <div className="p-3 rounded-xl glass-subtle">
+            <div className="p-3 rounded-none glass-subtle">
               <p className="text-xs text-tertiary mb-1">Commits</p>
               <p className="text-sm font-semibold text-primary">{dashOverview.gitCommits}</p>
             </div>
-            <div className="p-3 rounded-xl glass-subtle">
+            <div className="p-3 rounded-none glass-subtle">
               <p className="text-xs text-tertiary mb-1">Log Files</p>
               <p className="text-sm font-semibold text-primary">{dashOverview.activeLogFiles}</p>
             </div>
-            <div className="p-3 rounded-xl glass-subtle">
+            <div className="p-3 rounded-none glass-subtle">
               <p className="text-xs text-tertiary mb-1">Active Tasks</p>
               <p className="text-sm font-semibold text-primary">{dashOverview.activeExecutions}</p>
             </div>
           </div>
-        </GlassCard>
+        </CockpitCard>
       )}
 
       {/* AIOS Registry Quick Access */}
       <RegistryQuickAccess />
-    </motion.div>
+    </div>
   );
 }

@@ -13,8 +13,8 @@ function WorkflowViewShell({ status }: { status: 'idle' | 'running' | 'completed
       {/* Toolbar mock */}
       <div className="h-14 px-6 flex items-center justify-between border-b border-white/10 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--aiox-blue)]/20 to-[var(--aiox-blue)]/20 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--aiox-blue)]">
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
             </svg>
           </div>
@@ -22,9 +22,9 @@ function WorkflowViewShell({ status }: { status: 'idle' | 'running' | 'completed
           <span
             className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
               status === 'running'
-                ? 'bg-orange-500/20 text-orange-400'
+                ? 'bg-[var(--bb-flare)]/20 text-[var(--bb-flare)]'
                 : status === 'completed'
-                ? 'bg-green-500/20 text-green-400'
+                ? 'bg-[var(--color-status-success)]/20 text-[var(--color-status-success)]'
                 : 'bg-gray-500/20 text-gray-400'
             }`}
           >

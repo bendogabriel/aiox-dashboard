@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { useUIStore, type SettingsSection } from '../../stores/uiStore';
 import { cn } from '../../lib/utils';
 import { CategoryManager } from './CategoryManager';
@@ -157,13 +156,13 @@ export function SettingsPage() {
                 <button
                   onClick={() => setSettingsSection(section.id)}
                   className={cn(
-                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all',
+                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-none text-left transition-all',
                     isActive
-                      ? 'bg-blue-500/15 text-blue-400'
+                      ? 'bg-[var(--aiox-lime)]/15 text-[var(--aiox-lime)]'
                       : 'text-secondary hover:text-primary hover:bg-white/5'
                   )}
                 >
-                  <span className={cn('flex-shrink-0', isActive ? 'text-blue-400' : 'text-tertiary')}>
+                  <span className={cn('flex-shrink-0', isActive ? 'text-[var(--aiox-lime)]' : 'text-tertiary')}>
                     {section.icon}
                   </span>
                   <span className="text-sm font-medium truncate">{section.label}</span>
@@ -178,7 +177,7 @@ export function SettingsPage() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Section Header */}
         <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/10 flex-shrink-0">
-          <div className="text-blue-500">{currentSection?.icon}</div>
+          <div className="text-[var(--aiox-lime)]">{currentSection?.icon}</div>
           <div>
             <h2 className="text-lg font-semibold text-primary">{currentSection?.label}</h2>
             <p className="text-xs text-tertiary">{currentSection?.description}</p>
@@ -187,18 +186,12 @@ export function SettingsPage() {
 
         {/* Section Content */}
         <div className="flex-1 overflow-y-auto glass-scrollbar pr-2">
-          <AnimatePresence mode="wait">
-            <motion.div
+          <div
               key={settingsSection}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
             >
               {renderContent()}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+            </div>
+</div>
       </div>
     </div>
   );

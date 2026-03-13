@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Activity, CheckCircle2, AlertCircle, Wifi } from 'lucide-react';
-import { GlassCard } from '../ui';
+import { CockpitCard } from '../ui';
 import { cn } from '../../lib/utils';
 
 /**
@@ -30,7 +30,7 @@ function LiveMonitorShell({ connected, stats }: {
         <div className="flex items-center gap-3">
           <Activity className="h-5 w-5 text-primary" />
           <h1 className="text-lg font-bold text-primary">Live Monitor</h1>
-          <span className={cn('h-2.5 w-2.5 rounded-full', connected ? 'bg-green-500 animate-pulse' : 'bg-gray-500')} />
+          <span className={cn('h-2.5 w-2.5 rounded-full', connected ? 'bg-[var(--color-status-success)] animate-pulse' : 'bg-gray-500')} />
           <span className="text-xs text-tertiary">{connected ? 'Connected' : 'Disconnected'}</span>
         </div>
       </div>
@@ -38,42 +38,42 @@ function LiveMonitorShell({ connected, stats }: {
       {/* Metrics placeholder */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {['CPU: 42%', 'Memory: 68%', 'Latency: 120ms', 'Throughput: 15 req/s'].map((text, i) => (
-          <GlassCard key={i} padding="sm" variant="subtle">
+          <CockpitCard key={i} padding="sm" variant="subtle">
             <p className="text-xs text-tertiary">{text.split(':')[0]}</p>
             <p className="text-lg font-bold text-primary">{text.split(':')[1]}</p>
-          </GlassCard>
+          </CockpitCard>
         ))}
       </div>
 
       {/* Agent cards placeholder */}
       <div className="grid grid-cols-4 gap-3">
         {['@dex', '@morgan', '@river', '@pax'].map((name) => (
-          <GlassCard key={name} padding="sm" variant="subtle">
+          <CockpitCard key={name} padding="sm" variant="subtle">
             <p className="text-sm font-semibold text-primary">{name}</p>
             <p className="text-xs text-tertiary">idle</p>
-          </GlassCard>
+          </CockpitCard>
         ))}
       </div>
 
       {/* Activity feed placeholder */}
-      <GlassCard padding="sm" className="flex-1 overflow-hidden">
+      <CockpitCard padding="sm" className="flex-1 overflow-hidden">
         <p className="text-xs text-tertiary">Activity Feed (5 events)</p>
         <div className="mt-2 space-y-2">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="h-6 bg-white/5 rounded animate-pulse" />
           ))}
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       {/* Stats footer */}
-      <GlassCard padding="sm" variant="subtle" className="flex-shrink-0">
+      <CockpitCard padding="sm" variant="subtle" className="flex-shrink-0">
         <div className="grid grid-cols-4 gap-4">
-          <StatBlock icon={Activity} label="Total Events" value={stats.total} color="text-blue-400" />
-          <StatBlock icon={CheckCircle2} label="Success Rate" value={`${stats.successRate}%`} color="text-green-400" />
-          <StatBlock icon={AlertCircle} label="Errors" value={stats.errorCount} color="text-red-400" />
-          <StatBlock icon={Wifi} label="Sessions" value={stats.activeSessions} color="text-cyan-400" />
+          <StatBlock icon={Activity} label="Total Events" value={stats.total} color="text-[var(--aiox-blue)]" />
+          <StatBlock icon={CheckCircle2} label="Success Rate" value={`${stats.successRate}%`} color="text-[var(--color-status-success)]" />
+          <StatBlock icon={AlertCircle} label="Errors" value={stats.errorCount} color="text-[var(--bb-error)]" />
+          <StatBlock icon={Wifi} label="Sessions" value={stats.activeSessions} color="text-[var(--aiox-blue)]" />
         </div>
-      </GlassCard>
+      </CockpitCard>
     </div>
   );
 }

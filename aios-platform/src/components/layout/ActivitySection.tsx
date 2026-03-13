@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '../ui';
 import { ChevronDownIcon } from './activity-panel-icons';
 
@@ -29,29 +28,21 @@ export function Section({ title, badge, expanded = true, onToggle, children }: S
           )}
         </div>
         {onToggle && (
-          <motion.div
-            animate={{ rotate: expanded ? 0 : -90 }}
-            transition={{ duration: 0.2 }}
+          <div
             className="text-tertiary group-hover:text-secondary"
           >
             <ChevronDownIcon />
-          </motion.div>
+          </div>
         )}
       </button>
 
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+      {expanded && (
+          <div
           >
             {children}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }
 
@@ -65,7 +56,7 @@ interface EmptyStateProps {
 export function EmptyState({ icon, title, description }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="h-14 w-14 rounded-2xl glass-subtle flex items-center justify-center mb-4 text-tertiary">
+      <div className="h-14 w-14 rounded-none glass-subtle flex items-center justify-center mb-4 text-tertiary">
         {icon}
       </div>
       <p className="text-primary text-sm font-medium">{title}</p>

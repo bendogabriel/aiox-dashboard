@@ -26,6 +26,14 @@ html[data-theme="aiox"] {
    KEYFRAMES — UI Animations
    ============================================ */
 
+/* Fade in-out — success feedback overlay */
+@keyframes fade-in-out {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 /* Ticker — horizontal scrolling text */
 @keyframes aiox-ticker {
   from { transform: translateX(0); }

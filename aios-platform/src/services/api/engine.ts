@@ -139,6 +139,23 @@ export interface BundleInfo {
   agentCount: number;
 }
 
+export type ResourceType = 'checklists' | 'templates' | 'data' | 'protocols' | 'config' | 'docs' | 'scripts' | 'rules' | 'minds' | 'skills';
+
+export interface ResourceInfo {
+  id: string;
+  name: string;
+  squadId: string;
+  type: ResourceType;
+  file: string;
+  filePath: string;
+  description?: string;
+  format: string;
+  checkboxTotal?: number;
+  checkboxChecked?: number;
+  runtime?: string;
+  subItems?: number;
+}
+
 // -- API --
 
 export const engineApi = {
@@ -266,7 +283,7 @@ export const engineApi = {
     }),
   getAuditLog: (limit?: number) =>
     engineFetch<{ entries: Array<Record<string, unknown>> }>(
-      `/audit${limit ? `?limit=${limit}` : ''}`,
+      `/authority/audit${limit ? `?limit=${limit}` : ''}`,
     ),
   reloadAuthority: () =>
     engineFetch<{ status: string }>('/authority/reload', { method: 'POST' }),
@@ -301,6 +318,17 @@ export const engineApi = {
         domain?: string;
         agentCount: number;
         taskCount: number;
+        workflowCount: number;
+        checklistCount: number;
+        templateCount: number;
+        dataCount: number;
+        protocolCount: number;
+        configCount: number;
+        docCount: number;
+        scriptCount: number;
+        ruleCount: number;
+        mindCount: number;
+        skillCount: number;
         hasConfig: boolean;
       }>;
       count: number;
@@ -322,28 +350,82 @@ export const engineApi = {
     }>(`/agents${qs}`);
   },
 
-  getRegistryAgent: (squadId: string, agentId: string) =>
+  getRegistryAgent: async (squadId: string, agentId: string) => {
+    const res = await engineFetch<{
+      agent: {
+        id: string;
+        name: string;
+        squad: string;
+        tier?: number;
+        title?: string;
+        description?: string;
+        content?: string;
+      };
+    }>(`/agents/${squadId}/${agentId}`);
+    // Normalize: engine returns { agent: { squad, title } }, callers expect { squadId, role }
+    const a = res.agent;
+    return {
+      id: a.id,
+      squadId: a.squad,
+      name: a.name,
+      role: a.title,
+      description: a.description,
+      content: a.content || '',
+      filePath: '',
+    };
+  },
+
+  getRegistryWorkflows: (squad?: string) => {
+    const qs = squad ? `?squad=${encodeURIComponent(squad)}` : '';
+    return engineFetch<{
+      workflows: Array<{ id: string; name: string; squadId: string; description: string; phases: number; file: string }>;
+      count: number;
+    }>(`/workflows${qs}`);
+  },
+
+  getRegistryTasks: (squad?: string) => {
+    const qs = squad ? `?squad=${encodeURIComponent(squad)}` : '';
+    return engineFetch<{
+      tasks: Array<{ id: string; name: string; squadId: string; command?: string; agent?: string; purpose?: string; file: string }>;
+      count: number;
+    }>(`/tasks${qs}`);
+  },
+
+  getRegistryCommands: (squad?: string) => {
+    const qs = squad ? `?squad=${encodeURIComponent(squad)}` : '';
+    return engineFetch<{
+      commands: Array<{ id: string; name: string; squadId: string; agentId?: string; command: string; purpose?: string; file: string }>;
+      count: number;
+    }>(`/commands${qs}`);
+  },
+
+  // Resources — discovery of checklists, templates, data, protocols, etc.
+  getRegistryResources: (type?: ResourceType, squad?: string) => {
+    const qs = new URLSearchParams();
+    if (type) qs.set('type', type);
+    if (squad) qs.set('squad', squad);
+    const q = qs.toString();
+    return engineFetch<{
+      resources: ResourceInfo[];
+      count: number;
+      types: ResourceType[];
+    }>(`/registry/resources${q ? `?${q}` : ''}`);
+  },
+
+  getResourceDetail: (type: ResourceType, squadId: string, id: string) =>
     engineFetch<{
       id: string;
       squadId: string;
+      type: ResourceType;
       name: string;
-      role?: string;
-      description?: string;
-      content: string;
+      format: string;
+      content?: string;
+      files?: Array<{ path: string; name: string }>;
       filePath: string;
-    }>(`/agents/${squadId}/${agentId}`),
+    }>(`/registry/resources/${type}/${squadId}/${encodeURIComponent(id)}`),
 
-  getRegistryWorkflows: () =>
-    engineFetch<{
-      workflows: Array<{ id: string; name: string; description: string; phases: number; file: string }>;
-      count: number;
-    }>('/workflows'),
-
-  getRegistryTasks: () =>
-    engineFetch<{
-      tasks: Array<{ id: string; name: string; file: string }>;
-      count: number;
-    }>('/tasks'),
+  getResourceTypes: () =>
+    engineFetch<{ types: ResourceType[] }>('/registry/resource-types'),
 
   // Integrations — Fastify route: /api/integrations
   listIntegrations: () =>

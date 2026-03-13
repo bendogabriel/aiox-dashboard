@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
 import { GitCommit, AlertTriangle, Check, X, ArrowDown, ArrowUp } from 'lucide-react';
-import { GlassCard, Badge } from '../ui';
+import { CockpitCard, Badge } from '../ui';
 import { cn } from '../../lib/utils';
 import type { Experiment } from '../../types/overnight';
 
@@ -10,9 +9,9 @@ interface ExperimentCardProps {
 }
 
 const statusConfig = {
-  keep: { label: 'Keep', color: 'text-green-400', bg: 'bg-green-400/10', icon: Check },
-  discard: { label: 'Discard', color: 'text-yellow-400', bg: 'bg-yellow-400/10', icon: X },
-  error: { label: 'Error', color: 'text-red-400', bg: 'bg-red-400/10', icon: AlertTriangle },
+  keep: { label: 'Keep', color: 'text-[var(--color-status-success)]', bg: 'bg-[var(--color-status-success)]/10', icon: Check },
+  discard: { label: 'Discard', color: 'text-[var(--bb-warning)]', bg: 'bg-[var(--bb-warning)]/10', icon: X },
+  error: { label: 'Error', color: 'text-[var(--bb-error)]', bg: 'bg-[var(--bb-error)]/10', icon: AlertTriangle },
   skipped: { label: 'Skipped', color: 'text-white/40', bg: 'bg-white/5', icon: X },
 };
 
@@ -31,12 +30,9 @@ export default function ExperimentCard({ experiment, onClick }: ExperimentCardPr
   const isImprovement = experiment.delta !== null && experiment.delta < 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+    <div
     >
-      <GlassCard
+      <CockpitCard
         interactive={!!onClick}
         padding="sm"
         className={cn('cursor-pointer', onClick && 'hover:border-white/20')}
@@ -68,7 +64,7 @@ export default function ExperimentCard({ experiment, onClick }: ExperimentCardPr
               {deltaFormatted && (
                 <div className={cn(
                   'flex items-center gap-0.5 text-xs font-mono',
-                  isImprovement ? 'text-green-400' : 'text-red-400'
+                  isImprovement ? 'text-[var(--color-status-success)]' : 'text-[var(--bb-error)]'
                 )}>
                   {isImprovement ? <ArrowDown size={10} /> : <ArrowUp size={10} />}
                   <span>{deltaFormatted}</span>
@@ -88,7 +84,7 @@ export default function ExperimentCard({ experiment, onClick }: ExperimentCardPr
 
               {/* Error message */}
               {experiment.errorMessage && (
-                <span className="text-xs text-red-400 truncate max-w-[200px]">
+                <span className="text-xs text-[var(--bb-error)] truncate max-w-[200px]">
                   {experiment.errorMessage}
                 </span>
               )}
@@ -120,7 +116,7 @@ export default function ExperimentCard({ experiment, onClick }: ExperimentCardPr
             )}
           </div>
         </div>
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }

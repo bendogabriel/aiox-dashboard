@@ -1,6 +1,5 @@
 import { Component, ReactNode } from 'react';
-import { motion } from 'framer-motion';
-import { GlassButton } from './GlassButton';
+import { CockpitButton } from './cockpit/CockpitButton';
 
 // Icons
 const AlertIcon = () => (
@@ -141,105 +140,85 @@ function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+    <div
       className="min-h-[400px] flex items-center justify-center p-6"
     >
       <div className="text-center max-w-md">
         {/* Error icon */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="mx-auto w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-6"
+        <div
+          className="mx-auto w-20 h-20 rounded-full bg-[var(--bb-error)]/10 flex items-center justify-center text-[var(--bb-error)] mb-6"
         >
           <AlertIcon />
-        </motion.div>
+        </div>
 
         {/* Title */}
-        <motion.h2
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
+        <h2
           className="text-xl font-semibold text-primary mb-2"
         >
           Algo deu errado
-        </motion.h2>
+        </h2>
 
         {/* Description */}
-        <motion.p
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3 }}
+        <p
           className="text-sm text-secondary mb-6"
         >
           Ocorreu um erro inesperado. Tente recarregar a página ou voltar ao início.
-        </motion.p>
+        </p>
 
         {/* Error details (dev only) */}
         {isDev && error && (
-          <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="mb-6 p-4 rounded-xl glass-subtle text-left overflow-auto max-h-[200px]"
+          <div
+            className="mb-6 p-4 rounded-none glass-subtle text-left overflow-auto max-h-[200px]"
           >
-            <p className="text-xs font-mono text-red-400 mb-2">{error.message}</p>
+            <p className="text-xs font-mono text-[var(--bb-error)] mb-2">{error.message}</p>
             {error.stack && (
               <pre className="text-[10px] font-mono text-tertiary whitespace-pre-wrap">
                 {error.stack.split('\n').slice(1, 6).join('\n')}
               </pre>
             )}
-          </motion.div>
+          </div>
         )}
 
         {/* Actions */}
-        <motion.div
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
+        <div
           className="flex items-center justify-center gap-3 flex-wrap"
         >
-          <GlassButton
+          <CockpitButton
             variant="primary"
             size="sm"
             onClick={onReset}
             leftIcon={<RefreshIcon />}
           >
             Tentar novamente
-          </GlassButton>
-          <GlassButton
+          </CockpitButton>
+          <CockpitButton
             variant="ghost"
             size="sm"
             onClick={handleReload}
             leftIcon={<RefreshIcon />}
           >
             Recarregar página
-          </GlassButton>
-          <GlassButton
+          </CockpitButton>
+          <CockpitButton
             variant="ghost"
             size="sm"
             onClick={handleGoHome}
             leftIcon={<HomeIcon />}
           >
             Ir ao início
-          </GlassButton>
-        </motion.div>
+          </CockpitButton>
+        </div>
 
         {/* Report bug link */}
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+        <button
           onClick={handleReport}
           className="mt-4 text-xs text-tertiary hover:text-primary transition-colors flex items-center gap-1.5 mx-auto"
         >
           <BugIcon />
           <span>Reportar problema</span>
-        </motion.button>
+        </button>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -251,8 +230,8 @@ interface CompactErrorFallbackProps {
 
 export function CompactErrorFallback({ message = 'Erro ao carregar', onRetry }: CompactErrorFallbackProps) {
   return (
-    <div className="p-4 rounded-xl glass-subtle text-center">
-      <div className="text-red-500 mb-2">
+    <div className="p-4 rounded-none glass-subtle text-center">
+      <div className="text-[var(--bb-error)] mb-2">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mx-auto">
           <circle cx="12" cy="12" r="10" />
           <line x1="12" y1="8" x2="12" y2="12" />
@@ -261,9 +240,9 @@ export function CompactErrorFallback({ message = 'Erro ao carregar', onRetry }: 
       </div>
       <p className="text-sm text-secondary mb-3">{message}</p>
       {onRetry && (
-        <GlassButton variant="ghost" size="sm" onClick={onRetry}>
+        <CockpitButton variant="ghost" size="sm" onClick={onRetry}>
           Tentar novamente
-        </GlassButton>
+        </CockpitButton>
       )}
     </div>
   );

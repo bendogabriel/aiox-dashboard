@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { rooms, TILE_WIDTH, TILE_HEIGHT } from './world-layout';
 import { useDomains } from './DomainContext';
 import { useAgentActivityStore } from '../../stores/agentActivityStore';
@@ -29,7 +28,7 @@ export function WorldMinimap({ currentRoomId, onRoomClick }: WorldMinimapProps) 
 
   return (
     <div
-      className="glass-panel rounded-xl border border-glass-border overflow-hidden"
+      className="glass-panel rounded-none border border-glass-border overflow-hidden"
       style={{ width: mapW + 16 }}
     >
       {/* Header */}
@@ -40,11 +39,9 @@ export function WorldMinimap({ currentRoomId, onRoomClick }: WorldMinimapProps) 
         <span className="text-[8px] text-tertiary font-bold uppercase tracking-widest">World Map</span>
         {hasActiveAgents && (
           <div className="flex items-center gap-1">
-            <motion.div
+            <div
               className="w-1.5 h-1.5 rounded-full"
               style={{ background: '#10B981' }}
-              animate={{ opacity: [1, 0.3, 1] }}
-              transition={{ duration: 1.2, repeat: Infinity }}
             />
             <span className="text-[7px] font-bold" style={{ color: '#10B981' }}>LIVE</span>
           </div>
@@ -60,7 +57,7 @@ export function WorldMinimap({ currentRoomId, onRoomClick }: WorldMinimapProps) 
             const isCurrent = currentRoomId === room.squadId;
 
             return (
-              <motion.div
+              <div
                 key={room.squadId}
                 className="absolute rounded-sm cursor-pointer group"
                 style={{
@@ -72,16 +69,13 @@ export function WorldMinimap({ currentRoomId, onRoomClick }: WorldMinimapProps) 
                   opacity: isCurrent ? 1 : 0.45,
                   boxShadow: isCurrent ? `0 0 8px ${d.tileColor}60` : 'none',
                 }}
-                whileHover={{ scale: 1.8, opacity: 1 }}
                 onClick={() => onRoomClick(room.squadId)}
               >
                 {/* Current room indicator */}
                 {isCurrent && (
-                  <motion.div
+                  <div
                     className="absolute inset-[-3px] rounded"
                     style={{ border: `1.5px solid ${d.tileColor}` }}
-                    animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
                   />
                 )}
 
@@ -92,7 +86,7 @@ export function WorldMinimap({ currentRoomId, onRoomClick }: WorldMinimapProps) 
                 >
                   {room.label}
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>

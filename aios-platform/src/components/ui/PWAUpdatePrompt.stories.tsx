@@ -41,7 +41,7 @@ export const UpdateAvailableMockup: Story = {
       <div className="w-80">
         <div className="glass-card rounded-xl p-4 shadow-lg border border-white/10">
           <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 flex-shrink-0">
+            <div className="h-10 w-10 rounded-lg bg-[var(--aiox-blue)]/20 flex items-center justify-center text-[var(--aiox-blue)] flex-shrink-0">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M23 4v6h-6" />
                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
@@ -53,7 +53,7 @@ export const UpdateAvailableMockup: Story = {
                 Uma atualizacao esta pronta para ser instalada.
               </p>
               <div className="flex items-center gap-2 mt-3">
-                <button className="px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white">
+                <button className="px-3 py-1.5 text-xs rounded-lg bg-[var(--aiox-blue)] text-white">
                   Atualizar
                 </button>
                 <button className="px-3 py-1.5 text-xs rounded-lg text-tertiary hover:text-primary">
@@ -74,7 +74,7 @@ export const InstallPromptMockup: Story = {
       <div className="w-80">
         <div className="glass-card rounded-xl p-4 shadow-lg border border-white/10">
           <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white flex-shrink-0">
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[var(--aiox-blue)] to-[var(--aiox-gray-muted)] flex items-center justify-center text-white flex-shrink-0">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
@@ -95,7 +95,7 @@ export const InstallPromptMockup: Story = {
                 Instale o app para acesso rapido e experiencia offline.
               </p>
               <div className="flex items-center gap-2 mt-3">
-                <button className="px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white">
+                <button className="px-3 py-1.5 text-xs rounded-lg bg-[var(--aiox-blue)] text-white">
                   Instalar
                 </button>
                 <button className="px-3 py-1.5 text-xs rounded-lg text-tertiary hover:text-primary">

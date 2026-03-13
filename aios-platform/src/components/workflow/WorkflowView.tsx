@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { GlassButton, Badge } from '../ui';
+import { CockpitButton, Badge } from '../ui';
 import { WorkflowCanvas } from './WorkflowCanvas';
 import { WorkflowSidebar } from './WorkflowSidebar';
 import { WorkflowMissionDetail } from './WorkflowMissionDetail';
@@ -310,7 +309,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                   status: 'active' as const,
                   progress: 0,
                   currentAction: n.id === 'node-copy-2' ? 'Escrevendo body copy...'
-                    : n.id === 'node-design' ? 'Criando layout da landing page...'
+                    : n.id === 'node-design' ? 'Criando da landing page...'
                     : n.id === 'node-creator' ? 'Produzindo conteúdo para redes sociais...'
                     : n.currentAction,
                   startedAt: new Date().toISOString(),
@@ -402,10 +401,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
   );
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       className="fixed inset-0 z-50 flex"
     >
       {/* Backdrop */}
@@ -415,11 +411,8 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
       />
 
       {/* Main Content */}
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        className="relative z-10 m-2 md:m-4 flex-1 flex flex-col backdrop-blur-2xl border border-white/20 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl"
+      <div
+        className="relative z-10 m-2 md:m-4 flex-1 flex flex-col backdrop-blur-2xl border border-white/20 rounded-none md:rounded-3xl overflow-hidden shadow-2xl"
         style={{
           background: `
             radial-gradient(ellipse 60% 40% at 0% 100%, rgba(209, 255, 0, 0.08) 0%, transparent 50%),
@@ -488,24 +481,24 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <GlassButton
+            <CockpitButton
               variant="primary"
               size="sm"
               onClick={() => {
                 setOrchestrationDemand('');
                 setShowOrchestrationDialog(true);
               }}
-              className="bg-gradient-to-r from-[#D1FF00]/20 to-[#0099FF]/20 border-[#D1FF00]/30"
+              className="bg-gradient-to-r from-[var(--aiox-lime)]/20 to-[var(--aiox-blue)]/20 border-[var(--aiox-lime)]/30"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-1">
                 <circle cx="12" cy="12" r="3" />
                 <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
               </svg>
               Orquestrar
-            </GlassButton>
-            <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} aria-label="Fechar">
+            </CockpitButton>
+            <CockpitButton variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} aria-label="Fechar">
               <CloseIcon />
-            </GlassButton>
+            </CockpitButton>
           </div>
         </div>
 
@@ -522,14 +515,14 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                 <div className="flex items-center justify-between mb-6">
                   <p className="text-white/70">{realWorkflows.length} workflow(s) encontrado(s)</p>
                   <div className="flex gap-2">
-                    <GlassButton
+                    <CockpitButton
                       variant="primary"
                       size="sm"
                       onClick={() => {
                         setOrchestrationDemand('');
                         setShowOrchestrationDialog(true);
                       }}
-                      className="bg-gradient-to-r from-[#D1FF00]/20 to-[#0099FF]/20 border-[#D1FF00]/30"
+                      className="bg-gradient-to-r from-[var(--aiox-lime)]/20 to-[var(--aiox-blue)]/20 border-[var(--aiox-lime)]/30"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-1">
                         <circle cx="12" cy="12" r="3" />
@@ -537,17 +530,17 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                         <path d="M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" />
                       </svg>
                       Orquestrar
-                    </GlassButton>
-                    <GlassButton variant="ghost" size="sm" onClick={() => setShowCreateModal(true)}>
+                    </CockpitButton>
+                    <CockpitButton variant="ghost" size="sm" onClick={() => setShowCreateModal(true)}>
                       + Criar Workflow
-                    </GlassButton>
+                    </CockpitButton>
                   </div>
                 </div>
                 <div className="grid gap-4">
                   {realWorkflows.map((workflow) => (
                     <div
                       key={workflow.id}
-                      className="p-4 rounded-xl border border-white/15 bg-white/8 hover:bg-white/12 transition-all backdrop-blur-sm"
+                      className="p-4 rounded-none border border-white/15 bg-white/8 hover:bg-white/12 transition-all backdrop-blur-sm"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -563,17 +556,17 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                             {workflow.status}
                           </Badge>
                           {workflow.status === 'draft' && (
-                            <GlassButton
+                            <CockpitButton
                               variant="ghost"
                               size="sm"
                               onClick={() => handleActivateWorkflow(workflow.id)}
                               className="ml-2"
                             >
                               Ativar
-                            </GlassButton>
+                            </CockpitButton>
                           )}
                           {workflow.status === 'active' && (
-                            <GlassButton
+                            <CockpitButton
                               variant="primary"
                               size="sm"
                               onClick={() => handleOpenExecuteDialog(workflow.id)}
@@ -582,7 +575,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                             >
                               <PlayIcon />
                               <span className="ml-1">Executar</span>
-                            </GlassButton>
+                            </CockpitButton>
                           )}
                         </div>
                       </div>
@@ -599,7 +592,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center mb-6">
+                <div className="w-20 h-20 rounded-none bg-white/10 border border-white/10 flex items-center justify-center mb-6">
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/60"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" /><path d="M16 16h5v5" /></svg>
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">Nenhum workflow criado</h3>
@@ -608,15 +601,15 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                   Crie seu primeiro workflow ou veja uma demonstração.
                 </p>
                 <div className="flex gap-3">
-                  <GlassButton
+                  <CockpitButton
                     variant="primary"
                     onClick={() => setShowCreateModal(true)}
                   >
                     + Criar Workflow
-                  </GlassButton>
-                  <GlassButton variant="ghost" onClick={() => setActiveTab('demo')}>
+                  </CockpitButton>
+                  <CockpitButton variant="ghost" onClick={() => setActiveTab('demo')}>
                     Ver Demonstração
-                  </GlassButton>
+                  </CockpitButton>
                 </div>
               </div>
             )}
@@ -634,20 +627,20 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                   <div className="flex items-center gap-3">
                     <p className="text-white/70">{taskHistoryData.tasks.length} orquestração(ões)</p>
                     {taskHistoryData.dbPersistence && (
-                      <span className="px-2 py-0.5 text-[10px] bg-green-500/10 border border-green-500/20 rounded text-green-400">
+                      <span className="px-2 py-0.5 text-[10px] bg-[var(--color-status-success)]/10 border border-[var(--color-status-success)]/20 rounded text-[var(--color-status-success)]">
                         DB Persistido
                       </span>
                     )}
                     {!taskHistoryData.dbPersistence && (
-                      <span className="px-2 py-0.5 text-[10px] bg-yellow-500/10 border border-yellow-500/20 rounded text-yellow-400">
+                      <span className="px-2 py-0.5 text-[10px] bg-[var(--bb-warning)]/10 border border-[var(--bb-warning)]/20 rounded text-[var(--bb-warning)]">
                         Cache (sessão)
                       </span>
                     )}
                   </div>
-                  <GlassButton variant="ghost" size="sm" onClick={() => refetchTaskHistory()}>
+                  <CockpitButton variant="ghost" size="sm" onClick={() => refetchTaskHistory()}>
                     <RefreshIcon />
                     <span className="ml-1">Atualizar</span>
-                  </GlassButton>
+                  </CockpitButton>
                 </div>
 
                 {/* Quick Metrics */}
@@ -664,26 +657,26 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
 
                   return (
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
-                      <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                      <div className="p-3 rounded-none bg-white/5 border border-white/10">
                         <p className="text-[10px] uppercase text-white/40 mb-1">Total</p>
                         <p className="text-lg font-semibold text-white">{tasks.length}</p>
                       </div>
-                      <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                      <div className="p-3 rounded-none bg-white/5 border border-white/10">
                         <p className="text-[10px] uppercase text-white/40 mb-1">Taxa Sucesso</p>
-                        <p className="text-lg font-semibold text-green-400">{successRate}%</p>
+                        <p className="text-lg font-semibold text-[var(--color-status-success)]">{successRate}%</p>
                         <p className="text-[10px] text-white/30">{completed} ok / {failed} fail</p>
                       </div>
-                      <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                      <div className="p-3 rounded-none bg-white/5 border border-white/10">
                         <p className="text-[10px] uppercase text-white/40 mb-1">Tempo Médio</p>
                         <p className="text-lg font-semibold text-white">{avgDuration > 0 ? formatDuration(avgDuration) : '—'}</p>
                       </div>
-                      <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                      <div className="p-3 rounded-none bg-white/5 border border-white/10">
                         <p className="text-[10px] uppercase text-white/40 mb-1">Tokens Total</p>
                         <p className="text-lg font-semibold text-white">{formatTokens(totalTokens)}</p>
                       </div>
-                      <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                      <div className="p-3 rounded-none bg-white/5 border border-white/10">
                         <p className="text-[10px] uppercase text-white/40 mb-1">Custo Est.</p>
-                        <p className="text-lg font-semibold text-yellow-400">${estimatedCost.toFixed(4)}</p>
+                        <p className="text-lg font-semibold text-[var(--bb-warning)]">${estimatedCost.toFixed(4)}</p>
                       </div>
                     </div>
                   );
@@ -752,7 +745,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                     return (
                       <div
                         key={task.id}
-                        className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/8 transition-all group"
+                        className="p-4 rounded-none border border-white/10 bg-white/5 hover:bg-white/8 transition-all group"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0 mr-3">
@@ -777,7 +770,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                             </Badge>
                             {(task.status === 'completed' || task.status === 'failed') && hasOutputs && (
                               <>
-                                <GlassButton
+                                <CockpitButton
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleStartReplay(task.id)}
@@ -788,8 +781,8 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                                     <polygon points="5 3 19 12 5 21 5 3" />
                                   </svg>
                                   <span className="ml-1">Replay</span>
-                                </GlassButton>
-                                <GlassButton
+                                </CockpitButton>
+                                <CockpitButton
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleExportTask(task)}
@@ -802,8 +795,8 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                                     <line x1="12" y1="15" x2="12" y2="3" />
                                   </svg>
                                   <span className="ml-1">Export</span>
-                                </GlassButton>
-                                <GlassButton
+                                </CockpitButton>
+                                <CockpitButton
                                   variant="ghost"
                                   size="sm"
                                   onClick={async () => {
@@ -817,7 +810,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                                   title="Copiar link compartilhável"
                                 >
                                   {copiedShareId === task.id ? (
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" strokeWidth="2">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-status-success, #4ADE80)" strokeWidth="2">
                                       <polyline points="20 6 9 17 4 12" />
                                     </svg>
                                   ) : (
@@ -828,7 +821,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                                     </svg>
                                   )}
                                   <span className="ml-1">{copiedShareId === task.id ? 'Copied!' : 'Share'}</span>
-                                </GlassButton>
+                                </CockpitButton>
                               </>
                             )}
                           </div>
@@ -871,8 +864,8 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                         </div>
 
                         {task.error && (
-                          <div className="mt-2 p-2 rounded bg-red-500/10 border border-red-500/20">
-                            <p className="text-red-400 text-xs truncate">{task.error}</p>
+                          <div className="mt-2 p-2 rounded bg-[var(--bb-error)]/10 border border-[var(--bb-error)]/20">
+                            <p className="text-[var(--bb-error)] text-xs truncate">{task.error}</p>
                           </div>
                         )}
                       </div>
@@ -882,23 +875,23 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center mb-6">
+                <div className="w-20 h-20 rounded-none bg-white/10 border border-white/10 flex items-center justify-center mb-6">
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/60"><rect x="8" y="2" width="8" height="4" rx="1" ry="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><path d="M12 11h4" /><path d="M12 16h4" /><path d="M8 11h.01" /><path d="M8 16h.01" /></svg>
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">Nenhuma orquestração registrada</h3>
                 <p className="text-white/60 mb-6 max-w-md">
                   Execute uma orquestração para ver o histórico aqui. Clique em "Orquestrar" para começar.
                 </p>
-                <GlassButton
+                <CockpitButton
                   variant="primary"
                   onClick={() => {
                     setOrchestrationDemand('');
                     setShowOrchestrationDialog(true);
                   }}
-                  className="bg-gradient-to-r from-[#D1FF00]/20 to-[#0099FF]/20 border-[#D1FF00]/30"
+                  className="bg-gradient-to-r from-[var(--aiox-lime)]/20 to-[var(--aiox-blue)]/20 border-[var(--aiox-lime)]/30"
                 >
                   Orquestrar
-                </GlassButton>
+                </CockpitButton>
               </div>
             )}
           </div>
@@ -922,16 +915,16 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                   {replayActive ? (
                     /* Replay indicator + controls */
                     <>
-                      <div className="flex items-center gap-2 px-2 py-1 bg-[#0099FF]/10 border border-[#0099FF]/30 rounded-lg">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0099FF" strokeWidth="2">
+                      <div className="flex items-center gap-2 px-2 py-1 bg-[var(--aiox-blue)]/10 border border-[var(--aiox-blue)]/30 rounded-lg">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--aiox-blue)" strokeWidth="2">
                           <polygon points="5 3 19 12 5 21 5 3" />
                         </svg>
-                        <span className="text-xs font-medium text-[#0099FF]">
+                        <span className="text-xs font-medium text-[var(--aiox-blue)]">
                           REPLAY {taskReplay.state.currentStep}/{taskReplay.state.totalSteps}
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <GlassButton
+                        <CockpitButton
                           variant={taskReplay.state.isPlaying ? 'primary' : 'ghost'}
                           size="icon"
                           className="h-7 w-7"
@@ -939,7 +932,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                           aria-label={taskReplay.state.isPlaying ? 'Pausar' : 'Reproduzir'}
                         >
                           {taskReplay.state.isPlaying ? <PauseIcon /> : <PlayIcon />}
-                        </GlassButton>
+                        </CockpitButton>
                         <div className="flex gap-0.5 p-0.5 bg-white/5 rounded">
                           {[0.5, 1, 2, 4].map(s => (
                             <button
@@ -947,7 +940,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                               onClick={() => taskReplay.setSpeed(s)}
                               className={cn(
                                 'px-1.5 py-0.5 rounded text-[10px] font-medium transition-all',
-                                taskReplay.state.speed === s ? 'bg-[#0099FF]/20 text-[#0099FF]' : 'text-white/40 hover:text-white/60'
+                                taskReplay.state.speed === s ? 'bg-[var(--aiox-blue)]/20 text-[var(--aiox-blue)]' : 'text-white/40 hover:text-white/60'
                               )}
                             >
                               {s}x
@@ -959,7 +952,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                       {/* Export buttons */}
                       {replayTaskData && (
                         <div className="flex items-center gap-1">
-                          <GlassButton
+                          <CockpitButton
                             variant="ghost"
                             size="sm"
                             className="text-xs h-7"
@@ -973,8 +966,8 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                               <line x1="12" y1="15" x2="12" y2="3" />
                             </svg>
                             JSON
-                          </GlassButton>
-                          <GlassButton
+                          </CockpitButton>
+                          <CockpitButton
                             variant="ghost"
                             size="sm"
                             className="text-xs h-7"
@@ -988,30 +981,30 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                               <line x1="12" y1="15" x2="12" y2="3" />
                             </svg>
                             MD
-                          </GlassButton>
+                          </CockpitButton>
                         </div>
                       )}
-                      <GlassButton variant="ghost" size="sm" onClick={handleStopReplay} className="text-xs">
+                      <CockpitButton variant="ghost" size="sm" onClick={handleStopReplay} className="text-xs">
                         Sair do Replay
-                      </GlassButton>
+                      </CockpitButton>
                     </>
                   ) : liveMissionActive ? (
                     /* Live mission indicator */
                     <>
-                      <div className="flex items-center gap-2 px-2 py-1 bg-[#D1FF00]/10 border border-[#D1FF00]/30 rounded-lg">
+                      <div className="flex items-center gap-2 px-2 py-1 bg-[var(--aiox-lime)]/10 border border-[var(--aiox-lime)]/30 rounded-lg">
                         <span className="relative flex h-2 w-2">
                           {taskLiveMission.state.isRunning && (
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D1FF00] opacity-75" />
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--aiox-lime)] opacity-75" />
                           )}
-                          <span className={cn('relative inline-flex rounded-full h-2 w-2', taskLiveMission.state.isRunning ? 'bg-[#D1FF00]' : 'bg-white/40')} />
+                          <span className={cn('relative inline-flex rounded-full h-2 w-2', taskLiveMission.state.isRunning ? 'bg-[var(--aiox-lime)]' : 'bg-white/40')} />
                         </span>
-                        <span className="text-xs font-medium text-[#D1FF00]">
+                        <span className="text-xs font-medium text-[var(--aiox-lime)]">
                           {taskLiveMission.state.isRunning ? 'LIVE' : 'Concluído'}
                         </span>
                       </div>
-                      <GlassButton variant="ghost" size="sm" onClick={handleCloseLiveMission} className="text-xs">
+                      <CockpitButton variant="ghost" size="sm" onClick={handleCloseLiveMission} className="text-xs">
                         Voltar ao Demo
-                      </GlassButton>
+                      </CockpitButton>
                     </>
                   ) : (
                     /* Demo type selector */
@@ -1054,7 +1047,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
             <div className="flex items-center gap-2">
               {/* View Mode Toggle */}
               <div className="flex gap-1 p-1 bg-white/5 rounded-lg">
-                <GlassButton
+                <CockpitButton
                   variant={viewMode === 'canvas' ? 'primary' : 'ghost'}
                   size="icon"
                   className="h-7 w-7"
@@ -1062,8 +1055,8 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                   aria-label="Visualizacao em canvas"
                 >
                   <GridIcon />
-                </GlassButton>
-                <GlassButton
+                </CockpitButton>
+                <CockpitButton
                   variant={viewMode === 'list' ? 'primary' : 'ghost'}
                   size="icon"
                   className="h-7 w-7"
@@ -1071,26 +1064,26 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                   aria-label="Visualizacao em lista"
                 >
                   <ListIcon />
-                </GlassButton>
+                </CockpitButton>
               </div>
 
               <div className="w-px h-6 bg-white/10" />
 
               {/* Zoom Controls */}
-              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomOut} aria-label="Diminuir zoom">
+              <CockpitButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomOut} aria-label="Diminuir zoom">
                 <ZoomOutIcon />
-              </GlassButton>
+              </CockpitButton>
               <span className="text-xs text-white/60 w-12 text-center">
                 {Math.round(zoom * 100)}%
               </span>
-              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomIn} aria-label="Aumentar zoom">
+              <CockpitButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleZoomIn} aria-label="Aumentar zoom">
                 <ZoomInIcon />
-              </GlassButton>
+              </CockpitButton>
 
               <div className="w-px h-6 bg-white/10" />
 
               {/* Play/Pause */}
-              <GlassButton
+              <CockpitButton
                 variant={isPlaying ? 'primary' : 'ghost'}
                 size="icon"
                 className="h-8 w-8"
@@ -1098,12 +1091,12 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                 aria-label={isPlaying ? 'Pausar' : 'Reproduzir'}
               >
                 {isPlaying ? <PauseIcon /> : <PlayIcon />}
-              </GlassButton>
+              </CockpitButton>
 
               {/* Reset */}
-              <GlassButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleReset} aria-label="Reiniciar">
+              <CockpitButton variant="ghost" size="icon" className="h-8 w-8" onClick={handleReset} aria-label="Reiniciar">
                 <RefreshIcon />
-              </GlassButton>
+              </CockpitButton>
 
             </div>
           </div>
@@ -1127,12 +1120,12 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                     onChange={(e) => taskReplay.seekTo(Number(e.target.value))}
                     className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-white/10
                       [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5
-                      [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0099FF] [&::-webkit-slider-thumb]:shadow-[0_0_6px_rgba(0,153,255,0.5)]
+                      [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--aiox-blue)] [&::-webkit-slider-thumb]:shadow-[0_0_6px_rgba(0,153,255,0.5)]
                       [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-125
                       [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:rounded-full
-                      [&::-moz-range-thumb]:bg-[#0099FF] [&::-moz-range-thumb]:border-0"
+                      [&::-moz-range-thumb]:bg-[var(--aiox-blue)] [&::-moz-range-thumb]:border-0"
                     style={{
-                      background: `linear-gradient(to right, #0099FF ${(taskReplay.state.currentStep / taskReplay.state.totalSteps) * 100}%, rgba(255,255,255,0.1) ${(taskReplay.state.currentStep / taskReplay.state.totalSteps) * 100}%)`,
+                      background: `linear-gradient(to right, var(--aiox-blue) ${(taskReplay.state.currentStep / taskReplay.state.totalSteps) * 100}%, rgba(255,255,255,0.1) ${(taskReplay.state.currentStep / taskReplay.state.totalSteps) * 100}%)`,
                     }}
                     aria-label="Scrubber de replay"
                   />
@@ -1151,7 +1144,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
                           <div
                             className={cn(
                               'h-1 w-1 rounded-full',
-                              isPast ? 'bg-[#0099FF]' : 'bg-white/20'
+                              isPast ? 'bg-[var(--aiox-blue)]' : 'bg-white/20'
                             )}
                           />
                         </div>
@@ -1222,25 +1215,25 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
             <div className="flex items-center gap-3">
               {/* Squad indicators */}
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-[#999999]" />
+                <span className="h-2 w-2 rounded-full bg-[var(--aiox-gray-muted,#999999)]" />
                 <span className="text-[10px] text-white/50">
                   {m.agents.filter(a => a.squadType === 'copywriting').length} Copy
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-[#D1FF00]" />
+                <span className="h-2 w-2 rounded-full bg-[var(--aiox-lime)]" />
                 <span className="text-[10px] text-white/50">
                   {m.agents.filter(a => a.squadType === 'design').length} Design
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-[#ED4609]" />
+                <span className="h-2 w-2 rounded-full bg-[var(--aiox-flare,#ED4609)]" />
                 <span className="text-[10px] text-white/50">
                   {m.agents.filter(a => a.squadType === 'creator').length} Creator
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-[#D1FF00]" />
+                <span className="h-2 w-2 rounded-full bg-[var(--aiox-lime)]" />
                 <span className="text-[10px] text-white/50">
                   {m.agents.filter(a => a.squadType === 'orchestrator').length} Orch
                 </span>
@@ -1252,36 +1245,28 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
         </div>
 
         {/* Right: Node Detail */}
-        <AnimatePresence>
-          {selectedNode && (
-            <motion.div
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 320, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
+        {selectedNode && (
+            <div
               className="border-l border-white/15 overflow-hidden bg-white/5 backdrop-blur-xl"
             >
               <NodeDetailPanel
                 node={selectedNode}
                 onClose={() => setSelectedNodeId(null)}
               />
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-          </div>
+</div>
         )}
-      </motion.div>
+      </div>
 
       {/* Mission Detail Modal */}
-      <AnimatePresence>
-        {showMissionDetail && (
+      {showMissionDetail && (
           <WorkflowMissionDetail
             mission={mission}
             onClose={() => setShowMissionDetail(false)}
           />
         )}
-      </AnimatePresence>
-
-      {/* Execute Workflow Dialog */}
+{/* Execute Workflow Dialog */}
       <ExecuteWorkflowDialog
         isOpen={showExecuteDialog}
         demandInput={demandInput}
@@ -1291,16 +1276,13 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
       />
 
       {/* Live Execution Modal */}
-      <AnimatePresence>
-        {showLiveExecution && liveExecutionState && (
+      {showLiveExecution && liveExecutionState && (
           <WorkflowExecutionLive
             state={liveExecutionState}
             onClose={handleCloseLiveExecution}
           />
         )}
-      </AnimatePresence>
-
-      {/* Smart Orchestration Dialog */}
+{/* Smart Orchestration Dialog */}
       <SmartOrchestrationDialog
         isOpen={showOrchestrationDialog}
         demand={orchestrationDemand}
@@ -1310,8 +1292,7 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
       />
 
       {/* Smart Orchestration Live View */}
-      <AnimatePresence>
-        {showOrchestration && orchestrationState && (
+      {showOrchestration && orchestrationState && (
           <WorkflowExecutionLive
             state={orchestrationState.executionState || {
               executionId: null,
@@ -1330,19 +1311,15 @@ export function WorkflowView({ onClose }: WorkflowViewProps) {
             } : undefined}
           />
         )}
-      </AnimatePresence>
-
-      {/* Create Workflow Modal */}
-      <AnimatePresence>
-        {showCreateModal && (
+{/* Create Workflow Modal */}
+      {showCreateModal && (
           <CreateWorkflowModal
             onClose={() => setShowCreateModal(false)}
             onSubmit={handleWorkflowCreated}
             isLoading={createWorkflowMutation.isPending}
           />
         )}
-      </AnimatePresence>
-    </motion.div>
+</div>
   );
 }
 

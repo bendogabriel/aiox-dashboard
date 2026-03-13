@@ -48,7 +48,7 @@ export function KnowledgeSearch({
           defaultValue={query}
           onChange={(e) => handleChange(e.target.value)}
           className={cn(
-            'w-full pl-9 pr-9 py-2 text-sm rounded-xl border transition-colors',
+            'w-full pl-9 pr-9 py-2 text-sm rounded-none border transition-colors',
             'bg-white/5 border-glass-border',
             'text-primary placeholder:text-tertiary',
             'focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/10'

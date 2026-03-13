@@ -1,12 +1,11 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Cpu,
   AlertTriangle,
   RefreshCw,
 } from 'lucide-react';
 import {
-  GlassCard,
-  GlassButton,
+  CockpitCard,
+  CockpitButton,
   Badge,
   SectionLabel,
 } from '../ui';
@@ -20,17 +19,17 @@ import ExecutionLog from './ExecutionLog';
 // ---------- Error Card ----------
 function ErrorCard({ error }: { error: BobError }) {
   return (
-    <GlassCard padding="sm" className="border border-red-500/40">
+    <CockpitCard padding="sm" className="border border-[var(--bb-error)]/40">
       <div className="flex items-start gap-3">
-        <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" />
+        <AlertTriangle className="h-4 w-4 text-[var(--bb-error)] flex-shrink-0 mt-0.5" />
         <div className="min-w-0">
-          <p className="text-sm text-red-400 font-medium">{error.message}</p>
+          <p className="text-sm text-[var(--bb-error)] font-medium">{error.message}</p>
           <p className="text-[10px] text-tertiary mt-1">
             Source: {error.source} | {new Date(error.timestamp).toLocaleTimeString()}
           </p>
         </div>
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
@@ -60,23 +59,21 @@ function createDemoPipeline(): Pipeline {
 function InactiveState({ onStartDemo }: { onStartDemo: () => void }) {
   return (
     <div className="h-full flex items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+      <div
         className="text-center max-w-sm"
       >
-        <div className="flex items-center justify-center h-16 w-16 rounded-2xl glass-subtle mx-auto mb-4">
+        <div className="flex items-center justify-center h-16 w-16 rounded-none glass-subtle mx-auto mb-4">
           <Cpu className="h-8 w-8 text-tertiary" />
         </div>
         <h2 className="text-lg font-semibold text-primary mb-1">No active orchestration</h2>
         <p className="text-sm text-secondary mb-5">
           Bob orchestration will appear here when a pipeline is running.
         </p>
-        <GlassButton variant="primary" onClick={onStartDemo}>
+        <CockpitButton variant="primary" onClick={onStartDemo}>
           <Cpu className="h-4 w-4 mr-2" />
           Iniciar Orquestração Demo
-        </GlassButton>
-      </motion.div>
+        </CockpitButton>
+      </div>
     </div>
   );
 }
@@ -112,13 +109,11 @@ function ActiveState({
         <SectionLabel count={pipeline.agents.length}>Agent Activity</SectionLabel>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {pipeline.agents.map((agent) => (
-            <motion.div
+            <div
               key={agent.id}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
             >
               <AgentActivityCard agent={agent} isCurrent={agent.id === currentAgentId} />
-            </motion.div>
+            </div>
           ))}
         </div>
       </section>
@@ -233,8 +228,8 @@ export default function BobOrchestration() {
       {isActive && pipeline && (
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <Cpu className="h-5 w-5 text-[#D1FF00]" />
-            <h1 className="text-xl font-bold text-primary">Bob Orchestration</h1>
+            <Cpu className="h-5 w-5 text-[var(--aiox-lime)]" />
+            <h1 className="heading-display text-xl font-semibold text-primary">Bob Orchestration</h1>
             <Badge
               variant="status"
               status={
@@ -253,41 +248,33 @@ export default function BobOrchestration() {
             <span className="text-xs text-secondary font-mono">
               Session: {formatElapsed(sessionElapsed)} | Story: {formatElapsed(storyElapsed)}
             </span>
-            <GlassButton
+            <CockpitButton
               size="sm"
               variant="ghost"
               leftIcon={<RefreshCw className="h-3.5 w-3.5" />}
               onClick={handleReset}
             >
               Reset
-            </GlassButton>
+            </CockpitButton>
           </div>
         </div>
       )}
 
       {/* Content */}
-      <AnimatePresence mode="wait">
-        {!isActive || !pipeline ? (
-          <motion.div
+      {!isActive || !pipeline ? (
+          <div
             key="inactive"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             className="flex-1"
           >
             <InactiveState onStartDemo={startDemo} />
-          </motion.div>
+          </div>
         ) : (
-          <motion.div
+          <div
             key="active"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
           >
             <ActiveState pipeline={pipeline} onResolveDecision={resolveDecision} />
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

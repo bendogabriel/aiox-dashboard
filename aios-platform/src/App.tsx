@@ -1,6 +1,5 @@
 import { lazy, Suspense, ComponentType, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
 import { AppLayout } from './components/layout';
 import { ChatContainer } from './components/chat';
 import { PageLoader, ErrorBoundary, CompactErrorFallback, FocusModeIndicator } from './components/ui';
@@ -284,15 +283,8 @@ function ViewErrorFallback({ viewKey }: { viewKey: string }) {
 // Wrapped view with motion animation + Suspense + ErrorBoundary
 function ViewWrapper({ viewKey, children }: { viewKey: string; children: React.ReactNode }) {
   return (
-    <motion.div
+    <div
       key={viewKey}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{
-        duration: 0.2,
-        ease: [0, 0, 0.2, 1],
-      }}
       className="h-full"
     >
       <ErrorBoundary fallback={<ViewErrorFallback viewKey={viewKey} />}>
@@ -300,7 +292,7 @@ function ViewWrapper({ viewKey, children }: { viewKey: string; children: React.R
           {children}
         </Suspense>
       </ErrorBoundary>
-    </motion.div>
+    </div>
   );
 }
 
@@ -316,8 +308,7 @@ function AppContent() {
   return (
     <>
       <AppLayout>
-        <AnimatePresence mode="wait">
-          {ViewComponent ? (
+        {ViewComponent ? (
             <ViewWrapper viewKey={currentView}>
               <ViewComponent />
             </ViewWrapper>
@@ -326,18 +317,15 @@ function AppContent() {
               <ChatContainer />
             </ViewWrapper>
           )}
-        </AnimatePresence>
-      </AppLayout>
+</AppLayout>
 
       {/* Workflow View Modal - Lazy loaded */}
-      <AnimatePresence>
-        {workflowViewOpen && (
+      {workflowViewOpen && (
           <Suspense fallback={<ViewLoader view="workflow" />}>
             <WorkflowView onClose={() => setWorkflowViewOpen(false)} />
           </Suspense>
         )}
-      </AnimatePresence>
-    </>
+</>
   );
 }
 

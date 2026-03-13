@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Lightbulb } from 'lucide-react';
 import { Avatar } from '../ui';
 import { AgentSkills } from '../agents/AgentSkills';
@@ -21,13 +20,12 @@ export function WelcomeMessage({ agent }: WelcomeMessageProps) {
   const displayDescription = agent.whenToUse || (!isPlaceholder(agent.description) ? agent.description : null);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className="flex flex-col items-center justify-center h-full text-center py-8"
     >
       <Avatar
         name={agent.name}
+        agentId={agent.id}
         size="xl"
         squadType={agent.squadType}
         className="mb-4"
@@ -43,7 +41,7 @@ export function WelcomeMessage({ agent }: WelcomeMessageProps) {
 
       {/* When to use - Key capability */}
       {displayDescription && (
-        <div className="max-w-md mb-6 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+        <div className="max-w-md mb-6 px-4 py-3 rounded-none bg-white/5 border border-white/10">
           <p className="text-secondary text-sm leading-relaxed">
             {displayDescription}
           </p>
@@ -65,7 +63,7 @@ export function WelcomeMessage({ agent }: WelcomeMessageProps) {
         </div>
         <SuggestionPrompts agent={agent} />
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -77,14 +75,11 @@ function SuggestionPrompts({ agent }: { agent: ChatAgent }) {
   return (
     <div className="grid gap-2">
       {suggestions.map((suggestion, index) => (
-        <motion.button
+        <button
           key={index}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
           onClick={() => sendMessage(suggestion.prompt)}
           className={cn(
-            'glass-subtle rounded-xl p-3 text-left',
+            'glass-subtle rounded-none p-3 text-left',
             'hover:bg-white/30 dark:hover:bg-white/10',
             'transition-all duration-200 group',
             'border border-transparent hover:border-white/10'
@@ -99,7 +94,7 @@ function SuggestionPrompts({ agent }: { agent: ChatAgent }) {
               </p>
             </div>
           </div>
-        </motion.button>
+        </button>
       ))}
     </div>
   );

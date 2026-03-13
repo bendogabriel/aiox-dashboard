@@ -6,7 +6,7 @@ import type { SQLQueryBindings } from 'bun:sqlite';
 import { getDb } from '../lib/db';
 import { log } from '../lib/logger';
 import { broadcast } from '../lib/ws';
-import { aiosCorePath } from '../lib/config';
+import { aiosCorePath, getProjectPaths } from '../lib/config';
 import * as queue from './job-queue';
 import type { EngineConfig, Job, WorkflowState, WorkflowStatus, WSEventType } from '../types';
 
@@ -421,9 +421,21 @@ function inferSquadFromAgent(agentId: string): string {
 // -- YAML Loading --
 
 function loadWorkflowDefinitions(): void {
+  // 1. Core workflows from .aios-core/development/workflows/
   const workflowDirs = [
     aiosCorePath('development', 'workflows'),
   ];
+
+  // 2. Squad-specific workflows from squads/{id}/workflows/
+  const squadsDir = getProjectPaths().squads;
+  if (existsSync(squadsDir)) {
+    const squadDirs = readdirSync(squadsDir, { withFileTypes: true })
+      .filter(e => e.isDirectory() && !e.name.startsWith('.'));
+    for (const squad of squadDirs) {
+      const wfDir = resolve(squadsDir, squad.name, 'workflows');
+      if (existsSync(wfDir)) workflowDirs.push(wfDir);
+    }
+  }
 
   let loaded = 0;
 
@@ -436,7 +448,7 @@ function loadWorkflowDefinitions(): void {
       try {
         const content = readFileSync(resolve(dir, file), 'utf-8');
         const parsed = parseWorkflowYaml(content, file);
-        if (parsed) {
+        if (parsed && !definitionCache.has(parsed.id)) {
           definitionCache.set(parsed.id, parsed);
           loaded++;
         }
@@ -447,8 +459,6 @@ function loadWorkflowDefinitions(): void {
         });
       }
     }
-
-    if (loaded > 0) break; // Use first directory that has files
   }
 
   log.info('Workflow definitions loaded', {

@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-
 // ── Matrix Digital Rain (Canvas) ──
 
 const CHARS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF<>/{}[];:=+*&^%$#@!';
@@ -133,12 +131,9 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
   }, [onComplete]);
 
   return (
-    <motion.div
+    <div
       className="fixed inset-0 z-[10000] flex items-center justify-center"
       style={{ background: '#010401' }}
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.6 }}
     >
       {/* Ambient glow */}
       <div
@@ -150,11 +145,8 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
 
       <div className="font-mono text-sm max-w-lg px-6 relative">
         {BOOT_LINES.slice(0, visibleLines).map((line, i) => (
-          <motion.p
+          <p
             key={i}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.2 }}
             className="mb-2"
             style={{
               color: i === visibleLines - 1 ? '#6eff6e' : '#3a8a4a',
@@ -165,10 +157,10 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
             {i === visibleLines - 1 && (
               <span className="matrix-terminal-cursor" />
             )}
-          </motion.p>
+          </p>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -198,9 +190,7 @@ export function MatrixEffects() {
       <div className="matrix-scanline-sweep" aria-hidden="true" />
 
       {/* Boot Sequence */}
-      <AnimatePresence>
-        {!booted && <BootSequence onComplete={handleBootComplete} />}
-      </AnimatePresence>
-    </>
+      {!booted && <BootSequence onComplete={handleBootComplete} />}
+</>
   );
 }

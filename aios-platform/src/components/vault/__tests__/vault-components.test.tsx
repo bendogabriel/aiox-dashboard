@@ -48,7 +48,7 @@ const defaultStoreState = {
     {
       id: 'ws-1',
       name: 'AIOX Workspace',
-      icon: '🏢',
+      icon: 'Landmark',
       status: 'active' as const,
       documentsCount: 12,
       templatesCount: 5,
@@ -62,7 +62,7 @@ const defaultStoreState = {
     {
       id: 'ws-2',
       name: 'Academia IOX',
-      icon: '🎓',
+      icon: 'BookOpen',
       status: 'setup' as const,
       documentsCount: 4,
       templatesCount: 2,

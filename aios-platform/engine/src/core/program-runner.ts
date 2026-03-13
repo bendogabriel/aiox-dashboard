@@ -19,11 +19,11 @@
 import { readFileSync, existsSync } from 'fs';
 import { log } from '../lib/logger';
 import { broadcast } from '../lib/ws';
-import { GitCheckpoint, type GitCheckpointConfig } from './git-checkpoint';
+import { GitCheckpoint } from './git-checkpoint';
 import { MetricEvaluator, type MetricConfig } from './metric-evaluator';
 import { DecisionJournal, type ExperimentEntry } from './decision-journal';
-import { ConvergenceEngine, type ConvergenceConfig, type ConvergenceReason } from './convergence-engine';
-import { BudgetController, type BudgetConfig } from './convergence-engine';
+import { ConvergenceEngine, type ConvergenceReason } from './convergence-engine';
+import { BudgetController } from './convergence-engine';
 
 // ── Types ──
 

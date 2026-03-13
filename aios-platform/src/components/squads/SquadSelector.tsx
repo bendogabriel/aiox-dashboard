@@ -1,12 +1,11 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useMemo, useState } from 'react';
 import { Badge } from '../ui';
 import { useSquads } from '../../hooks/useSquads';
 import { useUIStore } from '../../stores/uiStore';
 import { cn, getSquadTheme } from '../../lib/utils';
 import type { Squad, SquadType } from '../../types';
 
-// Use centralized theme system - just create simple accessor
+// Use centralized theme system
 const getSquadColors = (squadType: SquadType) => {
   const theme = getSquadTheme(squadType);
   return {
@@ -17,136 +16,82 @@ const getSquadColors = (squadType: SquadType) => {
   };
 };
 
-// Category definitions
-interface SquadCategory {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  squadType: SquadType;
-  matcher: (squad: Squad) => boolean;
-}
+// Human-readable labels for each SquadType
+const squadTypeLabels: Record<SquadType, string> = {
+  copywriting: 'Marketing & Copy',
+  design: 'Design & Criação',
+  creator: 'Criação & Produção',
+  orchestrator: 'Sistema & Orquestração',
+  content: 'Conteúdo & Mídia',
+  development: 'Desenvolvimento',
+  engineering: 'Engenharia',
+  analytics: 'Dados & Analytics',
+  marketing: 'Outreach & Growth',
+  advisory: 'Estratégia & Conselho',
+  default: 'Outros',
+};
 
-// Categories updated 2026-02-06
-const categories: SquadCategory[] = [
-  {
-    id: 'natalia-tanaka',
-    name: 'Natália Tanaka',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-    ),
-    squadType: 'copywriting',
-    matcher: (squad) => squad.id.includes('natalia-tanaka'),
-  },
-  {
-    id: 'content',
-    name: 'Conteúdo & YouTube',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
-        <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
-      </svg>
-    ),
-    squadType: 'creator',
-    matcher: (squad) => ['content-ecosystem', 'youtube-lives'].includes(squad.id),
-  },
-  {
-    id: 'marketing',
-    name: 'Marketing & Vendas',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 19l7-7 3 3-7 7-3-3z" />
-        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
-        <path d="M2 2l7.586 7.586" />
-        <circle cx="11" cy="11" r="2" />
-      </svg>
-    ),
-    squadType: 'copywriting',
-    matcher: (squad) => ['copywriting', 'media-buy', 'funnel-creator', 'sales'].includes(squad.id),
-  },
-  {
-    id: 'creative',
-    name: 'Criação & Design',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
-        <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
-        <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
-        <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
-        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" />
-      </svg>
-    ),
-    squadType: 'design',
-    matcher: (squad) => ['design-system', 'creative-studio'].includes(squad.id),
-  },
-  {
-    id: 'development',
-    name: 'Desenvolvimento',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <polyline points="16 18 22 12 16 6" />
-        <polyline points="8 6 2 12 8 18" />
-      </svg>
-    ),
-    squadType: 'creator',
-    matcher: (squad) => ['full-stack-dev', 'aios-core-dev'].includes(squad.id),
-  },
-  {
-    id: 'data',
-    name: 'Dados & Pesquisa',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-        <line x1="12" y1="22.08" x2="12" y2="12" />
-      </svg>
-    ),
-    squadType: 'orchestrator',
-    matcher: (squad) => ['data-analytics', 'deep-scraper'].includes(squad.id),
-  },
-  {
-    id: 'strategy',
-    name: 'Estratégia & Conselho',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-      </svg>
-    ),
-    squadType: 'orchestrator',
-    matcher: (squad) => ['conselho', 'infoproduct-creation'].includes(squad.id),
-  },
-  {
-    id: 'system',
-    name: 'Sistema & Orquestração',
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-      </svg>
-    ),
-    squadType: 'orchestrator',
-    matcher: (squad) => ['orquestrador-global', 'squad-creator', 'project-management-clickup', 'operations-hub', 'docs'].includes(squad.id),
-  },
-];
+// Sort order for categories (lower = higher in list)
+const squadTypeSortOrder: Record<SquadType, number> = {
+  orchestrator: 0,
+  engineering: 1,
+  development: 2,
+  design: 3,
+  content: 4,
+  creator: 5,
+  analytics: 6,
+  copywriting: 7,
+  marketing: 8,
+  advisory: 9,
+  default: 10,
+};
 
 // Chevron icon component
 const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
-  <motion.svg
+  <svg
     width="12"
     height="12"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
-    animate={{ rotate: isOpen ? 180 : 0 }}
-    transition={{ duration: 0.2 }}
+    className={cn('transition-transform duration-200', isOpen && 'rotate-180')}
   >
     <polyline points="6 9 12 15 18 9" />
-  </motion.svg>
+  </svg>
 );
+
+// Category icon based on SquadType — generic enough for any squad
+function CategoryIcon({ squadType }: { squadType: SquadType }) {
+  const iconProps = { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 };
+  switch (squadType) {
+    case 'orchestrator':
+      return <svg {...iconProps}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.32 9H21a2 2 0 0 1 0 4h-.09" /></svg>;
+    case 'engineering':
+    case 'development':
+      return <svg {...iconProps}><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>;
+    case 'design':
+      return <svg {...iconProps}><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" /></svg>;
+    case 'content':
+    case 'creator':
+      return <svg {...iconProps}><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" /><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" /></svg>;
+    case 'analytics':
+      return <svg {...iconProps}><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg>;
+    case 'copywriting':
+    case 'marketing':
+      return <svg {...iconProps}><path d="M12 19l7-7 3 3-7 7-3-3z" /><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" /><path d="M2 2l7.586 7.586" /><circle cx="11" cy="11" r="2" /></svg>;
+    case 'advisory':
+      return <svg {...iconProps}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>;
+    default:
+      return <svg {...iconProps}><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>;
+  }
+}
+
+interface DynamicCategory {
+  squadType: SquadType;
+  label: string;
+  squads: Squad[];
+}
 
 export function SquadSelector() {
   const { data: squads, isLoading } = useSquads();
@@ -165,17 +110,30 @@ export function SquadSelector() {
     });
   };
 
-  // Group squads by category and sort alphabetically
-  const groupedSquads = categories.map((category) => ({
-    ...category,
-    squads: (squads?.filter(category.matcher) || []).sort((a, b) =>
-      a.name.localeCompare(b.name, 'pt-BR')
-    ),
-  }));
+  // Build categories dynamically from squad types
+  const dynamicCategories = useMemo((): DynamicCategory[] => {
+    if (!squads?.length) return [];
 
-  // Find uncategorized squads
-  const categorizedIds = new Set(groupedSquads.flatMap((g) => g.squads.map((s) => s.id)));
-  const uncategorized = squads?.filter((s) => !categorizedIds.has(s.id)) || [];
+    const groupMap = new Map<SquadType, Squad[]>();
+    for (const squad of squads) {
+      const type = squad.type || 'default';
+      const list = groupMap.get(type) || [];
+      list.push(squad);
+      groupMap.set(type, list);
+    }
+
+    return Array.from(groupMap.entries())
+      .map(([squadType, groupSquads]) => ({
+        squadType,
+        label: squadTypeLabels[squadType] || capitalizeFirst(squadType),
+        squads: groupSquads.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
+      }))
+      .sort((a, b) => {
+        const orderA = squadTypeSortOrder[a.squadType] ?? 99;
+        const orderB = squadTypeSortOrder[b.squadType] ?? 99;
+        return orderA - orderB;
+      });
+  }, [squads]);
 
   if (isLoading) {
     return <SquadSelectorSkeleton />;
@@ -191,7 +149,7 @@ export function SquadSelector() {
       </div>
 
       {/* All Squads button */}
-      <motion.button
+      <button
         onClick={() => setSelectedSquadId(null)}
         className={cn(
           'w-full px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
@@ -200,7 +158,6 @@ export function SquadSelector() {
             ? 'glass-card-active text-white'
             : 'hover:bg-white/5 text-secondary hover:text-primary'
         )}
-        whileTap={{ scale: 0.98 }}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <rect x="3" y="3" width="7" height="7" />
@@ -210,21 +167,22 @@ export function SquadSelector() {
         </svg>
         <span className="flex-1 text-left">Todos os Squads</span>
         <span className="text-xs opacity-60">{squads?.length || 0}</span>
-      </motion.button>
+      </button>
 
-      {/* Category accordions */}
+      {/* Dynamic category accordions */}
       <div className="space-y-1 mt-2">
-        {groupedSquads.map((group) => {
+        {dynamicCategories.map((group) => {
           if (group.squads.length === 0) return null;
 
-          const isExpanded = expandedCategories.has(group.id);
+          const isExpanded = expandedCategories.has(group.squadType);
           const hasSelectedSquad = group.squads.some((s) => s.id === selectedSquadId);
+          const colors = getSquadColors(group.squadType);
 
           return (
-            <div key={group.id} className="rounded-lg overflow-hidden">
+            <div key={group.squadType} className="rounded-lg overflow-hidden">
               {/* Category header */}
-              <motion.button
-                onClick={() => toggleCategory(group.id)}
+              <button
+                onClick={() => toggleCategory(group.squadType)}
                 className={cn(
                   'w-full px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                   'flex items-center gap-2',
@@ -232,114 +190,61 @@ export function SquadSelector() {
                     ? 'bg-white/10 text-primary'
                     : 'hover:bg-white/5 text-secondary hover:text-primary'
                 )}
-                whileTap={{ scale: 0.98 }}
               >
-                <span className={getSquadColors(group.squadType).text}>{group.icon}</span>
-                <span className="flex-1 text-left">{group.name}</span>
+                <span className="text-[var(--aiox-gray-muted)]">
+                  <CategoryIcon squadType={group.squadType} />
+                </span>
+                <span className="flex-1 text-left">{group.label}</span>
                 <span className="text-xs opacity-60 mr-1">{group.squads.length}</span>
                 <ChevronIcon isOpen={isExpanded} />
-              </motion.button>
+              </button>
 
               {/* Category content */}
-              <AnimatePresence>
-                {isExpanded && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="pl-4 pr-1 py-1 space-y-0.5">
-                      {group.squads.map((squad, index) => (
-                        <motion.button
-                          key={squad.id}
-                          onClick={() => setSelectedSquadId(squad.id)}
+              {isExpanded && (
+                <div className="overflow-hidden">
+                  <div className="pl-4 pr-1 py-1 space-y-0.5">
+                    {group.squads.map((squad) => (
+                      <button
+                        key={squad.id}
+                        onClick={() => setSelectedSquadId(squad.id)}
+                        className={cn(
+                          'w-full px-3 py-1.5 rounded-md text-xs transition-all duration-200',
+                          'flex items-center gap-2',
+                          selectedSquadId === squad.id
+                            ? 'bg-[var(--aiox-lime)]/10 text-[var(--aiox-lime)] shadow-sm'
+                            : 'hover:bg-white/5 text-secondary hover:text-primary'
+                        )}
+                      >
+                        <span
                           className={cn(
-                            'w-full px-3 py-1.5 rounded-md text-xs transition-all duration-200',
-                            'flex items-center gap-2',
-                            selectedSquadId === squad.id
-                              ? cn(getSquadColors(group.squadType).bg, 'text-white shadow-sm')
-                              : 'hover:bg-white/5 text-secondary hover:text-primary'
+                            'w-1.5 h-1.5 rounded-full',
+                            selectedSquadId === squad.id ? 'bg-[var(--aiox-lime)]' : 'bg-[var(--aiox-gray-dim)]'
                           )}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.03 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <span
-                            className={cn(
-                              'w-1.5 h-1.5 rounded-full',
-                              selectedSquadId === squad.id ? 'bg-white' : getSquadColors(group.squadType).bg
-                            )}
-                          />
-                          <span className="flex-1 text-left truncate">
-                            {formatSquadName(squad.name, group.name)}
-                          </span>
-                          <span className={cn(
-                            'text-[10px]',
-                            selectedSquadId === squad.id ? 'text-white/70' : 'opacity-50'
-                          )}>
-                            {squad.agentCount}
-                          </span>
-                        </motion.button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                        />
+                        <span className="flex-1 text-left truncate">
+                          {squad.name}
+                        </span>
+                        <span className={cn(
+                          'text-[10px]',
+                          selectedSquadId === squad.id ? 'text-white/70' : 'opacity-50'
+                        )}>
+                          {squad.agentCount}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
-
-        {/* Uncategorized squads (sorted alphabetically) */}
-        {uncategorized.length > 0 && (
-          <div className="pt-2 border-t border-white/5">
-            <div className="text-[10px] text-secondary uppercase tracking-wider px-3 py-1 mb-1">
-              Outros
-            </div>
-            {[...uncategorized].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).map((squad) => (
-              <motion.button
-                key={squad.id}
-                onClick={() => setSelectedSquadId(squad.id)}
-                className={cn(
-                  'w-full px-3 py-1.5 rounded-md text-xs transition-all duration-200',
-                  'flex items-center gap-2',
-                  selectedSquadId === squad.id
-                    ? 'bg-gray-500 text-white shadow-sm'
-                    : 'hover:bg-white/5 text-secondary hover:text-primary'
-                )}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span
-                  className={cn(
-                    'w-1.5 h-1.5 rounded-full',
-                    selectedSquadId === squad.id ? 'bg-white' : 'bg-gray-500'
-                  )}
-                />
-                <span className="flex-1 text-left truncate">{squad.name}</span>
-                <span className="text-[10px] opacity-50">{squad.agentCount}</span>
-              </motion.button>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
 }
 
-// Helper to shorten squad names within a category
-function formatSquadName(name: string, categoryName: string): string {
-  // Remove category name prefix for cleaner display
-  const cleanName = name
-    .replace(new RegExp(`^${categoryName}\\s*[-:]?\\s*`, 'i'), '')
-    .replace(/Natália Tanaka$/i, '')
-    .trim();
-
-  // If the name became empty or too short, return original
-  if (cleanName.length < 3) return name;
-
-  return cleanName || name;
+function capitalizeFirst(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function SquadSelectorSkeleton() {

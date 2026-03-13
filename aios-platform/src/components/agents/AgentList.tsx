@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { AgentCard } from './AgentCard';
 import { SkeletonAgentList } from '../ui';
 import { useAgents } from '../../hooks/useAgents';
@@ -40,15 +39,9 @@ export function AgentList({ onAgentSelect }: AgentListProps) {
   if (!hasTierGroups || agents.length <= 5) {
     return (
       <div className="space-y-2">
-        <AnimatePresence mode="popLayout">
-          {agents.map((agent, index) => (
-            <motion.div
+        {agents.map((agent, index) => (
+            <div
               key={agent.id}
-              layout
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ delay: index * 0.03 }}
             >
               <AgentCard
                 agent={agent}
@@ -57,10 +50,9 @@ export function AgentList({ onAgentSelect }: AgentListProps) {
                 showTier
                 onClick={() => handleSelectAgent(agent)}
               />
-            </motion.div>
+            </div>
           ))}
-        </AnimatePresence>
-      </div>
+</div>
     );
   }
 
@@ -125,18 +117,16 @@ function isChiefAgent(agent: AgentSummary): boolean {
 
 // Chevron icon for collapse/expand
 const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
-  <motion.svg
+  <svg
     width="12"
     height="12"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
-    animate={{ rotate: isOpen ? 180 : 0 }}
-    transition={{ duration: 0.2 }}
   >
     <polyline points="6 9 12 15 18 9" />
-  </motion.svg>
+  </svg>
 );
 
 function AgentGroup({ title, count, agents, selectedId, onSelect, defaultExpanded = true }: AgentGroupProps) {
@@ -157,24 +147,14 @@ function AgentGroup({ title, count, agents, selectedId, onSelect, defaultExpande
         </span>
       </button>
 
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+      {isExpanded && (
+          <div
             className="overflow-hidden"
           >
             <div className="space-y-2">
               {agents.map((agent, index) => (
-                <motion.div
+                <div
                   key={agent.id}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ delay: index * 0.03 }}
                 >
                   <AgentCard
                     agent={agent}
@@ -183,13 +163,12 @@ function AgentGroup({ title, count, agents, selectedId, onSelect, defaultExpande
                     onClick={() => onSelect(agent)}
                     highlight={isChiefAgent(agent)}
                   />
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }
 

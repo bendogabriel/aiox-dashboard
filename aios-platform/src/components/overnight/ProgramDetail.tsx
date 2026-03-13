@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import {
   Play,
   Pause,
@@ -11,7 +10,7 @@ import {
   TrendingDown,
   FileText,
 } from 'lucide-react';
-import { GlassCard, GlassButton, Badge, ProgressBar, StatusDot } from '../ui';
+import { CockpitCard, CockpitButton, Badge, ProgressBar, StatusDot } from '../ui';
 import { useOvernightStore } from '../../stores/overnightStore';
 import { cn } from '../../lib/utils';
 import MetricChart from './MetricChart';
@@ -106,25 +105,25 @@ export default function ProgramDetail({ program }: ProgramDetailProps) {
         <div className="flex items-center gap-2">
           {program.status === 'running' && (
             <>
-              <GlassButton size="sm" variant="ghost" leftIcon={<Pause size={14} />}>
+              <CockpitButton size="sm" variant="ghost" leftIcon={<Pause size={14} />}>
                 Pause
-              </GlassButton>
-              <GlassButton size="sm" variant="danger" leftIcon={<Square size={14} />}>
+              </CockpitButton>
+              <CockpitButton size="sm" variant="destructive" leftIcon={<Square size={14} />}>
                 Cancel
-              </GlassButton>
+              </CockpitButton>
             </>
           )}
           {(program.status === 'idle' || program.status === 'paused') && (
-            <GlassButton size="sm" variant="primary" leftIcon={<Play size={14} />}>
+            <CockpitButton size="sm" variant="primary" leftIcon={<Play size={14} />}>
               {program.status === 'paused' ? 'Resume' : 'Start'}
-            </GlassButton>
+            </CockpitButton>
           )}
         </div>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <GlassCard padding="sm">
+        <CockpitCard padding="sm">
           <div className="flex items-center gap-2 text-tertiary text-xs mb-1">
             <Repeat size={12} />
             <span>Iterations</span>
@@ -133,22 +132,22 @@ export default function ProgramDetail({ program }: ProgramDetailProps) {
             {program.currentIteration}
             <span className="text-xs text-tertiary font-normal">/{program.maxIterations}</span>
           </p>
-        </GlassCard>
+        </CockpitCard>
 
-        <GlassCard padding="sm">
+        <CockpitCard padding="sm">
           <div className="flex items-center gap-2 text-tertiary text-xs mb-1">
             <TrendingDown size={12} />
             <span>Improvement</span>
           </div>
           <p className={cn(
             'text-lg font-mono font-bold',
-            improvement !== null && improvement > 0 ? 'text-green-400' : 'text-primary'
+            improvement !== null && improvement > 0 ? 'text-[var(--color-status-success)]' : 'text-primary'
           )}>
             {improvement !== null ? `-${improvement.toFixed(1)}%` : '--'}
           </p>
-        </GlassCard>
+        </CockpitCard>
 
-        <GlassCard padding="sm">
+        <CockpitCard padding="sm">
           <div className="flex items-center gap-2 text-tertiary text-xs mb-1">
             <Timer size={12} />
             <span>Duration</span>
@@ -156,9 +155,9 @@ export default function ProgramDetail({ program }: ProgramDetailProps) {
           <p className="text-lg font-mono font-bold text-primary">
             {formatDuration(program.wallClockMs)}
           </p>
-        </GlassCard>
+        </CockpitCard>
 
-        <GlassCard padding="sm">
+        <CockpitCard padding="sm">
           <div className="flex items-center gap-2 text-tertiary text-xs mb-1">
             <Coins size={12} />
             <span>Cost</span>
@@ -166,11 +165,11 @@ export default function ProgramDetail({ program }: ProgramDetailProps) {
           <p className="text-lg font-mono font-bold text-primary">
             ${program.estimatedCost.toFixed(2)}
           </p>
-        </GlassCard>
+        </CockpitCard>
       </div>
 
       {/* Progress bar */}
-      <GlassCard padding="md">
+      <CockpitCard padding="md">
         <div className="flex items-center justify-between text-xs text-tertiary mb-2">
           <span>Progress</span>
           <span>{Math.round(progress)}%</span>
@@ -197,20 +196,20 @@ export default function ProgramDetail({ program }: ProgramDetailProps) {
             {formatTokens(program.tokensUsed)} tokens
           </span>
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       {/* Metric chart */}
       {experiments.length > 0 && (
-        <GlassCard padding="md">
+        <CockpitCard padding="md">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-primary">Metric Evolution</h3>
             <div className="flex items-center gap-3 text-xs">
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-green-400" />
+                <span className="w-2 h-2 rounded-full bg-[var(--color-status-success)]" />
                 Baseline: {program.baselineMetric?.toFixed(1) ?? '--'}
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-2 h-0.5 bg-green-400" />
+                <span className="w-2 h-0.5 bg-[var(--color-status-success)]" />
                 Best: {program.bestMetric?.toFixed(1) ?? '--'}
               </span>
             </div>
@@ -221,7 +220,7 @@ export default function ProgramDetail({ program }: ProgramDetailProps) {
             bestMetric={program.bestMetric}
             height={140}
           />
-        </GlassCard>
+        </CockpitCard>
       )}
 
       {/* Schedule + Alerts row */}
@@ -236,16 +235,16 @@ export default function ProgramDetail({ program }: ProgramDetailProps) {
           Experiments ({experiments.length})
         </h3>
         <div className="flex items-center gap-3 text-xs">
-          <span className="flex items-center gap-1 text-green-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+          <span className="flex items-center gap-1 text-[var(--color-status-success)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-status-success)]" />
             {keeps} keeps
           </span>
-          <span className="flex items-center gap-1 text-yellow-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+          <span className="flex items-center gap-1 text-[var(--bb-warning)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--bb-warning)]" />
             {discards} discards
           </span>
-          <span className="flex items-center gap-1 text-red-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+          <span className="flex items-center gap-1 text-[var(--bb-error)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--bb-error)]" />
             {errors} errors
           </span>
         </div>
@@ -254,12 +253,12 @@ export default function ProgramDetail({ program }: ProgramDetailProps) {
       {/* Experiments timeline */}
       <div className="space-y-2">
         {experiments.length === 0 ? (
-          <GlassCard padding="md">
+          <CockpitCard padding="md">
             <div className="flex flex-col items-center justify-center py-8 text-tertiary">
               <FileText size={32} className="mb-2 opacity-40" />
               <p className="text-sm">Nenhum experimento registrado</p>
             </div>
-          </GlassCard>
+          </CockpitCard>
         ) : (
           experiments.map((exp) => (
             <ExperimentCard
@@ -272,7 +271,7 @@ export default function ProgramDetail({ program }: ProgramDetailProps) {
       </div>
 
       {/* Metadata */}
-      <GlassCard padding="sm" variant="subtle">
+      <CockpitCard padding="sm" variant="subtle">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-tertiary">
           <div>
             <span className="block text-[10px] uppercase tracking-wide mb-0.5">Created</span>
@@ -293,7 +292,7 @@ export default function ProgramDetail({ program }: ProgramDetailProps) {
             </span>
           </div>
         </div>
-      </GlassCard>
+      </CockpitCard>
     </div>
   );
 }

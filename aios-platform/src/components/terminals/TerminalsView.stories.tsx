@@ -13,9 +13,9 @@ const mockSessions: TerminalSession[] = [
     story: 'Story 2.3',
     output: [
       '$ npm run typecheck',
-      '\u2713 No type errors found',
+      'PASS No type errors found',
       '$ npm run lint',
-      '\u2713 All files passed linting',
+      'PASS All files passed linting',
       '$ git commit -m "feat: add components"',
       '[feature/story-2.3 abc1234] feat: add components',
     ],
@@ -28,7 +28,7 @@ const mockSessions: TerminalSession[] = [
     story: 'Story 2.3',
     output: [
       '$ npm run test -- --coverage',
-      'PASS src/components/ui/__tests__/GlassCard.test.tsx',
+      'PASS src/components/ui/__tests__/CockpitCard.test.tsx',
       'PASS src/components/ui/__tests__/Badge.test.tsx',
       'Test Suites: 2 passed, 2 total',
       'Coverage: 87.5%',

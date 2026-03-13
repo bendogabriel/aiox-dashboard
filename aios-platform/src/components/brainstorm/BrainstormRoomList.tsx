@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus,
   Lightbulb,
@@ -11,7 +10,7 @@ import {
   Link2,
   Sparkles,
 } from 'lucide-react';
-import { GlassCard, GlassButton, GlassInput } from '../ui';
+import { CockpitCard, CockpitButton, CockpitInput } from '../ui';
 import { cn } from '../../lib/utils';
 import type { BrainstormRoom } from '../../stores/brainstormStore';
 
@@ -63,57 +62,51 @@ export function BrainstormRoomList({
           <Lightbulb size={20} className="text-primary" />
           <h2 className="text-lg font-semibold text-primary">Brainstorm</h2>
         </div>
-        <GlassButton
-          variant="default"
+        <CockpitButton
+          variant="secondary"
           size="sm"
           className="gap-1.5"
           onClick={() => setShowCreate(true)}
         >
           <Plus size={14} /> Nova Sala
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       {/* Create form */}
-      <AnimatePresence>
-        {showCreate && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+      {showCreate && (
+          <div
             className="overflow-hidden border-b border-glass-border"
           >
             <div className="p-4 space-y-3">
-              <GlassInput
+              <CockpitInput
                 placeholder="Nome da sala..."
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
                 autoFocus
               />
-              <GlassInput
+              <CockpitInput
                 placeholder="Descricao (opcional)..."
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
               />
               <div className="flex gap-2 justify-end">
-                <GlassButton variant="ghost" size="sm" onClick={() => setShowCreate(false)}>
+                <CockpitButton variant="ghost" size="sm" onClick={() => setShowCreate(false)}>
                   Cancelar
-                </GlassButton>
-                <GlassButton variant="default" size="sm" onClick={handleCreate} disabled={!newName.trim()}>
+                </CockpitButton>
+                <CockpitButton variant="secondary" size="sm" onClick={handleCreate} disabled={!newName.trim()}>
                   Criar
-                </GlassButton>
+                </CockpitButton>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-
-      {/* Room list */}
+{/* Room list */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2 glass-scrollbar">
         {rooms.length === 0 && !showCreate && (
           <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-            <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <div className="h-16 w-16 rounded-none bg-primary/10 flex items-center justify-center">
               <Lightbulb size={32} className="text-primary" />
             </div>
             <div className="space-y-1">
@@ -122,21 +115,17 @@ export function BrainstormRoomList({
                 Crie uma sala para despejar suas ideias e deixar a IA organizar em planos de acao AIOS
               </p>
             </div>
-            <GlassButton variant="default" size="sm" className="gap-1.5" onClick={() => setShowCreate(true)}>
+            <CockpitButton variant="secondary" size="sm" className="gap-1.5" onClick={() => setShowCreate(true)}>
               <Plus size={14} /> Criar primeira sala
-            </GlassButton>
+            </CockpitButton>
           </div>
         )}
 
-        <AnimatePresence>
-          {rooms.map((room) => (
-            <motion.div
+        {rooms.map((room) => (
+            <div
               key={room.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
             >
-              <GlassCard
+              <CockpitCard
                 variant="default"
                 padding="md"
                 className={cn(
@@ -152,7 +141,7 @@ export function BrainstormRoomList({
                       <p className="text-xs text-tertiary truncate mt-0.5">{room.description}</p>
                     )}
                   </div>
-                  <GlassButton
+                  <CockpitButton
                     variant="ghost"
                     size="icon"
                     className="h-6 w-6 opacity-0 group-hover:opacity-100 flex-shrink-0"
@@ -162,8 +151,8 @@ export function BrainstormRoomList({
                     }}
                     aria-label="Deletar sala"
                   >
-                    <Trash2 size={12} className="text-red-400" />
-                  </GlassButton>
+                    <Trash2 size={12} className="text-[var(--bb-error)]" />
+                  </CockpitButton>
                 </div>
 
                 <div className="flex items-center gap-3 mt-2 text-[10px] text-tertiary">
@@ -197,11 +186,10 @@ export function BrainstormRoomList({
                     {phaseLabels[room.phase] || room.phase}
                   </span>
                 </div>
-              </GlassCard>
-            </motion.div>
+              </CockpitCard>
+            </div>
           ))}
-        </AnimatePresence>
-      </div>
+</div>
     </div>
   );
 }

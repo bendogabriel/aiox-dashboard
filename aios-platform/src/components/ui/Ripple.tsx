@@ -1,6 +1,4 @@
 import { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-
 interface RippleProps {
   color?: string;
   duration?: number;
@@ -53,14 +51,10 @@ export function useRipple(options: RippleProps = {}) {
   }, [duration]);
 
   const RippleContainer = useCallback(() => (
-    <AnimatePresence>
+    <>
       {ripples.map((ripple) => (
-        <motion.span
+        <span
           key={ripple.id}
-          initial={{ scale: 0, opacity: 0.3 }}
-          animate={{ scale: 1, opacity: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: duration / 1000, ease: 'easeOut' }}
           style={{
             position: 'absolute',
             left: ripple.x - ripple.size / 2,
@@ -73,8 +67,8 @@ export function useRipple(options: RippleProps = {}) {
           }}
         />
       ))}
-    </AnimatePresence>
-  ), [ripples, duration, color]);
+    </>
+), [ripples, duration, color]);
 
   return {
     createRipple,

@@ -1,6 +1,4 @@
 import { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-
 // Helper: read a CSS custom property value at runtime
 function cssVar(name: string, fallback: string): string {
   if (typeof document === 'undefined') return fallback;
@@ -99,25 +97,19 @@ export function LineChart({
             className="absolute inset-0"
           >
             {/* Fill area */}
-            <motion.polygon
+            <polygon
               points={areaPoints}
               fill={resolvedFill}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
             />
 
             {/* Line */}
-            <motion.polyline
+            <polyline
               points={polylinePoints}
               fill="none"
               stroke={resolvedColor}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
             />
 
             {/* Points — interactive with hover */}
@@ -146,14 +138,11 @@ export function LineChart({
                   />
                 )}
                 {/* Visible point */}
-                <motion.circle
+                <circle
                   cx={point.x}
                   cy={point.y}
                   r={hoveredIndex === index ? 5 : 4}
                   fill={resolvedColor}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.3 + index * 0.05, duration: 0.2 }}
                 />
               </g>
             ))}
@@ -174,13 +163,8 @@ export function LineChart({
           </svg>
 
           {/* Tooltip */}
-          <AnimatePresence>
-            {hoveredIndex !== null && points[hoveredIndex] && (
-              <motion.div
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 4 }}
-                transition={{ duration: 0.15 }}
+          {hoveredIndex !== null && points[hoveredIndex] && (
+              <div
                 className="absolute pointer-events-none z-10 px-2.5 py-1.5 rounded-lg text-xs font-medium shadow-lg"
                 style={{
                   left: Math.min(
@@ -197,10 +181,9 @@ export function LineChart({
                 {labels?.[hoveredIndex] && (
                   <span className="ml-1.5 opacity-60">{labels[hoveredIndex]}</span>
                 )}
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
-        </>)}
+</>)}
       </div>
 
       {/* Labels */}
@@ -263,16 +246,12 @@ export function BarChart({
                 )}
               </div>
               <div className="h-2 rounded-full overflow-hidden group-hover:h-3 transition-all" style={{ background: 'var(--chart-ring-bg, rgba(255,255,255,0.1))' }}>
-                <motion.div
+                <div
                   className="h-full rounded-full transition-shadow"
                   style={{
                     backgroundColor: barColor,
                     boxShadow: undefined,
                   }}
-                  whileHover={{ boxShadow: `0 0 8px ${barColor}60` }}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${pct}%` }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
                 />
               </div>
             </div>
@@ -294,16 +273,13 @@ export function BarChart({
 
         return (
           <g key={item.label}>
-            <motion.rect
+            <rect
               x={x}
               y={y}
               width={barWidth - gap}
               height={barHeight}
               rx="3"
               fill={item.color || defaultColors[index % defaultColors.length]}
-              initial={{ height: 0, y: height - 20 }}
-              animate={{ height: barHeight, y }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
             />
             {showValues && (
               <text
@@ -390,7 +366,7 @@ export function DonutChart({
           const rotation = offsets[index] * 360;
 
           return (
-            <motion.circle
+            <circle
               key={item.label}
               cx={size / 2}
               cy={size / 2}
@@ -402,9 +378,6 @@ export function DonutChart({
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
               style={{ transform: `rotate(${rotation}deg)`, transformOrigin: '50% 50%' }}
-              initial={{ strokeDashoffset: circumference }}
-              animate={{ strokeDashoffset }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
             />
           );
         })}
@@ -454,16 +427,13 @@ export function Sparkline({
 
   return (
     <svg width={width} height={height} className="overflow-visible">
-      <motion.polyline
+      <polyline
         points={points.join(' ')}
         fill="none"
         stroke={resolvedColor}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 0.5 }}
       />
     </svg>
   );
@@ -509,7 +479,7 @@ export function ProgressRing({
           strokeWidth={thickness}
         />
         {/* Progress */}
-        <motion.circle
+        <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -519,9 +489,6 @@ export function ProgressRing({
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
         />
       </svg>
 

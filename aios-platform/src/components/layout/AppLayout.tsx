@@ -1,5 +1,4 @@
 import { ReactNode, useState, lazy, Suspense } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { ActivityPanel } from './ActivityPanel';
@@ -79,8 +78,10 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Skip Links for Accessibility */}
       <SkipLinks />
 
-      {/* Gradient Background */}
+      {/* Gradient Background + HUD Pattern Overlay */}
       <div className="app-background" aria-hidden="true" />
+      <div className="pattern-dot-grid--sparse fixed inset-0 pointer-events-none z-0 opacity-40" aria-hidden="true" />
+      <div className="grain-overlay fixed inset-0 pointer-events-none z-0" aria-hidden="true" />
 
       {/* Matrix Effects — only rendered when matrix theme is active */}
       {isMatrix && (
@@ -127,32 +128,23 @@ export function AppLayout({ children }: AppLayoutProps) {
           <main id="main-content" className="flex-1 overflow-hidden p-4 pb-20 md:p-6 md:pb-6" aria-label="Conteúdo principal">
             {/* Degradation Banner — shows limited capabilities for current view */}
             <DegradationBanner />
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            <div
               className="h-full"
             >
               {children}
-            </motion.div>
+            </div>
           </main>
         </div>
 
         {/* Activity Panel - Hidden on settings view and focus mode */}
-        <AnimatePresence>
-          {showActivityPanel && !focusMode && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        {showActivityPanel && !focusMode && (
+            <div
               className="hidden lg:block"
             >
               <ActivityPanel />
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-      </div>
+</div>
 
       {/* Agent Explorer Modal */}
       <AgentExplorer

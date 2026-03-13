@@ -86,7 +86,7 @@ function CategoryHeader({ label, connectedCount, total }: { label: string; conne
           fontSize: '11px',
           fontFamily: 'var(--font-family-mono, monospace)',
           color: connectedCount === total
-            ? 'var(--aiox-lime, #D1FF00)'
+            ? 'var(--color-status-success, #4ADE80)'
             : 'var(--aiox-gray-dim, #696969)',
         }}
       >
@@ -141,7 +141,7 @@ export default function IntegrationHub() {
                 textTransform: 'uppercase' as const,
                 letterSpacing: '0.1em',
                 fontWeight: 700,
-                color: 'var(--aiox-lime, #D1FF00)',
+                color: 'var(--aiox-cream, #FAF9F6)',
               }}
             >
               Integrations
@@ -174,12 +174,12 @@ export default function IntegrationHub() {
               letterSpacing: '0.06em',
               fontWeight: 500,
               background: 'transparent',
-              border: '1px solid rgba(209, 255, 0, 0.2)',
-              color: 'var(--aiox-lime, #D1FF00)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              color: 'var(--aiox-cream, #E5E5E5)',
               cursor: 'pointer',
               transition: 'background 0.15s',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(209, 255, 0, 0.06)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             title="Run Setup Wizard"
           >
@@ -206,14 +206,14 @@ export default function IntegrationHub() {
               fontWeight: 500,
               background: 'transparent',
               border: '1px solid rgba(255,255,255,0.1)',
-              color: refreshing ? 'var(--aiox-lime, #D1FF00)' : 'var(--aiox-gray-muted, #999)',
+              color: refreshing ? 'var(--aiox-cream, #E5E5E5)' : 'var(--aiox-gray-muted, #999)',
               cursor: refreshing ? 'wait' : 'pointer',
               transition: 'color 0.15s, border-color 0.15s',
             }}
             onMouseEnter={(e) => {
               if (!refreshing) {
-                e.currentTarget.style.color = 'var(--aiox-lime, #D1FF00)';
-                e.currentTarget.style.borderColor = 'rgba(209, 255, 0, 0.3)';
+                e.currentTarget.style.color = 'var(--aiox-cream, #E5E5E5)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
               }
             }}
             onMouseLeave={(e) => {

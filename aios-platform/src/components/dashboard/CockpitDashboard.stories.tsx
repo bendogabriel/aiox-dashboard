@@ -22,7 +22,7 @@ const meta = {
   decorators: [
     (Story: React.ComponentType) => (
       <QueryClientProvider client={queryClient}>
-        <div style={{ height: '100vh', background: '#050505' }} data-theme="aiox">
+        <div style={{ height: '100vh', background: 'var(--aiox-dark)' }} data-theme="aiox">
           <Story />
         </div>
       </QueryClientProvider>

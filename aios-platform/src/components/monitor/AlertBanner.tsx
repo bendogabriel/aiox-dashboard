@@ -1,24 +1,23 @@
 import { AlertTriangle, AlertCircle, Info, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { GlassCard } from '../ui';
+import { CockpitCard } from '../ui';
 import { useMonitorStore } from '../../stores/monitorStore';
 import { cn } from '../../lib/utils';
 
 const severityConfig = {
   info: {
     icon: Info,
-    borderClass: 'border-l-2 border-l-blue-400',
-    iconColor: 'text-blue-400',
+    borderClass: 'border-l-2 border-l-[var(--aiox-blue)]',
+    iconColor: 'text-[var(--aiox-blue)]',
   },
   warning: {
     icon: AlertTriangle,
-    borderClass: 'border-l-2 border-l-yellow-400',
-    iconColor: 'text-yellow-400',
+    borderClass: 'border-l-2 border-l-[var(--bb-warning)]',
+    iconColor: 'text-[var(--bb-warning)]',
   },
   error: {
     icon: AlertCircle,
-    borderClass: 'border-l-2 border-l-red-400',
-    iconColor: 'text-red-400',
+    borderClass: 'border-l-2 border-l-[var(--bb-error)]',
+    iconColor: 'text-[var(--bb-error)]',
   },
 } as const;
 
@@ -41,20 +40,15 @@ export default function AlertBanner() {
 
   return (
     <div className="flex flex-col gap-2 flex-shrink-0">
-      <AnimatePresence initial={false}>
-        {activeAlerts.map((alert) => {
+      {activeAlerts.map((alert) => {
           const config = severityConfig[alert.severity];
           const Icon = config.icon;
 
           return (
-            <motion.div
+            <div
               key={alert.id}
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
             >
-              <GlassCard
+              <CockpitCard
                 padding="sm"
                 variant="subtle"
                 className={cn('flex items-center gap-3', config.borderClass)}
@@ -73,11 +67,10 @@ export default function AlertBanner() {
                 >
                   <X className="h-3.5 w-3.5 text-tertiary" />
                 </button>
-              </GlassCard>
-            </motion.div>
+              </CockpitCard>
+            </div>
           );
         })}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

@@ -11,7 +11,6 @@ import {
   type DragEndEvent,
   type DragOverEvent,
 } from '@dnd-kit/core';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus,
   BookOpen,
@@ -26,7 +25,7 @@ import {
   Filter,
   X,
 } from 'lucide-react';
-import { GlassButton, Celebration, useCelebration } from '../ui';
+import { CockpitButton, useCelebration, Celebration } from '../ui';
 import { cn } from '../../lib/utils';
 import { KanbanColumn, type ColumnConfig } from './KanbanColumn';
 import { StoryCard } from './StoryCard';
@@ -38,12 +37,12 @@ import { useStoryStore, type Story, type StoryStatus } from '../../stores/storyS
 
 const COLUMNS: ColumnConfig[] = [
   { id: 'backlog', label: 'Backlog', color: 'var(--kanban-backlog, #6b7280)', icon: ClipboardList },
-  { id: 'in_progress', label: 'In Progress', color: 'var(--kanban-in-progress, #3b82f6)', icon: RefreshCw },
-  { id: 'ai_review', label: 'AI Review', color: 'var(--kanban-ai-review, #a855f7)', icon: Bot },
-  { id: 'human_review', label: 'Human Review', color: 'var(--kanban-human-review, #f97316)', icon: User },
-  { id: 'pr_created', label: 'PR Created', color: 'var(--kanban-pr-created, #22c55e)', icon: GitMerge },
-  { id: 'done', label: 'Done', color: 'var(--kanban-done, #10b981)', icon: CheckCircle },
-  { id: 'error', label: 'Error', color: 'var(--kanban-error, #ef4444)', icon: XCircle },
+  { id: 'in_progress', label: 'In Progress', color: 'var(--kanban-in-progress, var(--aiox-blue, #0099FF))', icon: RefreshCw },
+  { id: 'ai_review', label: 'AI Review', color: 'var(--kanban-ai-review, var(--aiox-gray-muted, #999999))', icon: Bot },
+  { id: 'human_review', label: 'Human Review', color: 'var(--kanban-human-review, var(--bb-flare, #ED4609))', icon: User },
+  { id: 'pr_created', label: 'PR Created', color: 'var(--kanban-pr-created, var(--color-status-success, #4ADE80))', icon: GitMerge },
+  { id: 'done', label: 'Done', color: 'var(--kanban-done, var(--color-status-success, #4ADE80))', icon: CheckCircle },
+  { id: 'error', label: 'Error', color: 'var(--kanban-error, var(--bb-error, #EF4444))', icon: XCircle },
 ];
 
 export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) {
@@ -58,8 +57,7 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
     setDraggedStory,
   } = useStoryStore();
 
-  // Celebration when story moves to done
-  const { celebrating, celebrate, onComplete: onCelebrationComplete } = useCelebration();
+  const { celebrating, celebrate, onComplete } = useCelebration();
 
   // Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -209,9 +207,8 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
       // Move story to a different column
       moveStory(activeId, overColumn);
 
-      // Celebrate when story reaches Done!
+      // Sound when story reaches Done
       if (overColumn === 'done') {
-        celebrate();
         playSound('success');
       }
     },
@@ -316,7 +313,7 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
                 {Array.from({ length: col === 0 ? 3 : col < 3 ? 2 : 1 }).map((_, card) => (
                   <div
                     key={card}
-                    className="mx-1.5 p-3 rounded-xl bg-white/5 space-y-2 shimmer"
+                    className="mx-1.5 p-3 rounded-none bg-white/5 space-y-2 shimmer"
                     style={{ animationDelay: `${(col * 3 + card) * 100}ms` }}
                   >
                     <div className="flex gap-1.5">
@@ -343,15 +340,10 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-glass-border flex-shrink-0"
-      >
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-glass-border flex-shrink-0">
         <div className="flex items-center gap-3">
           <BookOpen size={20} className="text-secondary" />
-          <h1 className="text-lg font-semibold text-primary">Stories</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary">Stories</h1>
           <span className="inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full bg-white/10 text-[10px] font-medium text-tertiary">
             {hasActiveFilters ? `${filteredTotal}/${totalStories}` : totalStories}
           </span>
@@ -367,7 +359,7 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar stories..."
-              className="h-8 w-full sm:w-44 pl-8 pr-7 rounded-lg text-xs bg-white/5 border border-glass-border text-primary placeholder:text-tertiary focus:outline-none focus:ring-1 focus:ring-blue-500/40 transition-colors"
+              className="h-8 w-full sm:w-44 pl-8 pr-7 rounded-lg text-xs bg-white/5 border border-glass-border text-primary placeholder:text-tertiary focus:outline-none focus:ring-1 focus:ring-[var(--aiox-lime)]/40 transition-colors"
             />
             {searchQuery && (
               <button
@@ -381,20 +373,20 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
           </div>
 
           {/* Filter toggle */}
-          <GlassButton
+          <CockpitButton
             variant="ghost"
             size="sm"
-            className={cn(hasActiveFilters && 'text-blue-400 bg-blue-500/10')}
+            className={cn(hasActiveFilters && 'text-[var(--aiox-lime)] bg-[var(--aiox-lime)]/10')}
             onClick={() => setShowFilters(!showFilters)}
             aria-label="Filtros"
           >
             <Filter size={14} />
             {hasActiveFilters && (
-              <span className="ml-1 w-1.5 h-1.5 rounded-full bg-blue-400" />
+              <span className="ml-1 w-1.5 h-1.5 rounded-full bg-[var(--aiox-lime)]" />
             )}
-          </GlassButton>
+          </CockpitButton>
 
-          <GlassButton
+          <CockpitButton
             variant="primary"
             size="sm"
             leftIcon={<Plus size={16} />}
@@ -405,20 +397,13 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
           >
             <span className="hidden sm:inline">New Story</span>
             <span className="sm:hidden">New</span>
-          </GlassButton>
+          </CockpitButton>
         </div>
-      </motion.div>
+      </div>
 
       {/* Filter bar */}
-      <AnimatePresence>
-        {showFilters && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden border-b border-glass-border flex-shrink-0"
-          >
+      {showFilters && (
+        <div className="border-b border-glass-border flex-shrink-0">
             <div className="flex items-center gap-3 px-4 sm:px-6 py-2.5 flex-wrap">
               <FilterSelect
                 label="Prioridade"
@@ -469,9 +454,8 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
                 </button>
               )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
 
       {/* Board */}
       <div className="flex-1 overflow-x-auto overflow-y-hidden p-4">
@@ -524,8 +508,7 @@ export default function KanbanBoard({ viewToggle }: { viewToggle?: ReactNode }) 
         onDelete={handleDeleteStory}
       />
 
-      {/* Celebration confetti when story is marked Done */}
-      <Celebration trigger={celebrating} onComplete={onCelebrationComplete} />
+      <Celebration celebrating={celebrating} onComplete={onComplete} />
     </div>
   );
 }
@@ -547,7 +530,7 @@ function FilterSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-7 px-2 rounded-md text-xs bg-white/5 border border-glass-border text-primary focus:outline-none focus:ring-1 focus:ring-blue-500/40 cursor-pointer"
+        className="h-7 px-2 rounded-md text-xs bg-white/5 border border-glass-border text-primary focus:outline-none focus:ring-1 focus:ring-[var(--aiox-lime)]/40 cursor-pointer"
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>{opt.label}</option>

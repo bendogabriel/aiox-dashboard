@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Badge } from '../ui';
 import { useChat } from '../../hooks/useChat';
-import { apiClient } from '../../services/api/client';
+import { engineApi } from '../../services/api/engine';
 import { cn } from '../../lib/utils';
+import { useEngineStore } from '../../stores/engineStore';
 import { ActionIcon, CommandIcon, PromptIcon, TaskIcon, WorkflowIcon } from './activity-panel-icons';
 import type { AgentWithUI } from '../../hooks/useAgents';
 import type { AgentAction } from './activity-panel-types';
@@ -20,13 +20,34 @@ export interface SquadCommand {
 export function AgentCommandsPanel({ agent }: { agent: AgentWithUI & { actions?: AgentAction[] } }) {
   const { sendMessage } = useChat();
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const engineStatus = useEngineStore((s) => s.status);
 
-  // Fetch squad tasks and workflows
+  // Fetch squad tasks and workflows from engine
   const { data: squadCommands } = useQuery<{ tasks: SquadCommand[]; workflows: SquadCommand[] }>({
-    queryKey: ['squad-commands', agent.squad],
+    queryKey: ['squad-commands', agent.squad, engineStatus],
     queryFn: async () => {
+      if (engineStatus !== 'online') return { tasks: [], workflows: [] };
       try {
-        return await apiClient.get<{ tasks: SquadCommand[]; workflows: SquadCommand[] }>(`/squads/${agent.squad}/commands`);
+        const [tasksRes, workflowsRes] = await Promise.all([
+          engineApi.getRegistryTasks(agent.squad),
+          engineApi.getRegistryWorkflows(agent.squad),
+        ]);
+        return {
+          tasks: (tasksRes.tasks || []).map(t => ({
+            id: t.id,
+            name: t.name,
+            description: t.purpose || t.name,
+            type: 'task' as const,
+            file: t.file,
+          })),
+          workflows: (workflowsRes.workflows || []).map(w => ({
+            id: w.id,
+            name: w.name,
+            description: w.description || w.name,
+            type: 'workflow' as const,
+            file: w.file,
+          })),
+        };
       } catch {
         return { tasks: [], workflows: [] };
       }
@@ -118,11 +139,11 @@ export function AgentCommandsPanel({ agent }: { agent: AgentWithUI & { actions?:
   ];
 
   const colorClasses: Record<string, string> = {
-    yellow: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400 hover:bg-yellow-500/20',
-    purple: 'bg-purple-500/10 border-purple-500/20 text-purple-400 hover:bg-purple-500/20',
-    green: 'bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20',
-    orange: 'bg-orange-500/10 border-orange-500/20 text-orange-400 hover:bg-orange-500/20',
-    cyan: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20',
+    yellow: 'bg-[var(--bb-warning)]/10 border-[var(--bb-warning)]/20 text-[var(--bb-warning)] hover:bg-[var(--bb-warning)]/20',
+    purple: 'bg-[var(--aiox-gray-muted)]/10 border-[var(--aiox-gray-muted)]/20 text-[var(--aiox-gray-muted)] hover:bg-[var(--aiox-gray-muted)]/20',
+    green: 'bg-[var(--color-status-success)]/10 border-[var(--color-status-success)]/20 text-[var(--color-status-success)] hover:bg-[var(--color-status-success)]/20',
+    orange: 'bg-[var(--bb-flare)]/10 border-[var(--bb-flare)]/20 text-[var(--bb-flare)] hover:bg-[var(--bb-flare)]/20',
+    cyan: 'bg-[var(--aiox-blue)]/10 border-[var(--aiox-blue)]/20 text-[var(--aiox-blue)] hover:bg-[var(--aiox-blue)]/20',
   };
 
   const totalItems = agentActions.length + agentCommands.length + agentPrompts.length + tasks.length + workflows.length;
@@ -157,13 +178,10 @@ export function AgentCommandsPanel({ agent }: { agent: AgentWithUI & { actions?:
 
             {/* Category Items */}
             <div className="space-y-1.5">
-              <AnimatePresence initial={false}>
-                {displayItems.map((item: unknown, index: number) => (
-                  <motion.button
+              {displayItems.map((item: unknown, index: number) => (
+                  <button
                     key={index}
-                    initial={index >= 3 ? { opacity: 0, height: 0 } : false}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
+
                     onClick={() => handleUse(category.getCommand(item))}
                     className={cn(
                       'w-full text-left p-2 rounded-lg border transition-colors',
@@ -178,11 +196,9 @@ export function AgentCommandsPanel({ agent }: { agent: AgentWithUI & { actions?:
                         {category.getDescription(item)}
                       </p>
                     )}
-                  </motion.button>
+                  </button>
                 ))}
-              </AnimatePresence>
-
-              {/* Expand/Collapse Button */}
+{/* Expand/Collapse Button */}
               {hasMore && (
                 <button
                   onClick={() => toggleCategory(category.id)}

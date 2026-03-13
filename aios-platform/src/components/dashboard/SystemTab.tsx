@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
 import { Timer, Signal, TrendingUp, AlertTriangle, Cpu, GitBranch } from 'lucide-react';
-import { GlassCard } from '../ui';
+import { CockpitCard } from '../ui';
 import { useSystemHealth, useSystemMetrics } from '../../hooks/useDashboard';
 import { useLLMHealth } from '../../hooks/useExecute';
 import { useDashboardOverview } from '../../hooks/useDashboardOverview';
@@ -39,10 +38,7 @@ export function SystemTab() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+    <div
       className="space-y-6 pb-6"
     >
       {/* System Metrics */}
@@ -74,7 +70,7 @@ export function SystemTab() {
       </div>
 
       {/* Health Status */}
-      <GlassCard>
+      <CockpitCard>
         <h2 className="font-semibold text-primary mb-4">Status dos Serviços</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <ServiceHealthCard
@@ -98,89 +94,89 @@ export function SystemTab() {
             error={llmHealth?.openai?.error}
           />
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       {/* System Info */}
-      <GlassCard>
+      <CockpitCard>
         <h2 className="font-semibold text-primary mb-4">Informações do Sistema</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div className="p-3 rounded-xl glass-subtle">
+          <div className="p-3 rounded-none glass-subtle">
             <p className="text-xs text-tertiary mb-1">Fila de Execução</p>
             <p className="text-xl font-semibold text-primary">{metrics?.queueSize ?? 0} tarefas</p>
           </div>
-          <div className="p-3 rounded-xl glass-subtle">
+          <div className="p-3 rounded-none glass-subtle">
             <p className="text-xs text-tertiary mb-1">Conexões Ativas</p>
             <p className="text-xl font-semibold text-primary">{metrics?.activeConnections ?? 0}</p>
           </div>
           {dashSystem && (
             <>
-              <div className="p-3 rounded-xl glass-subtle">
+              <div className="p-3 rounded-none glass-subtle">
                 <p className="text-xs text-tertiary mb-1">Node.js</p>
                 <p className="text-sm font-semibold text-primary">{dashSystem.nodeVersion}</p>
               </div>
-              <div className="p-3 rounded-xl glass-subtle">
+              <div className="p-3 rounded-none glass-subtle">
                 <p className="text-xs text-tertiary mb-1">Plataforma</p>
                 <p className="text-sm font-semibold text-primary truncate" title={dashSystem.platform}>{dashSystem.platform}</p>
               </div>
-              <div className="p-3 rounded-xl glass-subtle">
+              <div className="p-3 rounded-none glass-subtle">
                 <p className="text-xs text-tertiary mb-1">Arch / CPUs</p>
                 <p className="text-sm font-semibold text-primary">{dashSystem.arch} / {dashSystem.cpus} cores</p>
               </div>
-              <div className="p-3 rounded-xl glass-subtle">
+              <div className="p-3 rounded-none glass-subtle">
                 <p className="text-xs text-tertiary mb-1">.aios/ Disk</p>
                 <p className="text-sm font-semibold text-primary">{dashSystem.aiosDiskUsage}</p>
               </div>
             </>
           )}
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       {/* Git & Memory (from real data) */}
       {dashSystem && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <GlassCard>
+          <CockpitCard>
             <div className="flex items-center gap-2 mb-3">
               <GitBranch size={16} className="text-secondary" />
               <h2 className="font-semibold text-primary">Git</h2>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 rounded-xl glass-subtle">
+              <div className="p-3 rounded-none glass-subtle">
                 <p className="text-xs text-tertiary mb-1">Branch</p>
                 <p className="text-sm font-semibold text-primary">{dashSystem.gitBranch}</p>
               </div>
-              <div className="p-3 rounded-xl glass-subtle">
+              <div className="p-3 rounded-none glass-subtle">
                 <p className="text-xs text-tertiary mb-1">Status</p>
                 <p className="text-sm font-semibold text-primary">{dashSystem.gitDirty ? 'Dirty' : 'Clean'}</p>
               </div>
             </div>
-          </GlassCard>
+          </CockpitCard>
 
-          <GlassCard>
+          <CockpitCard>
             <div className="flex items-center gap-2 mb-3">
               <Cpu size={16} className="text-secondary" />
               <h2 className="font-semibold text-primary">Processo</h2>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 rounded-xl glass-subtle">
+              <div className="p-3 rounded-none glass-subtle">
                 <p className="text-xs text-tertiary mb-1">Heap Used</p>
                 <p className="text-sm font-semibold text-primary">{Math.round(dashSystem.memoryUsage.heapUsed / 1024 / 1024)}MB</p>
               </div>
-              <div className="p-3 rounded-xl glass-subtle">
+              <div className="p-3 rounded-none glass-subtle">
                 <p className="text-xs text-tertiary mb-1">Heap Total</p>
                 <p className="text-sm font-semibold text-primary">{Math.round(dashSystem.memoryUsage.heapTotal / 1024 / 1024)}MB ({dashSystem.memoryUsage.heapPercentage}%)</p>
               </div>
-              <div className="p-3 rounded-xl glass-subtle">
+              <div className="p-3 rounded-none glass-subtle">
                 <p className="text-xs text-tertiary mb-1">Total RAM</p>
                 <p className="text-sm font-semibold text-primary">{Math.round(dashSystem.totalMemory / 1024 / 1024 / 1024)}GB</p>
               </div>
-              <div className="p-3 rounded-xl glass-subtle">
+              <div className="p-3 rounded-none glass-subtle">
                 <p className="text-xs text-tertiary mb-1">Free RAM</p>
                 <p className="text-sm font-semibold text-primary">{Math.round(dashSystem.freeMemory / 1024 / 1024 / 1024)}GB</p>
               </div>
             </div>
-          </GlassCard>
+          </CockpitCard>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

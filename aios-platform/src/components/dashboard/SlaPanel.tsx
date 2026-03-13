@@ -141,8 +141,8 @@ const addBtnStyle: React.CSSProperties = {
   letterSpacing: '0.06em',
   padding: '4px 10px',
   background: 'transparent',
-  color: 'var(--aiox-lime, #D1FF00)',
-  border: '1px solid var(--aiox-lime, #D1FF00)',
+  color: 'var(--aiox-cream, #E5E5E5)',
+  border: '1px solid rgba(255, 255, 255, 0.15)',
   borderRadius: 0,
   cursor: 'pointer',
 };
@@ -219,9 +219,9 @@ const windowBtnStyle = (active: boolean): React.CSSProperties => ({
   fontSize: '0.5rem',
   fontWeight: 600,
   padding: '4px 8px',
-  background: active ? 'var(--aiox-lime, #D1FF00)' : 'transparent',
-  color: active ? 'var(--aiox-dark, #050505)' : 'var(--aiox-gray-muted, #999)',
-  border: `1px solid ${active ? 'var(--aiox-lime, #D1FF00)' : 'rgba(255, 255, 255, 0.1)'}`,
+  background: active ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+  color: active ? 'var(--aiox-cream, #E5E5E5)' : 'var(--aiox-gray-muted, #999)',
+  border: `1px solid ${active ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'}`,
   borderRadius: 0,
   cursor: 'pointer',
   textTransform: 'uppercase',
@@ -235,9 +235,9 @@ const submitBtnStyle: React.CSSProperties = {
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
   padding: '6px 14px',
-  background: 'var(--aiox-lime, #D1FF00)',
-  color: 'var(--aiox-dark, #050505)',
-  border: '1px solid var(--aiox-lime, #D1FF00)',
+  background: 'rgba(255, 255, 255, 0.06)',
+  color: 'var(--aiox-cream, #E5E5E5)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
   borderRadius: 0,
   cursor: 'pointer',
 };
@@ -330,9 +330,9 @@ export function SlaPanel() {
             <div
               style={{
                 ...badgeBaseStyle,
-                background: allMet ? 'rgba(209, 255, 0, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                color: allMet ? 'var(--aiox-lime, #D1FF00)' : 'var(--color-status-error, #EF4444)',
-                border: `1px solid ${allMet ? 'rgba(209, 255, 0, 0.25)' : 'rgba(239, 68, 68, 0.25)'}`,
+                background: allMet ? 'rgba(74, 222, 128, 0.08)' : 'rgba(239, 68, 68, 0.1)',
+                color: allMet ? 'var(--color-status-success, #4ADE80)' : 'var(--color-status-error, #EF4444)',
+                border: `1px solid ${allMet ? 'rgba(74, 222, 128, 0.2)' : 'rgba(239, 68, 68, 0.25)'}`,
               }}
             >
               {allMet ? (
@@ -547,7 +547,7 @@ function SlaGoalRow({
           ...cellValueStyle,
           color: isViolated
             ? 'var(--color-status-error, #EF4444)'
-            : 'var(--aiox-lime, #D1FF00)',
+            : 'var(--color-status-success, #4ADE80)',
           fontSize: '0.6rem',
           fontWeight: 600,
         }}
@@ -563,7 +563,7 @@ function SlaGoalRow({
             width: `${progress}%`,
             background: isViolated
               ? 'var(--color-status-error, #EF4444)'
-              : 'var(--aiox-lime, #D1FF00)',
+              : 'var(--color-status-success, #4ADE80)',
             transition: 'width 0.3s ease',
           }}
         />
@@ -575,12 +575,12 @@ function SlaGoalRow({
           ...badgeBaseStyle,
           background: isViolated
             ? 'rgba(239, 68, 68, 0.1)'
-            : 'rgba(209, 255, 0, 0.1)',
+            : 'rgba(74, 222, 128, 0.08)',
           color: isViolated
             ? 'var(--color-status-error, #EF4444)'
-            : 'var(--aiox-lime, #D1FF00)',
+            : 'var(--color-status-success, #4ADE80)',
           border: `1px solid ${
-            isViolated ? 'rgba(239, 68, 68, 0.2)' : 'rgba(209, 255, 0, 0.2)'
+            isViolated ? 'rgba(239, 68, 68, 0.2)' : 'rgba(74, 222, 128, 0.2)'
           }`,
           textAlign: 'center',
         }}

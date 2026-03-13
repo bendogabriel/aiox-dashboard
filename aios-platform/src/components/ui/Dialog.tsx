@@ -1,7 +1,6 @@
 import { useEffect, useCallback, useRef, ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import { GlassButton } from './GlassButton';
+import { CockpitButton } from './cockpit/CockpitButton';
 import { cn } from '../../lib/utils';
 
 interface DialogProps {
@@ -94,29 +93,21 @@ export function Dialog({
   }, [isOpen, handleKeyDown]);
 
   return (
-    <AnimatePresence>
-      {isOpen && (
+    <>
+    {isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
+          <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
             onClick={onClose}
           />
 
           {/* Dialog */}
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            <div
               ref={dialogRef}
               className={cn(
-                'w-full glass-lg rounded-2xl shadow-2xl overflow-hidden',
+                'w-full glass-lg rounded-none shadow-2xl overflow-hidden',
                 sizeClasses[size],
                 className,
               )}
@@ -137,7 +128,7 @@ export function Dialog({
                     )}
                   </div>
                   {showClose && (
-                    <GlassButton
+                    <CockpitButton
                       variant="ghost"
                       size="icon"
                       onClick={onClose}
@@ -145,7 +136,7 @@ export function Dialog({
                       aria-label="Close dialog"
                     >
                       <X size={16} />
-                    </GlassButton>
+                    </CockpitButton>
                   )}
                 </div>
               )}
@@ -161,10 +152,10 @@ export function Dialog({
                   {footer}
                 </div>
               )}
-            </motion.div>
+            </div>
           </div>
         </>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 }

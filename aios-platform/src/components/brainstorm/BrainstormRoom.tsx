@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Lightbulb,
   LayoutGrid,
@@ -9,7 +8,7 @@ import {
   ArrowLeft,
   Sparkles,
 } from 'lucide-react';
-import { GlassButton, Badge, useToast } from '../ui';
+import { CockpitButton, Badge, useToast } from '../ui';
 import { cn } from '../../lib/utils';
 import { useBrainstormStore } from '../../stores/brainstormStore';
 import { useBrainstormSync } from '../../hooks/useBrainstormSync';
@@ -26,8 +25,8 @@ import type { OutputType, BrainstormOutput, IdeaType } from '../../stores/brains
 type ViewMode = 'canvas' | 'list';
 
 const phaseLabels: Record<string, { label: string; color: string }> = {
-  collecting: { label: 'COLETANDO', color: '#D1FF00' },
-  organizing: { label: 'ORGANIZANDO', color: '#0099FF' },
+  collecting: { label: 'COLETANDO', color: 'var(--aiox-lime)' },
+  organizing: { label: 'ORGANIZANDO', color: 'var(--aiox-blue)' },
   reviewing: { label: 'REVISANDO', color: '#4ADE80' },
   exporting: { label: 'EXPORTANDO', color: '#f59e0b' },
 };
@@ -258,7 +257,7 @@ export default function BrainstormRoomView() {
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-glass-border">
-        <GlassButton
+        <CockpitButton
           variant="ghost"
           size="icon"
           className="h-8 w-8"
@@ -266,7 +265,7 @@ export default function BrainstormRoomView() {
           aria-label="Voltar para lista"
         >
           <ArrowLeft size={16} />
-        </GlassButton>
+        </CockpitButton>
 
         <Lightbulb size={18} className="text-primary" />
         <h2 className="text-sm font-semibold text-primary truncate flex-1">
@@ -284,7 +283,7 @@ export default function BrainstormRoomView() {
 
         {/* View mode toggle */}
         <div className="flex items-center gap-0.5 glass-panel border border-glass-border rounded-lg p-0.5">
-          <GlassButton
+          <CockpitButton
             variant={viewMode === 'canvas' ? 'default' : 'ghost'}
             size="icon"
             className="h-7 w-7"
@@ -292,8 +291,8 @@ export default function BrainstormRoomView() {
             aria-label="Vista canvas"
           >
             <LayoutGrid size={14} />
-          </GlassButton>
-          <GlassButton
+          </CockpitButton>
+          <CockpitButton
             variant={viewMode === 'list' ? 'default' : 'ghost'}
             size="icon"
             className="h-7 w-7"
@@ -301,11 +300,11 @@ export default function BrainstormRoomView() {
             aria-label="Vista lista"
           >
             <List size={14} />
-          </GlassButton>
+          </CockpitButton>
         </div>
 
         {/* Sidebar toggle */}
-        <GlassButton
+        <CockpitButton
           variant="ghost"
           size="icon"
           className="h-8 w-8"
@@ -313,7 +312,7 @@ export default function BrainstormRoomView() {
           aria-label={sidebarOpen ? 'Fechar painel' : 'Abrir painel'}
         >
           {sidebarOpen ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       {/* Content */}
@@ -330,8 +329,7 @@ export default function BrainstormRoomView() {
             />
           ) : (
             <div className="flex-1 overflow-y-auto p-4 space-y-2 glass-scrollbar">
-              <AnimatePresence>
-                {activeRoom.ideas.map((idea) => (
+              {activeRoom.ideas.map((idea) => (
                   <IdeaCard
                     key={idea.id}
                     idea={idea}
@@ -341,8 +339,7 @@ export default function BrainstormRoomView() {
                     onTagIdea={(id, tags) => tagIdea(activeRoom.id, id, tags)}
                   />
                 ))}
-              </AnimatePresence>
-              {activeRoom.ideas.length === 0 && (
+{activeRoom.ideas.length === 0 && (
                 <div className="flex items-center justify-center py-16 text-tertiary text-sm">
                   Nenhuma ideia ainda. Use o campo abaixo para comecar.
                 </div>
@@ -358,13 +355,8 @@ export default function BrainstormRoomView() {
         </div>
 
         {/* Right sidebar — organize + outputs */}
-        <AnimatePresence>
-          {sidebarOpen && (
-            <motion.aside
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 320, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+        {sidebarOpen && (
+            <aside
               className="border-l border-glass-border overflow-y-auto glass-scrollbar"
             >
               <div className="p-4 space-y-6">
@@ -391,10 +383,9 @@ export default function BrainstormRoomView() {
                   />
                 )}
               </div>
-            </motion.aside>
+            </aside>
           )}
-        </AnimatePresence>
-      </div>
+</div>
     </div>
   );
 }

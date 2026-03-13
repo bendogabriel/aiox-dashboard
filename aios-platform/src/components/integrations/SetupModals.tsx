@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, Server, MessageSquare, Database, Copy, Check, ExternalLink, QrCode, KeyRound, Mic, Plus, Trash2, Send as SendIcon, HardDrive, CalendarDays } from 'lucide-react';
 import { useIntegrationStore } from '../../stores/integrationStore';
 import { getEngineUrl } from '../../lib/connection';
@@ -11,11 +10,7 @@ import { supabaseBrainstormService } from '../../services/supabase/brainstorm';
 
 function ModalShell({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
   return createPortal(
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.15 }}
+    <div
       style={{
         position: 'fixed',
         inset: 0,
@@ -27,18 +22,14 @@ function ModalShell({ title, children, onClose }: { title: string; children: Rea
       }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <motion.div
-        initial={{ opacity: 0, y: 20, scale: 0.97 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 10, scale: 0.97 }}
-        transition={{ duration: 0.2 }}
+      <div
         style={{
           width: '100%',
           maxWidth: 520,
           maxHeight: '90vh',
           overflow: 'auto',
           background: 'var(--aiox-dark, #050505)',
-          border: '1px solid rgba(209, 255, 0, 0.15)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
         }}
       >
         {/* Header */}
@@ -59,7 +50,7 @@ function ModalShell({ title, children, onClose }: { title: string; children: Rea
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
               fontWeight: 600,
-              color: 'var(--aiox-lime, #D1FF00)',
+              color: 'var(--aiox-cream, #E5E5E5)',
             }}
           >
             {title}
@@ -82,8 +73,8 @@ function ModalShell({ title, children, onClose }: { title: string; children: Rea
         <div style={{ padding: '20px' }}>
           {children}
         </div>
-      </motion.div>
-    </motion.div>,
+      </div>
+    </div>,
     document.body,
   );
 }
@@ -127,9 +118,9 @@ const primaryBtnStyle: React.CSSProperties = {
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
   fontWeight: 600,
-  background: 'var(--aiox-lime, #D1FF00)',
-  color: 'var(--aiox-dark, #050505)',
-  border: '1px solid var(--aiox-lime, #D1FF00)',
+  background: 'rgba(255, 255, 255, 0.06)',
+  color: 'var(--aiox-cream, #E5E5E5)',
+  border: '1px solid rgba(255, 255, 255, 0.15)',
   cursor: 'pointer',
 };
 
@@ -141,7 +132,7 @@ function CopyButton({ text }: { text: string }) {
       style={{ background: 'none', border: 'none', color: 'var(--aiox-gray-muted)', cursor: 'pointer', padding: 2 }}
       title="Copy"
     >
-      {copied ? <Check size={14} style={{ color: 'var(--aiox-lime)' }} /> : <Copy size={14} />}
+      {copied ? <Check size={14} style={{ color: 'var(--color-status-success, #4ADE80)' }} /> : <Copy size={14} />}
     </button>
   );
 }
@@ -203,9 +194,9 @@ function EngineSetup({ onClose }: { onClose: () => void }) {
               padding: '10px 12px',
               fontSize: '12px',
               fontFamily: 'var(--font-family-mono)',
-              background: result.ok ? 'rgba(209,255,0,0.06)' : 'rgba(239,68,68,0.06)',
-              border: `1px solid ${result.ok ? 'rgba(209,255,0,0.2)' : 'rgba(239,68,68,0.2)'}`,
-              color: result.ok ? 'var(--aiox-lime)' : 'var(--color-status-error)',
+              background: result.ok ? 'rgba(74, 222, 128, 0.06)' : 'rgba(239,68,68,0.06)',
+              border: `1px solid ${result.ok ? 'rgba(74, 222, 128, 0.15)' : 'rgba(239,68,68,0.2)'}`,
+              color: result.ok ? 'var(--color-status-success, #4ADE80)' : 'var(--color-status-error)',
             }}
           >
             {result.ok ? <Check size={14} style={{ display: 'inline', marginRight: 6 }} /> : <X size={14} style={{ display: 'inline', marginRight: 6 }} />}
@@ -1242,8 +1233,8 @@ export function IntegrationSetupModal() {
   const Modal = setupModalOpen ? modals[setupModalOpen] : null;
 
   return (
-    <AnimatePresence>
-      {Modal && <Modal onClose={closeSetup} />}
-    </AnimatePresence>
-  );
+    <>
+    {Modal && <Modal onClose={closeSetup} />}
+    </>
+);
 }

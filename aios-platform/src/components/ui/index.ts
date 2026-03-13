@@ -1,3 +1,31 @@
+// Cockpit components (primary — brandbook-aligned)
+export { CockpitButton, type CockpitButtonProps } from './cockpit/CockpitButton';
+export { CockpitCard, type CockpitCardProps } from './cockpit/CockpitCard';
+export { CockpitInput, CockpitTextarea, type CockpitInputProps, type CockpitTextareaProps } from './cockpit/CockpitInput';
+export { CockpitSectionDivider, type CockpitSectionDividerProps } from './cockpit/CockpitSectionDivider';
+export { CockpitTickerStrip, type CockpitTickerStripProps } from './cockpit/CockpitTickerStrip';
+export { CockpitSelect, type CockpitSelectProps } from './cockpit/CockpitSelect';
+export { CockpitCheckbox, type CockpitCheckboxProps } from './cockpit/CockpitCheckbox';
+export { CockpitToggle, type CockpitToggleProps } from './cockpit/CockpitToggle';
+export { CockpitSlider, type CockpitSliderProps } from './cockpit/CockpitSlider';
+export { CockpitTabs, type CockpitTabsProps } from './cockpit/CockpitTabs';
+export { CockpitAccordion, type CockpitAccordionProps } from './cockpit/CockpitAccordion';
+export { CockpitStepper, type CockpitStepperProps } from './cockpit/CockpitStepper';
+export { CockpitTable, type CockpitTableColumn, type CockpitTableProps } from './cockpit/CockpitTable';
+export { CockpitModal, type CockpitModalProps } from './cockpit/CockpitModal';
+export { CockpitProgress, type CockpitProgressProps } from './cockpit/CockpitProgress';
+export { CockpitSkeleton, type CockpitSkeletonProps } from './cockpit/CockpitSkeleton';
+export { CockpitToast, type CockpitToastProps } from './cockpit/CockpitToast';
+export { CockpitBadge, type CockpitBadgeProps } from './cockpit/CockpitBadge';
+export { CockpitSpinner, type CockpitSpinnerProps } from './cockpit/CockpitSpinner';
+export { CockpitKpiCard, type CockpitKpiCardProps } from './cockpit/CockpitKpiCard';
+export { CockpitAlert, type CockpitAlertProps } from './cockpit/CockpitAlert';
+export { CockpitFooterBar, type CockpitFooterBarProps } from './cockpit/CockpitFooterBar';
+export { CockpitStatusIndicator, type CockpitStatusIndicatorProps } from './cockpit/CockpitStatusIndicator';
+export { Reveal, RevealGroup, RevealItem } from './Reveal';
+export { StaggerContainer, type StaggerContainerProps } from './cockpit/StaggerContainer';
+
+// Glass wrappers (deprecated — kept for backward compatibility)
 export { GlassCard, type GlassCardProps } from './GlassCard';
 export { GlassButton, type GlassButtonProps } from './GlassButton';
 export { GlassInput, GlassTextarea, type GlassInputProps, type GlassTextareaProps } from './GlassInput';

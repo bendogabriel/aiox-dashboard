@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Search, Plus, Database, Star } from 'lucide-react';
-import { GlassCard, GlassButton, GlassInput, GlassTextarea, Badge, Dialog } from '../ui';
+import { Search, Plus, Database, Star, Info } from 'lucide-react';
+import { CockpitCard, CockpitButton, CockpitInput, CockpitTextarea, Badge, Dialog } from '../ui';
 import { cn } from '../../lib/utils';
 import { useRecallMemory, useStoreMemory } from '../../hooks/useEngine';
 
@@ -9,12 +9,23 @@ export default function MemoryBrowser() {
   const [query, setQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showStoreForm, setShowStoreForm] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const { data, isLoading, isFetching } = useRecallMemory(scope, searchQuery, 10);
 
   function handleSearch() {
     if (query.trim()) {
       setSearchQuery(query.trim());
+      setHasSearched(true);
+    }
+  }
+
+  function handleScopeChange(newScope: string) {
+    setScope(newScope);
+    // Re-run search with new scope if there's an active query
+    if (searchQuery) {
+      // Force re-fetch by updating searchQuery (React Query will detect scope change via key)
+      setSearchQuery(prev => prev); // scope is part of the query key, so this triggers refetch
     }
   }
 
@@ -27,7 +38,7 @@ export default function MemoryBrowser() {
         {scopes.map((s) => (
           <button
             key={s}
-            onClick={() => setScope(s)}
+            onClick={() => handleScopeChange(s)}
             className={cn(
               'px-2.5 py-1 text-xs rounded-md transition-all',
               scope === s
@@ -38,7 +49,7 @@ export default function MemoryBrowser() {
             {s}
           </button>
         ))}
-        <GlassButton
+        <CockpitButton
           size="sm"
           variant="ghost"
           leftIcon={<Plus className="h-3 w-3" />}
@@ -46,45 +57,73 @@ export default function MemoryBrowser() {
           className="ml-auto"
         >
           Armazenar
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       {/* Search bar */}
       <div className="flex gap-2">
         <div className="flex-1">
-          <GlassInput
+          <CockpitInput
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar memórias..."
+            placeholder="Buscar por palavra-chave..."
             leftIcon={<Search className="h-4 w-4" />}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
           />
         </div>
-        <GlassButton
+        <CockpitButton
           variant="primary"
           onClick={handleSearch}
           loading={isFetching}
+          disabled={!query.trim()}
         >
           Buscar
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       {/* Results */}
-      {!searchQuery ? (
-        <div className="text-tertiary text-sm p-8 text-center">
-          <Database className="h-8 w-8 mx-auto mb-2 opacity-30" />
-          Digite uma query para buscar memórias no scope "{scope}"
-        </div>
+      {!hasSearched ? (
+        <CockpitCard padding="md" variant="subtle">
+          <div className="flex items-start gap-3 text-sm">
+            <Info className="h-4 w-4 text-[var(--aiox-blue)] flex-shrink-0 mt-0.5" />
+            <div className="space-y-2">
+              <p className="text-secondary">
+                A memória do engine armazena informações persistentes que os agentes usam durante execuções.
+              </p>
+              <p className="text-tertiary text-xs">
+                <strong className="text-secondary">Como buscar:</strong> Digite uma palavra-chave e clique em "Buscar" para encontrar memórias no scope "{scope}".
+                Exemplos: "arquitetura", "decisão", "configuração"
+              </p>
+              <p className="text-tertiary text-xs">
+                <strong className="text-secondary">Scopes:</strong> Cada scope é um namespace isolado. "global" contém memórias compartilhadas, os demais são específicos por área.
+              </p>
+            </div>
+          </div>
+        </CockpitCard>
       ) : isLoading ? (
-        <div className="text-secondary text-sm p-4">Buscando memórias...</div>
-      ) : !data?.memories.length ? (
-        <div className="text-tertiary text-sm p-8 text-center">
-          Nenhuma memória encontrada para "{searchQuery}"
+        <div className="text-secondary text-sm p-4 flex items-center gap-2 justify-center">
+          <div className="h-4 w-4 border-2 border-[var(--aiox-blue)] border-t-transparent rounded-full animate-spin" />
+          Buscando memórias...
         </div>
+      ) : !data?.memories.length ? (
+        <CockpitCard padding="md" variant="subtle">
+          <div className="text-center space-y-2">
+            <Database className="h-8 w-8 mx-auto text-tertiary/30" />
+            <p className="text-tertiary text-sm">
+              Nenhuma memória encontrada para "<span className="text-secondary">{searchQuery}</span>" no scope "<span className="text-secondary">{scope}</span>"
+            </p>
+            <p className="text-tertiary text-xs">
+              Tente outro termo ou scope. Você também pode armazenar novas memórias clicando em "Armazenar".
+            </p>
+          </div>
+        </CockpitCard>
       ) : (
         <div className="space-y-2">
+          <div className="text-xs text-tertiary">
+            {data.memories.length} resultado(s) em "{scope}"
+          </div>
           {data.memories.map((mem) => (
-            <GlassCard key={mem.id} padding="md" variant="subtle">
+            <CockpitCard key={mem.id} padding="md" variant="subtle">
               <div className="flex items-start gap-3">
                 <Database className="h-3.5 w-3.5 mt-1 text-tertiary flex-shrink-0" />
                 <div className="flex-1 min-w-0">
@@ -102,7 +141,7 @@ export default function MemoryBrowser() {
                   </div>
                 </div>
               </div>
-            </GlassCard>
+            </CockpitCard>
           ))}
         </div>
       )}
@@ -157,17 +196,17 @@ function StoreMemoryDialog({
 
   const footer = (
     <>
-      <GlassButton variant="ghost" onClick={handleClose}>
+      <CockpitButton variant="ghost" onClick={handleClose}>
         Cancelar
-      </GlassButton>
-      <GlassButton
+      </CockpitButton>
+      <CockpitButton
         variant="primary"
         leftIcon={<Plus className="h-3.5 w-3.5" />}
         onClick={handleSubmit}
         loading={storeMemory.isPending}
       >
         Armazenar
-      </GlassButton>
+      </CockpitButton>
     </>
   );
 
@@ -181,14 +220,14 @@ function StoreMemoryDialog({
       footer={footer}
     >
       <div className="space-y-4">
-        <GlassInput
+        <CockpitInput
           label="Scope"
           value={scope}
           onChange={(e) => setScope(e.target.value)}
           error={errors.scope}
           placeholder="global, development, ..."
         />
-        <GlassTextarea
+        <CockpitTextarea
           label="Conteúdo"
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -197,7 +236,7 @@ function StoreMemoryDialog({
           rows={5}
         />
         {storeMemory.isError && (
-          <div className="text-sm text-red-400 bg-red-500/10 p-3 rounded-lg">
+          <div className="text-sm text-[var(--bb-error)] bg-[var(--bb-error)]/10 p-3 rounded-lg">
             {(storeMemory.error as Error).message || 'Erro ao armazenar memória'}
           </div>
         )}

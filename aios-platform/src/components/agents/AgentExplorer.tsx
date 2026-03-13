@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { GlassButton, Badge, Avatar } from '../ui';
+import { CockpitButton, CockpitSectionDivider, Badge, Avatar } from '../ui';
 import { AgentExplorerCard } from './AgentCard';
 import { useAgents, useSquads, useAgent, useAgentCommands } from '../../hooks';
 import { useChat } from '../../hooks/useChat';
@@ -60,7 +59,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
   const { data: allAgents, isLoading: loadingAgents } = useAgents();
   const { data: squads } = useSquads();
   const { selectAgent: startChat } = useChat();
-  const isAiox = useUIStore((s) => s.theme) === 'aiox';
+  const isAiox = useUIStore((s) => s.theme === 'aiox' || s.theme === 'aiox-gold');
 
   // Filter agents
   const filteredAgents = useMemo(() => {
@@ -117,33 +116,22 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+    <div
         className="fixed inset-0 z-50 flex"
       >
         {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           className={cn('absolute inset-0', isAiox ? 'bg-black' : 'bg-black/60 backdrop-blur-sm')}
           onClick={onClose}
         />
 
         {/* Main Content */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        <div
           className="relative w-full h-full flex overflow-hidden"
           onClick={(e) => e.stopPropagation()}
           style={{
             background: isAiox
-              ? '#050505'
+              ? 'var(--aiox-dark)'
               : `
               radial-gradient(ellipse 80% 60% at 20% 100%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
               radial-gradient(ellipse 60% 80% at 80% 0%, rgba(147, 51, 234, 0.15) 0%, transparent 50%),
@@ -157,7 +145,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
             <div className="p-4 border-b border-white/10">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={cn('h-10 w-10 rounded-xl flex items-center justify-center', isAiox ? 'bg-[#D1FF00]/20 text-[#D1FF00]' : 'bg-gradient-to-br from-blue-500 to-purple-500')}>
+                  <div className={cn('h-10 w-10 rounded-none flex items-center justify-center', isAiox ? 'bg-[var(--aiox-lime)]/20 text-[var(--aiox-lime)]' : 'bg-gradient-to-br from-[var(--aiox-blue)] to-[var(--aiox-gray-muted)]')}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                       <circle cx="9" cy="7" r="4" />
@@ -166,15 +154,15 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                     </svg>
                   </div>
                   <div>
-                    <h1 className="text-white font-bold text-lg">Agent Explorer</h1>
+                    <h1 className="heading-display text-xl font-semibold text-white">Agent Explorer</h1>
                     <p className="text-white/50 text-sm">
                       {filteredAgents.length} agents encontrados
                     </p>
                   </div>
                 </div>
-                <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
+                <CockpitButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
                   <CloseIcon />
-                </GlassButton>
+                </CockpitButton>
               </div>
 
               {/* Search */}
@@ -191,8 +179,8 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                   className={cn(
                     'w-full pl-10 pr-4 py-2.5 text-white placeholder-white/30 text-sm focus:outline-none',
                     isAiox
-                      ? 'bg-[#111] border border-[rgba(156,156,156,0.15)] focus:border-[#D1FF00] focus:ring-1 focus:ring-[#D1FF00]'
-                      : 'rounded-xl bg-white/5 border border-white/10 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50'
+                      ? 'bg-[#111] border border-[rgba(156,156,156,0.15)] focus:border-[var(--aiox-lime)] focus:ring-1 focus:ring-[var(--aiox-lime)]'
+                      : 'rounded-none bg-white/5 border border-white/10 focus:border-[var(--aiox-lime)]/50 focus:ring-1 focus:ring-[var(--aiox-lime)]/50'
                   )}
                 />
               </div>
@@ -235,14 +223,14 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                   className={cn(
                     'px-3 py-1.5 text-white text-xs focus:outline-none',
                     isAiox
-                      ? 'bg-[#111] border border-[rgba(156,156,156,0.15)] focus:border-[#D1FF00]'
-                      : 'rounded-lg bg-white/5 border border-white/10 focus:border-blue-500/50'
+                      ? 'bg-[#111] border border-[rgba(156,156,156,0.15)] focus:border-[var(--aiox-lime)]'
+                      : 'rounded-lg bg-white/5 border border-white/10 focus:border-[var(--aiox-lime)]/50'
                   )}
                   aria-label="Filtrar por squad"
                 >
                   <option value="all">Todos os Squads</option>
                   {squads?.map((squad) => (
-                    <option key={squad.id} value={squad.id}>
+                    <option key={squad.id}>
                       {squad.name} ({squad.agentCount})
                     </option>
                   ))}
@@ -268,32 +256,41 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                 <div className="space-y-6">
                   {/* Orchestrators */}
                   {groupedAgents[0].length > 0 && (
-                    <AgentSection
-                      tier={0}
-                      agents={groupedAgents[0]}
-                      selectedId={selectedAgentId}
-                      onSelect={handleAgentSelect}
-                    />
+                    <>
+                      <CockpitSectionDivider num="01" label="Orchestrators" />
+                      <AgentSection
+                        tier={0}
+                        agents={groupedAgents[0]}
+                        selectedId={selectedAgentId}
+                        onSelect={handleAgentSelect}
+                      />
+                    </>
                   )}
 
                   {/* Masters */}
                   {groupedAgents[1].length > 0 && (
-                    <AgentSection
-                      tier={1}
-                      agents={groupedAgents[1]}
-                      selectedId={selectedAgentId}
-                      onSelect={handleAgentSelect}
-                    />
+                    <>
+                      <CockpitSectionDivider num="02" label="Masters" />
+                      <AgentSection
+                        tier={1}
+                        agents={groupedAgents[1]}
+                        selectedId={selectedAgentId}
+                        onSelect={handleAgentSelect}
+                      />
+                    </>
                   )}
 
                   {/* Specialists */}
                   {groupedAgents[2].length > 0 && (
-                    <AgentSection
-                      tier={2}
-                      agents={groupedAgents[2]}
-                      selectedId={selectedAgentId}
-                      onSelect={handleAgentSelect}
-                    />
+                    <>
+                      <CockpitSectionDivider num="03" label="Specialists" />
+                      <AgentSection
+                        tier={2}
+                        agents={groupedAgents[2]}
+                        selectedId={selectedAgentId}
+                        onSelect={handleAgentSelect}
+                      />
+                    </>
                   )}
                 </div>
               )}
@@ -301,8 +298,7 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
           </div>
 
           {/* Right Panel - Agent Detail */}
-          <AnimatePresence mode="wait">
-            {selectedAgentId && selectedAgentSquadId ? (
+          {selectedAgentId && selectedAgentSquadId ? (
               <AgentDetailPanel
                 key={selectedAgentId}
                 squadId={selectedAgentSquadId}
@@ -315,13 +311,10 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                 onStartChat={handleStartChat}
               />
             ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+              <div
                 className="w-96 flex flex-col items-center justify-center p-8 text-center"
               >
-                <div className={cn('h-16 w-16 flex items-center justify-center mb-4 text-white/20', isAiox ? 'bg-[#111] border border-[rgba(156,156,156,0.15)]' : 'rounded-2xl bg-white/5')}>
+                <div className={cn('h-16 w-16 flex items-center justify-center mb-4 text-white/20', isAiox ? 'bg-[#111] border border-[rgba(156,156,156,0.15)]' : 'rounded-none bg-white/5')}>
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <circle cx="12" cy="12" r="10" />
                     <path d="M12 16v-4M12 8h.01" />
@@ -331,13 +324,11 @@ export function AgentExplorer({ isOpen, onClose }: AgentExplorerProps) {
                 <p className="text-white/30 text-xs mt-1">
                   Clique em um agent para ver detalhes
                 </p>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
+</div>
+      </div>
+);
 }
 
 // Agent Section Component
@@ -367,18 +358,15 @@ function AgentSection({ tier, agents, selectedId, onSelect }: AgentSectionProps)
 
       <div className="grid grid-cols-2 gap-3">
         {agents.map((agent, index) => (
-          <motion.div
+          <div
             key={`${agent.squad}-${agent.id}`}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.03 }}
           >
             <AgentExplorerCard
               agent={agent}
               selected={selectedId === agent.id}
               onClick={() => onSelect(agent)}
             />
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
@@ -400,14 +388,11 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
 
   if (isLoading) {
     return (
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
+      <div
         className="w-96 border-l border-white/10 flex items-center justify-center"
       >
         <SpinnerIcon />
-      </motion.div>
+      </div>
     );
   }
 
@@ -421,14 +406,11 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
   const squadType = getSquadType(agent.squad);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
+    <div
       className="w-96 flex flex-col overflow-hidden"
       style={{
         background: isAiox
-          ? '#0a0a0a'
+          ? 'var(--aiox-surface)'
           : `linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%)`,
       }}
     >
@@ -451,9 +433,9 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
               </div>
             </div>
           </div>
-          <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
+          <CockpitButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
             <CloseIcon />
-          </GlassButton>
+          </CockpitButton>
         </div>
       </div>
 
@@ -462,7 +444,7 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
         {/* Description */}
         {agent.description && (
           <div>
-            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+            <h3 className="label-mono text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
               Descrição
             </h3>
             <p className="text-white/80 text-sm leading-relaxed">{agent.description}</p>
@@ -472,13 +454,13 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
         {/* When to Use */}
         {agent.whenToUse && (
           <div
-            className={isAiox ? 'p-3 border border-[rgba(156,156,156,0.15)]' : 'rounded-xl p-3'}
+            className={isAiox ? 'p-3 border border-[rgba(156,156,156,0.15)]' : 'rounded-none p-3'}
             style={isAiox ? {} : {
               background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%)',
               border: '1px solid rgba(59, 130, 246, 0.2)',
             }}
           >
-            <h3 className={cn('text-xs font-semibold mb-1.5 flex items-center gap-1.5', isAiox ? 'text-[#D1FF00]' : 'text-blue-400')}>
+            <h3 className={cn('text-xs font-semibold mb-1.5 flex items-center gap-1.5', isAiox ? 'text-[var(--aiox-lime)]' : 'text-[var(--aiox-blue)]')}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /><path d="M9 18h6" /><path d="M10 22h4" /></svg>
               Quando Usar
             </h3>
@@ -489,7 +471,7 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
         {/* Persona */}
         {agent.persona && (
           <div>
-            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+            <h3 className="label-mono text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
               Persona
             </h3>
             <div className="space-y-2">
@@ -518,7 +500,7 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
         {/* Core Principles */}
         {agent.corePrinciples && agent.corePrinciples.length > 0 && (
           <div>
-            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+            <h3 className="label-mono text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
               Princípios
             </h3>
             <div className="space-y-1.5">
@@ -527,7 +509,7 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
                   key={index}
                   className="flex items-start gap-2 text-xs text-white/60"
                 >
-                  <span className="text-green-400 mt-0.5">•</span>
+                  <span className="text-[var(--color-status-success)] mt-0.5">•</span>
                   <span>{principle}</span>
                 </div>
               ))}
@@ -537,7 +519,7 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
 
         {/* Commands */}
         <div>
-          <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2 flex items-center gap-2">
+          <h3 className="label-mono text-xs font-semibold text-white/50 uppercase tracking-wider mb-2 flex items-center gap-2">
             <CommandIcon />
             Comandos
             {commands && <Badge variant="count" size="sm">{commands.length}</Badge>}
@@ -549,26 +531,23 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
           ) : commands && commands.length > 0 ? (
             <div className="space-y-2">
               {commands.map((cmd, index) => (
-                <motion.div
+                <div
                   key={cmd.command}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
                   className={cn(
                     'p-2.5 border transition-colors',
                     isAiox
-                      ? 'bg-[#111] border-[rgba(156,156,156,0.15)] hover:border-[#D1FF00]/30'
+                      ? 'bg-[#111] border-[rgba(156,156,156,0.15)] hover:border-[var(--aiox-lime)]/30'
                       : 'rounded-lg bg-white/5 border-white/5 hover:border-white/10'
                   )}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <code className="text-xs font-mono text-purple-400">/{cmd.command}</code>
+                    <code className="text-xs font-mono text-[var(--aiox-gray-muted)]">/{cmd.command}</code>
                     <span className="text-[10px] text-white/30">{cmd.action}</span>
                   </div>
                   {cmd.description && (
                     <p className="text-[11px] text-white/50">{cmd.description}</p>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
           ) : (
@@ -579,23 +558,23 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
         {/* Mind Source */}
         {agent.mindSource && (
           <div>
-            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+            <h3 className="label-mono text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
               Fonte de Conhecimento
             </h3>
             <div
-              className={isAiox ? 'p-3 border border-[rgba(156,156,156,0.15)]' : 'rounded-xl p-3'}
+              className={isAiox ? 'p-3 border border-[rgba(156,156,156,0.15)]' : 'rounded-none p-3'}
               style={isAiox ? {} : {
                 background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, transparent 100%)',
                 border: '1px solid rgba(147, 51, 234, 0.2)',
               }}
             >
-              <p className={cn('text-sm font-medium', isAiox ? 'text-[#D1FF00]' : 'text-purple-300')}>{agent.mindSource.name}</p>
+              <p className={cn('text-sm font-medium', isAiox ? 'text-[var(--aiox-lime)]' : 'text-[var(--aiox-gray-muted)]')}>{agent.mindSource.name}</p>
               {agent.mindSource.frameworks && agent.mindSource.frameworks.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {agent.mindSource.frameworks.map((fw) => (
                     <span
                       key={fw}
-                      className={cn('text-[10px] px-1.5 py-0.5', isAiox ? 'bg-[#D1FF00]/10 text-[#D1FF00]' : 'rounded bg-purple-500/20 text-purple-300')}
+                      className={cn('text-[10px] px-1.5 py-0.5', isAiox ? 'bg-[var(--aiox-lime)]/10 text-[var(--aiox-lime)]' : 'rounded bg-[var(--aiox-gray-muted)]/20 text-[var(--aiox-gray-muted)]')}
                     >
                       {fw}
                     </span>
@@ -609,16 +588,16 @@ function AgentDetailPanel({ squadId, agentId, isAiox, onClose, onStartChat }: Ag
 
       {/* Footer */}
       <div className="p-4 border-t border-white/10">
-        <GlassButton
+        <CockpitButton
           variant="primary"
           className="w-full"
           onClick={() => onStartChat(agent)}
           leftIcon={<ChatIcon />}
         >
           Iniciar Conversa
-        </GlassButton>
+        </CockpitButton>
       </div>
-    </motion.div>
+    </div>
   );
 }
 

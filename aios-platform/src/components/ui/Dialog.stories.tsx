@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Dialog } from './Dialog';
-import { GlassButton } from './GlassButton';
+import { CockpitButton } from './cockpit/CockpitButton';
 
 const meta: Meta<typeof Dialog> = {
   title: 'UI/Dialog',
@@ -63,9 +63,9 @@ export const Default: Story = {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <>
-        <GlassButton variant="primary" onClick={() => setIsOpen(true)}>
+        <CockpitButton variant="primary" onClick={() => setIsOpen(true)}>
           Open Dialog
-        </GlassButton>
+        </CockpitButton>
         <Dialog
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
@@ -83,9 +83,9 @@ export const WithFooter: Story = {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <>
-        <GlassButton variant="primary" onClick={() => setIsOpen(true)}>
+        <CockpitButton variant="primary" onClick={() => setIsOpen(true)}>
           Open Dialog with Footer
-        </GlassButton>
+        </CockpitButton>
         <Dialog
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
@@ -93,12 +93,12 @@ export const WithFooter: Story = {
           description="Are you sure you want to proceed?"
           footer={
             <>
-              <GlassButton variant="ghost" onClick={() => setIsOpen(false)}>
+              <CockpitButton variant="ghost" onClick={() => setIsOpen(false)}>
                 Cancel
-              </GlassButton>
-              <GlassButton variant="primary" onClick={() => setIsOpen(false)}>
+              </CockpitButton>
+              <CockpitButton variant="primary" onClick={() => setIsOpen(false)}>
                 Confirm
-              </GlassButton>
+              </CockpitButton>
             </>
           }
         >
@@ -115,9 +115,9 @@ export const Sizes: Story = {
     return (
       <div className="flex gap-3">
         {(['sm', 'md', 'lg'] as const).map((size) => (
-          <GlassButton key={size} onClick={() => setOpenSize(size)}>
+          <CockpitButton key={size} onClick={() => setOpenSize(size)}>
             {size.toUpperCase()}
-          </GlassButton>
+          </CockpitButton>
         ))}
         {(['sm', 'md', 'lg'] as const).map((size) => (
           <Dialog
@@ -142,9 +142,9 @@ export const WithDescription: Story = {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <>
-        <GlassButton variant="primary" onClick={() => setIsOpen(true)}>
+        <CockpitButton variant="primary" onClick={() => setIsOpen(true)}>
           Open with Description
-        </GlassButton>
+        </CockpitButton>
         <Dialog
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
@@ -165,18 +165,18 @@ export const NoCloseButton: Story = {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <>
-        <GlassButton variant="primary" onClick={() => setIsOpen(true)}>
+        <CockpitButton variant="primary" onClick={() => setIsOpen(true)}>
           Open (No Close Button)
-        </GlassButton>
+        </CockpitButton>
         <Dialog
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           title="Important Notice"
           showClose={false}
           footer={
-            <GlassButton variant="primary" onClick={() => setIsOpen(false)}>
+            <CockpitButton variant="primary" onClick={() => setIsOpen(false)}>
               Acknowledge
-            </GlassButton>
+            </CockpitButton>
           }
         >
           <p className="text-secondary">

@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
 import { WorkflowCanvas } from './WorkflowCanvas';
 import type { WorkflowNode, WorkflowEdge } from './types';
 import type { SquadType } from '../../types';
@@ -149,20 +148,14 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
   }, [state.steps, state.status]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       className="fixed inset-0 z-50 flex"
     >
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       {/* Main Content */}
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
+      <div
         className="relative z-10 m-4 flex-1 flex flex-col backdrop-blur-2xl border border-white/10 rounded-3xl overflow-hidden"
         style={{
           background: `
@@ -176,10 +169,10 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
         <div className="h-14 px-6 flex items-center justify-between border-b border-white/10 flex-shrink-0">
           <div className="flex items-center gap-4">
             <div className={cn(
-              'w-10 h-10 rounded-xl flex items-center justify-center',
+              'w-10 h-10 rounded-none flex items-center justify-center',
               state.status === 'running' && 'bg-[rgba(209,255,0,0.08)]',
               state.status === 'completed' && 'bg-[rgba(209,255,0,0.06)]',
-              state.status === 'failed' && 'bg-gradient-to-br from-red-500/20 to-rose-500/20',
+              state.status === 'failed' && 'bg-gradient-to-br from-[var(--bb-error)]/20 to-[var(--bb-flare)]/20',
               (state.status === 'connecting' || state.status === 'created') && 'bg-[rgba(209,255,0,0.10)]'
             )}>
               {(state.status === 'connecting' || state.status === 'created' || state.status === 'running') && (
@@ -189,7 +182,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                 <span style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' }}><CheckIcon size={18} /></span>
               )}
               {state.status === 'failed' && (
-                <span className="text-red-400"><XIcon /></span>
+                <span className="text-[var(--bb-error)]"><XIcon /></span>
               )}
             </div>
             <div>
@@ -210,7 +203,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
           <div className="flex items-center gap-3">
             {/* Timer */}
             {state.status === 'running' && (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-none bg-white/5 border border-white/10">
                 <ClockIcon size={14} />
                 <span className="text-sm font-mono text-white/80">{formatElapsedTime(elapsedTime)}</span>
               </div>
@@ -235,22 +228,19 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
               </button>
             </div>
 
-            <GlassButton variant="ghost" size="icon" className="h-9 w-9" onClick={onClose} aria-label="Fechar workflow">
+            <CockpitButton variant="ghost" size="icon" className="h-9 w-9" onClick={onClose} aria-label="Fechar workflow">
               <CloseIcon />
-            </GlassButton>
+            </CockpitButton>
           </div>
         </div>
 
         {/* Progress Bar */}
         <div className="h-1 bg-black/30 flex-shrink-0">
-          <motion.div
+          <div
             className={cn(
               'h-full',
-              state.status === 'failed' && 'bg-gradient-to-r from-red-500 to-rose-500'
+              state.status === 'failed' && 'bg-gradient-to-r from-[var(--bb-error)] to-[var(--bb-flare)]'
             )}
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.3 }}
             style={{
               ...( state.status !== 'failed' ? { background: 'linear-gradient(to right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))' } : {}),
               boxShadow: state.status !== 'failed' ? '0 0 10px rgba(209, 255, 0, 0.3)' : '0 0 10px rgba(239, 68, 68, 0.5)'
@@ -310,24 +300,24 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
           <div className={cn(
             'border-t border-white/10 p-4 flex items-center justify-between flex-shrink-0',
             state.status === 'completed' && 'bg-[rgba(209,255,0,0.06)]',
-            state.status === 'failed' && 'bg-gradient-to-r from-red-500/10 to-transparent'
+            state.status === 'failed' && 'bg-gradient-to-r from-[var(--bb-error)]/10 to-transparent'
           )}>
             <div className="flex items-center gap-3">
               <div className={cn(
-                'w-10 h-10 rounded-xl flex items-center justify-center',
-                state.status === 'completed' ? 'bg-[rgba(209,255,0,0.10)]' : 'bg-gradient-to-br from-red-500/30 to-rose-500/30'
+                'w-10 h-10 rounded-none flex items-center justify-center',
+                state.status === 'completed' ? 'bg-[rgba(209,255,0,0.10)]' : 'bg-gradient-to-br from-[var(--bb-error)]/30 to-[var(--bb-flare)]/30'
               )}>
                 {state.status === 'completed' ? (
                   <span style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' }}><CheckIcon size={18} /></span>
                 ) : (
-                  <span className="text-red-400"><XIcon /></span>
+                  <span className="text-[var(--bb-error)]"><XIcon /></span>
                 )}
               </div>
               <div>
                 <p
                   className={cn(
                     'font-semibold',
-                    state.status !== 'completed' && 'text-red-400'
+                    state.status !== 'completed' && 'text-[var(--bb-error)]'
                   )}
                   style={state.status === 'completed' ? { color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' } : undefined}
                 >
@@ -341,7 +331,7 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
 
             <div className="flex items-center gap-2">
               {state.status === 'completed' && state.steps.length > 0 && (
-                <GlassButton
+                <CockpitButton
                   variant="ghost"
                   size="sm"
                   onClick={() => {
@@ -350,15 +340,15 @@ export function WorkflowExecutionLive({ state, onClose, orchestrationPlan }: Wor
                   }}
                 >
                   Ver Resultado Final
-                </GlassButton>
+                </CockpitButton>
               )}
-              <GlassButton variant="primary" onClick={onClose}>
+              <CockpitButton variant="primary" onClick={onClose}>
                 Fechar
-              </GlassButton>
+              </CockpitButton>
             </div>
           </div>
         )}
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

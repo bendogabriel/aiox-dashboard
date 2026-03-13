@@ -1,6 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { useNetworkStatus, useOfflineQueue } from '../../services/offline';
-import { GlassButton } from './GlassButton';
+import { CockpitButton } from './cockpit/CockpitButton';
 import { cn } from '../../lib/utils';
 
 const WifiIcon = () => (
@@ -47,33 +46,31 @@ export function NetworkStatusBanner({ className, showQueueInfo = true }: Network
   }
 
   return (
-    <AnimatePresence>
-      {(!isOnline || isSlow || queueSize > 0) && (
-        <motion.div
-          initial={{ opacity: 0, y: -20, height: 0 }}
-          animate={{ opacity: 1, y: 0, height: 'auto' }}
-          exit={{ opacity: 0, y: -20, height: 0 }}
+    <>
+    {(!isOnline || isSlow || queueSize > 0) && (
+        <div
+
           className={cn(
             'px-4 py-2 flex items-center justify-between gap-3',
-            status === 'offline' && 'bg-red-500/10 border-b border-red-500/20',
-            status === 'slow' && 'bg-yellow-500/10 border-b border-yellow-500/20',
-            status === 'online' && queueSize > 0 && 'bg-blue-500/10 border-b border-blue-500/20',
+            status === 'offline' && 'bg-[var(--bb-error)]/10 border-b border-[var(--bb-error)]/20',
+            status === 'slow' && 'bg-[var(--bb-warning)]/10 border-b border-[var(--bb-warning)]/20',
+            status === 'online' && queueSize > 0 && 'bg-[var(--aiox-blue)]/10 border-b border-[var(--aiox-blue)]/20',
             className
           )}
         >
           <div className="flex items-center gap-2">
             <span className={cn(
-              status === 'offline' && 'text-red-500',
-              status === 'slow' && 'text-yellow-500',
-              status === 'online' && 'text-blue-500'
+              status === 'offline' && 'text-[var(--bb-error)]',
+              status === 'slow' && 'text-[var(--bb-warning)]',
+              status === 'online' && 'text-[var(--aiox-blue)]'
             )}>
               {status === 'offline' ? <WifiOffIcon /> : <WifiIcon />}
             </span>
             <span className={cn(
               'text-sm font-medium',
-              status === 'offline' && 'text-red-500',
-              status === 'slow' && 'text-yellow-500',
-              status === 'online' && 'text-blue-500'
+              status === 'offline' && 'text-[var(--bb-error)]',
+              status === 'slow' && 'text-[var(--bb-warning)]',
+              status === 'online' && 'text-[var(--aiox-blue)]'
             )}>
               {status === 'offline' && 'Sem conexão'}
               {status === 'slow' && 'Conexão lenta'}
@@ -87,28 +84,27 @@ export function NetworkStatusBanner({ className, showQueueInfo = true }: Network
           </div>
 
           {queueSize > 0 && isOnline && (
-            <GlassButton
+            <CockpitButton
               variant="ghost"
               size="sm"
               onClick={sync}
               disabled={isSyncing}
               className="h-7 text-xs"
               leftIcon={
-                <motion.span
-                  animate={isSyncing ? { rotate: 360 } : {}}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                <span
+
                 >
                   <SyncIcon />
-                </motion.span>
+                </span>
               }
             >
               {isSyncing ? 'Sincronizando...' : 'Sincronizar'}
-            </GlassButton>
+            </CockpitButton>
           )}
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 }
 
 // Compact indicator for header/sidebar
@@ -122,9 +118,9 @@ export function NetworkStatusIndicator({ className, showLabel = false }: Network
   const { queueSize } = useOfflineQueue();
 
   const getStatusColor = () => {
-    if (status === 'offline') return 'bg-red-500';
-    if (status === 'slow' || quality < 0.5) return 'bg-yellow-500';
-    return 'bg-green-500';
+    if (status === 'offline') return 'bg-[var(--bb-error)]';
+    if (status === 'slow' || quality < 0.5) return 'bg-[var(--bb-warning)]';
+    return 'bg-[var(--color-status-success)]';
   };
 
   return (
@@ -135,13 +131,12 @@ export function NetworkStatusIndicator({ className, showLabel = false }: Network
           getStatusColor()
         )} />
         {status === 'online' && (
-          <motion.div
+          <div
             className={cn(
               'absolute inset-0 w-2 h-2 rounded-full',
               getStatusColor()
             )}
-            animate={{ scale: [1, 1.5, 1], opacity: [1, 0, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
+
           />
         )}
       </div>
@@ -153,7 +148,7 @@ export function NetworkStatusIndicator({ className, showLabel = false }: Network
         </span>
       )}
       {queueSize > 0 && (
-        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-500">
+        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--bb-flare)]/20 text-[var(--bb-flare)]">
           {queueSize}
         </span>
       )}

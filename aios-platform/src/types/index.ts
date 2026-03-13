@@ -73,17 +73,34 @@ const squadTypePatterns: Array<{ pattern: RegExp; type: SquadType }> = [
   { pattern: /communication|comunicacao/i, type: 'copywriting' },
 ];
 
-export function getSquadType(squadId: string): SquadType {
+export function getSquadType(squadId: string, domain?: string): SquadType {
   // First try exact match
   if (squadTypeMap[squadId]) {
     return squadTypeMap[squadId];
   }
 
-  // Then try pattern matching
+  // Then try pattern matching against squadId
   for (const { pattern, type } of squadTypePatterns) {
     if (pattern.test(squadId)) {
       return type;
     }
+  }
+
+  // Then try pattern matching against domain (for new/unknown squads)
+  if (domain) {
+    for (const { pattern, type } of squadTypePatterns) {
+      if (pattern.test(domain)) {
+        return type;
+      }
+    }
+    // Direct domain name match (e.g. domain="engineering" → SquadType "engineering")
+    const domainLower = domain.toLowerCase();
+    const validTypes: SquadType[] = [
+      'copywriting', 'design', 'creator', 'orchestrator', 'content',
+      'development', 'engineering', 'analytics', 'marketing', 'advisory',
+    ];
+    const directMatch = validTypes.find(t => domainLower.includes(t));
+    if (directMatch) return directMatch;
   }
 
   return 'default';
@@ -606,7 +623,7 @@ export interface UIState {
   agentExplorerOpen: boolean;
   mobileMenuOpen: boolean;
   commandPaletteOpen: boolean;
-  theme: 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox';
+  theme: 'light' | 'dark' | 'system' | 'matrix' | 'glass' | 'aiox' | 'aiox-gold';
   selectedSquadId: string | null;
   selectedAgentId: string | null;
   currentView: ViewType;

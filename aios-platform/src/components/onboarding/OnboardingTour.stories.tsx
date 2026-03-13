@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 import { OnboardingTour, useOnboardingStore } from './OnboardingTour';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
 
 /**
  * Wrapper that resets the onboarding store so the tour is always visible in Storybook.
@@ -26,9 +26,9 @@ function TourStoryWrapper({ onComplete }: { onComplete?: () => void }) {
   return (
     <div style={{ height: '100vh', background: '#0f0f14', position: 'relative' }}>
       <div style={{ padding: 24 }}>
-        <GlassButton variant="ghost" onClick={handleRestart}>
+        <CockpitButton variant="ghost" onClick={handleRestart}>
           Restart Tour
-        </GlassButton>
+        </CockpitButton>
       </div>
       <OnboardingTour key={key} onComplete={onComplete} />
     </div>

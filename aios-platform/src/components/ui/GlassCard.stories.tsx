@@ -129,7 +129,7 @@ export const WithContent: Story = {
     children: (
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold">
+          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[var(--aiox-blue)] to-[var(--aiox-blue)] flex items-center justify-center text-white font-bold">
             AI
           </div>
           <div>

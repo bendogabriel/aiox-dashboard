@@ -42,7 +42,7 @@ const INTEGRATION_NAMES: Record<IntegrationId, string> = {
 // ── Latency color helper ──────────────────────────────────
 
 function latencyColor(ms: number): string {
-  if (ms < 500) return 'var(--aiox-lime, #D1FF00)';
+  if (ms < 500) return 'var(--color-status-success, #4ADE80)';
   if (ms <= 2000) return 'var(--aiox-warning, #f59e0b)';
   return 'var(--color-status-error, #EF4444)';
 }
@@ -113,7 +113,7 @@ export function IntegrationTestPanel() {
           textAlign: 'left',
         }}
       >
-        <Play size={14} style={{ color: 'var(--aiox-blue, #0099FF)' }} />
+        <Play size={14} style={{ color: 'var(--aiox-gray-dim, #696969)' }} />
         <span
           style={{
             flex: 1,
@@ -130,7 +130,7 @@ export function IntegrationTestPanel() {
               fontSize: '10px',
               color:
                 result.summary.failed === 0
-                  ? 'var(--aiox-lime, #D1FF00)'
+                  ? 'var(--color-status-success, #4ADE80)'
                   : 'var(--color-status-error, #EF4444)',
             }}
           >
@@ -317,11 +317,11 @@ function ResultRow({ result }: { result: IntegrationTestResult }) {
         gap: '8px',
         padding: '6px 10px',
         background: result.ok
-          ? 'rgba(209, 255, 0, 0.03)'
+          ? 'rgba(74, 222, 128, 0.03)'
           : 'rgba(239, 68, 68, 0.03)',
         border: `1px solid ${
           result.ok
-            ? 'rgba(209, 255, 0, 0.1)'
+            ? 'rgba(74, 222, 128, 0.1)'
             : 'rgba(239, 68, 68, 0.1)'
         }`,
       }}
@@ -330,7 +330,7 @@ function ResultRow({ result }: { result: IntegrationTestResult }) {
       {result.ok ? (
         <CheckCircle2
           size={14}
-          style={{ color: 'var(--aiox-lime, #D1FF00)', flexShrink: 0 }}
+          style={{ color: 'var(--color-status-success, #4ADE80)', flexShrink: 0 }}
         />
       ) : (
         <XCircle
@@ -363,10 +363,10 @@ function ResultRow({ result }: { result: IntegrationTestResult }) {
           fontWeight: 600,
           padding: '2px 6px',
           background: result.ok
-            ? 'rgba(209, 255, 0, 0.1)'
+            ? 'rgba(74, 222, 128, 0.08)'
             : 'rgba(239, 68, 68, 0.1)',
           color: result.ok
-            ? 'var(--aiox-lime, #D1FF00)'
+            ? 'var(--color-status-success, #4ADE80)'
             : 'var(--color-status-error, #EF4444)',
         }}
       >
@@ -423,11 +423,11 @@ function SummaryBar({ result }: { result: TestSuiteResult }) {
         gap: '12px',
         padding: '8px 10px',
         background: allPassed
-          ? 'rgba(209, 255, 0, 0.04)'
+          ? 'rgba(74, 222, 128, 0.04)'
           : 'rgba(239, 68, 68, 0.04)',
         border: `1px solid ${
           allPassed
-            ? 'rgba(209, 255, 0, 0.15)'
+            ? 'rgba(74, 222, 128, 0.12)'
             : 'rgba(239, 68, 68, 0.15)'
         }`,
         fontSize: '10px',
@@ -441,7 +441,7 @@ function SummaryBar({ result }: { result: TestSuiteResult }) {
         style={{
           fontWeight: 600,
           color: allPassed
-            ? 'var(--aiox-lime, #D1FF00)'
+            ? 'var(--color-status-success, #4ADE80)'
             : 'var(--color-status-error, #EF4444)',
         }}
       >

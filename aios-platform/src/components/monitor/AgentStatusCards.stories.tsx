@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { GlassCard, StatusDot, Badge } from '../ui';
+import { CockpitCard, StatusDot, Badge } from '../ui';
 import type { StatusType } from '../ui/StatusDot';
 
 /**
@@ -29,7 +29,7 @@ function AgentStatusCardsPresentation({ agents }: { agents: MockAgent[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
       {agents.map((agent) => (
-        <GlassCard key={agent.id} padding="sm" variant="subtle">
+        <CockpitCard key={agent.id} padding="sm" variant="subtle">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-primary truncate">{agent.name}</span>
             <StatusDot
@@ -44,7 +44,7 @@ function AgentStatusCardsPresentation({ agents }: { agents: MockAgent[] }) {
             <span className="text-[10px] text-tertiary font-mono">{agent.duration}</span>
             <Badge size="sm" variant="default">{agent.model}</Badge>
           </div>
-        </GlassCard>
+        </CockpitCard>
       ))}
     </div>
   );
@@ -105,11 +105,11 @@ export const Loading: Story = {
   render: () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 w-[900px]">
       {Array.from({ length: 4 }).map((_, i) => (
-        <GlassCard key={i} padding="sm" variant="subtle" className="animate-pulse">
+        <CockpitCard key={i} padding="sm" variant="subtle" className="animate-pulse">
           <div className="h-4 w-24 bg-white/5 rounded mb-2" />
           <div className="h-3 w-32 bg-white/5 rounded mb-2" />
           <div className="h-3 w-16 bg-white/5 rounded" />
-        </GlassCard>
+        </CockpitCard>
       ))}
     </div>
   ),

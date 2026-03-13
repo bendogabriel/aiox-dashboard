@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react';
 import {
   Dialog,
-  GlassButton,
-  GlassInput,
-  GlassTextarea,
+  CockpitButton,
+  CockpitInput,
+  CockpitTextarea,
   Badge,
   ProgressBar,
 } from '../ui';
@@ -39,31 +39,31 @@ const statusLabels: Record<StoryStatus, string> = {
 };
 
 const statusColors: Record<StoryStatus, string> = {
-  backlog: 'bg-gray-500/15 text-gray-400',
-  in_progress: 'bg-blue-500/15 text-blue-400',
-  ai_review: 'bg-purple-500/15 text-purple-400',
-  human_review: 'bg-orange-500/15 text-orange-400',
-  pr_created: 'bg-green-500/15 text-green-400',
-  done: 'bg-emerald-500/15 text-emerald-400',
-  error: 'bg-red-500/15 text-red-400',
+  backlog: 'bg-[var(--aiox-gray-dim)]/15 text-tertiary',
+  in_progress: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  ai_review: 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]',
+  human_review: 'bg-[var(--bb-flare)]/15 text-[var(--bb-flare)]',
+  pr_created: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
+  done: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
+  error: 'bg-[var(--bb-error)]/15 text-[var(--bb-error)]',
 };
 
 const priorityColors: Record<Story['priority'], string> = {
-  low: 'bg-gray-500/15 text-gray-400',
-  medium: 'bg-blue-500/15 text-blue-400',
-  high: 'bg-orange-500/15 text-orange-400',
-  critical: 'bg-red-500/15 text-red-400',
+  low: 'bg-[var(--aiox-gray-dim)]/15 text-tertiary',
+  medium: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  high: 'bg-[var(--bb-flare)]/15 text-[var(--bb-flare)]',
+  critical: 'bg-[var(--bb-error)]/15 text-[var(--bb-error)]',
 };
 
 const categoryColors: Record<Story['category'], string> = {
-  feature: 'bg-blue-500/15 text-blue-400',
-  fix: 'bg-red-500/15 text-red-400',
-  refactor: 'bg-amber-500/15 text-amber-400',
-  docs: 'bg-green-500/15 text-green-400',
+  feature: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  fix: 'bg-[var(--bb-error)]/15 text-[var(--bb-error)]',
+  refactor: 'bg-[var(--bb-warning)]/15 text-[var(--bb-warning)]',
+  docs: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
 };
 
 const selectClasses =
-  'glass-input w-full h-11 px-4 rounded-xl text-sm bg-transparent';
+  'glass-input w-full h-11 px-4 rounded-none text-sm bg-transparent';
 
 const statusOptions: { value: StoryStatus; label: string }[] = [
   { value: 'backlog', label: 'Backlog' },
@@ -192,43 +192,43 @@ export function StoryDetailModal({
       footer={
         isEditing ? (
           <>
-            <GlassButton variant="ghost" onClick={() => setIsEditing(false)}>
+            <CockpitButton variant="ghost" onClick={() => setIsEditing(false)}>
               Cancel
-            </GlassButton>
-            <GlassButton variant="primary" onClick={handleSave}>
+            </CockpitButton>
+            <CockpitButton variant="primary" onClick={handleSave}>
               Save Changes
-            </GlassButton>
+            </CockpitButton>
           </>
         ) : (
           <>
             {showDeleteConfirm ? (
               <>
-                <span className="text-sm text-red-400 mr-2 flex items-center gap-1">
+                <span className="text-sm text-[var(--bb-error)] mr-2 flex items-center gap-1">
                   <AlertTriangle size={14} /> Confirm deletion?
                 </span>
-                <GlassButton variant="ghost" onClick={() => setShowDeleteConfirm(false)}>
+                <CockpitButton variant="ghost" onClick={() => setShowDeleteConfirm(false)}>
                   Cancel
-                </GlassButton>
-                <GlassButton variant="danger" onClick={handleDelete}>
+                </CockpitButton>
+                <CockpitButton variant="destructive" onClick={handleDelete}>
                   Delete
-                </GlassButton>
+                </CockpitButton>
               </>
             ) : (
               <>
-                <GlassButton
-                  variant="danger"
+                <CockpitButton
+                  variant="destructive"
                   onClick={() => setShowDeleteConfirm(true)}
                   leftIcon={<Trash2 size={14} />}
                 >
                   Delete
-                </GlassButton>
-                <GlassButton
+                </CockpitButton>
+                <CockpitButton
                   variant="primary"
                   onClick={startEditing}
                   leftIcon={<Pencil size={14} />}
                 >
                   Edit
-                </GlassButton>
+                </CockpitButton>
               </>
             )}
           </>
@@ -304,7 +304,7 @@ function ReadView({
           {story.complexity}
         </Badge>
         {story.bobOrchestrated && (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-500/15 text-purple-400">
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]">
             <Zap size={12} className="mr-1" />
             Bob Orchestrated
           </span>
@@ -450,14 +450,14 @@ function EditView({
 }: EditViewProps) {
   return (
     <div className="flex flex-col gap-4">
-      <GlassInput
+      <CockpitInput
         label="Title"
         value={editTitle}
         onChange={(e) => setEditTitle(e.target.value)}
         required
       />
 
-      <GlassTextarea
+      <CockpitTextarea
         label="Description"
         value={editDescription}
         onChange={(e) => setEditDescription(e.target.value)}
@@ -548,7 +548,7 @@ function EditView({
         </select>
       </div>
 
-      <GlassTextarea
+      <CockpitTextarea
         label="Acceptance Criteria"
         value={editAC}
         onChange={(e) => setEditAC(e.target.value)}
@@ -556,7 +556,7 @@ function EditView({
         className="min-h-[80px]"
       />
 
-      <GlassTextarea
+      <CockpitTextarea
         label="Technical Notes"
         value={editNotes}
         onChange={(e) => setEditNotes(e.target.value)}

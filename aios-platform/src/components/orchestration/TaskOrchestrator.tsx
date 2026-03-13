@@ -8,7 +8,6 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Loader2,
   Sparkles,
@@ -23,7 +22,7 @@ import {
   GitBranch,
   History,
 } from 'lucide-react';
-import { GlassButton } from '../ui/GlassButton';
+import { CockpitButton } from '../ui/cockpit/CockpitButton';
 import { WorkflowCanvas } from '../workflow/WorkflowCanvas';
 import { WorkflowExecutionSidebar } from '../workflow/WorkflowExecutionSidebar';
 import { WorkflowExecutionDetails } from '../workflow/WorkflowExecutionDetails';
@@ -42,7 +41,7 @@ import { orchestrationManager } from '../../services/orchestration-manager';
 import type { Task } from '../../services/api/tasks';
 import type { TaskState, AgentOutput } from './orchestration-types';
 import { initialState } from './orchestration-types';
-import { BackgroundParticles, LiveMetrics, PhaseProgress, SquadCard } from './OrchestrationWidgets';
+import { LiveMetrics, PhaseProgress, SquadCard } from './OrchestrationWidgets';
 import { AgentOutputCard } from './AgentOutputCard';
 import { PlanApprovalCard } from './PlanApprovalCard';
 import { EventsPanel, TaskHistoryPanel, TaskDetailView } from './OrchestrationPanels';
@@ -281,8 +280,7 @@ export default function TaskOrchestrator() {
   // ─── Render ─────────────────────────────────────────────────
   return (
     <div className="h-full flex flex-col relative overflow-hidden">
-      {/* Animated background */}
-      {isRunning && <BackgroundParticles />}
+      {/* Background placeholder — particles removed for enterprise polish */}
 
       {/* Header (hidden in Canvas mode — canvas has its own header) */}
       <div className={cn("relative z-10 p-4 md:p-6 border-b border-white/10", visualMode && "hidden")}>
@@ -292,7 +290,7 @@ export default function TaskOrchestrator() {
             <Workflow className="w-5 h-5 text-[var(--color-accent,#D1FF00)] flex-shrink-0" />
             <h1 className="text-base md:text-lg font-bold text-white whitespace-nowrap">Orquestrador</h1>
             {isAwaitingApproval && (
-              <span className="px-2 py-1 rounded text-[10px] font-medium bg-yellow-500/15 text-yellow-400 border border-yellow-500/30">
+              <span className="px-2 py-1 rounded text-[10px] font-medium bg-[var(--bb-warning)]/15 text-[var(--bb-warning)] border border-[var(--bb-warning)]/30">
                 Aguardando Aprovação
               </span>
             )}
@@ -304,10 +302,10 @@ export default function TaskOrchestrator() {
           {/* Actions */}
           <div className="flex items-center gap-2">
             {(state.status === 'completed' || state.status === 'failed') && (
-              <GlassButton onClick={handleNewTask} className="px-3 py-1.5 text-xs">
+              <CockpitButton onClick={handleNewTask} className="px-3 py-1.5 text-xs">
                 <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
                 Nova Tarefa
-              </GlassButton>
+              </CockpitButton>
             )}
             {state.status !== 'idle' && (
               <div className="flex gap-1 p-0.5 bg-white/5 rounded-lg border border-white/10">
@@ -392,8 +390,7 @@ export default function TaskOrchestrator() {
 
           {/* Tab content */}
           <div className="flex-1 p-4 md:p-5 overflow-auto">
-            <AnimatePresence mode="wait">
-              {leftTab === 'history' ? (
+            {leftTab === 'history' ? (
                 <TaskHistoryPanel
                   key="history"
                   visible={leftTab === 'history'}
@@ -401,54 +398,45 @@ export default function TaskOrchestrator() {
                   onClose={() => setLeftTab('input')}
                 />
               ) : leftTab === 'events' ? (
-                <motion.div key="events" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full">
+                <div key="events" className="h-full">
                   <EventsPanel events={state.events} isActive={isRunning} />
-                </motion.div>
+                </div>
               ) : (
-                <motion.div
+                <div
                   key="input"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
                   className="flex flex-col gap-5 flex-1"
                 >
                   {/* Input */}
                   <div>
                     <label className="text-xs font-medium text-white/50 uppercase tracking-wider mb-2 block">Sua Demanda</label>
-                    <div className="relative">
-                      <textarea
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="Descreva o que você precisa..."
-                        className="w-full h-24 md:h-28 bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white placeholder:text-white/30 resize-none focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
-                        disabled={isRunning}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                            e.preventDefault();
-                            handleSubmit();
-                          }
-                        }}
-                      />
-                      <motion.div
-                        className="absolute bottom-3 right-3"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                    <textarea
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      placeholder="Descreva o que você precisa..."
+                      className="w-full h-24 md:h-28 bg-white/5 border border-white/10 rounded-none px-3 py-3 text-sm text-white placeholder:text-white/30 resize-none focus:outline-none focus:border-[var(--aiox-lime)]/50 focus:ring-2 focus:ring-[var(--aiox-lime)]/20 transition-all"
+                      disabled={isRunning}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                          e.preventDefault();
+                          handleSubmit();
+                        }
+                      }}
+                    />
+                    <div className="flex justify-end mt-2">
+                      <CockpitButton
+                        onClick={handleSubmit}
+                        disabled={!inputValue.trim() || isRunning}
+                        className="px-4 py-2"
                       >
-                        <GlassButton
-                          onClick={handleSubmit}
-                          disabled={!inputValue.trim() || isRunning}
-                          className="px-4 py-2"
-                        >
-                          {isRunning ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <>
-                              <Zap className="w-4 h-4 mr-2" />
-                              Executar
-                            </>
-                          )}
-                        </GlassButton>
-                      </motion.div>
+                        {isRunning ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Zap className="w-4 h-4 mr-2" />
+                            Executar
+                          </>
+                        )}
+                      </CockpitButton>
                     </div>
                   </div>
 
@@ -470,10 +458,9 @@ export default function TaskOrchestrator() {
                       </div>
                     </div>
                   )}
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
-          </div>
+</div>
         </div>
         )}
 
@@ -501,55 +488,51 @@ export default function TaskOrchestrator() {
               </div>
             </div>
           ) : state.status === 'idle' ? (
-            <div className="flex-1 p-4 md:p-6 overflow-auto">
-              <div className="flex flex-col items-center justify-start pt-8 md:pt-12">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+            <div className="flex-1 min-h-0 p-4 md:p-6 overflow-y-auto">
+              <div className="flex flex-col items-center justify-start pt-8 md:pt-12 pb-12">
+                <div
                   className="text-center max-w-md px-4 mb-8"
                 >
-                  <motion.div
-                    className="w-20 h-20 md:w-32 md:h-32 mx-auto mb-6 md:mb-8 rounded-2xl md:rounded-3xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 flex items-center justify-center border border-cyan-500/20"
-                    animate={{ rotate: [0, 5, -5, 0] }}
-                    transition={{ duration: 4, repeat: Infinity }}
+                  <div
+                    className="w-20 h-20 md:w-32 md:h-32 mx-auto mb-6 md:mb-8 rounded-none md:rounded-3xl bg-gradient-to-br from-[var(--aiox-blue)]/10 to-[var(--aiox-blue)]/10 flex items-center justify-center border border-[var(--aiox-blue)]/20"
                   >
-                    <Sparkles className="w-16 h-16 text-cyan-400/50" />
-                  </motion.div>
+                    <Sparkles className="w-16 h-16 text-[var(--aiox-blue)]/50" />
+                  </div>
                   <h2 className="text-2xl font-bold text-white mb-3">Pronto para Orquestrar</h2>
                   <p className="text-white/50 leading-relaxed">
                     Digite sua demanda e observe o orquestrador master selecionar squads, delegar para chiefs, e
                     coordenar a execução dos agentes especialistas em tempo real.
                   </p>
-                </motion.div>
+                </div>
 
                 {/* Orchestration Templates */}
                 <OrchestrationTemplates onSelect={(demand) => setInputValue(demand)} />
               </div>
             </div>
           ) : visualMode && liveMission && liveExecState ? (
-            /* Canvas visualization mode — full WorkflowExecutionLive layout */
+            /* Canvas visualization mode — full WorkflowExecutionLive */
             <div className="flex-1 flex flex-col overflow-hidden">
               {/* Canvas Header */}
               <div className="h-14 px-6 flex items-center justify-between border-b border-white/10 flex-shrink-0">
                 <div className="flex items-center gap-4">
                   <div className={cn(
-                    'w-10 h-10 rounded-xl flex items-center justify-center',
-                    (state.status === 'executing' || state.status === 'analyzing' || state.status === 'planning') && 'bg-[rgba(209,255,0,0.08)]',
-                    state.status === 'awaiting_approval' && 'bg-yellow-500/10',
-                    state.status === 'completed' && 'bg-[rgba(209,255,0,0.06)]',
-                    state.status === 'failed' && 'bg-gradient-to-br from-red-500/20 to-rose-500/20',
+                    'w-10 h-10 rounded-none flex items-center justify-center',
+                    (state.status === 'executing' || state.status === 'analyzing' || state.status === 'planning') && 'bg-[var(--color-background-hover)]',
+                    state.status === 'awaiting_approval' && 'bg-[var(--bb-warning)]/10',
+                    state.status === 'completed' && 'bg-[var(--color-background-hover)]',
+                    state.status === 'failed' && 'bg-gradient-to-br from-[var(--bb-error)]/20 to-[var(--bb-error)]/10',
                   )}>
                     {(state.status === 'analyzing' || state.status === 'planning' || state.status === 'executing') && (
                       <SpinnerIcon size={18} />
                     )}
                     {state.status === 'awaiting_approval' && (
-                      <span className="text-yellow-400"><ClockIcon size={18} /></span>
+                      <span className="text-[var(--bb-warning)]"><ClockIcon size={18} /></span>
                     )}
                     {state.status === 'completed' && (
                       <span style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' }}><CheckIcon size={18} /></span>
                     )}
                     {state.status === 'failed' && (
-                      <span className="text-red-400"><XIcon /></span>
+                      <span className="text-[var(--bb-error)]"><XIcon /></span>
                     )}
                   </div>
                   <div>
@@ -577,7 +560,7 @@ export default function TaskOrchestrator() {
                   </button>
                   {/* Timer */}
                   {(state.status === 'executing' || state.status === 'analyzing' || state.status === 'planning') && (
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-none bg-white/5 border border-white/10">
                       <ClockIcon size={14} />
                       <span className="text-sm font-mono text-white/80">{formatElapsedTime(canvasElapsed)}</span>
                     </div>
@@ -614,14 +597,11 @@ export default function TaskOrchestrator() {
                   : 0;
                 return (
                   <div className="h-1 bg-black/30 flex-shrink-0">
-                    <motion.div
-                      className={cn('h-full', state.status === 'failed' && 'bg-gradient-to-r from-red-500 to-rose-500')}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progressPct}%` }}
-                      transition={{ duration: 0.3 }}
+                    <div
+                      className={cn('h-full', state.status === 'failed' && 'bg-gradient-to-r from-[var(--bb-error)] to-[var(--bb-error)]')}
                       style={{
                         ...(state.status !== 'failed' ? { background: 'linear-gradient(to right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))' } : {}),
-                        boxShadow: state.status !== 'failed' ? '0 0 10px rgba(209, 255, 0, 0.3)' : '0 0 10px rgba(239, 68, 68, 0.5)',
+                        boxShadow: state.status !== 'failed' ? '0 0 10px var(--aiox-lime-glow)' : '0 0 10px var(--color-status-error-muted)',
                       }}
                     />
                   </div>
@@ -669,23 +649,23 @@ export default function TaskOrchestrator() {
               {(state.status === 'completed' || state.status === 'failed') && (
                 <div className={cn(
                   'border-t border-white/10 p-4 flex items-center justify-between flex-shrink-0',
-                  state.status === 'completed' && 'bg-[rgba(209,255,0,0.06)]',
-                  state.status === 'failed' && 'bg-gradient-to-r from-red-500/10 to-transparent',
+                  state.status === 'completed' && 'bg-[var(--color-background-hover)]',
+                  state.status === 'failed' && 'bg-gradient-to-r from-[var(--bb-error)]/10 to-transparent',
                 )}>
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      'w-10 h-10 rounded-xl flex items-center justify-center',
-                      state.status === 'completed' ? 'bg-[rgba(209,255,0,0.10)]' : 'bg-gradient-to-br from-red-500/30 to-rose-500/30'
+                      'w-10 h-10 rounded-none flex items-center justify-center',
+                      state.status === 'completed' ? 'bg-[var(--color-background-active)]' : 'bg-gradient-to-br from-[var(--bb-error)]/30 to-[var(--bb-error)]/20'
                     )}>
                       {state.status === 'completed' ? (
                         <span style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' }}><CheckIcon size={18} /></span>
                       ) : (
-                        <span className="text-red-400"><XIcon /></span>
+                        <span className="text-[var(--bb-error)]"><XIcon /></span>
                       )}
                     </div>
                     <div>
                       <p
-                        className={cn('font-semibold', state.status !== 'completed' && 'text-red-400')}
+                        className={cn('font-semibold', state.status !== 'completed' && 'text-[var(--bb-error)]')}
                         style={state.status === 'completed' ? { color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' } : undefined}
                       >
                         {state.status === 'completed' ? 'Execução Concluída!' : 'Execução Falhou'}
@@ -696,9 +676,9 @@ export default function TaskOrchestrator() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <GlassButton variant="ghost" size="sm" onClick={() => { setSelectedNodeId(null); setVisualMode(false); useUIStore.getState().setFocusMode(false); }}>
+                    <CockpitButton variant="ghost" size="sm" onClick={() => { setSelectedNodeId(null); setVisualMode(false); useUIStore.getState().setFocusMode(false); }}>
                       Ver Outputs
-                    </GlassButton>
+                    </CockpitButton>
                   </div>
                 </div>
               )}
@@ -706,7 +686,6 @@ export default function TaskOrchestrator() {
           ) : (
             <div className="flex-1 p-4 md:p-6 overflow-auto">
               <div className="space-y-4">
-                <AnimatePresence mode="popLayout" initial={false}>
                 {/* Completed outputs first (oldest → newest) */}
                 {state.agentOutputs.map((output, index) => (
                   <AgentOutputCard
@@ -734,23 +713,18 @@ export default function TaskOrchestrator() {
                     copied={copiedIndex === -100 - index}
                   />
                 ))}
-
-                </AnimatePresence>
-
-                {/* Completion message + Export */}
+{/* Completion message + Export */}
                 {state.status === 'completed' && (
                   <>
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="p-6 rounded-2xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 text-center"
+                    <div
+                      className="p-6 rounded-none bg-gradient-to-r from-[var(--color-status-success)]/10 to-[var(--color-status-success)]/10 border border-[var(--color-status-success)]/30 text-center"
                     >
-                      <CheckCircle2 className="w-12 h-12 text-green-400 mx-auto mb-3" />
+                      <CheckCircle2 className="w-12 h-12 text-[var(--color-status-success)] mx-auto mb-3" />
                       <h2 className="text-xl font-bold text-white mb-2">Tarefa Concluída!</h2>
                       <p className="text-white/60">
                         {state.agentOutputs.length} agentes executados com sucesso
                       </p>
-                    </motion.div>
+                    </div>
                     {/* Export panel */}
                     {state.taskId && (
                       <ExportPanel
@@ -788,15 +762,13 @@ export default function TaskOrchestrator() {
 
                 {/* Error message */}
                 {state.status === 'failed' && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="p-6 rounded-2xl bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/30 text-center"
+                  <div
+                    className="p-6 rounded-none bg-gradient-to-r from-[var(--bb-error)]/10 to-[var(--bb-error)]/10 border border-[var(--bb-error)]/30 text-center"
                   >
-                    <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
+                    <AlertCircle className="w-12 h-12 text-[var(--bb-error)] mx-auto mb-3" />
                     <h2 className="text-xl font-bold text-white mb-2">Erro na Execução</h2>
                     <p className="text-white/60">{state.error}</p>
-                  </motion.div>
+                  </div>
                 )}
               </div>
             </div>

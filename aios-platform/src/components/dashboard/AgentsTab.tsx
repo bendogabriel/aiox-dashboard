@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import { GlassCard, Badge } from '../ui';
+import { CockpitCard, Badge } from '../ui';
 import { useAgentAnalytics, useCommandAnalytics } from '../../hooks/useDashboard';
 import { useDashboardOverview } from '../../hooks/useDashboardOverview';
 import { useUIStore } from '../../stores/uiStore';
@@ -32,24 +31,18 @@ export function AgentsTab() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+    <div
       className="space-y-6 pb-6"
     >
       {/* Top Agents */}
-      <GlassCard>
+      <CockpitCard>
         <h2 className="font-semibold text-primary mb-4">Agents Mais Ativos</h2>
         <div className="space-y-3">
           {agentAnalytics?.slice(0, 8).map((agent, index) => (
-            <motion.div
+            <div
               key={agent.agentId}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 }}
               onClick={() => handleAgentClick(agent.agentId)}
-              className="flex items-center justify-between p-3 rounded-xl glass-subtle hover:bg-white/10 transition-colors cursor-pointer"
+              className="flex items-center justify-between p-3 rounded-none glass-subtle hover:bg-white/10 transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <span className="text-lg font-bold text-tertiary w-6">#{index + 1}</span>
@@ -66,7 +59,7 @@ export function AgentsTab() {
                 <div className="text-right">
                   <p className={cn(
                     'font-semibold',
-                    agent.successRate >= 90 ? 'text-green-400' : agent.successRate >= 70 ? 'text-yellow-400' : 'text-red-400'
+                    agent.successRate >= 90 ? 'text-[var(--color-status-success)]' : agent.successRate >= 70 ? 'text-[var(--bb-warning)]' : 'text-[var(--bb-error)]'
                   )}>
                     {agent.successRate.toFixed(0)}%
                   </p>
@@ -77,23 +70,23 @@ export function AgentsTab() {
                   <p className="text-[10px] text-tertiary">avg time</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
           {(agentAnalytics?.length ?? 0) === 0 && (
             <p className="text-center text-tertiary py-8">Nenhum dado de execução disponível</p>
           )}
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       {/* Agent Definitions (from filesystem) */}
       {dashAgents && dashAgents.length > 0 && (
-        <GlassCard>
+        <CockpitCard>
           <h2 className="font-semibold text-primary mb-4">Agent Definitions</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {dashAgents.map((agent) => (
               <div
                 key={agent.agentId}
-                className="p-3 rounded-xl glass-subtle flex items-center justify-between"
+                className="p-3 rounded-none glass-subtle flex items-center justify-between"
               >
                 <div className="min-w-0">
                   <p className="text-primary font-medium truncate">{agent.agentName}</p>
@@ -112,12 +105,12 @@ export function AgentsTab() {
               </div>
             ))}
           </div>
-        </GlassCard>
+        </CockpitCard>
       )}
 
       {/* Command Analytics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <GlassCard>
+        <CockpitCard>
           <h2 className="font-semibold text-primary mb-4">Comandos Mais Usados</h2>
           {commandAnalytics && commandAnalytics.length > 0 ? (
             <BarChart
@@ -131,9 +124,9 @@ export function AgentsTab() {
           ) : (
             <p className="text-center text-tertiary py-8">Nenhum comando registrado</p>
           )}
-        </GlassCard>
+        </CockpitCard>
 
-        <GlassCard>
+        <CockpitCard>
           <h2 className="font-semibold text-primary mb-4">Performance por Comando</h2>
           <div className="space-y-3">
             {commandAnalytics?.slice(0, 5).map((cmd) => (
@@ -152,8 +145,8 @@ export function AgentsTab() {
               <p className="text-center text-tertiary py-4">Nenhum comando registrado</p>
             )}
           </div>
-        </GlassCard>
+        </CockpitCard>
       </div>
-    </motion.div>
+    </div>
   );
 }

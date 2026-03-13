@@ -11,7 +11,7 @@ export function SectionLabel({ children, count, action, className }: SectionLabe
   return (
     <div className={cn('flex items-center justify-between mb-3', className)}>
       <div className="flex items-center gap-2">
-        <span className="text-xs font-semibold text-secondary uppercase tracking-wider">
+        <span className="label-mono text-xs font-semibold text-secondary uppercase tracking-wider">
           {children}
         </span>
         {count !== undefined && (

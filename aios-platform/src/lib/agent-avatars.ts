@@ -168,7 +168,8 @@ const SQUAD_IMAGE_MAP: Record<string, string> = {
  * Tries exact match, then normalized (lowercase, trimmed).
  * Returns undefined if no avatar is found.
  */
-export function getAgentAvatarUrl(agentName: string): string | undefined {
+export function getAgentAvatarUrl(agentName: string | undefined | null): string | undefined {
+  if (!agentName) return undefined;
   const normalized = agentName.toLowerCase().trim();
 
   // Exact match

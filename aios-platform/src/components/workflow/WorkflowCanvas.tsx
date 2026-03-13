@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect, memo } from 'react';
-import { motion } from 'framer-motion';
 import { Avatar } from '../ui';
 import { cn, getSquadTheme } from '../../lib/utils';
 import type { WorkflowNode, WorkflowEdge } from './types';
@@ -118,10 +117,10 @@ export function WorkflowCanvas({
         style={{
           background: `
             var(--workflow-canvas,
-              radial-gradient(ellipse 80% 60% at 0% 100%, rgba(209, 255, 0, 0.06) 0%, transparent 55%),
-              radial-gradient(ellipse 70% 80% at 100% 0%, rgba(209, 255, 0, 0.04) 0%, transparent 55%),
-              radial-gradient(ellipse 90% 70% at 50% 50%, rgba(156, 156, 156, 0.03) 0%, transparent 50%),
-              linear-gradient(160deg, #0a0a0c 0%, #0f0f11 30%, #0d0d0f 50%, #0f0f11 70%, #0a0a0c 100%)
+              radial-gradient(ellipse 80% 60% at 0% 100%, var(--aiox-lime-glow-soft, rgba(209, 255, 0, 0.06)) 0%, transparent 55%),
+              radial-gradient(ellipse 70% 80% at 100% 0%, var(--aiox-neon-dim, rgba(209, 255, 0, 0.04)) 0%, transparent 55%),
+              radial-gradient(ellipse 90% 70% at 50% 50%, var(--color-border-subtle, rgba(156, 156, 156, 0.03)) 0%, transparent 50%),
+              linear-gradient(160deg, var(--aiox-dark, #0a0a0c) 0%, var(--aiox-surface, #0f0f11) 30%, var(--aiox-dark, #0d0d0f) 50%, var(--aiox-surface, #0f0f11) 70%, var(--aiox-dark, #0a0a0c) 100%)
             )
           `
         }}
@@ -132,7 +131,7 @@ export function WorkflowCanvas({
         className="canvas-bg absolute inset-0"
         style={{
           backgroundImage: `
-            radial-gradient(circle at 1px 1px, var(--chart-grid, rgba(209,255,0,0.05)) 1px, transparent 0)
+            radial-gradient(circle at 1px 1px, var(--chart-grid, var(--aiox-lime-glow-soft, rgba(209,255,0,0.05))) 1px, transparent 0)
           `,
           backgroundSize: `${40 * zoom}px ${40 * zoom}px`,
           backgroundPosition: `${pan.x}px ${pan.y}px`,
@@ -233,7 +232,7 @@ export function WorkflowCanvas({
       </div>
 
       {/* Legend */}
-      <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 backdrop-blur-xl rounded-xl p-2 md:p-3" style={{ background: 'var(--glass-background-panel, rgba(0,0,0,0.4))', border: '1px solid var(--color-border-default, rgba(255,255,255,0.1))' }}>
+      <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 backdrop-blur-xl rounded-none p-2 md:p-3" style={{ background: 'var(--glass-background-panel, rgba(0,0,0,0.4))', border: '1px solid var(--color-border-default, rgba(255,255,255,0.1))' }}>
         <p className="text-[10px] md:text-xs mb-1.5 md:mb-2" style={{ color: 'var(--color-text-tertiary, rgba(255,255,255,0.5))' }}>Legenda</p>
         <div className="flex flex-wrap items-center gap-2 md:gap-4 text-[10px] md:text-xs">
           <div className="flex items-center gap-1.5">
@@ -309,16 +308,13 @@ const EdgePath = memo(function EdgePath({
       />
 
       {/* Main path */}
-      <motion.path
+      <path
         d={pathD}
         fill="none"
         stroke={edge.status === 'completed' ? `url(#${gradientId})` : edge.status === 'active' ? `url(#${gradientId})` : 'var(--color-border-subtle, rgba(255,255,255,0.15))'}
         strokeWidth="2"
         strokeLinecap="round"
         strokeDasharray={edge.status === 'idle' ? '8 4' : 'none'}
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 1, ease: 'easeInOut' }}
       />
 
       {/* Animated particle for active edges */}
@@ -369,25 +365,21 @@ const WorkflowNodeComponent = memo(function WorkflowNodeComponent({
   // Special rendering for start/end/checkpoint nodes
   if (node.type === 'start' || node.type === 'end' || node.type === 'checkpoint') {
     return (
-      <motion.div
+      <div
         className={cn(
           'absolute cursor-pointer',
           'flex flex-col items-center gap-2'
         )}
         style={{ left: node.position.x, top: node.position.y }}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
         onClick={onClick}
       >
         <div
           className={cn(
             'h-14 w-14 rounded-full flex items-center justify-center',
             'bg-black/50 backdrop-blur-xl border transition-all',
-            node.type === 'start' && 'border-[var(--color-accent,#D1FF00)]/50 shadow-[0_0_20px_rgba(209,255,0,0.2)]',
-            node.type === 'end' && 'border-[var(--color-accent,#D1FF00)]/30 shadow-[0_0_20px_rgba(209,255,0,0.1)]',
-            node.type === 'checkpoint' && 'border-[var(--color-text-secondary,#858585)]/50 shadow-[0_0_20px_rgba(156,156,156,0.15)]',
+            node.type === 'start' && 'border-[var(--color-accent,#D1FF00)]/50 shadow-[0_0_20px_var(--aiox-lime-glow,rgba(209,255,0,0.2))]',
+            node.type === 'end' && 'border-[var(--color-accent,#D1FF00)]/30 shadow-[0_0_20px_var(--aiox-lime-glow-soft,rgba(209,255,0,0.1))]',
+            node.type === 'checkpoint' && 'border-[var(--color-text-secondary,#858585)]/50 shadow-[0_0_20px_var(--color-border-subtle,rgba(156,156,156,0.15))]',
             isSelected && 'ring-2 ring-offset-2 ring-offset-transparent ring-white'
           )}
         >
@@ -410,27 +402,23 @@ const WorkflowNodeComponent = memo(function WorkflowNodeComponent({
           )}
         </div>
         <span className="text-xs text-white/70 whitespace-nowrap">{node.label}</span>
-      </motion.div>
+      </div>
     );
   }
 
   // Agent node rendering
   return (
-    <motion.div
+    <div
       className={cn(
         'absolute cursor-pointer',
         'w-[120px]'
       )}
       style={{ left: node.position.x, top: node.position.y }}
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
       onClick={onClick}
     >
       <div
         className={cn(
-          'bg-black/50 backdrop-blur-xl rounded-xl p-3 border transition-all',
+          'bg-black/50 backdrop-blur-xl rounded-none p-3 border transition-all',
           colors?.border || 'border-white/10',
           isSelected && 'ring-2 ring-offset-2 ring-offset-transparent ring-white',
           node.status === 'active' && colors?.glow
@@ -459,7 +447,7 @@ const WorkflowNodeComponent = memo(function WorkflowNodeComponent({
         {node.progress !== undefined && (
           <div className="space-y-1">
             <div className="h-1 rounded-full bg-white/10 overflow-hidden">
-              <motion.div
+              <div
                 className={cn(
                   'h-full rounded-full bg-gradient-to-r',
                   colors?.bg.replace('/20', '') || 'from-gray-500 to-gray-400'
@@ -467,9 +455,6 @@ const WorkflowNodeComponent = memo(function WorkflowNodeComponent({
                 style={{
                   background: `linear-gradient(to right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 60%, transparent))`
                 }}
-                initial={{ width: 0 }}
-                animate={{ width: `${node.progress}%` }}
-                transition={{ duration: 0.5 }}
               />
             </div>
             <p className="text-[10px] text-white/50 text-right">{node.progress}%</p>
@@ -489,14 +474,12 @@ const WorkflowNodeComponent = memo(function WorkflowNodeComponent({
 
       {/* Current action tooltip */}
       {node.status === 'active' && node.currentAction && (
-        <motion.div
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="mt-2 bg-black/50 backdrop-blur-xl border border-white/10 rounded-lg px-2 py-1"
         >
           <p className="text-[10px] text-white/70 truncate">{node.currentAction}</p>
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 });

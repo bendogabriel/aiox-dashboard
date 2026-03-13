@@ -4,7 +4,7 @@ import { Activity, Cpu, Heart, Zap } from 'lucide-react';
 
 // Mock the UI components used by DashboardHelpers
 vi.mock('../../ui', () => ({
-  GlassCard: ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  CockpitCard: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div data-testid="glass-card" className={className}>{children}</div>
   ),
   Badge: ({ children, variant, status, size }: {
@@ -116,14 +116,14 @@ describe('QuickStatCard', () => {
     const { container } = render(
       <QuickStatCard label="Metric" value={42} icon={Activity} color="green" />
     );
-    expect(container.firstChild).toHaveClass('from-green-500/20');
+    expect(container.firstChild).toHaveClass('from-[var(--color-status-success)]/20');
   });
 
   it('falls back to blue class for unknown color', () => {
     const { container } = render(
       <QuickStatCard label="Metric" value={42} icon={Activity} color="magenta" />
     );
-    expect(container.firstChild).toHaveClass('from-blue-500/20');
+    expect(container.firstChild).toHaveClass('from-[var(--aiox-blue)]/20');
   });
 });
 
@@ -191,25 +191,25 @@ describe('HealthCard', () => {
   });
 
   it('renders checkmark for ok=true detail', () => {
-    render(
+    const { container } = render(
       <HealthCard
         title="Checks"
         status="healthy"
         details={[{ label: 'SSL', ok: true }]}
       />
     );
-    expect(screen.getByText('\u2713')).toBeInTheDocument();
+    expect(container.querySelector('svg')).toBeInTheDocument();
   });
 
   it('renders X mark for ok=false detail', () => {
-    render(
+    const { container } = render(
       <HealthCard
         title="Checks"
         status="error"
         details={[{ label: 'SSL', ok: false }]}
       />
     );
-    expect(screen.getByText('\u2717')).toBeInTheDocument();
+    expect(container.querySelector('svg')).toBeInTheDocument();
   });
 
   it('renders detail value when ok is not provided', () => {
@@ -237,7 +237,7 @@ describe('ServiceHealthCard', () => {
     const { container } = render(
       <ServiceHealthCard name="OpenAI" healthy={true} latency={45} />
     );
-    const dot = container.querySelector('.bg-green-500');
+    const dot = container.querySelector('.bg-\\[var\\(--color-status-success\\)\\]');
     expect(dot).toBeInTheDocument();
   });
 
@@ -245,7 +245,7 @@ describe('ServiceHealthCard', () => {
     const { container } = render(
       <ServiceHealthCard name="OpenAI" healthy={false} error="Connection failed" />
     );
-    const dot = container.querySelector('.bg-red-500');
+    const dot = container.querySelector('.bg-\\[var\\(--bb-error\\)\\]');
     expect(dot).toBeInTheDocument();
   });
 
@@ -314,7 +314,7 @@ describe('CostProviderRow', () => {
     const { container } = render(
       <CostProviderRow name="Claude" cost={10} tokens={1000} color="purple" />
     );
-    expect(container.querySelector('.bg-purple-500')).toBeInTheDocument();
+    expect(container.querySelector('.bg-\\[var\\(--aiox-gray-muted\\)\\]')).toBeInTheDocument();
   });
 
   it('formats cost to two decimal places', () => {

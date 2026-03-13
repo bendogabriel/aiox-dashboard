@@ -50,18 +50,18 @@ export const BannerPreview: Story = {
       </p>
 
       {/* Offline mockup */}
-      <div className="px-4 py-2 flex items-center gap-3 bg-red-500/10 border-b border-red-500/20 rounded-lg">
-        <span className="text-red-500 text-sm font-medium">Sem conexao</span>
+      <div className="px-4 py-2 flex items-center gap-3 bg-[var(--bb-error)]/10 border-b border-[var(--bb-error)]/20 rounded-lg">
+        <span className="text-[var(--bb-error)] text-sm font-medium">Sem conexao</span>
       </div>
 
       {/* Slow connection mockup */}
-      <div className="px-4 py-2 flex items-center gap-3 bg-yellow-500/10 border-b border-yellow-500/20 rounded-lg">
-        <span className="text-yellow-500 text-sm font-medium">Conexao lenta</span>
+      <div className="px-4 py-2 flex items-center gap-3 bg-[var(--bb-warning)]/10 border-b border-[var(--bb-warning)]/20 rounded-lg">
+        <span className="text-[var(--bb-warning)] text-sm font-medium">Conexao lenta</span>
       </div>
 
       {/* Syncing mockup */}
-      <div className="px-4 py-2 flex items-center justify-between gap-3 bg-blue-500/10 border-b border-blue-500/20 rounded-lg">
-        <span className="text-blue-500 text-sm font-medium">Sincronizando...</span>
+      <div className="px-4 py-2 flex items-center justify-between gap-3 bg-[var(--aiox-blue)]/10 border-b border-[var(--aiox-blue)]/20 rounded-lg">
+        <span className="text-[var(--aiox-blue)] text-sm font-medium">Sincronizando...</span>
         <span className="text-xs text-tertiary">(3 pendentes)</span>
       </div>
     </div>
@@ -73,27 +73,27 @@ export const IndicatorPreview: Story = {
     <div className="flex items-center gap-8">
       {/* Online */}
       <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-green-500" />
+        <div className="w-2 h-2 rounded-full bg-[var(--color-status-success)]" />
         <span className="text-xs text-tertiary">Online</span>
       </div>
 
       {/* Slow */}
       <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-yellow-500" />
+        <div className="w-2 h-2 rounded-full bg-[var(--bb-warning)]" />
         <span className="text-xs text-tertiary">Lento</span>
       </div>
 
       {/* Offline */}
       <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-red-500" />
+        <div className="w-2 h-2 rounded-full bg-[var(--bb-error)]" />
         <span className="text-xs text-tertiary">Offline</span>
       </div>
 
       {/* With queue */}
       <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-green-500" />
+        <div className="w-2 h-2 rounded-full bg-[var(--color-status-success)]" />
         <span className="text-xs text-tertiary">Online</span>
-        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-500">
+        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--bb-flare)]/20 text-[var(--bb-flare)]">
           5
         </span>
       </div>

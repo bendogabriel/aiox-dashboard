@@ -42,7 +42,7 @@ export async function startEngine(options: RunnerOptions): Promise<EngineProcess
           port,
           baseUrl,
           kill: () => {
-            try { proc.kill(); } catch {}
+            try { proc.kill(); } catch { /* no-op */ }
           },
         };
       }
@@ -53,7 +53,7 @@ export async function startEngine(options: RunnerOptions): Promise<EngineProcess
   }
 
   // Timeout — kill and throw
-  try { proc.kill(); } catch {}
+  try { proc.kill(); } catch { /* no-op */ }
   throw new Error(`Engine failed to start within ${timeout}ms on port ${port}`);
 }
 

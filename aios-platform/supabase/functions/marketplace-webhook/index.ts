@@ -100,7 +100,7 @@ async function handleCheckoutCompleted(
   session: Stripe.Checkout.Session,
 ) {
   const metadata = session.metadata || {};
-  const { listing_id, buyer_id, seller_id, order_type } = metadata;
+  const { listing_id, buyer_id, seller_id, order_type: _order_type } = metadata;
 
   if (!listing_id) {
     console.error('[Webhook] Missing listing_id in session metadata');

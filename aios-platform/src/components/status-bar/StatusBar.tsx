@@ -89,14 +89,14 @@ export function StatusBar() {
         {/* Connection status */}
         <div className="flex items-center gap-1.5">
           {connected ? (
-            <Wifi className="h-3 w-3 text-green-500" aria-hidden="true" />
+            <Wifi className="h-3 w-3 text-[var(--color-status-success)]" aria-hidden="true" />
           ) : (
-            <WifiOff className="h-3 w-3 text-red-500" aria-hidden="true" />
+            <WifiOff className="h-3 w-3 text-[var(--bb-error)]" aria-hidden="true" />
           )}
           <span
             className={cn(
               'font-medium',
-              connected ? 'text-green-500' : 'text-red-500'
+              connected ? 'text-[var(--color-status-success)]' : 'text-[var(--bb-error)]'
             )}
           >
             {connected ? 'Connected' : 'Disconnected'}
@@ -109,11 +109,11 @@ export function StatusBar() {
         {/* Engine status */}
         <div className="flex items-center gap-1.5" title={engineOnline ? `Engine v${engineHealth?.version ?? '?'}` : 'Engine offline'}>
           {engineOnline ? (
-            <Zap className="h-3 w-3 text-[#D1FF00]" aria-hidden="true" />
+            <Zap className="h-3 w-3 text-[var(--aiox-lime)]" aria-hidden="true" />
           ) : (
-            <ZapOff className="h-3 w-3 text-red-500" aria-hidden="true" />
+            <ZapOff className="h-3 w-3 text-[var(--bb-error)]" aria-hidden="true" />
           )}
-          <span className={cn('font-medium', engineOnline ? 'text-[#D1FF00]' : 'text-red-500')}>
+          <span className={cn('font-medium', engineOnline ? 'text-[var(--aiox-lime)]' : 'text-[var(--bb-error)]')}>
             {engineOnline ? 'Engine' : 'Engine Off'}
           </span>
         </div>
@@ -139,7 +139,7 @@ export function StatusBar() {
           <span
             className={cn(
               'font-medium',
-              claudeReady ? 'text-green-500' : 'text-yellow-500'
+              claudeReady ? 'text-[var(--color-status-success)]' : 'text-[var(--bb-warning)]'
             )}
           >
             {claudeReady ? 'Claude Ready' : 'Claude Busy'}
@@ -151,8 +151,8 @@ export function StatusBar() {
           <>
             <span className="h-3 w-px bg-glass-border" aria-hidden="true" />
             <div className="flex items-center gap-1.5" title={`${capSummary.full} full, ${capSummary.degraded} degraded, ${capSummary.unavailable} unavailable`}>
-              <AlertTriangle className={cn('h-3 w-3', capSummary.unavailable > 0 ? 'text-red-500' : 'text-yellow-500')} aria-hidden="true" />
-              <span className={cn('font-mono', capSummary.unavailable > 0 ? 'text-red-500' : 'text-yellow-500')}>
+              <AlertTriangle className={cn('h-3 w-3', capSummary.unavailable > 0 ? 'text-[var(--bb-error)]' : 'text-[var(--bb-warning)]')} aria-hidden="true" />
+              <span className={cn('font-mono', capSummary.unavailable > 0 ? 'text-[var(--bb-error)]' : 'text-[var(--bb-warning)]')}>
                 {capSummary.full}/{capSummary.total}
               </span>
             </div>
@@ -165,8 +165,8 @@ export function StatusBar() {
         {/* Tier badge */}
         <div className={cn(
           'flex items-center gap-1 px-1.5 py-0.5 rounded font-mono font-medium',
-          currentTier === 'enterprise' ? 'bg-[#D1FF00]/10 text-[#D1FF00]'
-            : currentTier === 'pro' ? 'bg-blue-500/10 text-blue-400'
+          currentTier === 'enterprise' ? 'bg-[var(--aiox-lime)]/10 text-[var(--aiox-lime)]'
+            : currentTier === 'pro' ? 'bg-[var(--aiox-blue)]/10 text-[var(--aiox-blue)]'
             : 'bg-zinc-500/10 text-zinc-400',
         )}>
           {masterActive && <Crown className="h-2.5 w-2.5" aria-hidden="true" />}
@@ -191,7 +191,7 @@ export function StatusBar() {
         {activeAgent && (
           <>
             <span className="h-3 w-px bg-glass-border" aria-hidden="true" />
-            <span className="px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-medium">
+            <span className="px-1.5 py-0.5 rounded bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)] font-medium">
               {activeAgent}
             </span>
           </>
@@ -208,7 +208,7 @@ export function StatusBar() {
         >
           <Bell className="h-3 w-3 text-tertiary" aria-hidden="true" />
           {unreadCount > 0 && (
-            <span className="min-w-[14px] h-[14px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold leading-none">
+            <span className="min-w-[14px] h-[14px] px-1 flex items-center justify-center rounded-full bg-[var(--bb-error)] text-white text-[9px] font-bold leading-none">
               {unreadCount}
             </span>
           )}

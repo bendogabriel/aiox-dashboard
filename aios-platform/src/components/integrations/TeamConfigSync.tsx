@@ -144,7 +144,7 @@ export function TeamConfigSync() {
           textAlign: 'left',
         }}
       >
-        <Users size={14} style={{ color: 'var(--aiox-lime, #D1FF00)' }} />
+        <Users size={14} style={{ color: 'var(--aiox-gray-dim, #696969)' }} />
         <span style={{ flex: 1, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
           Team Config Sync
         </span>

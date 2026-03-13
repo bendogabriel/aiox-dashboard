@@ -42,7 +42,7 @@ export function IntegrationDocsPanel() {
           textAlign: 'left',
         }}
       >
-        <BookOpen size={14} style={{ color: 'var(--aiox-blue, #0099FF)' }} />
+        <BookOpen size={14} style={{ color: 'var(--aiox-gray-dim, #696969)' }} />
         <span style={{ flex: 1, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
           Setup Guides
         </span>

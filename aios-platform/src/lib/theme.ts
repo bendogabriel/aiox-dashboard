@@ -417,10 +417,10 @@ export function getSquadTheme(squadType: SquadType): SquadTheme {
 }
 
 /**
- * Get theme for a squad by its ID
+ * Get theme for a squad by its ID (with optional domain for better matching of new squads)
  */
-export function getSquadThemeById(squadId: string): SquadTheme {
-  const squadType = getSquadType(squadId);
+export function getSquadThemeById(squadId: string, domain?: string): SquadTheme {
+  const squadType = getSquadType(squadId, domain);
   return getSquadTheme(squadType);
 }
 

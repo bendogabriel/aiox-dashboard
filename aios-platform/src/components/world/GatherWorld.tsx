@@ -1,5 +1,4 @@
 import { useCallback, useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useUIStore } from '../../stores/uiStore';
 import { useMonitorStore } from '../../stores/monitorStore';
 import { WorldMap } from './WorldMap';
@@ -75,14 +74,9 @@ function GatherWorldInner() {
     <div className="h-full flex relative">
       {/* Main content area */}
       <div className="flex-1 min-w-0 h-full">
-        <AnimatePresence mode="wait">
-          {worldZoom === 'map' ? (
-            <motion.div
+        {worldZoom === 'map' ? (
+            <div
               key="world-map"
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.15, filter: 'blur(4px)' }}
-              transition={{ duration: 0.35, ease: 'easeInOut' }}
               className="h-full"
             >
               <WorldMap
@@ -91,14 +85,10 @@ function GatherWorldInner() {
                 onZoomChange={setMapZoom}
                 highlightedRooms={highlightedRooms}
               />
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
+            <div
               key="room-view"
-              initial={{ opacity: 0, scale: 1.3, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, scale: 0.85 }}
-              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="h-full"
             >
               {selectedRoomId && (
@@ -109,64 +99,47 @@ function GatherWorldInner() {
                   onZoomChange={setRoomZoom}
                 />
               )}
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-
-        {/* Door transition overlay */}
-        <AnimatePresence>
-          {doorTransition && (
-            <motion.div
+{/* Door transition overlay */}
+        {doorTransition && (
+            <div
               className="absolute inset-0 z-40 pointer-events-none flex items-center justify-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
             >
               {/* Vignette effect */}
-              <motion.div
+              <div
                 className="absolute inset-0"
                 style={{
                   background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.6) 100%)',
                 }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: doorTransition === 'entering' ? 1 : 0.5 }}
-                transition={{ duration: 0.3 }}
               />
               {/* Door frame silhouette */}
               {doorTransition === 'entering' && transitionRoomId && (() => {
                 const roomCfg = rooms.find((r) => r.squadId === transitionRoomId);
                 const domainCfg = roomCfg ? themedDomains[roomCfg.domain] : null;
                 return (
-                  <motion.div
-                    className="relative rounded-xl overflow-hidden"
+                  <div
+                    className="relative rounded-none overflow-hidden"
                     style={{
                       border: `3px solid ${domainCfg?.tileColor || '#fff'}88`,
                       boxShadow: `0 0 60px ${domainCfg?.tileColor || '#fff'}44`,
                     }}
-                    initial={{ width: 40, height: 60, opacity: 0.8 }}
-                    animate={{ width: '100vw', height: '100vh', opacity: 0, borderRadius: 0 }}
-                    transition={{ duration: 0.5, ease: 'easeIn' }}
                   >
                     <div
                       className="w-full h-full"
                       style={{ background: domainCfg?.floorColor || 'var(--color-background-base)' }}
                     />
-                  </motion.div>
+                  </div>
                 );
               })()}
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-      </div>
+</div>
 
       {/* Zoom controls (bottom-left) */}
-      <motion.div
+      <div
         className="absolute left-4 flex flex-col gap-1 z-30"
         style={{ bottom: worldZoom === 'map' && workflowPanelExpanded ? 230 : 16 }}
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.3 }}
       >
         <button
           onClick={() => setCurrentZoom(Math.min(currentZoom + 0.2, worldZoom === 'map' ? 2.0 : 2.5))}
@@ -196,7 +169,7 @@ function GatherWorldInner() {
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
         </button>
-      </motion.div>
+      </div>
 
       {/* In-world notifications (top-right) */}
       <WorldNotifications maxVisible={4} />

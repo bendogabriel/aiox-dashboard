@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { shortcutDefinitions } from '../../hooks/useGlobalKeyboardShortcuts';
 
@@ -50,32 +49,25 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
   }, [isOpen, onClose]);
 
   return (
-    <AnimatePresence>
-      {isOpen && (
+    <>
+    {isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
             onClick={onClose}
           />
 
           {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          <div
             className="fixed top-[15%] left-1/2 -translate-x-1/2 z-50 w-full max-w-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="glass-card rounded-2xl overflow-hidden shadow-2xl">
+            <div className="glass-card rounded-none overflow-hidden shadow-2xl">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl glass-subtle flex items-center justify-center text-primary">
+                  <div className="h-10 w-10 rounded-none glass-subtle flex items-center justify-center text-primary">
                     <KeyboardIcon />
                   </div>
                   <div>
@@ -102,11 +94,8 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
                       </h3>
                       <div className="space-y-2">
                         {categoryShortcuts.map((shortcut, index) => (
-                          <motion.div
+                          <div
                             key={index}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.03 }}
                             className="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors"
                           >
                             <span className="text-sm text-secondary">{shortcut.description}</span>
@@ -126,7 +115,7 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
                                 </span>
                               ))}
                             </div>
-                          </motion.div>
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -150,11 +139,11 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
                 </button>
               </div>
             </div>
-          </motion.div>
+          </div>
         </>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 }
 
 // Hook for keyboard shortcuts modal

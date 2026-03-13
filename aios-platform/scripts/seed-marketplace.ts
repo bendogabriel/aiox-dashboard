@@ -36,7 +36,7 @@ function randomBetween(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function randomFloat(min: number, max: number): number {
+function _randomFloat(min: number, max: number): number {
   return +(Math.random() * (max - min) + min).toFixed(1);
 }
 

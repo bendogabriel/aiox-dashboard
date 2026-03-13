@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Minimize2, Maximize2, FolderOpen, ArrowLeftRight, Box, Layers } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { GlassCard, Badge, StatusDot } from '../ui';
+import { CockpitCard, Badge, StatusDot } from '../ui';
 import type { StatusType } from '../ui/StatusDot';
 import { cn } from '../../lib/utils';
 
@@ -33,7 +32,7 @@ const invocationConfig: Record<InvocationType, {
   'full-context': {
     label: 'Full',
     icon: Layers,
-    className: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_6px_rgba(16,185,129,0.3)]',
+    className: 'bg-[var(--color-status-success)]/20 text-[var(--color-status-success)] border border-[var(--color-status-success)]/40 shadow-[0_0_6px_rgba(16,185,129,0.3)]',
     title: 'Full context — Agent persona + pipeline loaded',
   },
   'subagent': {
@@ -45,7 +44,7 @@ const invocationConfig: Record<InvocationType, {
   'delegated': {
     label: 'Delegated',
     icon: ArrowLeftRight,
-    className: 'bg-blue-500/20 text-blue-400 border border-blue-500/40 shadow-[0_0_6px_rgba(59,130,246,0.3)]',
+    className: 'bg-[var(--aiox-blue)]/20 text-[var(--aiox-blue)] border border-[var(--aiox-blue)]/40 shadow-[0_0_6px_rgba(59,130,246,0.3)]',
     title: 'Delegated — Full context, initiated by orchestrator',
   },
 };
@@ -85,7 +84,7 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
   const visibleLines = session.output.slice(-8);
 
   return (
-    <GlassCard
+    <CockpitCard
       padding="none"
       className={cn(
         'overflow-hidden flex flex-col',
@@ -134,13 +133,8 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
       </div>
 
       {/* Terminal output area */}
-      <AnimatePresence initial={false}>
-        {!minimized && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+      {!minimized && (
+          <div
             className="flex-1 overflow-hidden"
           >
             <div
@@ -157,7 +151,7 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
                 <div key={i} className="whitespace-pre-wrap">
                   {line.startsWith('$') ? (
                     <span className="terminal-prompt">{line}</span>
-                  ) : line.startsWith('PASS') || line.includes('passed') || line.startsWith('\u2713') ? (
+                  ) : line.startsWith('PASS') || line.includes('passed') ? (
                     <span className="terminal-success">{line}</span>
                   ) : line.startsWith('FAIL') || line.includes('error') || line.includes('Error') ? (
                     <span className="terminal-error">{line}</span>
@@ -170,11 +164,9 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
                 <span className="terminal-cursor animate-pulse">_</span>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-
-      {/* Last output preview (when minimized) */}
+{/* Last output preview (when minimized) */}
       {minimized && session.output.length > 0 && (
         <div className="px-3 py-1.5 border-t border-white/5 bg-black/40">
           <p className="font-mono text-[10px] text-tertiary truncate">
@@ -209,6 +201,6 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
           </span>
         </div>
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }

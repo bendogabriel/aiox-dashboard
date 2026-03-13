@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Badge } from '../ui';
 import { useTokenUsage, useLLMHealth, useExecutionStats } from '../../hooks';
 import { SpinnerIcon, ServerIcon } from './activity-panel-icons';
@@ -79,7 +78,7 @@ export function MetricsPanel({ expandedSections, toggleSection }: MetricsPanelPr
           <div className="space-y-3">
             {/* Total Tokens */}
             <div
-              className="rounded-xl p-3"
+              className="rounded-none p-3"
               style={{
                 background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%)',
                 border: '1px solid rgba(59, 130, 246, 0.2)',
@@ -149,7 +148,7 @@ export function MetricsPanel({ expandedSections, toggleSection }: MetricsPanelPr
 
             {/* Success Rate */}
             <div
-              className="rounded-xl p-3"
+              className="rounded-none p-3"
               style={{
                 background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, transparent 100%)',
                 border: '1px solid rgba(255, 255, 255, 0.05)',
@@ -157,16 +156,13 @@ export function MetricsPanel({ expandedSections, toggleSection }: MetricsPanelPr
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-white/60 text-xs">Taxa de Sucesso</span>
-                <span className="text-green-400 font-semibold text-sm">
+                <span className="text-[var(--color-status-success)] font-semibold text-sm">
                   {((stats.byStatus.completed ?? 0) / stats.total * 100).toFixed(1)}%
                 </span>
               </div>
               <div className="h-2 rounded-full bg-black/30 overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(stats.byStatus.completed ?? 0) / stats.total * 100}%` }}
-                  transition={{ duration: 0.5 }}
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[var(--color-status-success)] to-[var(--color-status-success)]"
                 />
               </div>
             </div>
@@ -256,7 +252,7 @@ function HealthCard({ name, available, error, color }: HealthCardProps) {
 
   return (
     <div
-      className="rounded-xl p-3"
+      className="rounded-none p-3"
       style={{
         background: `linear-gradient(135deg, ${style.bg} 0%, transparent 100%)`,
         border: `1px solid ${style.border}`,
@@ -267,9 +263,9 @@ function HealthCard({ name, available, error, color }: HealthCardProps) {
         <span className="text-white/80 text-xs font-medium">{name}</span>
       </div>
       <div className="flex items-center gap-1.5">
-        <span className={`h-2 w-2 rounded-full ${available ? 'bg-green-500' : 'bg-red-500'}`} />
+        <span className={`h-2 w-2 rounded-full ${available ? 'bg-[var(--color-status-success)]' : 'bg-[var(--bb-error)]'}`} />
         <span
-          className={`text-[10px] ${available ? 'text-green-400' : 'text-red-400'} truncate max-w-[80px]`}
+          className={`text-[10px] ${available ? 'text-[var(--color-status-success)]' : 'text-[var(--bb-error)]'} truncate max-w-[80px]`}
           title={!available && error ? error : undefined}
         >
           {available ? 'Online' : getErrorMessage(error)}
@@ -296,12 +292,12 @@ function TokenCard({ provider, input, output, requests, color }: TokenCardProps)
   };
 
   const colors = {
-    purple: 'from-purple-500/10 border-purple-500/20',
-    green: 'from-green-500/10 border-green-500/20',
+    purple: 'from-[var(--aiox-gray-muted)]/10 border-[var(--aiox-gray-muted)]/20',
+    green: 'from-[var(--color-status-success)]/10 border-[var(--color-status-success)]/20',
   };
 
   return (
-    <div className={`rounded-xl p-2.5 bg-gradient-to-br ${colors[color]} to-transparent border`}>
+    <div className={`rounded-none p-2.5 bg-gradient-to-br ${colors[color]} to-transparent border`}>
       <p className="text-[10px] text-white/50 mb-1">{provider}</p>
       <p className="text-white font-semibold text-sm mb-0.5">
         {formatNumber(input + output)}
@@ -320,16 +316,16 @@ interface StatCardProps {
 
 function StatCard({ label, value, color }: StatCardProps) {
   const colors = {
-    blue: { text: 'text-blue-400', bg: 'from-blue-500/20' },
-    green: { text: 'text-green-400', bg: 'from-green-500/20' },
-    red: { text: 'text-red-400', bg: 'from-red-500/20' },
+    blue: { text: 'text-[var(--aiox-blue)]', bg: 'from-[var(--aiox-blue)]/20' },
+    green: { text: 'text-[var(--color-status-success)]', bg: 'from-[var(--color-status-success)]/20' },
+    red: { text: 'text-[var(--bb-error)]', bg: 'from-[var(--bb-error)]/20' },
   };
 
   const style = colors[color];
 
   return (
     <div
-      className={`rounded-xl p-2.5 bg-gradient-to-br ${style.bg} to-transparent`}
+      className={`rounded-none p-2.5 bg-gradient-to-br ${style.bg} to-transparent`}
       style={{ border: '1px solid var(--glass-border-color-subtle)' }}
     >
       <p className="text-[10px] text-white/40 mb-0.5">{label}</p>

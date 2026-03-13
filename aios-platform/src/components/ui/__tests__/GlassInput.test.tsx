@@ -1,30 +1,30 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '../../../test/test-utils';
-import { GlassInput, GlassTextarea } from '../GlassInput';
+import { CockpitInput, CockpitTextarea } from '../cockpit/CockpitInput';
 
-describe('GlassInput', () => {
+describe('CockpitInput', () => {
   it('should render input element', () => {
-    render(<GlassInput placeholder="Enter text" />);
+    render(<CockpitInput placeholder="Enter text" />);
 
     expect(screen.getByPlaceholderText('Enter text')).toBeInTheDocument();
   });
 
   it('should render with label', () => {
-    render(<GlassInput label="Username" />);
+    render(<CockpitInput label="Username" />);
 
     expect(screen.getByText('Username')).toBeInTheDocument();
     expect(screen.getByRole('textbox')).toBeInTheDocument();
   });
 
   it('should show required indicator with label', () => {
-    render(<GlassInput label="Email" required />);
+    render(<CockpitInput label="Email" required />);
 
     expect(screen.getByText('*')).toBeInTheDocument();
   });
 
   it('should handle value changes', async () => {
     const handleChange = vi.fn();
-    const { user } = render(<GlassInput onChange={handleChange} />);
+    const { user } = render(<CockpitInput onChange={handleChange} />);
 
     const input = screen.getByRole('textbox');
     await user.type(input, 'hello');
@@ -34,95 +34,89 @@ describe('GlassInput', () => {
   });
 
   it('should show error message', () => {
-    render(<GlassInput error="This field is required" />);
+    render(<CockpitInput error="This field is required" />);
 
     expect(screen.getByRole('alert')).toHaveTextContent('This field is required');
   });
 
   it('should set aria-invalid when error is present', () => {
-    render(<GlassInput error="Error" />);
+    render(<CockpitInput error="Error" />);
 
     expect(screen.getByRole('textbox')).toHaveAttribute('aria-invalid', 'true');
   });
 
   it('should show hint text when no error', () => {
-    render(<GlassInput hint="Enter your username" />);
+    render(<CockpitInput hint="Enter your username" />);
 
     expect(screen.getByText('Enter your username')).toBeInTheDocument();
   });
 
   it('should hide hint when error is shown', () => {
-    render(<GlassInput hint="Helpful hint" error="Error message" />);
+    render(<CockpitInput hint="Helpful hint" error="Error message" />);
 
     expect(screen.queryByText('Helpful hint')).not.toBeInTheDocument();
     expect(screen.getByText('Error message')).toBeInTheDocument();
   });
 
-  it('should show character count', async () => {
-    const { user } = render(
-      <GlassInput showCharacterCount maxLength={10} />
-    );
+  it('should accept showCharacterCount prop without error (ignored)', () => {
+    render(<CockpitInput showCharacterCount maxLength={10} />);
 
-    expect(screen.getByText('0/10')).toBeInTheDocument();
-
-    const input = screen.getByRole('textbox');
-    await user.type(input, 'hello');
-
-    expect(screen.getByText('5/10')).toBeInTheDocument();
+    // showCharacterCount is ignored by CockpitInput, but should not throw
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
   });
 
-  it('should show success state', () => {
-    render(<GlassInput success />);
+  it('should accept success prop without error (ignored)', () => {
+    render(<CockpitInput success />);
 
     const input = screen.getByRole('textbox');
-    // Check the input wrapper has success styling
-    expect(input.closest('.glass-input')).toBeInTheDocument();
+    expect(input).toBeInTheDocument();
   });
 
   it('should render left icon', () => {
     const Icon = () => <span data-testid="left-icon">Q</span>;
-    render(<GlassInput leftIcon={<Icon />} />);
+    render(<CockpitInput leftIcon={<Icon />} />);
 
     expect(screen.getByTestId('left-icon')).toBeInTheDocument();
   });
 
-  it('should render right icon', () => {
-    const Icon = () => <span data-testid="right-icon">{'\u2713'}</span>;
-    render(<GlassInput rightIcon={<Icon />} />);
+  it('should accept rightIcon prop without error (ignored)', () => {
+    const Icon = () => <span data-testid="right-icon">ok</span>;
+    render(<CockpitInput rightIcon={<Icon />} />);
 
-    expect(screen.getByTestId('right-icon')).toBeInTheDocument();
+    // rightIcon is ignored by CockpitInput, but should not throw
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
   });
 
   it('should be disabled when disabled prop is true', () => {
-    render(<GlassInput disabled />);
+    render(<CockpitInput disabled />);
 
     expect(screen.getByRole('textbox')).toBeDisabled();
   });
 
   it('should forward ref', () => {
     const ref = vi.fn();
-    render(<GlassInput ref={ref} />);
+    render(<CockpitInput ref={ref} />);
 
     expect(ref).toHaveBeenCalled();
   });
 });
 
-describe('GlassTextarea', () => {
+describe('CockpitTextarea', () => {
   it('should render textarea element', () => {
-    render(<GlassTextarea placeholder="Enter description" />);
+    render(<CockpitTextarea placeholder="Enter description" />);
 
     expect(screen.getByPlaceholderText('Enter description')).toBeInTheDocument();
   });
 
   it('should render with label', () => {
-    render(<GlassTextarea label="Description" />);
+    render(<CockpitTextarea label="Description" />);
 
     expect(screen.getByText('Description')).toBeInTheDocument();
   });
 
   it('should handle value changes', async () => {
     const handleChange = vi.fn();
-    const { user } = render(<GlassTextarea onChange={handleChange} />);
+    const { user } = render(<CockpitTextarea onChange={handleChange} />);
 
     const textarea = screen.getByRole('textbox');
     await user.type(textarea, 'test content');
@@ -131,26 +125,20 @@ describe('GlassTextarea', () => {
   });
 
   it('should show error message', () => {
-    render(<GlassTextarea error="Description is required" />);
+    render(<CockpitTextarea error="Description is required" />);
 
     expect(screen.getByRole('alert')).toHaveTextContent('Description is required');
   });
 
-  it('should show character count', async () => {
-    const { user } = render(
-      <GlassTextarea showCharacterCount maxLength={100} />
-    );
+  it('should accept showCharacterCount prop without error (ignored)', () => {
+    render(<CockpitTextarea showCharacterCount maxLength={100} />);
 
-    expect(screen.getByText('0/100')).toBeInTheDocument();
-
-    const textarea = screen.getByRole('textbox');
-    await user.type(textarea, 'hello world');
-
-    expect(screen.getByText('11/100')).toBeInTheDocument();
+    // showCharacterCount is ignored by CockpitTextarea, but should not throw
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
   });
 
   it('should show hint text', () => {
-    render(<GlassTextarea hint="Maximum 500 characters" />);
+    render(<CockpitTextarea hint="Maximum 500 characters" />);
 
     expect(screen.getByText('Maximum 500 characters')).toBeInTheDocument();
   });

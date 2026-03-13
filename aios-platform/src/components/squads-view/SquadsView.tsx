@@ -8,7 +8,7 @@ import {
   GitBranch,
   Network,
 } from 'lucide-react';
-import { GlassCard, GlassButton, GlassInput, Badge, StatusDot, SectionLabel, Avatar } from '../ui';
+import { CockpitCard, CockpitButton, CockpitInput, CockpitSectionDivider, Badge, StatusDot, SectionLabel, Avatar, RevealGroup, RevealItem } from '../ui';
 import { SquadOrgChart } from '../squads/SquadOrgChart';
 import { AgentDetailPanel } from '../squads/AgentDetailPanel';
 import { ConnectionsMap } from '../squads/ConnectionsMap';
@@ -75,9 +75,9 @@ const placeholderAgents: AgentSummary[] = [
 // --- Tier config ---
 
 const tierConfig = {
-  0: { label: 'Orchestrator', color: 'text-purple-400', bg: 'bg-purple-500/15' },
-  1: { label: 'Master', color: 'text-blue-400', bg: 'bg-blue-500/15' },
-  2: { label: 'Specialist', color: 'text-green-400', bg: 'bg-green-500/15' },
+  0: { label: 'Orchestrator', color: 'text-[var(--aiox-lime)]', bg: 'bg-[var(--aiox-lime)]/10' },
+  1: { label: 'Master', color: 'text-[var(--aiox-gray-silver)]', bg: 'bg-[var(--aiox-gray-silver)]/10' },
+  2: { label: 'Specialist', color: 'text-[var(--aiox-gray-muted)]', bg: 'bg-[var(--aiox-gray-muted)]/10' },
 } as const;
 
 // --- Tab types ---
@@ -155,103 +155,107 @@ export default function SquadsView() {
   // --- Level 1: Organogram ---
   if (level === 1) {
     return (
-      <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6">
+      <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6 pattern-dot-grid--sparse">
         <div className="flex items-center gap-3">
-          <Users size={22} className="text-cyan-400" />
-          <h1 className="text-xl font-semibold text-primary">Squads</h1>
+          <Users size={22} className="text-[var(--aiox-lime)]" />
+          <h1 className="heading-display text-xl font-semibold text-primary">Squads</h1>
           <Badge variant="count" size="sm">{squads.length}</Badge>
         </div>
 
-        <GlassInput
+        <CockpitInput
           placeholder="Search squads..."
           leftIcon={<Search size={16} />}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        {groupedSquads.map((group) => (
+        {groupedSquads.map((group, groupIdx) => (
           <div key={group.name}>
-            <SectionLabel count={group.squads.length}>{group.name}</SectionLabel>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            <CockpitSectionDivider
+              num={String(groupIdx + 1).padStart(2, '0')}
+              label={group.name}
+            />
+            <RevealGroup className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-3" stagger={0.04}>
               {group.squads.map((squad, i) => (
-                <GlassCard
-                  key={squad.id}
-                  padding="md"
-                  interactive
-                  className="cursor-pointer"
-                  onClick={() => navigateToSquad(squad.id)}
-                  motionProps={{ transition: { delay: i * 0.03 } }}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                      {getSquadImageUrl(squad.id) ? (
-                        <img
-                          src={getSquadImageUrl(squad.id)}
-                          alt={squad.name}
-                          className="w-8 h-8 rounded-lg object-cover"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-lg bg-cyan-500/15 flex items-center justify-center">
-                          <Users size={16} className="text-cyan-400" />
+                <RevealItem key={squad.id} direction="up">
+                  <CockpitCard
+                    padding="md"
+                    interactive
+                    className="cursor-pointer"
+                    onClick={() => navigateToSquad(squad.id)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        {getSquadImageUrl(squad.id) ? (
+                          <img
+                            src={getSquadImageUrl(squad.id)}
+                            alt={squad.name}
+                            className="w-8 h-8 rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-lg bg-[var(--aiox-lime)]/15 flex items-center justify-center">
+                            <Users size={16} className="text-[var(--aiox-lime)]" />
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-primary">{squad.name}</p>
+                          <p className="text-[10px] text-tertiary font-mono">{squad.id}</p>
                         </div>
-                      )}
-                      <div>
-                        <p className="text-sm font-medium text-primary">{squad.name}</p>
-                        <p className="text-[10px] text-tertiary font-mono">{squad.id}</p>
                       </div>
+                      <StatusDot
+                        status={squad.status === 'active' ? 'success' : squad.status === 'busy' ? 'waiting' : 'offline'}
+                        size="sm"
+                      />
                     </div>
-                    <StatusDot
-                      status={squad.status === 'active' ? 'success' : squad.status === 'busy' ? 'waiting' : 'offline'}
-                      size="sm"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge variant="default" size="sm">{squad.agentCount} agents</Badge>
-                  </div>
-                </GlassCard>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge variant="default" size="sm">{squad.agentCount} agents</Badge>
+                    </div>
+                  </CockpitCard>
+                </RevealItem>
               ))}
-            </div>
+            </RevealGroup>
           </div>
         ))}
 
         {ungrouped.length > 0 && (
           <div>
             <SectionLabel count={ungrouped.length}>Other Squads</SectionLabel>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            <RevealGroup className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3" stagger={0.04}>
               {ungrouped.map((squad) => (
-                <GlassCard
-                  key={squad.id}
-                  padding="md"
-                  interactive
-                  className="cursor-pointer"
-                  onClick={() => navigateToSquad(squad.id)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                      {getSquadImageUrl(squad.id) ? (
-                        <img
-                          src={getSquadImageUrl(squad.id)}
-                          alt={squad.name}
-                          className="w-8 h-8 rounded-lg object-cover"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-lg bg-gray-500/15 flex items-center justify-center">
-                          <Users size={16} className="text-gray-400" />
+                <RevealItem key={squad.id} direction="up">
+                  <CockpitCard
+                    padding="md"
+                    interactive
+                    className="cursor-pointer"
+                    onClick={() => navigateToSquad(squad.id)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        {getSquadImageUrl(squad.id) ? (
+                          <img
+                            src={getSquadImageUrl(squad.id)}
+                            alt={squad.name}
+                            className="w-8 h-8 rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-lg bg-[var(--aiox-gray-dim)]/15 flex items-center justify-center">
+                            <Users size={16} className="text-[var(--aiox-gray-dim)]" />
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-primary">{squad.name}</p>
+                          <p className="text-[10px] text-tertiary font-mono">{squad.id}</p>
                         </div>
-                      )}
-                      <div>
-                        <p className="text-sm font-medium text-primary">{squad.name}</p>
-                        <p className="text-[10px] text-tertiary font-mono">{squad.id}</p>
                       </div>
+                      <StatusDot status="idle" size="sm" />
                     </div>
-                    <StatusDot status="idle" size="sm" />
-                  </div>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge variant="default" size="sm">{squad.agentCount} agents</Badge>
-                  </div>
-                </GlassCard>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge variant="default" size="sm">{squad.agentCount} agents</Badge>
+                    </div>
+                  </CockpitCard>
+                </RevealItem>
               ))}
-            </div>
+            </RevealGroup>
           </div>
         )}
       </div>
@@ -264,29 +268,29 @@ export default function SquadsView() {
       <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2">
-          <GlassButton size="sm" variant="ghost" onClick={goBack} leftIcon={<ChevronLeft size={14} />}>
+          <CockpitButton size="sm" variant="ghost" onClick={goBack} leftIcon={<ChevronLeft size={14} />}>
             Squads
-          </GlassButton>
+          </CockpitButton>
           <span className="text-tertiary text-sm">/</span>
           <span className="text-sm text-primary font-medium">{selectedSquad.name}</span>
         </div>
 
         {/* Squad Header */}
-        <GlassCard padding="lg">
+        <CockpitCard padding="lg">
           <div className="flex items-center gap-4">
             {getSquadImageUrl(selectedSquad.id) ? (
               <img
                 src={getSquadImageUrl(selectedSquad.id)}
                 alt={selectedSquad.name}
-                className="w-12 h-12 rounded-xl object-cover"
+                className="w-12 h-12 rounded-none object-cover"
               />
             ) : (
-              <div className="w-12 h-12 rounded-xl bg-cyan-500/15 flex items-center justify-center">
-                <Users size={24} className="text-cyan-400" />
+              <div className="w-12 h-12 rounded-none bg-[var(--aiox-lime)]/15 flex items-center justify-center">
+                <Users size={24} className="text-[var(--aiox-lime)]" />
               </div>
             )}
             <div>
-              <h2 className="text-lg font-semibold text-primary">{selectedSquad.name}</h2>
+              <h2 className="text-base font-semibold text-primary">{selectedSquad.name}</h2>
               <p className="text-sm text-secondary">{selectedSquad.description}</p>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="default" size="sm">{selectedSquad.agentCount} agents</Badge>
@@ -298,10 +302,10 @@ export default function SquadsView() {
               </div>
             </div>
           </div>
-        </GlassCard>
+        </CockpitCard>
 
         {/* Tab Bar */}
-        <div className="flex items-center gap-1 p-1 glass-subtle rounded-xl w-fit" role="tablist" aria-label="Abas do squad">
+        <div className="flex items-center gap-1 p-1 glass-subtle rounded-none w-fit" role="tablist" aria-label="Abas do squad">
           {squadTabs.map((tab) => (
             <button
               key={tab.id}
@@ -334,13 +338,12 @@ export default function SquadsView() {
               {agents.map((agent, i) => {
                 const tier = tierConfig[agent.tier as 0 | 1 | 2] || tierConfig[2];
                 return (
-                  <GlassCard
+                  <CockpitCard
                     key={agent.id}
                     padding="md"
                     interactive
                     className="cursor-pointer"
                     onClick={() => navigateToAgent(agent.id)}
-                    motionProps={{ transition: { delay: i * 0.03 } }}
                   >
                     <div className="flex items-center gap-3">
                       {hasAgentAvatar(agent.name) || hasAgentAvatar(agent.id) ? (
@@ -366,7 +369,7 @@ export default function SquadsView() {
                       </Badge>
                       <StatusDot status="success" size="sm" />
                     </div>
-                  </GlassCard>
+                  </CockpitCard>
                 );
               })}
             </div>
@@ -390,14 +393,14 @@ export default function SquadsView() {
       <div className="h-full overflow-y-auto glass-scrollbar p-6 space-y-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 flex-wrap">
-          <GlassButton
+          <CockpitButton
             size="sm"
             variant="ghost"
             onClick={() => { setSelectedAgentId(null); setLevel(2); }}
             leftIcon={<ChevronLeft size={14} />}
           >
             {selectedSquad.name}
-          </GlassButton>
+          </CockpitButton>
           <span className="text-tertiary text-sm">/</span>
           <span className="text-sm text-primary font-medium">{selectedAgent.name}</span>
         </div>
@@ -419,13 +422,13 @@ export default function SquadsView() {
   // Fallback
   return (
     <div className="h-full flex items-center justify-center">
-      <GlassCard padding="lg" className="text-center">
+      <CockpitCard padding="lg" className="text-center">
         <p className="text-primary text-lg font-semibold">Squads</p>
         <p className="text-secondary text-sm mt-1">No data available</p>
-        <GlassButton size="sm" className="mt-3" onClick={() => { setLevel(1); setSelectedSquadId(null); setSelectedAgentId(null); }}>
+        <CockpitButton size="sm" className="mt-3" onClick={() => { setLevel(1); setSelectedSquadId(null); setSelectedAgentId(null); }}>
           Go back
-        </GlassButton>
-      </GlassCard>
+        </CockpitButton>
+      </CockpitCard>
     </div>
   );
 }

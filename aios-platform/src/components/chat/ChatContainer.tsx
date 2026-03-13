@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { SmartMessageList } from './VirtualizedMessageList';
 import { ChatInput } from './ChatInput';
 import { ChatConversationPanel } from './ChatConversationPanel';
@@ -49,16 +48,51 @@ export function ChatContainer() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleSelectSession = (sessionId: string) => {
+    const session = sessions.find(s => s.id === sessionId);
+    if (session) {
+      setActiveSession(sessionId);
+      useUIStore.setState({
+        selectedSquadId: session.squadId,
+        selectedAgentId: session.agentId,
+      });
+    }
+  };
+
+  const handleNewChat = () => {
+    useUIStore.setState({ selectedAgentId: null, selectedSquadId: null });
+    useChatStore.getState().setActiveSession(null);
+  };
+
   // Show loading while agent data is being fetched (prevents flash of EmptyChat)
   if (!selectedAgent && isAgentLoading && selectedAgentId) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-2 border-[#0099FF] border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-2 border-[var(--aiox-lime)] border-t-transparent rounded-full" />
       </div>
     );
   }
 
+  // No agent selected — show EmptyChat with conversation sidebar if sessions exist
   if (!selectedAgent) {
+    if (sessions.length > 0) {
+      return (
+        <div className="h-full flex">
+          <ChatConversationPanel
+            sessions={sessions}
+            activeSessionId={activeSessionId}
+            isOpen={chatSidebarOpen}
+            onToggle={() => setChatSidebarOpen(!chatSidebarOpen)}
+            onSelectSession={handleSelectSession}
+            onDeleteSession={deleteSession}
+            onNewChat={handleNewChat}
+          />
+          <div className="flex-1 min-w-0">
+            <EmptyChat />
+          </div>
+        </div>
+      );
+    }
     return <EmptyChat />;
   }
 
@@ -70,21 +104,9 @@ export function ChatContainer() {
         activeSessionId={activeSessionId}
         isOpen={chatSidebarOpen}
         onToggle={() => setChatSidebarOpen(!chatSidebarOpen)}
-        onSelectSession={(sessionId) => {
-          const session = sessions.find(s => s.id === sessionId);
-          if (session) {
-            setActiveSession(sessionId);
-            useUIStore.setState({
-              selectedSquadId: session.squadId,
-              selectedAgentId: session.agentId,
-            });
-          }
-        }}
+        onSelectSession={handleSelectSession}
         onDeleteSession={deleteSession}
-        onNewChat={() => {
-          useUIStore.setState({ selectedAgentId: null, selectedSquadId: null });
-          useChatStore.getState().setActiveSession(null);
-        }}
+        onNewChat={handleNewChat}
       />
 
       {/* Main Chat Area */}
@@ -112,12 +134,8 @@ export function ChatContainer() {
           )}
 
           {/* Scroll to bottom floating button */}
-          <AnimatePresence>
-            {showScrollBtn && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.8, y: 10 }}
+          {showScrollBtn && (
+              <button
                 onClick={scrollToBottom}
                 className="sticky bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-white/70 hover:text-white text-xs transition-colors shadow-lg"
                 title="Ir para o final"
@@ -127,10 +145,9 @@ export function ChatContainer() {
                   <polyline points="7 6 12 11 17 6" />
                 </svg>
                 Novas mensagens
-              </motion.button>
+              </button>
             )}
-          </AnimatePresence>
-        </div>
+</div>
 
         {/* Input Area */}
         <div className="p-4 pt-0">

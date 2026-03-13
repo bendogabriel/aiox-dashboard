@@ -10,7 +10,7 @@ const initTheme = () => {
     try {
       const { state } = JSON.parse(stored);
       const theme = state?.theme;
-      if (theme === 'glass' || theme === 'matrix' || theme === 'aiox') {
+      if (theme === 'glass' || theme === 'matrix' || theme === 'aiox' || theme === 'aiox-gold') {
         // Glass, Matrix & AIOX need .dark class + data-theme attribute
         document.documentElement.classList.add('dark');
         document.documentElement.setAttribute('data-theme', theme);

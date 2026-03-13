@@ -1,4 +1,4 @@
-import { GlassCard, Badge, Avatar } from '../ui';
+import { CockpitCard, Badge, Avatar } from '../ui';
 import { getTierTheme } from '../../lib/utils';
 import type { AgentWithUI } from '../../hooks/useAgents';
 import type { SquadType } from '../../types';
@@ -12,7 +12,7 @@ export function AgentInfoCard({ agent, squadType }: AgentInfoCardProps) {
   const normalizedTier = (agent.tier === 0 || agent.tier === 1 || agent.tier === 2) ? agent.tier : 2;
 
   return (
-    <GlassCard variant="subtle" padding="md">
+    <CockpitCard variant="subtle" padding="md">
       <div className="flex items-center gap-3">
         <Avatar name={agent.name} agentId={agent.id} size="lg" squadType={squadType} />
         <div className="flex-1 min-w-0">
@@ -28,6 +28,6 @@ export function AgentInfoCard({ agent, squadType }: AgentInfoCardProps) {
           </div>
         </div>
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }

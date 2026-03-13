@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { GlassCard, GlassButton, GlassInput } from '../ui';
+import { CockpitCard, CockpitButton, CockpitInput } from '../ui';
 import { useToast } from '../ui/Toast';
 import { SettingRow } from './SettingsHelpers';
 import { Crown, Shield, Zap, Lock, Check } from 'lucide-react';
@@ -68,10 +68,10 @@ export function ProfileSettings() {
 
   return (
     <div className="space-y-6">
-      <GlassCard>
+      <CockpitCard>
         {/* Avatar */}
         <div className="flex items-center gap-4 mb-6">
-          <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+          <div className="h-20 w-20 rounded-none bg-gradient-to-br from-[var(--aiox-lime)] to-[var(--aiox-gray-muted)] flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
             {avatarUrl ? (
               <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
             ) : (
@@ -86,9 +86,9 @@ export function ProfileSettings() {
               className="hidden"
               onChange={handlePhotoChange}
             />
-            <GlassButton variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()}>
+            <CockpitButton variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()}>
               Alterar foto
-            </GlassButton>
+            </CockpitButton>
             <p className="text-xs text-tertiary mt-1">JPG, PNG. Max 2MB</p>
           </div>
         </div>
@@ -96,7 +96,7 @@ export function ProfileSettings() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm text-secondary mb-2">Nome completo</label>
-            <GlassInput
+            <CockpitInput
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Seu nome"
@@ -105,7 +105,7 @@ export function ProfileSettings() {
 
           <div>
             <label className="block text-sm text-secondary mb-2">Email</label>
-            <GlassInput
+            <CockpitInput
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -113,9 +113,9 @@ export function ProfileSettings() {
             />
           </div>
         </div>
-      </GlassCard>
+      </CockpitCard>
 
-      <GlassCard>
+      <CockpitCard>
         <h2 className="text-lg font-semibold text-primary mb-4">Preferências de Conta</h2>
 
         <div className="space-y-4">
@@ -143,17 +143,17 @@ export function ProfileSettings() {
             }
           />
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       {/* Plan & Access */}
-      <GlassCard>
+      <CockpitCard>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Crown size={18} className="text-[#D1FF00]" />
+            <Crown size={18} className="text-[var(--aiox-lime)]" />
             <h2 className="text-lg font-semibold text-primary">Plano & Acesso</h2>
           </div>
           {masterMode && (
-            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-[#D1FF00]/10 text-[#D1FF00] border border-[#D1FF00]/20 font-mono">
+            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-[var(--aiox-lime)]/10 text-[var(--aiox-lime)] border border-[var(--aiox-lime)]/20 font-mono">
               Master
             </span>
           )}
@@ -175,17 +175,17 @@ export function ProfileSettings() {
               },
               pro: {
                 icon: <Zap size={16} />,
-                color: 'text-blue-400',
-                bg: 'bg-blue-500/5',
-                border: isActive ? 'border-blue-400/50' : 'border-white/5',
+                color: 'text-[var(--aiox-blue)]',
+                bg: 'bg-[var(--aiox-blue)]/5',
+                border: isActive ? 'border-[var(--aiox-blue)]/50' : 'border-white/5',
                 label: 'Pro',
                 desc: 'Todas as ferramentas',
               },
               enterprise: {
                 icon: <Shield size={16} />,
-                color: 'text-[#D1FF00]',
-                bg: 'bg-[#D1FF00]/5',
-                border: isActive ? 'border-[#D1FF00]/50' : 'border-white/5',
+                color: 'text-[var(--aiox-lime)]',
+                bg: 'bg-[var(--aiox-lime)]/5',
+                border: isActive ? 'border-[var(--aiox-lime)]/50' : 'border-white/5',
                 label: 'Enterprise',
                 desc: 'Recursos avancados + SSO',
               },
@@ -197,7 +197,7 @@ export function ProfileSettings() {
                 key={tier}
                 onClick={() => handleTierChange(tier)}
                 className={cn(
-                  'relative p-4 rounded-xl border text-left transition-all',
+                  'relative p-4 rounded-none border text-left transition-all',
                   cfg.bg, cfg.border,
                   isActive && 'ring-1 ring-white/10',
                   'hover:bg-white/5'
@@ -228,14 +228,14 @@ export function ProfileSettings() {
 
         {/* Master Mode Toggle */}
         <div className={cn(
-          'p-4 rounded-xl border transition-all',
+          'p-4 rounded-none border transition-all',
           masterMode
-            ? 'bg-[#D1FF00]/5 border-[#D1FF00]/20'
+            ? 'bg-[var(--aiox-lime)]/5 border-[var(--aiox-lime)]/20'
             : 'bg-white/[0.02] border-white/5',
         )}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Crown size={18} className={masterMode ? 'text-[#D1FF00]' : 'text-tertiary'} />
+              <Crown size={18} className={masterMode ? 'text-[var(--aiox-lime)]' : 'text-tertiary'} />
               <div>
                 <p className="text-sm font-semibold text-primary">Master Mode</p>
                 <p className="text-xs text-tertiary">
@@ -247,7 +247,7 @@ export function ProfileSettings() {
               onClick={handleMasterToggle}
               className={cn(
                 'relative w-11 h-6 rounded-full transition-colors duration-200',
-                masterMode ? 'bg-[#D1FF00]' : 'bg-white/10',
+                masterMode ? 'bg-[var(--aiox-lime)]' : 'bg-white/10',
               )}
               role="switch"
               aria-checked={masterMode}
@@ -262,12 +262,12 @@ export function ProfileSettings() {
             </button>
           </div>
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       <div className="flex justify-end">
-        <GlassButton variant="primary" onClick={handleSave}>
+        <CockpitButton variant="primary" onClick={handleSave}>
           Salvar alterações
-        </GlassButton>
+        </CockpitButton>
       </div>
     </div>
   );

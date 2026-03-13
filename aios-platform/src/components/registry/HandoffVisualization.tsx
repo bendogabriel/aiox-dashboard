@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, GitBranch, Users, Zap, ChevronDown } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { getAgentColor } from '../../lib/agent-colors';
@@ -71,7 +70,7 @@ export default function HandoffVisualization() {
               <div
                 key={workflow.id}
                 className={cn(
-                  'border rounded-xl p-4 transition-colors',
+                  'border rounded-none p-4 transition-colors',
                   'bg-white/[0.03] backdrop-blur-sm',
                   isExpanded
                     ? 'border-white/20 bg-white/[0.06]'
@@ -97,22 +96,15 @@ export default function HandoffVisualization() {
                     <span className="text-[10px] text-white/30 tabular-nums">
                       {workflow.phases.length} phases
                     </span>
-                    <motion.div
-                      animate={{ rotate: isExpanded ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
+                    <div
                     >
                       <ChevronDown className="w-4 h-4 text-white/30" />
-                    </motion.div>
+                    </div>
                   </div>
                 </button>
 
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: 'easeInOut' }}
+                {isExpanded && (
+                    <div
                       className="overflow-hidden"
                     >
                       <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-4 px-1">
@@ -155,10 +147,9 @@ export default function HandoffVisualization() {
                           );
                         })}
                       </div>
-                    </motion.div>
+                    </div>
                   )}
-                </AnimatePresence>
-              </div>
+</div>
             );
           })}
         </div>
@@ -176,13 +167,10 @@ export default function HandoffVisualization() {
               const isExpanded = expandedAgent === agent.id;
 
               return (
-                <motion.div
+                <div
                   key={agent.id}
-                  layout
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
                   className={cn(
-                    'border rounded-xl p-4 transition-colors cursor-pointer',
+                    'border rounded-none p-4 transition-colors cursor-pointer',
                     'bg-white/[0.03] backdrop-blur-sm',
                     isExpanded
                       ? 'border-white/20 bg-white/[0.06]'
@@ -214,12 +202,10 @@ export default function HandoffVisualization() {
                         @{agent.id}
                       </span>
                     </div>
-                    <motion.div
-                      animate={{ rotate: isExpanded ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
+                    <div
                     >
                       <ChevronDown className="w-3.5 h-3.5 text-white/30" />
-                    </motion.div>
+                    </div>
                   </div>
 
                   {/* Quick summary when collapsed */}
@@ -246,13 +232,8 @@ export default function HandoffVisualization() {
                   )}
 
                   {/* Expanded details */}
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2, ease: 'easeInOut' }}
+                  {isExpanded && (
+                      <div
                         className="overflow-hidden"
                       >
                         <div className="space-y-3 pt-1">
@@ -329,10 +310,9 @@ export default function HandoffVisualization() {
                             </div>
                           )}
                         </div>
-                      </motion.div>
+                      </div>
                     )}
-                  </AnimatePresence>
-                </motion.div>
+</div>
               );
             })}
           </div>

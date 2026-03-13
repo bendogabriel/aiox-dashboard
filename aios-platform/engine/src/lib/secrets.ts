@@ -5,7 +5,7 @@ import { log } from './logger';
 const ALGORITHM = 'aes-256-gcm';
 const KEY_LENGTH = 32;
 const IV_LENGTH = 16;
-const AUTH_TAG_LENGTH = 16;
+const _AUTH_TAG_LENGTH = 16;
 
 /**
  * Derives encryption key from ENGINE_SECRET env var (or fallback).

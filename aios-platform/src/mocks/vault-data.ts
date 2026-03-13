@@ -364,7 +364,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
   {
     id: 'ws-aiox',
     name: 'AIOX',
-    icon: '🏢',
+    icon: 'Landmark',
     status: 'active',
     documentsCount: 23,
     templatesCount: 18,
@@ -374,7 +374,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
       {
         id: 'company',
         name: 'Company',
-        icon: '🏛️',
+        icon: 'Landmark',
         color: 'purple',
         status: 'complete',
         items: [
@@ -390,7 +390,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
       {
         id: 'products',
         name: 'Products',
-        icon: '📦',
+        icon: 'Package',
         color: 'green',
         status: 'complete',
         items: [
@@ -404,7 +404,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
       {
         id: 'campaigns',
         name: 'Campaigns',
-        icon: '📣',
+        icon: 'Megaphone',
         color: 'yellow',
         status: 'partial',
         items: [
@@ -414,7 +414,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
       {
         id: 'brand',
         name: 'Brand',
-        icon: '🎨',
+        icon: 'Palette',
         color: 'orange',
         status: 'complete',
         items: [
@@ -427,7 +427,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
       {
         id: 'tech',
         name: 'Tech',
-        icon: '💻',
+        icon: 'Laptop',
         color: 'emerald',
         status: 'partial',
         items: [
@@ -440,7 +440,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
       {
         id: 'operations',
         name: 'Operations',
-        icon: '📊',
+        icon: 'BarChart3',
         color: 'blue',
         status: 'partial',
         items: [
@@ -453,7 +453,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
     ],
     templateGroups: [
       {
-        id: 'tg-ai', name: 'AI Strategy', icon: '🧠', area: 'AI',
+        id: 'tg-ai', name: 'AI Strategy', icon: 'Brain', area: 'AI',
         completionPercent: 75,
         templates: [
           { id: 't-model-pol', name: 'Model Policy', status: 'filled', lastUpdated: '2026-03-05T11:00:00Z' },
@@ -463,7 +463,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
         ],
       },
       {
-        id: 'tg-analytics', name: 'Analytics', icon: '📊', area: 'Analytics',
+        id: 'tg-analytics', name: 'Analytics', icon: 'BarChart3', area: 'Analytics',
         completionPercent: 100,
         templates: [
           { id: 't-console360', name: 'Console 360', status: 'filled', lastUpdated: '2026-03-06T10:00:00Z' },
@@ -473,7 +473,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
         ],
       },
       {
-        id: 'tg-branding', name: 'Branding', icon: '🎨', area: 'Branding',
+        id: 'tg-branding', name: 'Branding', icon: 'Palette', area: 'Branding',
         completionPercent: 66,
         templates: [
           { id: 't-ativacao', name: 'Ativação Estratégica', status: 'filled', lastUpdated: '2026-03-02T11:00:00Z' },
@@ -482,7 +482,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
         ],
       },
       {
-        id: 'tg-ops', name: 'Operations', icon: '⚙️', area: 'Ops',
+        id: 'tg-ops', name: 'Operations', icon: 'Cog', area: 'Ops',
         completionPercent: 66,
         templates: [
           { id: 't-kpis-tmpl', name: 'KPI Framework', status: 'filled', lastUpdated: '2026-03-04T08:00:00Z' },
@@ -491,7 +491,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
         ],
       },
       {
-        id: 'tg-tech', name: 'Tech', icon: '💻', area: 'Tech',
+        id: 'tg-tech', name: 'Tech', icon: 'Laptop', area: 'Tech',
         completionPercent: 33,
         templates: [
           { id: 't-stack-tmpl', name: 'Stack Map', status: 'filled', lastUpdated: '2026-03-04T09:00:00Z' },
@@ -500,7 +500,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
         ],
       },
       {
-        id: 'tg-exec', name: 'Executive', icon: '👑', area: 'Executive',
+        id: 'tg-exec', name: 'Executive', icon: 'Crown', area: 'Executive',
         completionPercent: 33,
         templates: [
           { id: 't-ceo-report', name: 'CEO Report', status: 'filled', lastUpdated: '2026-03-06T15:00:00Z' },
@@ -511,7 +511,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
     ],
     taxonomySections: [
       {
-        id: 'tax-context', name: 'Contexto', icon: '📂',
+        id: 'tax-context', name: 'Contexto', icon: 'FolderOpen',
         nodes: [
           { id: 'n-business', name: 'business', type: 'namespace', usedInDocuments: 12, children: [
             { id: 'n-b-company', name: 'company', type: 'entity', usedInDocuments: 7 },
@@ -532,7 +532,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
         ],
       },
       {
-        id: 'tax-entities', name: 'Entidades', icon: '📦',
+        id: 'tax-entities', name: 'Entidades', icon: 'Package',
         nodes: [
           { id: 'n-e-company', name: 'company', type: 'entity', usedInDocuments: 7, description: 'Dados corporativos: credenciais, DCP, diagnósticos' },
           { id: 'n-e-founder', name: 'founder', type: 'entity', usedInDocuments: 3, description: 'DNA, estilo, background do founder' },
@@ -542,7 +542,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
         ],
       },
       {
-        id: 'tax-glossary', name: 'Glossário', icon: '📖',
+        id: 'tax-glossary', name: 'Glossário', icon: 'BookOpen',
         nodes: [
           { id: 'n-g-sap', name: 'SAP', type: 'term', usedInDocuments: 4, description: 'Strategic Action Plan — plano de ação estratégico' },
           { id: 'n-g-dcp', name: 'DCP', type: 'term', usedInDocuments: 2, description: 'Diagnóstico de Competências e Processos' },
@@ -552,7 +552,7 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
         ],
       },
       {
-        id: 'tax-workflows', name: 'Workflows', icon: '🔀',
+        id: 'tax-workflows', name: 'Workflows', icon: 'GitMerge',
         nodes: [
           { id: 'n-w-copy', name: 'copy-create', type: 'workflow', usedInDocuments: 2, description: 'Criação de copy com context loading' },
           { id: 'n-w-brief', name: 'brief-init', type: 'workflow', usedInDocuments: 1, description: 'Inicialização de campaign brief' },
@@ -562,49 +562,49 @@ export const MOCK_WORKSPACES: VaultWorkspace[] = [
       },
     ],
     csuitePersonas: [
-      { id: 'cs-cio', name: 'CIO', role: 'Chief Intelligence Officer', icon: '🗄️', area: 'Workspace Orchestration', dependencies: ['SAP', 'All Data Sources', 'Taxonomies'], isActive: true },
-      { id: 'cs-ceo', name: 'CEO', role: 'Chief Executive Officer', icon: '👑', area: 'Reporting & Strategy', dependencies: ['KPIs', 'Analytics', 'Operations', 'Evidence'], isActive: true },
-      { id: 'cs-cmo', name: 'CMO', role: 'Chief Marketing Officer', icon: '📣', area: 'Marketing & Campaigns', dependencies: ['Brand Book', 'Offerbook', 'Proofs', 'Campaigns'], isActive: false },
-      { id: 'cs-cfo', name: 'CFO', role: 'Chief Financial Officer', icon: '💰', area: 'Financial Operations', dependencies: ['Pricing', 'Revenue', 'KPIs'], isActive: false },
-      { id: 'cs-chro', name: 'CHRO', role: 'Chief Human Resources Officer', icon: '👥', area: 'People & Culture', dependencies: ['Team Structure', 'Culture', 'Onboarding'], isActive: false },
+      { id: 'cs-cio', name: 'CIO', role: 'Chief Intelligence Officer', icon: 'Package', area: 'Workspace Orchestration', dependencies: ['SAP', 'All Data Sources', 'Taxonomies'], isActive: true },
+      { id: 'cs-ceo', name: 'CEO', role: 'Chief Executive Officer', icon: 'Crown', area: 'Reporting & Strategy', dependencies: ['KPIs', 'Analytics', 'Operations', 'Evidence'], isActive: true },
+      { id: 'cs-cmo', name: 'CMO', role: 'Chief Marketing Officer', icon: 'Megaphone', area: 'Marketing & Campaigns', dependencies: ['Brand Book', 'Offerbook', 'Proofs', 'Campaigns'], isActive: false },
+      { id: 'cs-cfo', name: 'CFO', role: 'Chief Financial Officer', icon: 'DollarSign', area: 'Financial Operations', dependencies: ['Pricing', 'Revenue', 'KPIs'], isActive: false },
+      { id: 'cs-chro', name: 'CHRO', role: 'Chief Human Resources Officer', icon: 'Users', area: 'People & Culture', dependencies: ['Team Structure', 'Culture', 'Onboarding'], isActive: false },
     ],
   },
   {
     id: 'ws-academia',
     name: 'Academia IOX',
-    icon: '🎓',
+    icon: 'BookOpen',
     status: 'setup',
     documentsCount: 12,
     templatesCount: 8,
     healthPercent: 45,
     lastUpdated: '2026-03-08T09:00:00Z',
     categories: [
-      { id: 'company', name: 'Company', icon: '🏛️', color: 'purple', status: 'partial', items: [
+      { id: 'company', name: 'Company', icon: 'Landmark', color: 'purple', status: 'partial', items: [
         { id: 'i-acad-dna', name: 'DNA Academia', type: 'diagnostic', status: 'validated', tokenCount: 567, lastUpdated: '2026-03-07T10:00:00Z', documentId: '' },
         { id: 'i-acad-cred', name: 'Credenciais', type: 'generic', status: 'draft', tokenCount: 234, lastUpdated: '2026-03-05T14:00:00Z', documentId: '' },
       ]},
-      { id: 'products', name: 'Products', icon: '📦', color: 'green', status: 'partial', items: [
+      { id: 'products', name: 'Products', icon: 'Package', color: 'green', status: 'partial', items: [
         { id: 'i-acad-fund', name: 'Fundamentos', type: 'offerbook', status: 'validated', tokenCount: 890, lastUpdated: '2026-03-06T11:00:00Z', documentId: '' },
         { id: 'i-acad-avanc', name: 'Avançado', type: 'offerbook', status: 'draft', tokenCount: 456, lastUpdated: '2026-03-04T09:00:00Z', documentId: '' },
         { id: 'i-acad-mentor', name: 'Mentoria', type: 'offerbook', status: 'draft', tokenCount: 345, lastUpdated: '2026-03-01T16:00:00Z', documentId: '' },
       ]},
-      { id: 'campaigns', name: 'Campaigns', icon: '📣', color: 'yellow', status: 'empty', items: [] },
-      { id: 'brand', name: 'Brand', icon: '🎨', color: 'orange', status: 'partial', items: [
+      { id: 'campaigns', name: 'Campaigns', icon: 'Megaphone', color: 'yellow', status: 'empty', items: [] },
+      { id: 'brand', name: 'Brand', icon: 'Palette', color: 'orange', status: 'partial', items: [
         { id: 'i-acad-brand', name: 'Brand Guidelines', type: 'brand', status: 'draft', tokenCount: 345, lastUpdated: '2026-03-03T10:00:00Z', documentId: '' },
       ]},
-      { id: 'tech', name: 'Tech', icon: '💻', color: 'emerald', status: 'empty', items: [] },
-      { id: 'operations', name: 'Operations', icon: '📊', color: 'blue', status: 'partial', items: [
+      { id: 'tech', name: 'Tech', icon: 'Laptop', color: 'emerald', status: 'empty', items: [] },
+      { id: 'operations', name: 'Operations', icon: 'BarChart3', color: 'blue', status: 'partial', items: [
         { id: 'i-acad-kpis', name: 'KPIs', type: 'generic', status: 'draft', tokenCount: 234, lastUpdated: '2026-03-02T08:00:00Z', documentId: '' },
       ]},
     ],
     templateGroups: [
-      { id: 'tg-acad-ai', name: 'AI Strategy', icon: '🧠', area: 'AI', completionPercent: 25, templates: [
+      { id: 'tg-acad-ai', name: 'AI Strategy', icon: 'Brain', area: 'AI', completionPercent: 25, templates: [
         { id: 't-acad-mp', name: 'Model Policy', status: 'filled' },
         { id: 't-acad-me', name: 'Model Evaluation', status: 'empty' },
         { id: 't-acad-fb', name: 'Feedback Loop', status: 'empty' },
         { id: 't-acad-ar', name: 'Analysis Rules', status: 'empty' },
       ]},
-      { id: 'tg-acad-brand', name: 'Branding', icon: '🎨', area: 'Branding', completionPercent: 33, templates: [
+      { id: 'tg-acad-brand', name: 'Branding', icon: 'Palette', area: 'Branding', completionPercent: 33, templates: [
         { id: 't-acad-ativ', name: 'Ativação', status: 'filled' },
         { id: 't-acad-arq', name: 'Arquitetura', status: 'empty' },
         { id: 't-acad-voice', name: 'Brand Voice', status: 'empty' },

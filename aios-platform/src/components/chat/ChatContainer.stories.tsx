@@ -51,7 +51,7 @@ export const LayoutShowcase: Story = {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
         <div className="px-6 py-4 glass border-b border-glass-border flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-blue-500/20" />
+          <div className="h-10 w-10 rounded-full bg-[var(--aiox-blue)]/20" />
           <div>
             <h2 className="text-primary font-semibold">Agent Name</h2>
             <p className="text-secondary text-sm">Role description</p>

@@ -1,6 +1,5 @@
 import { useState, useCallback, memo, useMemo, lazy, Suspense, Fragment } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -196,7 +195,7 @@ function CopyButton({ code }: { code: string }) {
       className={cn(
         'absolute top-2 right-2 px-2 py-1 rounded text-xs transition-all',
         'bg-white/10 hover:bg-white/20 text-white/70 hover:text-white',
-        copied && 'bg-green-500/20 text-green-400'
+        copied && 'bg-[var(--color-status-success)]/20 text-[var(--color-status-success)]'
       )}
     >
       {copied ? (
@@ -241,7 +240,7 @@ const CodeBlock = memo(function CodeBlock({
         fallback={
           <div className="my-3 rounded-lg bg-white/5 border border-white/10 h-32 flex items-center justify-center">
             <div className="flex items-center gap-2 text-white/40 text-sm">
-              <div className="animate-spin h-4 w-4 border-2 border-[#D1FF00] border-t-transparent rounded-full" />
+              <div className="animate-spin h-4 w-4 border-2 border-[var(--aiox-lime)] border-t-transparent rounded-full" />
               Renderizando diagrama...
             </div>
           </div>
@@ -354,7 +353,7 @@ function DiffBlock({ value }: { value: string }) {
 // --- Inline code ---
 
 const InlineCode = ({ children }: { children: React.ReactNode }) => (
-  <code className="bg-[#D1FF00]/10 border border-[#D1FF00]/20 px-1.5 py-0.5 rounded text-[12px] font-mono text-[#D1FF00]/90">
+  <code className="bg-[var(--aiox-lime)]/10 border border-[var(--aiox-lime)]/20 px-1.5 py-0.5 rounded text-[12px] font-mono text-[var(--aiox-lime)]/90">
     {children}
   </code>
 );
@@ -423,7 +422,7 @@ function GistCard({ user, id, href }: { user: string; id: string; href: string }
         </svg>
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white/90 group-hover:text-[#D1FF00] transition-colors truncate">
+        <p className="text-sm font-medium text-white/90 group-hover:text-[var(--aiox-lime)] transition-colors truncate">
           GitHub Gist
         </p>
         <p className="text-xs text-white/50 truncate">
@@ -463,8 +462,8 @@ function VideoPlayer({ src }: { src: string }) {
 function AudioPlayer({ src, title }: { src: string; title?: string }) {
   return (
     <div className="my-3 flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
-      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-purple-500/15 flex items-center justify-center">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-400">
+      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[var(--aiox-gray-muted)]/15 flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--aiox-gray-muted)]">
           <path d="M9 18V5l12-2v13" />
           <circle cx="6" cy="18" r="3" />
           <circle cx="18" cy="16" r="3" />
@@ -506,11 +505,11 @@ const MarkdownImage = memo(function MarkdownImage({ src, alt }: { src?: string; 
       >
         {loading && !error && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/5">
-            <div className="animate-spin h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full" />
+            <div className="animate-spin h-6 w-6 border-2 border-[var(--aiox-blue)] border-t-transparent rounded-full" />
           </div>
         )}
         {error ? (
-          <div className="flex items-center gap-2 p-4 bg-red-500/10 text-red-400 text-sm">
+          <div className="flex items-center gap-2 p-4 bg-[var(--bb-error)]/10 text-[var(--bb-error)] text-sm">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
@@ -544,11 +543,7 @@ const MarkdownImage = memo(function MarkdownImage({ src, alt }: { src?: string; 
       </div>
 
       {showLightbox && createPortal(
-        <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+        <div
             className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4"
             onClick={() => setShowLightbox(false)}
           >
@@ -575,16 +570,14 @@ const MarkdownImage = memo(function MarkdownImage({ src, alt }: { src?: string; 
             {alt && (
               <div className="absolute bottom-4 left-4 text-white/70 text-sm">{alt}</div>
             )}
-            <motion.img
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
+            <img
               src={src}
               alt={alt || ''}
               className="max-w-full max-h-full object-contain"
               onClick={(e) => e.stopPropagation()}
             />
-          </motion.div>
-        </AnimatePresence>,
+          </div>
+,
         document.body
       )}
     </>
@@ -682,7 +675,7 @@ const components = {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-[#D1FF00]/80 hover:text-[#D1FF00] underline underline-offset-2 decoration-[#D1FF00]/30 hover:decoration-[#D1FF00]/60 transition-colors"
+        className="text-[var(--aiox-lime)]/80 hover:text-[var(--aiox-lime)] underline underline-offset-2 decoration-[var(--aiox-lime)]/30 hover:decoration-[var(--aiox-lime)]/60 transition-colors"
       >
         {children}
       </a>
@@ -743,7 +736,7 @@ const components = {
 
       return (
         <li className="flex gap-3 items-start p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06] transition-colors hover:bg-white/[0.05]" {...props}>
-          <span className="flex-shrink-0 w-6 h-6 rounded-md bg-[#D1FF00]/10 border border-[#D1FF00]/20 flex items-center justify-center text-[11px] font-mono font-bold text-[#D1FF00]/80 mt-px">
+          <span className="flex-shrink-0 w-6 h-6 rounded-md bg-[var(--aiox-lime)]/10 border border-[var(--aiox-lime)]/20 flex items-center justify-center text-[11px] font-mono font-bold text-[var(--aiox-lime)]/80 mt-px">
             {num}
           </span>
           <div className="flex-1 min-w-0 text-sm leading-relaxed text-white/80">
@@ -756,7 +749,7 @@ const components = {
     // Unordered list items
     return (
       <li className="flex gap-2.5 items-start text-sm leading-relaxed text-white/80" {...props}>
-        <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#D1FF00]/50 mt-[7px]" />
+        <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[var(--aiox-lime)]/50 mt-[7px]" />
         <div className="flex-1 min-w-0">{processInlineContent(children)}</div>
       </li>
     );
@@ -765,7 +758,7 @@ const components = {
   // Blockquote
   blockquote({ children }: React.BlockquoteHTMLAttributes<HTMLQuoteElement>) {
     return (
-      <blockquote className="border-l-3 border-[#D1FF00]/40 pl-4 my-3 py-1 bg-[#D1FF00]/[0.03] rounded-r-lg italic text-white/60">
+      <blockquote className="border-l-3 border-[var(--aiox-lime)]/40 pl-4 my-3 py-1 bg-[var(--aiox-lime)]/[0.03] rounded-r-lg italic text-white/60">
         {children}
       </blockquote>
     );
@@ -789,7 +782,7 @@ const components = {
     const text = getTextContent(children);
     if (/^[\w-]+$/.test(text) && (text.includes('_') || text.includes('-'))) {
       return (
-        <strong className="font-mono text-[12px] font-semibold text-[#D1FF00] bg-[#D1FF00]/10 border border-[#D1FF00]/20 px-1.5 py-0.5 rounded">
+        <strong className="font-mono text-[12px] font-semibold text-[var(--aiox-lime)] bg-[var(--aiox-lime)]/10 border border-[var(--aiox-lime)]/20 px-1.5 py-0.5 rounded">
           {children}
         </strong>
       );
@@ -810,7 +803,7 @@ const components = {
           className={cn(
             'inline-flex items-center justify-center w-4 h-4 rounded border mr-2 align-middle',
             checked
-              ? 'bg-[#D1FF00]/20 border-[#D1FF00]/40 text-[#D1FF00]'
+              ? 'bg-[var(--aiox-lime)]/20 border-[var(--aiox-lime)]/40 text-[var(--aiox-lime)]'
               : 'border-white/20 bg-white/5'
           )}
           role="img"
@@ -852,7 +845,7 @@ const components = {
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          className="text-[#D1FF00]/60 transition-transform group-open/details:rotate-90 flex-shrink-0"
+          className="text-[var(--aiox-lime)]/60 transition-transform group-open/details:rotate-90 flex-shrink-0"
         >
           <polyline points="9 18 15 12 9 6" />
         </svg>

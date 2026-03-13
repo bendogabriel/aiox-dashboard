@@ -1,12 +1,34 @@
 // Minimalist sound design using Web Audio API — zero dependencies
 // Sounds are synthesized procedurally (no audio files needed)
 
-const audioCtx = () => {
+let userHasInteracted = false;
+
+// Track first user gesture to enable AudioContext
+if (typeof window !== 'undefined') {
+  const markInteracted = () => {
+    userHasInteracted = true;
+    window.removeEventListener('click', markInteracted);
+    window.removeEventListener('keydown', markInteracted);
+    window.removeEventListener('touchstart', markInteracted);
+    // Resume suspended context if it exists
+    const win = window as unknown as Record<string, unknown>;
+    const ctx = win.__aiosSoundCtx as AudioContext | undefined;
+    if (ctx?.state === 'suspended') ctx.resume();
+  };
+  window.addEventListener('click', markInteracted);
+  window.addEventListener('keydown', markInteracted);
+  window.addEventListener('touchstart', markInteracted);
+}
+
+const audioCtx = (): AudioContext | null => {
+  if (!userHasInteracted) return null;
   const win = window as unknown as Record<string, unknown>;
   if (!win.__aiosSoundCtx) {
     win.__aiosSoundCtx = new AudioContext();
   }
-  return win.__aiosSoundCtx as AudioContext;
+  const ctx = win.__aiosSoundCtx as AudioContext;
+  if (ctx.state === 'suspended') ctx.resume();
+  return ctx;
 };
 
 type SoundName =
@@ -22,6 +44,7 @@ type SoundName =
 const SOUNDS: Record<SoundName, () => void> = {
   navigate: () => {
     const ctx = audioCtx();
+    if (!ctx) return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -37,6 +60,7 @@ const SOUNDS: Record<SoundName, () => void> = {
 
   success: () => {
     const ctx = audioCtx();
+    if (!ctx) return;
     const notes = [523.25, 659.25, 783.99]; // C5, E5, G5 chord arpeggio
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
@@ -54,6 +78,7 @@ const SOUNDS: Record<SoundName, () => void> = {
 
   error: () => {
     const ctx = audioCtx();
+    if (!ctx) return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -69,6 +94,7 @@ const SOUNDS: Record<SoundName, () => void> = {
 
   notify: () => {
     const ctx = audioCtx();
+    if (!ctx) return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -84,6 +110,7 @@ const SOUNDS: Record<SoundName, () => void> = {
 
   drop: () => {
     const ctx = audioCtx();
+    if (!ctx) return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -99,6 +126,7 @@ const SOUNDS: Record<SoundName, () => void> = {
 
   hover: () => {
     const ctx = audioCtx();
+    if (!ctx) return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -113,6 +141,7 @@ const SOUNDS: Record<SoundName, () => void> = {
 
   open: () => {
     const ctx = audioCtx();
+    if (!ctx) return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -128,6 +157,7 @@ const SOUNDS: Record<SoundName, () => void> = {
 
   close: () => {
     const ctx = audioCtx();
+    if (!ctx) return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);

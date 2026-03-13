@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
-import { motion } from 'framer-motion';
-import { GlassButton } from './GlassButton';
+import { CockpitButton } from './cockpit/CockpitButton';
 import { cn } from '../../lib/utils';
 
 // Icons for common empty states
@@ -118,9 +117,7 @@ export function EmptyState({
   const IconComponent = type !== 'custom' ? iconMap[type] : null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className={cn(
         'flex flex-col items-center justify-center text-center',
         compact ? 'py-6 px-4' : 'py-12 px-6',
@@ -128,10 +125,7 @@ export function EmptyState({
       )}
     >
       {/* Icon */}
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.1 }}
+      <div
         className={cn(
           'rounded-full flex items-center justify-center mb-4',
           'bg-white/10 text-tertiary',
@@ -139,68 +133,59 @@ export function EmptyState({
         )}
       >
         {icon || (IconComponent && <IconComponent />)}
-      </motion.div>
+      </div>
 
       {/* Title */}
-      <motion.h3
-        initial={{ opacity: 0, y: 5 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
+      <h3
         className={cn(
           'font-semibold text-primary',
           compact ? 'text-sm' : 'text-lg'
         )}
       >
         {title}
-      </motion.h3>
+      </h3>
 
       {/* Description */}
       {description && (
-        <motion.p
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+        <p
           className={cn(
             'text-secondary mt-2 max-w-sm',
             compact ? 'text-xs' : 'text-sm'
           )}
         >
           {description}
-        </motion.p>
+        </p>
       )}
 
       {/* Actions */}
       {(action || secondaryAction) && (
-        <motion.div
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
+        <div
           className={cn(
             'flex items-center gap-3',
             compact ? 'mt-4' : 'mt-6'
           )}
         >
           {action && (
-            <GlassButton
+            <CockpitButton
               variant={action.variant || 'primary'}
               size={compact ? 'sm' : 'md'}
               onClick={action.onClick}
             >
               {action.label}
-            </GlassButton>
+            </CockpitButton>
           )}
           {secondaryAction && (
-            <GlassButton
+            <CockpitButton
               variant="ghost"
               size={compact ? 'sm' : 'md'}
               onClick={secondaryAction.onClick}
             >
               {secondaryAction.label}
-            </GlassButton>
+            </CockpitButton>
           )}
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useChat } from '../../hooks/useChat';
 import { cn, getSquadTheme } from '../../lib/utils';
@@ -27,18 +26,16 @@ const ClockIcon = () => (
 );
 
 const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
-  <motion.svg
+  <svg
     width="12"
     height="12"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
-    animate={{ rotate: isOpen ? 180 : 0 }}
-    transition={{ duration: 0.2 }}
   >
     <polyline points="6 9 12 15 18 9" />
-  </motion.svg>
+  </svg>
 );
 
 const TrashIcon = () => (
@@ -97,23 +94,15 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
             <ChevronIcon isOpen={favoritesExpanded} />
           </button>
 
-          <AnimatePresence>
-            {favoritesExpanded && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
+          {favoritesExpanded && (
+              <div
                 className="overflow-hidden"
               >
                 <div className="space-y-0.5">
                   {favorites.map((agent, index) => {
                     return (
-                      <motion.div
+                      <div
                         key={agent.id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.03 }}
                         className="group flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-white/5 cursor-pointer transition-colors"
                         onClick={() => handleSelectAgent(agent)}
                       >
@@ -129,20 +118,19 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
                             e.stopPropagation();
                             removeFavorite(agent.id);
                           }}
-                          className="opacity-0 group-hover:opacity-100 p-1 text-tertiary hover:text-yellow-500 transition-all"
+                          className="opacity-0 group-hover:opacity-100 p-1 text-tertiary hover:text-[var(--bb-warning)] transition-all"
                           title="Remover dos favoritos"
                           aria-label="Remover dos favoritos"
                         >
                           <StarIcon filled />
                         </button>
-                      </motion.div>
+                      </div>
                     );
                   })}
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
-        </div>
+</div>
       )}
 
       {/* Recents Section */}
@@ -159,23 +147,15 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
             <ChevronIcon isOpen={recentsExpanded} />
           </button>
 
-          <AnimatePresence>
-            {recentsExpanded && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
+          {recentsExpanded && (
+              <div
                 className="overflow-hidden"
               >
                 <div className="space-y-0.5">
                   {recents.map((agent, index) => {
                     return (
-                      <motion.div
+                      <div
                         key={agent.id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.03 }}
                         className="group flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-white/5 cursor-pointer transition-colors"
                         onClick={() => handleSelectAgent(agent)}
                       >
@@ -191,7 +171,7 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
                             {agent.useCount}x
                           </span>
                         )}
-                      </motion.div>
+                      </div>
                     );
                   })}
 
@@ -201,16 +181,15 @@ export function FavoritesRecents({ onAgentSelect }: FavoritesRecentsProps) {
                       e.stopPropagation();
                       clearRecents();
                     }}
-                    className="w-full mt-1 px-2 py-1 text-[10px] text-tertiary hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors flex items-center justify-center gap-1"
+                    className="w-full mt-1 px-2 py-1 text-[10px] text-tertiary hover:text-[var(--bb-error)] hover:bg-[var(--bb-error)]/10 rounded-md transition-colors flex items-center justify-center gap-1"
                   >
                     <TrashIcon />
                     <span>Limpar recentes</span>
                   </button>
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
-        </div>
+</div>
       )}
     </div>
   );

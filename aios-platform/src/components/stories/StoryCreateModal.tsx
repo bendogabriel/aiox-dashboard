@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Dialog, GlassButton, GlassInput, GlassTextarea } from '../ui';
+import { Dialog, CockpitButton, CockpitInput, CockpitTextarea } from '../ui';
 import { generateId } from '../../lib/utils';
 import { useStoryStore } from '../../stores/storyStore';
 import type { StoryStatus, Story, StoryState, StoryActions } from '../../stores/storyStore';
@@ -13,7 +13,7 @@ interface StoryCreateModalProps {
 }
 
 const selectClasses =
-  'glass-input w-full h-11 px-4 rounded-xl appearance-none bg-transparent text-sm text-primary cursor-pointer';
+  'glass-input w-full h-11 px-4 rounded-none appearance-none bg-transparent text-sm text-primary cursor-pointer';
 
 export function StoryCreateModal({ isOpen, onClose, defaultStatus = 'backlog' }: StoryCreateModalProps) {
   const addStory = useStoryStore((s: StoryStore) => s.addStory);
@@ -97,22 +97,22 @@ export function StoryCreateModal({ isOpen, onClose, defaultStatus = 'backlog' }:
       size="lg"
       footer={
         <>
-          <GlassButton variant="ghost" onClick={handleClose} disabled={loading}>
+          <CockpitButton variant="ghost" onClick={handleClose} disabled={loading}>
             Cancelar
-          </GlassButton>
-          <GlassButton
+          </CockpitButton>
+          <CockpitButton
             variant="primary"
             onClick={handleSubmit}
             loading={loading}
           >
             Criar
-          </GlassButton>
+          </CockpitButton>
         </>
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Title */}
-        <GlassInput
+        <CockpitInput
           label="Titulo"
           required
           placeholder="Titulo da story"
@@ -125,7 +125,7 @@ export function StoryCreateModal({ isOpen, onClose, defaultStatus = 'backlog' }:
         />
 
         {/* Description */}
-        <GlassTextarea
+        <CockpitTextarea
           label="Descricao"
           placeholder="Descreva a story..."
           value={description}
@@ -202,7 +202,7 @@ export function StoryCreateModal({ isOpen, onClose, defaultStatus = 'backlog' }:
         </div>
 
         {/* Epic ID */}
-        <GlassInput
+        <CockpitInput
           label="Epic ID"
           placeholder="Ex: EPIC-2"
           value={epicId}
@@ -210,7 +210,7 @@ export function StoryCreateModal({ isOpen, onClose, defaultStatus = 'backlog' }:
         />
 
         {/* Acceptance Criteria */}
-        <GlassTextarea
+        <CockpitTextarea
           label="Criterios de Aceitacao"
           placeholder="Um criterio por linha..."
           hint="Insira cada criterio em uma nova linha"
@@ -219,7 +219,7 @@ export function StoryCreateModal({ isOpen, onClose, defaultStatus = 'backlog' }:
         />
 
         {/* Technical Notes */}
-        <GlassTextarea
+        <CockpitTextarea
           label="Notas Tecnicas"
           placeholder="Notas tecnicas opcionais..."
           value={technicalNotes}

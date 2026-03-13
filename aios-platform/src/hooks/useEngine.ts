@@ -1,19 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { engineApi } from '../services/api/engine';
 import { getEngineUrl } from '../lib/connection';
+import { useEngineStore } from '../stores/engineStore';
 import type { EngineHealth, PoolStatus, EngineJob, CronJobDef, WorkflowDef, WorkflowState, BundleInfo } from '../services/api/engine';
 
 // Helper: only enable engine queries when engine URL is configured
 const engineAvailable = () => !!getEngineUrl();
 
-// Engine health — polls every 10s
+// Helper: check if engine is online (URL configured AND status is online)
+const engineOnline = () => engineAvailable() && useEngineStore.getState().status === 'online';
+
+// Engine health — polls every 10s (only when engine is online; useEngineConnection handles reconnection)
 export function useEngineHealth() {
   return useQuery<EngineHealth>({
     queryKey: ['engine', 'health'],
     queryFn: () => engineApi.health(),
     enabled: engineAvailable(),
     staleTime: 5_000,
-    refetchInterval: engineAvailable() ? 10_000 : false,
+    refetchInterval: () => engineOnline() ? 10_000 : false,
     retry: 1,
   });
 }
@@ -25,7 +29,7 @@ export function useEnginePool() {
     queryFn: () => engineApi.pool(),
     enabled: engineAvailable(),
     staleTime: 2_000,
-    refetchInterval: engineAvailable() ? 3_000 : false,
+    refetchInterval: () => engineOnline() ? 3_000 : false,
     retry: 1,
   });
 }
@@ -37,7 +41,7 @@ export function useEngineJobs(params?: { status?: string; limit?: number }) {
     queryFn: () => engineApi.listJobs(params),
     enabled: engineAvailable(),
     staleTime: 3_000,
-    refetchInterval: engineAvailable() ? 5_000 : false,
+    refetchInterval: () => engineOnline() ? 5_000 : false,
     retry: 1,
   });
 }
@@ -60,7 +64,7 @@ export function useCronJobs() {
     queryFn: () => engineApi.listCrons(),
     enabled: engineAvailable(),
     staleTime: 10_000,
-    refetchInterval: engineAvailable() ? 30_000 : false,
+    refetchInterval: () => engineOnline() ? 30_000 : false,
     retry: 1,
   });
 }
@@ -107,7 +111,7 @@ export function useActiveWorkflows() {
     queryFn: () => engineApi.listActiveWorkflows(),
     enabled: engineAvailable(),
     staleTime: 3_000,
-    refetchInterval: engineAvailable() ? 5_000 : false,
+    refetchInterval: () => engineOnline() ? 5_000 : false,
     retry: 1,
   });
 }
@@ -218,7 +222,7 @@ export function useAuditLog(limit = 50) {
     queryFn: () => engineApi.getAuditLog(limit),
     enabled: engineAvailable(),
     staleTime: 10_000,
-    refetchInterval: engineAvailable() ? 15_000 : false,
+    refetchInterval: () => engineOnline() ? 15_000 : false,
     retry: 1,
   });
 }

@@ -74,13 +74,13 @@ export const FullSizes: Story = {
 export const CustomColor: Story = {
   render: () => (
     <div className="flex items-center gap-6">
-      <span className="text-blue-500">
+      <span className="text-[var(--aiox-blue)]">
         <AioxLogo variant="icon" size={48} />
       </span>
-      <span className="text-green-500">
+      <span className="text-[var(--color-status-success)]">
         <AioxLogo variant="icon" size={48} />
       </span>
-      <span className="text-purple-500">
+      <span className="text-[var(--aiox-gray-muted)]">
         <AioxLogo variant="full" size={48} />
       </span>
     </div>

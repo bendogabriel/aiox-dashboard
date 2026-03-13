@@ -1,6 +1,7 @@
 import { apiClient } from './client';
 import { engineApi } from './engine';
 import { getEngineUrl } from '../../lib/connection';
+import { useEngineStore } from '../../stores/engineStore';
 
 export interface WorkflowSummary {
   id: string;
@@ -85,6 +86,11 @@ function hasEngine(): boolean {
   return !!getEngineUrl();
 }
 
+/** Check if engine is reachable */
+function isEngineOnline(): boolean {
+  return hasEngine() && useEngineStore.getState().status === 'online';
+}
+
 export const workflowsApi = {
   // Get workflow schema and types
   // GET /api/workflows/schema
@@ -97,7 +103,7 @@ export const workflowsApi = {
     status?: string;
     name?: string;
   }): Promise<{ total: number; workflows: WorkflowSummary[] }> => {
-    if (hasEngine() && !params?.status) {
+    if (isEngineOnline() && !params?.status) {
       try {
         const data = await engineApi.getRegistryWorkflows();
         let workflows: WorkflowSummary[] = data.workflows.map((w) => ({

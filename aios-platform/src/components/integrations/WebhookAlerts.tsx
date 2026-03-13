@@ -92,7 +92,7 @@ export function WebhookAlerts() {
           textAlign: 'left',
         }}
       >
-        <Bell size={14} style={{ color: 'var(--aiox-warning, #f59e0b)' }} />
+        <Bell size={14} style={{ color: 'var(--aiox-gray-dim, #696969)' }} />
         <span style={{ flex: 1, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
           Webhook Alerts
         </span>
@@ -125,7 +125,7 @@ export function WebhookAlerts() {
                   {/* Toggle */}
                   <button
                     onClick={() => toggleWebhook(wh.id)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: wh.enabled ? 'var(--aiox-lime)' : 'var(--aiox-gray-dim)' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: wh.enabled ? 'var(--aiox-cream, #E5E5E5)' : 'var(--aiox-gray-dim)' }}
                     title={wh.enabled ? 'Disable' : 'Enable'}
                     aria-label={wh.enabled ? 'Disable webhook' : 'Enable webhook'}
                   >
@@ -197,9 +197,9 @@ export function WebhookAlerts() {
                           fontFamily: 'inherit',
                           textTransform: 'uppercase',
                           letterSpacing: '0.04em',
-                          background: active ? 'rgba(209, 255, 0, 0.08)' : 'rgba(255,255,255,0.02)',
-                          border: `1px solid ${active ? 'rgba(209, 255, 0, 0.2)' : 'rgba(255,255,255,0.06)'}`,
-                          color: active ? 'var(--aiox-lime, #D1FF00)' : 'var(--aiox-gray-muted, #999)',
+                          background: active ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255,255,255,0.02)',
+                          border: `1px solid ${active ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255,255,255,0.06)'}`,
+                          color: active ? 'var(--aiox-cream, #E5E5E5)' : 'var(--aiox-gray-muted, #999)',
                           cursor: 'pointer',
                         }}
                       >

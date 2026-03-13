@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { formatRelativeTime } from '../../lib/utils';
 import type { Message } from '../../types';
 import { UserIcon, BotIcon } from './activity-panel-icons';
@@ -11,18 +10,15 @@ export function MessageHistory({ messages }: { messages: Message[] }) {
     <div className="space-y-2">
       <p className="text-xs text-tertiary px-1">Últimas {Math.min(messages.length, 10)} mensagens</p>
       {recentMessages.map((message, index) => (
-        <motion.div
+        <div
           key={message.id}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.03 }}
-          className="p-3 rounded-xl glass-subtle"
+          className="p-3 rounded-none glass-subtle"
         >
           <div className="flex items-center gap-2 mb-1">
             <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
               message.role === 'user'
-                ? 'bg-blue-500/20 text-blue-400'
-                : 'bg-purple-500/20 text-purple-400'
+                ? 'bg-[var(--aiox-blue)]/20 text-[var(--aiox-blue)]'
+                : 'bg-[var(--aiox-gray-muted)]/20 text-[var(--aiox-gray-muted)]'
             }`}>
               {message.role === 'user' ? <UserIcon /> : <BotIcon />}
             </div>
@@ -36,7 +32,7 @@ export function MessageHistory({ messages }: { messages: Message[] }) {
           <p className="text-xs text-secondary line-clamp-2 pl-7">
             {message.content}
           </p>
-        </motion.div>
+        </div>
       ))}
     </div>
   );

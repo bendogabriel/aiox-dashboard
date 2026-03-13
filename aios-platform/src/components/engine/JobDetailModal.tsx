@@ -13,7 +13,7 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import { Dialog, GlassButton, GlassCard, useToast } from '../ui';
+import { Dialog, CockpitButton, CockpitCard, useToast } from '../ui';
 import { cn } from '../../lib/utils';
 import { useGetJob, useCancelJob } from '../../hooks/useEngine';
 import JobLogsViewer from './JobLogsViewer';
@@ -25,13 +25,13 @@ interface JobDetailModalProps {
 }
 
 const statusColors: Record<string, string> = {
-  done: 'text-green-400',
-  running: 'text-blue-400',
-  pending: 'text-yellow-400',
-  failed: 'text-red-400',
-  rejected: 'text-orange-400',
-  cancelled: 'text-gray-400',
-  timeout: 'text-red-300',
+  done: 'text-[var(--color-status-success)]',
+  running: 'text-[var(--aiox-blue)]',
+  pending: 'text-[var(--bb-warning)]',
+  failed: 'text-[var(--bb-error)]',
+  rejected: 'text-[var(--bb-flare)]',
+  cancelled: 'text-tertiary',
+  timeout: 'text-[var(--bb-error)]',
 };
 
 const statusIcons: Record<string, typeof CheckCircle2> = {
@@ -78,7 +78,7 @@ function InfoRow({ icon: Icon, label, value, mono }: {
 }
 
 export default function JobDetailModal({ jobId, onClose }: JobDetailModalProps) {
-  const { data } = useGetJob(jobId);
+  const { data, isLoading, isError, error } = useGetJob(jobId);
   const cancelJob = useCancelJob();
   const toast = useToast();
   const [copied, setCopied] = useState(false);
@@ -122,32 +122,32 @@ export default function JobDetailModal({ jobId, onClose }: JobDetailModalProps) 
       </div>
       <div className="flex items-center gap-2">
         {canCancel && !showCancelConfirm && (
-          <GlassButton
+          <CockpitButton
             size="sm"
-            variant="danger"
+            variant="destructive"
             onClick={() => setShowCancelConfirm(true)}
           >
             Cancelar Job
-          </GlassButton>
+          </CockpitButton>
         )}
         {showCancelConfirm && (
           <>
-            <span className="text-xs text-red-400">Confirmar cancelamento?</span>
-            <GlassButton
+            <span className="text-xs text-[var(--bb-error)]">Confirmar cancelamento?</span>
+            <CockpitButton
               size="sm"
-              variant="danger"
+              variant="destructive"
               onClick={handleCancel}
               loading={cancelJob.isPending}
             >
               Sim, cancelar
-            </GlassButton>
-            <GlassButton
+            </CockpitButton>
+            <CockpitButton
               size="sm"
               variant="ghost"
               onClick={() => setShowCancelConfirm(false)}
             >
               Não
-            </GlassButton>
+            </CockpitButton>
           </>
         )}
       </div>
@@ -162,8 +162,25 @@ export default function JobDetailModal({ jobId, onClose }: JobDetailModalProps) 
       size="lg"
       footer={footer}
     >
-      {!job ? (
-        <div className="text-secondary text-sm p-4 text-center">Carregando...</div>
+      {isError ? (
+        <div className="text-sm p-6 text-center space-y-2">
+          <XCircle className="h-8 w-8 text-[var(--bb-error)] mx-auto" />
+          <p className="text-[var(--bb-error)]">Erro ao carregar job</p>
+          <p className="text-xs text-tertiary">{(error as Error)?.message || 'Job não encontrado'}</p>
+          <p className="text-[10px] text-tertiary font-mono">{jobId}</p>
+        </div>
+      ) : !job && isLoading ? (
+        <div className="text-secondary text-sm p-6 text-center space-y-3">
+          <Loader2 className="h-6 w-6 animate-spin mx-auto text-[var(--aiox-blue)]" />
+          <p>Carregando detalhes do job...</p>
+          <p className="text-[10px] text-tertiary font-mono">{jobId}</p>
+        </div>
+      ) : !job ? (
+        <div className="text-sm p-6 text-center space-y-2">
+          <AlertTriangle className="h-8 w-8 text-[var(--bb-warning)] mx-auto" />
+          <p className="text-tertiary">Job não encontrado</p>
+          <p className="text-[10px] text-tertiary font-mono">{jobId}</p>
+        </div>
       ) : (
         <div className="space-y-4">
           {/* ID + Copy */}
@@ -171,37 +188,37 @@ export default function JobDetailModal({ jobId, onClose }: JobDetailModalProps) 
             <code className="text-xs font-mono text-tertiary flex-1 truncate">
               {job.id}
             </code>
-            <GlassButton size="sm" variant="ghost" onClick={handleCopyId} aria-label="Copiar ID">
-              {copied ? <Check className="h-3 w-3 text-green-400" /> : <Copy className="h-3 w-3" />}
-            </GlassButton>
+            <CockpitButton size="sm" variant="ghost" onClick={handleCopyId} aria-label="Copiar ID">
+              {copied ? <Check className="h-3 w-3 text-[var(--color-status-success)]" /> : <Copy className="h-3 w-3" />}
+            </CockpitButton>
           </div>
 
           {/* Info grid */}
-          <GlassCard padding="sm" variant="subtle">
+          <CockpitCard padding="sm" variant="subtle">
             <InfoRow icon={User} label="Agent" value={job.agent_id} />
             <InfoRow icon={Network} label="Squad" value={job.squad_id} />
             <InfoRow icon={Zap} label="Trigger" value={job.trigger_type} />
             <InfoRow icon={Hash} label="Priority" value={`P${job.priority}`} />
             <InfoRow icon={Hash} label="Attempt" value={`${job.attempt}${job.max_attempts ? ` / ${job.max_attempts}` : ''}`} />
             {job.pid && <InfoRow icon={Hash} label="PID" value={String(job.pid)} mono />}
-          </GlassCard>
+          </CockpitCard>
 
           {/* Timestamps */}
-          <GlassCard padding="sm" variant="subtle">
+          <CockpitCard padding="sm" variant="subtle">
             <InfoRow icon={Clock} label="Criado" value={formatDateTime(job.created_at)} />
             <InfoRow icon={Clock} label="Iniciado" value={formatDateTime(job.started_at)} />
             <InfoRow icon={Clock} label="Concluído" value={formatDateTime(job.completed_at)} />
             <InfoRow icon={Clock} label="Duração" value={formatDuration(job.started_at, job.completed_at)} />
-          </GlassCard>
+          </CockpitCard>
 
           {/* Error */}
           {job.error_message && (
-            <GlassCard padding="sm" variant="subtle" className="border border-red-500/20">
+            <CockpitCard padding="sm" variant="subtle" className="border border-[var(--bb-error)]/20">
               <div className="text-xs text-tertiary mb-1">Erro</div>
-              <div className="text-sm text-red-400 font-mono whitespace-pre-wrap break-all">
+              <div className="text-sm text-[var(--bb-error)] font-mono whitespace-pre-wrap break-all">
                 {job.error_message}
               </div>
-            </GlassCard>
+            </CockpitCard>
           )}
 
           {/* Logs */}
@@ -209,13 +226,13 @@ export default function JobDetailModal({ jobId, onClose }: JobDetailModalProps) 
 
           {/* Output preview */}
           {job.output_result && (
-            <GlassCard padding="sm" variant="subtle">
+            <CockpitCard padding="sm" variant="subtle">
               <div className="text-xs text-tertiary mb-1">Output</div>
               <pre className="text-xs text-secondary font-mono whitespace-pre-wrap break-all max-h-40 overflow-auto">
                 {job.output_result.slice(0, 2000)}
                 {job.output_result.length > 2000 && '\n... (truncated)'}
               </pre>
-            </GlassCard>
+            </CockpitCard>
           )}
         </div>
       )}

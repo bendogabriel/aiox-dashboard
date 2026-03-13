@@ -1,5 +1,4 @@
 import { useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Wrench,
   MessageSquare,
@@ -7,19 +6,21 @@ import {
   Settings,
   Trash2,
 } from 'lucide-react';
-import { GlassCard, GlassButton, Badge } from '../ui';
+import { CockpitCard, CockpitButton, Badge } from '../ui';
 import { cn } from '../../lib/utils';
 import { useMonitorStore, type MonitorEvent } from '../../stores/monitorStore';
 
 const typeConfig: Record<MonitorEvent['type'], { icon: typeof Settings; color: string; label: string }> = {
-  system: { icon: Settings, color: 'text-blue-400', label: 'System' },
-  message: { icon: MessageSquare, color: 'text-green-400', label: 'Message' },
-  error: { icon: AlertOctagon, color: 'text-red-400', label: 'Error' },
-  tool_call: { icon: Wrench, color: 'text-yellow-400', label: 'Tool' },
+  system: { icon: Settings, color: 'text-[var(--aiox-blue)]', label: 'System' },
+  message: { icon: MessageSquare, color: 'text-[var(--color-status-success)]', label: 'Message' },
+  error: { icon: AlertOctagon, color: 'text-[var(--bb-error)]', label: 'Error' },
+  tool_call: { icon: Wrench, color: 'text-[var(--bb-warning)]', label: 'Tool' },
 };
 
 function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('pt-BR', {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '--:--:--';
+  return d.toLocaleTimeString('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
@@ -52,7 +53,7 @@ export default function EngineEventFeed() {
           <div
             className={cn(
               'h-2 w-2 rounded-full',
-              connected ? 'bg-green-400 animate-pulse' : 'bg-red-400',
+              connected ? 'bg-[var(--color-status-success)] animate-pulse' : 'bg-[var(--bb-error)]',
             )}
           />
           <span className="text-xs text-tertiary">
@@ -63,42 +64,58 @@ export default function EngineEventFeed() {
           </Badge>
         </div>
         {events.length > 0 && (
-          <GlassButton
+          <CockpitButton
             size="sm"
             variant="ghost"
             leftIcon={<Trash2 className="h-3 w-3" />}
             onClick={clearEvents}
           >
             Limpar
-          </GlassButton>
+          </CockpitButton>
         )}
       </div>
 
       {/* Event list */}
       {sortedEvents.length === 0 ? (
-        <div className="text-tertiary text-sm p-8 text-center">
-          {connected
-            ? 'Aguardando eventos do engine...'
-            : 'Conecte ao engine para ver eventos em tempo real'}
-        </div>
+        <CockpitCard padding="md" variant="subtle">
+          <div className="text-center space-y-2">
+            {connected ? (
+              <>
+                <div className="h-8 w-8 mx-auto rounded-full bg-[var(--color-status-success)]/10 flex items-center justify-center">
+                  <div className="h-3 w-3 rounded-full bg-[var(--color-status-success)] animate-pulse" />
+                </div>
+                <p className="text-secondary text-sm">Conectado — aguardando eventos</p>
+                <p className="text-tertiary text-xs">
+                  Eventos aparecerão aqui em tempo real quando agentes forem executados ou houver atividade no engine.
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="h-8 w-8 mx-auto rounded-full bg-[var(--bb-error)]/10 flex items-center justify-center">
+                  <div className="h-3 w-3 rounded-full bg-[var(--bb-error)]" />
+                </div>
+                <p className="text-secondary text-sm">WebSocket desconectado</p>
+                <p className="text-tertiary text-xs">
+                  Verifique se o engine está rodando na porta 4002. Eventos serão exibidos automaticamente quando a conexão for restabelecida.
+                </p>
+              </>
+            )}
+          </div>
+        </CockpitCard>
       ) : (
         <div ref={scrollRef} className="space-y-1 max-h-[60vh] overflow-auto">
-          <AnimatePresence initial={false}>
-            {sortedEvents.map((event) => {
+          {sortedEvents.map((event) => {
               const config = typeConfig[event.type] || typeConfig.system;
               const Icon = config.icon;
               return (
-                <motion.div
+                <div
                   key={event.id}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.15 }}
                 >
-                  <GlassCard
+                  <CockpitCard
                     padding="sm"
                     variant="subtle"
                     className={cn(
-                      event.type === 'error' && 'border-l-2 border-red-500/40',
+                      event.type === 'error' && 'border-l-2 border-[var(--bb-error)]/40',
                     )}
                   >
                     <div className="flex items-start gap-2.5">
@@ -117,7 +134,7 @@ export default function EngineEventFeed() {
                             </span>
                           )}
                           {event.success === false && (
-                            <span className="text-[10px] text-red-400">FAILED</span>
+                            <span className="text-[10px] text-[var(--bb-error)]">FAILED</span>
                           )}
                         </div>
                         <div className="text-xs text-secondary mt-0.5 break-words">
@@ -128,12 +145,11 @@ export default function EngineEventFeed() {
                         {formatTime(event.timestamp)}
                       </span>
                     </div>
-                  </GlassCard>
-                </motion.div>
+                  </CockpitCard>
+                </div>
               );
             })}
-          </AnimatePresence>
-        </div>
+</div>
       )}
     </div>
   );

@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import {
   type LucideIcon,
   Sparkles,
@@ -190,26 +189,20 @@ export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
     return (
       <div className="flex flex-wrap gap-1.5 mt-2">
         {skills.slice(0, 3).map((skill, index) => (
-          <motion.div
+          <div
             key={skill.name}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
             className="stat-badge"
           >
             <skill.icon size={ICON_SIZES.sm} />
             <span className="stat-badge-value">{skill.level}</span>
-          </motion.div>
+          </div>
         ))}
       </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+    <div
       className="agent-skills-card"
     >
       <div className="agent-skills-header">
@@ -221,11 +214,8 @@ export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
 
       <div className="skill-bar-container">
         {skills.map((skill, index) => (
-          <motion.div
+          <div
             key={skill.name}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.08, duration: 0.3 }}
             className="skill-item"
           >
             <div className="skill-icon"><skill.icon size={ICON_SIZES.md} /></div>
@@ -235,15 +225,12 @@ export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
                 <span className="skill-level">{skill.level}%</span>
               </div>
               <div className="skill-bar">
-                <motion.div
+                <div
                   className={`skill-bar-fill ${skill.color}`}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${skill.level}%` }}
-                  transition={{ delay: index * 0.08 + 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 />
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -288,6 +275,6 @@ export function AgentSkills({ agent, compact = false }: AgentSkillsProps) {
           {agent.model || 'claude-3'}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

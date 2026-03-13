@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Cpu, HardDrive, Clock, Zap } from 'lucide-react';
-import { GlassCard, ProgressBar } from '../ui';
+import { CockpitCard, ProgressBar } from '../ui';
 import { cn } from '../../lib/utils';
 
 /**
@@ -38,7 +38,7 @@ function MetricCard({
 }) {
   const variant = showProgress ? getVariant(value) : 'default';
   return (
-    <GlassCard padding="sm" variant="subtle">
+    <CockpitCard padding="sm" variant="subtle">
       <div className="flex items-center gap-2 mb-2">
         <Icon className={cn('h-4 w-4', color)} />
         <span className="text-[10px] text-tertiary uppercase tracking-wider font-medium">{label}</span>
@@ -48,17 +48,17 @@ function MetricCard({
         <span className="text-xs text-tertiary font-normal ml-0.5">{unit}</span>
       </div>
       {showProgress && <ProgressBar value={value} size="sm" variant={variant} glow={variant === 'error'} className="mt-2" />}
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
 function MetricsPanelPresentation({ metrics }: { metrics: Metrics }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-      <MetricCard icon={Cpu} label="CPU" value={metrics.cpu} unit="%" showProgress color="text-blue-400" />
-      <MetricCard icon={HardDrive} label="Memory" value={metrics.memory} unit="%" showProgress color="text-purple-400" />
-      <MetricCard icon={Clock} label="Latency" value={metrics.latency} unit="ms" color="text-yellow-400" />
-      <MetricCard icon={Zap} label="Throughput" value={metrics.throughput} unit="req/s" color="text-green-400" />
+      <MetricCard icon={Cpu} label="CPU" value={metrics.cpu} unit="%" showProgress color="text-[var(--aiox-blue)]" />
+      <MetricCard icon={HardDrive} label="Memory" value={metrics.memory} unit="%" showProgress color="text-[var(--aiox-gray-muted)]" />
+      <MetricCard icon={Clock} label="Latency" value={metrics.latency} unit="ms" color="text-[var(--bb-warning)]" />
+      <MetricCard icon={Zap} label="Throughput" value={metrics.throughput} unit="req/s" color="text-[var(--color-status-success)]" />
     </div>
   );
 }

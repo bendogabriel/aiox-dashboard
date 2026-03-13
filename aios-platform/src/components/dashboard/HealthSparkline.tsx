@@ -59,7 +59,7 @@ export function HealthSparkline({
           cx={points.length === 1 ? width / 2 : i * step}
           cy={cy}
           r={r}
-          fill={point.ok ? 'var(--aiox-lime, #D1FF00)' : 'var(--color-status-error, #EF4444)'}
+          fill={point.ok ? 'var(--color-status-success, #4ADE80)' : 'var(--color-status-error, #EF4444)'}
           opacity={point.ok ? 0.8 : 1}
         />
       ))}

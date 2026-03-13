@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Terminal, LayoutGrid, List, Plus, ArrowLeft, Radio, RefreshCw } from 'lucide-react';
-import { GlassCard, GlassButton, Badge, ProgressBar, SectionLabel } from '../ui';
+import { CockpitCard, CockpitButton, Badge, ProgressBar, SectionLabel } from '../ui';
 import { LiveTerminalCard } from './LiveTerminalCard';
 import { LiveTerminalOutput } from './LiveTerminalOutput';
 import { TerminalTabs } from './TerminalTabs';
@@ -117,7 +117,7 @@ export default function TerminalsView() {
       <div className="flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
           <Terminal className="h-5 w-5 text-primary" />
-          <h1 className="text-lg font-bold text-primary">Terminals</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary">Terminals</h1>
           <Badge variant="default" size="sm">
             {sessionCount} sessions
           </Badge>
@@ -133,14 +133,14 @@ export default function TerminalsView() {
           {/* Refresh */}
           <button
             onClick={refetch}
-            className="p-2 rounded-xl text-tertiary hover:text-secondary hover:bg-white/5 transition-colors"
+            className="p-2 rounded-none text-tertiary hover:text-secondary hover:bg-white/5 transition-colors"
             title="Refresh agent list"
           >
             <RefreshCw className="h-4 w-4" />
           </button>
 
           {/* Grid/List toggle */}
-          <div className="flex items-center glass rounded-xl overflow-hidden">
+          <div className="flex items-center glass rounded-none overflow-hidden">
             <button
               onClick={() => setViewMode('grid')}
               className={cn(
@@ -169,16 +169,16 @@ export default function TerminalsView() {
 
           {/* New Terminal Dropdown */}
           <div className="relative group">
-            <GlassButton
+            <CockpitButton
               size="sm"
               variant="primary"
               leftIcon={<Plus className="h-4 w-4" />}
               disabled={sessionCount >= MAX_SESSIONS}
             >
               New Terminal
-            </GlassButton>
+            </CockpitButton>
             <div className="absolute right-0 top-full mt-1 hidden group-hover:block z-20">
-              <div className="glass rounded-xl py-1 min-w-[200px] shadow-lg border border-white/10">
+              <div className="glass rounded-none py-1 min-w-[200px] shadow-lg border border-white/10">
                 {/* Agents with logs but no session */}
                 {agentsWithoutSession.length > 0 && (
                   <>
@@ -191,7 +191,7 @@ export default function TerminalsView() {
                         onClick={() => handleAddAgent(agent.agentId)}
                         className="w-full px-3 py-2 text-left text-xs hover:bg-white/10 flex items-center gap-2 text-secondary hover:text-primary transition-colors"
                       >
-                        <span className="h-2 w-2 rounded-full bg-green-500" />
+                        <span className="h-2 w-2 rounded-full bg-[var(--color-status-success)]" />
                         {AGENT_DISPLAY[agent.agentId] || `@${agent.agentId}`}
                         {agent.active && (
                           <span className="ml-auto text-[10px] terminal-status-active">live</span>
@@ -234,7 +234,7 @@ export default function TerminalsView() {
       <div className="flex-1 flex flex-col gap-4 min-h-0 overflow-hidden">
         {activeSession ? (
           /* Expanded terminal output for selected session */
-          <GlassCard padding="none" className="flex-1 flex flex-col overflow-hidden">
+          <CockpitCard padding="none" className="flex-1 flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-3 py-2 border-b border-white/5 flex-shrink-0">
               <div className="flex items-center gap-2">
                 <button
@@ -250,8 +250,8 @@ export default function TerminalsView() {
                 <span className={cn(
                   'text-[10px] font-medium capitalize',
                   activeSession.status === 'working' && 'terminal-status-active',
-                  activeSession.status === 'connecting' && 'text-yellow-400',
-                  activeSession.status === 'error' && 'text-red-400',
+                  activeSession.status === 'connecting' && 'text-[var(--bb-warning)]',
+                  activeSession.status === 'error' && 'text-[var(--bb-error)]',
                   activeSession.status === 'idle' && 'text-tertiary',
                 )}>
                   {activeSession.status}
@@ -267,7 +267,7 @@ export default function TerminalsView() {
               </div>
             </div>
             <LiveTerminalOutput session={activeSession} />
-          </GlassCard>
+          </CockpitCard>
         ) : (
           /* Session cards grid/list */
           <div className="flex-1 overflow-y-auto" tabIndex={0} role="region" aria-label="Terminal sessions">
@@ -297,23 +297,23 @@ export default function TerminalsView() {
               </div>
             ) : (
               <div className="flex-1 flex items-center justify-center mt-12">
-                <GlassCard padding="lg" className="text-center max-w-sm">
+                <CockpitCard padding="lg" className="text-center max-w-sm">
                   <Radio className="h-10 w-10 text-tertiary mx-auto mb-3" />
                   <h2 className="text-sm font-semibold text-primary mb-1">Waiting for agents</h2>
                   <p className="text-xs text-secondary mb-3">
                     Terminals auto-open when agents start writing to <code className="text-[10px] bg-white/5 px-1 py-0.5 rounded">.aios/logs/</code>
                   </p>
                   <div className="flex items-center justify-center gap-2">
-                    <GlassButton size="sm" onClick={() => handleAddAgent('dev')}>
+                    <CockpitButton size="sm" onClick={() => handleAddAgent('dev')}>
                       <Plus className="h-3 w-3 mr-1" />
                       @dev
-                    </GlassButton>
-                    <GlassButton size="sm" onClick={() => handleAddAgent('main')}>
+                    </CockpitButton>
+                    <CockpitButton size="sm" onClick={() => handleAddAgent('main')}>
                       <Plus className="h-3 w-3 mr-1" />
                       Main
-                    </GlassButton>
+                    </CockpitButton>
                   </div>
-                </GlassCard>
+                </CockpitCard>
               </div>
             )}
           </div>
@@ -321,7 +321,7 @@ export default function TerminalsView() {
       </div>
 
       {/* Footer */}
-      <GlassCard padding="sm" variant="subtle" className="flex-shrink-0">
+      <CockpitCard padding="sm" variant="subtle" className="flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xs text-tertiary">
@@ -340,7 +340,7 @@ export default function TerminalsView() {
             />
           </div>
         </div>
-      </GlassCard>
+      </CockpitCard>
     </div>
   );
 }

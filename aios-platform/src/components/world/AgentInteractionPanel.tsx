@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useAgentById, useAgentCommands } from '../../hooks/useAgents';
 import { useChat } from '../../hooks/useChat';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
 import { domainSpriteColors, tierBadge, agentSpriteRects } from './pixel-sprites';
 import { rooms } from './world-layout';
 import type { DomainId } from './world-layout';
@@ -120,12 +119,8 @@ export function AgentInteractionPanel({
   ];
 
   return (
-    <motion.div
+    <div
       className="h-full flex flex-col glass-panel border-l border-glass-border"
-      initial={{ x: '100%', opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: '100%', opacity: 0 }}
-      transition={{ type: 'spring', damping: 25, stiffness: 300 }}
     >
       {/* Header */}
       <div className="flex-shrink-0 p-3 border-b border-glass-border">
@@ -183,7 +178,7 @@ export function AgentInteractionPanel({
             </div>
           </div>
 
-          <GlassButton
+          <CockpitButton
             variant="ghost"
             size="icon"
             onClick={onClose}
@@ -194,7 +189,7 @@ export function AgentInteractionPanel({
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
-          </GlassButton>
+          </CockpitButton>
         </div>
       </div>
 
@@ -223,13 +218,9 @@ export function AgentInteractionPanel({
 
       {/* Tab content */}
       <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-        <AnimatePresence mode="wait">
-          {activeTab === 'chat' ? (
-            <motion.div
+        {activeTab === 'chat' ? (
+            <div
               key="chat"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               className="flex-1 flex flex-col min-h-0"
             >
               {/* Messages area */}
@@ -237,7 +228,7 @@ export function AgentInteractionPanel({
                 {messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center py-8">
                     <div
-                      className="rounded-xl p-3 mb-3 overflow-hidden"
+                      className="rounded-none p-3 mb-3 overflow-hidden"
                       style={{ background: `${domainCfg.tileColor}11` }}
                     >
                       {getAgentAvatarUrl(agentId) ? (
@@ -278,7 +269,7 @@ export function AgentInteractionPanel({
                     >
                       <div
                         className={cn(
-                          'max-w-[85%] rounded-xl px-2.5 py-1.5',
+                          'max-w-[85%] rounded-none px-2.5 py-1.5',
                           msg.role === 'user'
                             ? 'glass text-primary'
                             : 'text-secondary',
@@ -293,11 +284,9 @@ export function AgentInteractionPanel({
                           {msg.content}
                         </p>
                         {msg.isStreaming && (
-                          <motion.span
+                          <span
                             className="inline-block w-1.5 h-3 ml-0.5 rounded-sm"
                             style={{ backgroundColor: domainCfg.tileColor }}
-                            animate={{ opacity: [1, 0, 1] }}
-                            transition={{ duration: 0.8, repeat: Infinity }}
                           />
                         )}
                       </div>
@@ -345,32 +334,25 @@ export function AgentInteractionPanel({
                   </button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ) : activeTab === 'activity' ? (
-            <motion.div
+            <div
               key="activity"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               className="flex-1 overflow-y-auto glass-scrollbar p-3 space-y-1"
             >
               {/* Live status */}
               {liveActivity?.isActive && (
-                <motion.div
-                  className="rounded-xl p-3 mb-3"
+                <div
+                  className="rounded-none p-3 mb-3"
                   style={{
                     background: `${domainCfg.tileColor}11`,
                     border: `1px solid ${domainCfg.tileColor}22`,
                   }}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
                 >
                   <div className="flex items-center gap-2">
-                    <motion.div
+                    <div
                       className="w-2 h-2 rounded-full"
                       style={{ background: '#10B981' }}
-                      animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
-                      transition={{ duration: 1.2, repeat: Infinity }}
                     />
                     <span className="text-[11px] font-semibold text-primary">
                       {liveActivity.action}
@@ -381,7 +363,7 @@ export function AgentInteractionPanel({
                       tool: {liveActivity.tool}
                     </span>
                   )}
-                </motion.div>
+                </div>
               )}
 
               {/* Events timeline */}
@@ -404,13 +386,10 @@ export function AgentInteractionPanel({
                   </p>
                 </div>
               )}
-            </motion.div>
+            </div>
           ) : activeTab === 'profile' ? (
-            <motion.div
+            <div
               key="profile"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
               className="flex-1 overflow-y-auto glass-scrollbar p-4 space-y-4"
             >
               {isLoading ? (
@@ -427,7 +406,7 @@ export function AgentInteractionPanel({
                       <img
                         src={getAgentAvatarUrl(agentId)}
                         alt={agent.name}
-                        className="rounded-xl object-cover shadow-lg"
+                        className="rounded-none object-cover shadow-lg"
                         style={{
                           width: 120,
                           height: 120,
@@ -492,13 +471,10 @@ export function AgentInteractionPanel({
               ) : (
                 <p className="text-xs text-tertiary">Agent não encontrado</p>
               )}
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
+            <div
               key="commands"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
               className="flex-1 overflow-y-auto glass-scrollbar p-3 space-y-1.5"
             >
               {commands && commands.length > 0 ? (
@@ -506,7 +482,7 @@ export function AgentInteractionPanel({
                   <button
                     key={cmd.command}
                     onClick={() => handleCommandClick(cmd)}
-                    className="w-full text-left p-2.5 rounded-xl glass-subtle hover:bg-white/10 transition-colors group"
+                    className="w-full text-left p-2.5 rounded-none glass-subtle hover:bg-white/10 transition-colors group"
                   >
                     <div className="flex items-center gap-2 mb-0.5">
                       <code
@@ -533,11 +509,10 @@ export function AgentInteractionPanel({
                   </p>
                 </div>
               )}
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
+</div>
+    </div>
   );
 }
 

@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence, Reorder } from 'framer-motion';
-import { GlassCard, GlassButton, GlassInput } from '../ui';
+import { CockpitCard, CockpitButton, CockpitInput } from '../ui';
 import { useCategoryStore, type CategoryConfig } from '../../stores/categoryStore';
 import { useSquads } from '../../hooks/useSquads';
 import { useToast } from '../ui/Toast';
@@ -81,10 +80,9 @@ const squadTypeOptions: { value: SquadType; label: string }[] = [
   { value: 'advisory', label: 'Advisory' },
 ];
 
-// Get category colors from centralized theme
-const getCategoryColors = (squadType: SquadType): string => {
-  const theme = getSquadTheme(squadType);
-  return `${theme.borderSubtle} ${theme.bgSubtle}`;
+// Uniform dark surface for all categories — no per-type rainbow backgrounds
+const getCategoryColors = (_squadType: SquadType): string => {
+  return 'border-white/8 bg-white/[0.03]';
 };
 
 export function CategoryManager() {
@@ -108,7 +106,7 @@ export function CategoryManager() {
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategory, setNewCategory] = useState({
     name: '',
-    icon: '\u{1F4C2}',
+    icon: 'FolderOpen',
     squadType: 'orchestrator' as SquadType,
   });
 
@@ -168,7 +166,7 @@ export function CategoryManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <GlassCard>
+      <CockpitCard>
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-lg font-semibold text-primary">Organização de Categorias</h2>
@@ -177,7 +175,7 @@ export function CategoryManager() {
             </p>
           </div>
           <div className="flex gap-2">
-            <GlassButton
+            <CockpitButton
               variant="ghost"
               size="sm"
               onClick={() => {
@@ -186,33 +184,30 @@ export function CategoryManager() {
               }}
             >
               Resetar
-            </GlassButton>
-            <GlassButton
+            </CockpitButton>
+            <CockpitButton
               variant="primary"
               size="sm"
               onClick={() => setShowNewCategory(true)}
             >
               <PlusIcon />
               <span className="ml-1">Nova Categoria</span>
-            </GlassButton>
+            </CockpitButton>
           </div>
         </div>
 
         {/* New Category Form */}
-        <AnimatePresence>
-          {showNewCategory && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
+        {showNewCategory && (
+            <div
+
               className="mb-4 overflow-hidden"
             >
-              <div className="p-4 rounded-xl border border-blue-500/30 bg-blue-500/10">
+              <div className="p-4 rounded-none border border-white/10 bg-white/[0.03]">
                 <h3 className="text-sm font-medium text-primary mb-3">Nova Categoria</h3>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="block text-xs text-tertiary mb-1">Icon</label>
-                    <GlassInput
+                    <CockpitInput
                       value={newCategory.icon}
                       onChange={(e) => setNewCategory({ ...newCategory, icon: e.target.value })}
                       placeholder="icon"
@@ -221,7 +216,7 @@ export function CategoryManager() {
                   </div>
                   <div>
                     <label className="block text-xs text-tertiary mb-1">Nome</label>
-                    <GlassInput
+                    <CockpitInput
                       value={newCategory.name}
                       onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
                       placeholder="Nome da categoria"
@@ -243,27 +238,20 @@ export function CategoryManager() {
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 mt-3">
-                  <GlassButton variant="ghost" size="sm" onClick={() => setShowNewCategory(false)}>
+                  <CockpitButton variant="ghost" size="sm" onClick={() => setShowNewCategory(false)}>
                     <XIcon />
                     <span className="ml-1">Cancelar</span>
-                  </GlassButton>
-                  <GlassButton variant="primary" size="sm" onClick={handleCreateCategory}>
+                  </CockpitButton>
+                  <CockpitButton variant="primary" size="sm" onClick={handleCreateCategory}>
                     <CheckIcon />
                     <span className="ml-1">Criar</span>
-                  </GlassButton>
+                  </CockpitButton>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-
-        {/* Categories List */}
-        <Reorder.Group
-          axis="y"
-          values={categories}
-          onReorder={handleReorderCategories}
-          className="space-y-2"
-        >
+{/* Categories List */}
+        <div className="space-y-2">
           {categories.map((category) => (
             <CategoryItem
               key={category.id}
@@ -284,12 +272,12 @@ export function CategoryManager() {
               onReorderSquads={(squadIds) => reorderSquadsInCategory(category.id, squadIds)}
             />
           ))}
-        </Reorder.Group>
-      </GlassCard>
+        </div>
+      </CockpitCard>
 
       {/* Uncategorized Squads */}
       {uncategorizedSquads.length > 0 && (
-        <GlassCard>
+        <CockpitCard>
           <h3 className="text-sm font-medium text-primary mb-3">
             Squads sem Categoria ({uncategorizedSquads.length})
           </h3>
@@ -298,19 +286,17 @@ export function CategoryManager() {
           </p>
           <div className="flex flex-wrap gap-2">
             {uncategorizedSquads.map((squad) => (
-              <motion.div
+              <div
                 key={squad.id}
                 draggable
-                onDragStart={((e: React.DragEvent<HTMLDivElement>) => {
-                  e.dataTransfer.setData('squadId', squad.id);
-                }) as unknown as (event: MouseEvent | TouchEvent | PointerEvent) => void}
+                onDragStart={(e: React.DragEvent<HTMLDivElement>) => { e.dataTransfer.setData("squadId", squad.id); }}
                 className="px-3 py-1.5 rounded-lg border border-white/20 bg-white/5 text-sm text-primary cursor-grab hover:border-white/40 transition-colors"
               >
                 {(() => { const Icon = getIconComponent(squad.icon || 'Package'); return <Icon size={14} className="inline-block mr-1" />; })()} {squad.name}
-              </motion.div>
+              </div>
             ))}
           </div>
-        </GlassCard>
+        </CockpitCard>
       )}
     </div>
   );
@@ -375,17 +361,11 @@ function CategoryItem({
   };
 
   return (
-    <Reorder.Item
-      value={category}
-      className={cn(
-        'rounded-xl border transition-all',
+    <div className={cn(
+        'rounded-none border transition-all',
         getCategoryColors(category.squadType),
-        isDragOver && 'ring-2 ring-blue-500'
-      )}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
+        isDragOver && 'ring-2 ring-[var(--aiox-lime)]'
+      )}>
       {/* Header */}
       <div className="flex items-center gap-3 p-3">
         <div className="cursor-grab text-white/30 hover:text-white/50">
@@ -395,12 +375,12 @@ function CategoryItem({
         {isEditing ? (
           // Edit Mode
           <div className="flex-1 flex items-center gap-2">
-            <GlassInput
+            <CockpitInput
               value={editForm.icon}
               onChange={(e) => setEditForm({ ...editForm, icon: e.target.value })}
               className="w-12 text-center"
             />
-            <GlassInput
+            <CockpitInput
               value={editForm.name}
               onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
               className="flex-1"
@@ -416,12 +396,12 @@ function CategoryItem({
                 </option>
               ))}
             </select>
-            <GlassButton variant="ghost" size="icon" onClick={onCancelEdit} aria-label="Cancelar">
+            <CockpitButton variant="ghost" size="icon" onClick={onCancelEdit} aria-label="Cancelar">
               <XIcon />
-            </GlassButton>
-            <GlassButton variant="primary" size="icon" onClick={() => onSave(editForm)} aria-label="Salvar">
+            </CockpitButton>
+            <CockpitButton variant="primary" size="icon" onClick={() => onSave(editForm)} aria-label="Salvar">
               <CheckIcon />
-            </GlassButton>
+            </CockpitButton>
           </div>
         ) : (
           // View Mode
@@ -437,65 +417,52 @@ function CategoryItem({
             </button>
 
             <div className="flex items-center gap-1">
-              <GlassButton variant="ghost" size="icon" onClick={onEdit} aria-label="Editar">
+              <CockpitButton variant="ghost" size="icon" onClick={onEdit} aria-label="Editar">
                 <EditIcon />
-              </GlassButton>
-              <GlassButton
+              </CockpitButton>
+              <CockpitButton
                 variant="ghost"
                 size="icon"
                 onClick={onDelete}
-                className="text-red-400 hover:bg-red-500/10"
+                className="text-[var(--bb-error)] hover:bg-[var(--bb-error)]/10"
                 disabled={category.squads.length > 0}
                 aria-label="Excluir"
               >
                 <TrashIcon />
-              </GlassButton>
+              </CockpitButton>
             </div>
           </>
         )}
       </div>
 
       {/* Squads List */}
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+      {isExpanded && (
+          <div
+
             className="overflow-hidden"
           >
             <div className="px-3 pb-3">
               {sortedSquads.length > 0 ? (
-                <Reorder.Group
-                  axis="y"
-                  values={category.squads}
-                  onReorder={onReorderSquads}
-                  className="space-y-1"
-                >
+                <div className="space-y-1">
                   {sortedSquads.map((squad) => (
-                    <Reorder.Item
-                      key={squad.id}
-                      value={squad.id}
-                      className="flex items-center gap-2 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-grab"
-                    >
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-grab">
                       <div className="text-white/30">
                         <GripIcon />
                       </div>
                       <span className="text-base">{(() => { const Icon = getIconComponent(squad.icon || 'Package'); return <Icon size={16} />; })()}</span>
                       <span className="text-sm text-primary flex-1">{squad.name}</span>
                       <span className="text-xs text-tertiary">{squad.agentCount} agents</span>
-                    </Reorder.Item>
+                    </div>
                   ))}
-                </Reorder.Group>
+                </div>
               ) : (
                 <div className="text-center py-4 text-tertiary text-sm">
                   Arraste squads para cá
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </Reorder.Item>
+</div>
   );
 }

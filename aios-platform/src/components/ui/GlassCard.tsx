@@ -1,87 +1,63 @@
-import React, { forwardRef, useState, HTMLAttributes } from 'react';
-import { motion, MotionProps } from 'framer-motion';
-import { cn } from '../../lib/utils';
+import { forwardRef } from 'react';
+import type { HTMLAttributes } from 'react';
+import { CockpitCard } from './cockpit/CockpitCard';
+import type { CockpitCardProps } from './cockpit/CockpitCard';
 
+let _warnedGlassCard = false;
+
+/** @deprecated Use CockpitCard from 'components/ui/cockpit' instead. */
 export interface GlassCardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'subtle' | 'strong';
   interactive?: boolean;
   padding?: 'none' | 'sm' | 'md' | 'lg';
+  /** @deprecated Ignored — Cockpit cards are brutalist (no border-radius). */
   radius?: 'sm' | 'md' | 'lg' | 'xl';
+  /** @deprecated Ignored — Cockpit cards do not use animation toggles. */
   animate?: boolean;
-  motionProps?: MotionProps;
-  /** Accessible label for the card content */
+  /** @deprecated No longer used — kept for API compatibility. */
+  motionProps?: Record<string, unknown>;
   'aria-label'?: string;
 }
 
-const paddingMap = {
-  none: '',
-  sm: 'p-3',
-  md: 'p-4',
-  lg: 'p-6',
+const variantMap: Record<
+  NonNullable<GlassCardProps['variant']>,
+  CockpitCardProps['variant']
+> = {
+  default: 'default',
+  subtle: 'subtle',
+  strong: 'elevated',
 };
 
-const radiusMap = {
-  sm: 'rounded-xl',
-  md: 'rounded-[16px]',
-  lg: 'rounded-glass',
-  xl: 'rounded-glass-lg',
-};
-
-const variantClasses = {
-  default: 'glass',
-  subtle: 'glass-subtle',
-  strong: 'glass-lg',
-};
-
+/**
+ * @deprecated Use `CockpitCard` from `components/ui/cockpit` instead.
+ * This component now delegates to CockpitCard with variant mapping.
+ */
 export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
   (
     {
-      className,
       variant = 'default',
-      interactive = false,
-      padding = 'md',
-      radius = 'lg',
-      animate = true,
-      motionProps,
-      children,
-      'aria-label': ariaLabel,
-      ...props
+      // Destructure ignored props so they don't pass through to CockpitCard
+      radius: _radius,
+      animate: _animate,
+      motionProps: _motionProps,
+      ...rest
     },
     ref
   ) => {
-    const [isAnimating, setIsAnimating] = useState(animate);
-
-    const classes = cn(
-      variantClasses[variant],
-      paddingMap[padding],
-      radiusMap[radius],
-      interactive && 'glass-interactive',
-      className
-    );
-
-    if (animate) {
-      return (
-        <motion.div
-          ref={ref}
-          className={classes}
-          aria-busy={isAnimating}
-          aria-label={ariaLabel}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          onAnimationComplete={() => setIsAnimating(false)}
-          {...motionProps}
-          {...(props as React.ComponentProps<typeof motion.div>)}
-        >
-          {children}
-        </motion.div>
+    if (process.env.NODE_ENV !== 'production' && !_warnedGlassCard) {
+      _warnedGlassCard = true;
+      console.warn(
+        'GlassCard is deprecated. Use CockpitCard instead. ' +
+          'See src/components/ui/cockpit/CockpitCard.tsx'
       );
     }
 
     return (
-      <div ref={ref} className={classes} aria-label={ariaLabel} {...props}>
-        {children}
-      </div>
+      <CockpitCard
+        ref={ref}
+        variant={variantMap[variant]}
+        {...rest}
+      />
     );
   }
 );

@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
 import { Users, Cpu, Shield, Mic, Ban, Terminal } from 'lucide-react';
-import { GlassCard, Badge, ProgressBar } from '../ui';
+import { CockpitCard, Badge, ProgressBar } from '../ui';
 import type { SquadStats } from '../../types';
 
 interface SquadStatsPanelProps {
@@ -8,9 +7,9 @@ interface SquadStatsPanelProps {
 }
 
 const tierBadges: Array<{ key: string; label: string; color: string; bg: string }> = [
-  { key: '0', label: 'Orchestrator', color: 'text-purple-400', bg: 'bg-purple-500/15' },
-  { key: '1', label: 'Master', color: 'text-blue-400', bg: 'bg-blue-500/15' },
-  { key: '2', label: 'Specialist', color: 'text-green-400', bg: 'bg-green-500/15' },
+  { key: '0', label: 'Orchestrator', color: 'text-[var(--aiox-gray-muted)]', bg: 'bg-[var(--aiox-gray-muted)]/15' },
+  { key: '1', label: 'Master', color: 'text-[var(--aiox-blue)]', bg: 'bg-[var(--aiox-blue)]/15' },
+  { key: '2', label: 'Specialist', color: 'text-[var(--color-status-success)]', bg: 'bg-[var(--color-status-success)]/15' },
 ];
 
 function MetricCard({
@@ -25,19 +24,16 @@ function MetricCard({
   delay?: number;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.3 }}
+    <div
     >
-      <GlassCard padding="md" className="h-full">
+      <CockpitCard padding="md" className="h-full">
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-cyan-400">{icon}</span>
+          <span className="text-[var(--aiox-blue)]">{icon}</span>
           <span className="text-xs font-semibold text-secondary uppercase tracking-wider">{label}</span>
         </div>
         {children}
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }
 
@@ -46,11 +42,19 @@ export function SquadStatsPanel({ stats }: SquadStatsPanelProps) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <GlassCard key={i} padding="md" className="h-24 animate-pulse">
+          <CockpitCard key={i} padding="md" className="h-24 animate-pulse">
             <div className="h-3 w-20 bg-white/5 rounded mb-3" />
             <div className="h-6 w-16 bg-white/5 rounded" />
-          </GlassCard>
+          </CockpitCard>
         ))}
+      </div>
+    );
+  }
+
+  if (!stats.stats) {
+    return (
+      <div className="text-tertiary text-sm p-6 text-center">
+        Estatísticas não disponíveis para este squad
       </div>
     );
   }
@@ -63,7 +67,7 @@ export function SquadStatsPanel({ stats }: SquadStatsPanelProps) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
       {/* Total Agents */}
       <MetricCard icon={<Users size={16} />} label="Total Agents" delay={0}>
-        <p className="text-3xl font-bold text-primary">{totalAgents}</p>
+        <p className="text-lg font-bold text-primary">{totalAgents}</p>
       </MetricCard>
 
       {/* By Tier */}
@@ -80,7 +84,7 @@ export function SquadStatsPanel({ stats }: SquadStatsPanelProps) {
       {/* Quality Score */}
       <MetricCard icon={<Shield size={16} />} label="Quality Score" delay={0.1}>
         <div className="space-y-2">
-          <p className="text-2xl font-bold text-primary">{qualityScore}%</p>
+          <p className="text-lg font-bold text-primary">{qualityScore}%</p>
           <ProgressBar
             value={qualityScore}
             variant={qualityScore >= 80 ? 'success' : qualityScore >= 50 ? 'warning' : 'error'}
@@ -114,7 +118,7 @@ export function SquadStatsPanel({ stats }: SquadStatsPanelProps) {
 
       {/* Total Commands */}
       <MetricCard icon={<Terminal size={16} />} label="Commands" delay={0.25}>
-        <p className="text-3xl font-bold text-primary">{commands.total}</p>
+        <p className="text-lg font-bold text-primary">{commands.total}</p>
         {commands.byAgent.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
             {commands.byAgent.slice(0, 3).map((entry) => (

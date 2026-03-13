@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Loader2,
   AlertCircle,
@@ -38,20 +37,18 @@ export const EventsPanel = memo(function EventsPanel({ events, isActive }: { eve
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Terminal className="w-5 h-5 text-cyan-400" />
+          <Terminal className="w-5 h-5 text-[var(--aiox-blue)]" />
           <h2 className="font-semibold text-white">Eventos em Tempo Real</h2>
           {isActive && (
-            <motion.div
-              className="w-2 h-2 bg-green-400 rounded-full"
-              animate={{ scale: [1, 1.5, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
+            <div
+              className="w-2 h-2 bg-[var(--color-status-success)] rounded-full"
             />
           )}
         </div>
         {events.length > 10 && (
           <button
             onClick={() => setShowAll(!showAll)}
-            className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+            className="text-xs text-[var(--aiox-blue)] hover:text-[var(--aiox-blue)] flex items-center gap-1"
           >
             <Eye className="w-3 h-3" />
             {showAll ? 'Mostrar menos' : `Ver todos (${events.length})`}
@@ -60,17 +57,13 @@ export const EventsPanel = memo(function EventsPanel({ events, isActive }: { eve
       </div>
 
       <div ref={containerRef} className="flex-1 overflow-auto space-y-2 pr-2">
-        <AnimatePresence mode="popLayout">
-          {displayEvents.map((event, index) => (
-            <motion.div
+        {displayEvents.map((event, index) => (
+            <div
               key={`${event.timestamp}-${index}`}
-              initial={{ x: 20, opacity: 0, scale: 0.95 }}
-              animate={{ x: 0, opacity: 1, scale: 1 }}
-              exit={{ x: -20, opacity: 0, scale: 0.95 }}
-              className="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+              className="p-3 rounded-none bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-mono text-cyan-400 flex items-center gap-1">
+                <span className="text-xs font-mono text-[var(--aiox-blue)] flex items-center gap-1">
                   <GitBranch className="w-3 h-3" />
                   {event.event}
                 </span>
@@ -82,9 +75,8 @@ export const EventsPanel = memo(function EventsPanel({ events, isActive }: { eve
                 {JSON.stringify(event.data).substring(0, 100)}
                 {JSON.stringify(event.data).length > 100 && '...'}
               </div>
-            </motion.div>
+            </div>
           ))}
-        </AnimatePresence>
       </div>
     </div>
   );
@@ -143,15 +135,12 @@ export function TaskHistoryPanel({
   if (!visible) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+    <div
       className="flex flex-col h-full"
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <History className="w-5 h-5 text-cyan-400" />
+          <History className="w-5 h-5 text-[var(--aiox-blue)]" />
           <h2 className="font-semibold text-white">Histórico</h2>
           <span className="px-2 py-0.5 rounded-full text-xs bg-white/10 text-white/50">
             {total}
@@ -177,7 +166,7 @@ export function TaskHistoryPanel({
 
       {/* Persistence indicator */}
       {!dbPersistence && (
-        <div className="mb-3 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-xs text-yellow-400/80">
+        <div className="mb-3 px-3 py-2 rounded-lg bg-[var(--bb-warning)]/10 border border-[var(--bb-warning)]/20 text-xs text-[var(--bb-warning)]/80">
           Apenas memória — reiniciar o servidor apaga o histórico
         </div>
       )}
@@ -190,7 +179,7 @@ export function TaskHistoryPanel({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Buscar demanda..."
-          className="w-full pl-9 pr-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-cyan-500/50 transition-colors"
+          className="w-full pl-9 pr-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--aiox-lime)]/50 transition-colors"
         />
         {searchQuery && (
           <button
@@ -210,7 +199,7 @@ export function TaskHistoryPanel({
             onClick={() => setFilter(sf.value)}
             className={`px-2.5 py-1 text-xs rounded-lg transition-colors ${
               filter === sf.value
-                ? 'bg-cyan-500/20 text-cyan-400 ring-1 ring-cyan-500/40'
+                ? 'bg-[var(--aiox-lime)]/20 text-[var(--aiox-lime)] ring-1 ring-[var(--aiox-lime)]/40'
                 : 'bg-white/5 text-white/50 hover:bg-white/10'
             }`}
           >
@@ -230,17 +219,13 @@ export function TaskHistoryPanel({
             {searchQuery ? 'Nenhuma demanda encontrada' : 'Nenhuma orquestração registrada'}
           </div>
         ) : (
-          <AnimatePresence initial={false}>
-            {filtered.map((task) => {
+          filtered.map((task) => {
               const st = statusLabel(task.status);
               return (
-                <motion.button
+                <button
                   key={task.id}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
                   onClick={() => onSelectTask(task)}
-                  className="w-full text-left p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
+                  className="w-full text-left p-3 rounded-none bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
                 >
                   <div className="flex items-start justify-between gap-2 mb-1.5">
                     <p className="text-sm text-white/90 line-clamp-2 leading-snug group-hover:text-white transition-colors">
@@ -270,13 +255,12 @@ export function TaskHistoryPanel({
                       <span>{task.totalTokens.toLocaleString()} tok</span>
                     )}
                   </div>
-                </motion.button>
+                </button>
               );
-            })}
-          </AnimatePresence>
-        )}
+            })
+)}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -310,7 +294,7 @@ export function TaskDetailView({
   const st = statusLabel(task.status);
 
   return (
-    <div className="h-full flex flex-col">
+    <div>
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
         <button
@@ -356,7 +340,7 @@ export function TaskDetailView({
       )}
 
       {/* Outputs */}
-      <div className="flex-1 overflow-y-auto space-y-4">
+      <div className="space-y-4">
         {outputs.length === 0 ? (
           <div className="text-center py-12 text-white/30 text-sm">
             Nenhum output registrado para esta tarefa
@@ -385,10 +369,10 @@ export function TaskDetailView({
 
         {/* Error display */}
         {task.error && (
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30">
+          <div className="p-4 rounded-none bg-[var(--bb-error)]/10 border border-[var(--bb-error)]/30">
             <div className="flex items-center gap-2 mb-2">
-              <AlertCircle className="w-4 h-4 text-red-400" />
-              <span className="text-sm font-medium text-red-400">Erro</span>
+              <AlertCircle className="w-4 h-4 text-[var(--bb-error)]" />
+              <span className="text-sm font-medium text-[var(--bb-error)]">Erro</span>
             </div>
             <p className="text-sm text-white/60">{task.error}</p>
           </div>

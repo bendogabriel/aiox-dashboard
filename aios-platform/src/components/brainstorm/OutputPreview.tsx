@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpen,
   FileText,
@@ -15,13 +14,13 @@ import {
   Trash2,
   KanbanSquare,
 } from 'lucide-react';
-import { GlassCard, GlassButton, Badge } from '../ui';
+import { CockpitCard, CockpitButton, Badge } from '../ui';
 import { cn } from '../../lib/utils';
 import type { BrainstormOutput, OutputType } from '../../stores/brainstormStore';
 
 const typeConfig: Record<OutputType, { label: string; icon: typeof BookOpen; color: string }> = {
-  'action-plan': { label: 'Plano de Acao', icon: Zap, color: '#D1FF00' },
-  story: { label: 'Story AIOS', icon: BookOpen, color: '#0099FF' },
+  'action-plan': { label: 'Plano de Acao', icon: Zap, color: 'var(--aiox-lime)' },
+  story: { label: 'Story AIOS', icon: BookOpen, color: 'var(--aiox-blue)' },
   prd: { label: 'PRD', icon: FileText, color: '#ED4609' },
   epic: { label: 'Epic', icon: Layers, color: '#4ADE80' },
   requirements: { label: 'Requirements', icon: ClipboardList, color: '#f59e0b' },
@@ -68,12 +67,9 @@ function OutputCard({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+    <div
     >
-      <GlassCard
+      <CockpitCard
         padding="md"
         className="border-l-2"
         style={{ borderLeftColor: config.color }}
@@ -97,16 +93,16 @@ function OutputCard({
           </button>
 
           <div className="flex items-center gap-1">
-            <GlassButton
+            <CockpitButton
               variant="ghost"
               size="icon"
               className="h-7 w-7"
               onClick={handleCopy}
               aria-label="Copiar"
             >
-              {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
-            </GlassButton>
-            <GlassButton
+              {copied ? <Check size={12} className="text-[var(--color-status-success)]" /> : <Copy size={12} />}
+            </CockpitButton>
+            <CockpitButton
               variant="ghost"
               size="icon"
               className="h-7 w-7"
@@ -114,8 +110,8 @@ function OutputCard({
               aria-label="Download"
             >
               <Download size={12} />
-            </GlassButton>
-            <GlassButton
+            </CockpitButton>
+            <CockpitButton
               variant="ghost"
               size="icon"
               className="h-7 w-7"
@@ -123,26 +119,22 @@ function OutputCard({
               aria-label="Refinar"
             >
               <RefreshCw size={12} />
-            </GlassButton>
-            <GlassButton
+            </CockpitButton>
+            <CockpitButton
               variant="ghost"
               size="icon"
               className="h-7 w-7"
               onClick={onRemove}
               aria-label="Remover"
             >
-              <Trash2 size={12} className="text-red-400" />
-            </GlassButton>
+              <Trash2 size={12} className="text-[var(--bb-error)]" />
+            </CockpitButton>
           </div>
         </div>
 
         {/* Content */}
-        <AnimatePresence>
-          {expanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+        {expanded && (
+            <div
               className="overflow-hidden"
             >
               <div className="pt-2 border-t border-glass-border">
@@ -153,7 +145,7 @@ function OutputCard({
 
               {/* Actions */}
               <div className="flex gap-2 mt-3 pt-2 border-t border-glass-border">
-                <GlassButton
+                <CockpitButton
                   variant="ghost"
                   size="sm"
                   className="text-xs gap-1.5"
@@ -164,21 +156,20 @@ function OutputCard({
                   ) : (
                     <><Download size={12} /> Download .md</>
                   )}
-                </GlassButton>
-                <GlassButton
+                </CockpitButton>
+                <CockpitButton
                   variant="ghost"
                   size="sm"
                   className="text-xs gap-1.5"
                   onClick={onRefine}
                 >
                   <RefreshCw size={12} /> Refinar
-                </GlassButton>
+                </CockpitButton>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-      </GlassCard>
-    </motion.div>
+</CockpitCard>
+    </div>
   );
 }
 
@@ -190,8 +181,7 @@ export function OutputPreview({ outputs, onRefine, onRemove, onExport }: OutputP
       <h3 className="text-xs uppercase tracking-wider text-tertiary font-mono px-1">
         Outputs Gerados ({outputs.length})
       </h3>
-      <AnimatePresence>
-        {outputs.map((output) => (
+      {outputs.map((output) => (
           <OutputCard
             key={output.id}
             output={output}
@@ -200,7 +190,6 @@ export function OutputPreview({ outputs, onRefine, onRemove, onExport }: OutputP
             onExport={() => onExport(output)}
           />
         ))}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

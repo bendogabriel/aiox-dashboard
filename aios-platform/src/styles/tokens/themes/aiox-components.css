@@ -571,38 +571,17 @@ html[data-theme="aiox"] [role="alert"] {
 }
 
 /* ============================================
-   HEADINGS — Display Font
+   HEADINGS — Display Font (opt-in via .heading-display)
    ============================================ */
 
-html[data-theme="aiox"] h1,
-html[data-theme="aiox"] h2 {
+/* Opt-in display heading: use on page-level h1 titles only */
+html[data-theme="aiox"] .heading-display {
   font-family: var(--font-family-display);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-}
-
-html[data-theme="aiox"] h1 {
-  font-size: var(--font-size-2xl);
-  line-height: 1;
-}
-
-html[data-theme="aiox"] h2 {
   font-size: var(--font-size-xl);
-  line-height: 1.05;
-}
-
-/* Card-level headings with text-sm/text-xs — reset display font overrides */
-html[data-theme="aiox"] h2[class*="text-sm"],
-html[data-theme="aiox"] h2[class*="text-xs"],
-html[data-theme="aiox"] h3[class*="text-sm"],
-html[data-theme="aiox"] h3[class*="text-xs"] {
-  font-family: var(--font-family-mono);
-  font-size: inherit;
-  font-weight: inherit;
-  text-transform: none;
-  letter-spacing: normal;
-  line-height: inherit;
+  line-height: 1;
 }
 
 /* ============================================
@@ -823,6 +802,65 @@ html[data-theme="aiox"] [class*="text-orange-5"] {
   color: #FFB800 !important;
 }
 
+/* --- Orange-400 → Amber --- */
+html[data-theme="aiox"] [class*="text-orange-4"] {
+  color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="border-orange-500"] {
+  border-color: rgba(255, 184, 0, 0.2) !important;
+}
+
+/* --- Emerald → Lime (success) --- */
+html[data-theme="aiox"] [class*="bg-emerald-500\/"] {
+  background-color: rgba(209, 255, 0, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="bg-emerald-500"]:not([class*="/"]) {
+  background-color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="text-emerald-4"],
+html[data-theme="aiox"] [class*="text-emerald-5"] {
+  color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="border-emerald-500"] {
+  border-color: rgba(209, 255, 0, 0.2) !important;
+}
+
+/* --- Teal → Lime dim --- */
+html[data-theme="aiox"] [class*="bg-teal-500\/"] {
+  background-color: rgba(209, 255, 0, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="text-teal-4"],
+html[data-theme="aiox"] [class*="text-teal-5"] {
+  color: rgba(209, 255, 0, 0.7) !important;
+}
+
+/* --- Violet → Muted surface (same as purple) --- */
+html[data-theme="aiox"] [class*="bg-violet-500\/"] {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+html[data-theme="aiox"] [class*="text-violet-4"],
+html[data-theme="aiox"] [class*="text-violet-5"] {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* --- Indigo → Lime dim --- */
+html[data-theme="aiox"] [class*="bg-indigo-500\/"] {
+  background-color: rgba(209, 255, 0, 0.08) !important;
+}
+html[data-theme="aiox"] [class*="text-indigo-4"],
+html[data-theme="aiox"] [class*="text-indigo-5"] {
+  color: rgba(209, 255, 0, 0.7) !important;
+}
+
+/* --- Rose → Red (error) --- */
+html[data-theme="aiox"] [class*="bg-rose-500\/"] {
+  background-color: rgba(255, 59, 48, 0.1) !important;
+}
+html[data-theme="aiox"] [class*="text-rose-4"],
+html[data-theme="aiox"] [class*="text-rose-5"] {
+  color: #FF3B30 !important;
+}
+
 /* --- Pink → Muted surface --- */
 html[data-theme="aiox"] [class*="bg-pink-500\/1"] {
   background-color: rgba(255, 255, 255, 0.05) !important;
@@ -830,6 +868,85 @@ html[data-theme="aiox"] [class*="bg-pink-500\/1"] {
 html[data-theme="aiox"] [class*="text-pink-4"],
 html[data-theme="aiox"] [class*="text-pink-5"] {
   color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* --- Red-300 → Softer red --- */
+html[data-theme="aiox"] [class*="text-red-3"] {
+  color: rgba(255, 59, 48, 0.7) !important;
+}
+
+/* --- Solid color dots/indicators → Lime for positive, Red for negative --- */
+html[data-theme="aiox"] [class*="bg-green-4"]:not([class*="/"]) {
+  background-color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="bg-emerald-4"]:not([class*="/"]) {
+  background-color: #D1FF00 !important;
+}
+html[data-theme="aiox"] [class*="bg-red-4"]:not([class*="/"]) {
+  background-color: #FF3B30 !important;
+}
+html[data-theme="aiox"] [class*="bg-orange-4"]:not([class*="/"]) {
+  background-color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="bg-orange-5"]:not([class*="/"]) {
+  background-color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="bg-yellow-4"]:not([class*="/"]) {
+  background-color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="bg-amber-4"]:not([class*="/"]) {
+  background-color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="bg-amber-5"]:not([class*="/"]) {
+  background-color: #FFB800 !important;
+}
+html[data-theme="aiox"] [class*="bg-purple-4"]:not([class*="/"]),
+html[data-theme="aiox"] [class*="bg-purple-5"]:not([class*="/"]) {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+html[data-theme="aiox"] [class*="bg-cyan-5"]:not([class*="/"]) {
+  background-color: #D1FF00 !important;
+}
+
+/* --- Yellow text → Amber --- */
+html[data-theme="aiox"] [class*="text-yellow-5"] {
+  color: #FFB800 !important;
+}
+
+/* ============================================
+   SKILL BARS — All lime in AIOX theme
+   ============================================ */
+
+html[data-theme="aiox"] .skill-bar-fill,
+html[data-theme="aiox"] .skill-bar-fill.orange,
+html[data-theme="aiox"] .skill-bar-fill.purple,
+html[data-theme="aiox"] .skill-bar-fill.green,
+html[data-theme="aiox"] .skill-bar-fill.blue,
+html[data-theme="aiox"] .skill-bar-fill.pink,
+html[data-theme="aiox"] .skill-bar-fill.cyan {
+  background: var(--aiox-lime) !important;
+}
+
+/* Kill the shimmer animation — brutalist, no bling */
+html[data-theme="aiox"] .skill-bar-fill::after {
+  display: none !important;
+}
+
+/* ============================================
+   SQUAD GRADIENTS — Brandbook-aligned overrides
+   ============================================ */
+
+html[data-theme="aiox"] {
+  --squad-orchestrator-gradient: linear-gradient(135deg, #D1FF00, #a8cc00);
+  --squad-design-gradient: linear-gradient(135deg, #a8cc00, #859E00);
+  --squad-development-gradient: linear-gradient(135deg, #0099FF, #0077CC);
+  --squad-engineering-gradient: linear-gradient(135deg, #0077CC, #005EA6);
+  --squad-analytics-gradient: linear-gradient(135deg, #3DB2FF, #2D8FCC);
+  --squad-content-gradient: linear-gradient(135deg, #ED4609, #BD3807);
+  --squad-creator-gradient: linear-gradient(135deg, #F06838, #C0532D);
+  --squad-marketing-gradient: linear-gradient(135deg, #C04D26, #9A3B1E);
+  --squad-copywriting-gradient: linear-gradient(135deg, #BDBDBD, #999999);
+  --squad-advisory-gradient: linear-gradient(135deg, #999999, #696969);
 }
 
 /* ============================================
@@ -1032,6 +1149,63 @@ html[data-theme="aiox"] [class*="badge-count"] {
 }
 
 /* ============================================
+   BRUTALIST OVERRIDES — Visual Discipline
+   Kill shadows, excessive rounding, backdrop blur,
+   and decorative gradients globally in AIOX theme.
+   ============================================ */
+
+/* --- Shadows: Kill all decorative shadows --- */
+html[data-theme="aiox"] [class*="shadow-lg"],
+html[data-theme="aiox"] [class*="shadow-xl"],
+html[data-theme="aiox"] [class*="shadow-2xl"] {
+  box-shadow: none !important;
+}
+
+/* --- Rounded corners: Enforce brutalist sharp edges --- */
+html[data-theme="aiox"] [class*="rounded-xl"],
+html[data-theme="aiox"] [class*="rounded-2xl"],
+html[data-theme="aiox"] [class*="rounded-3xl"] {
+  border-radius: 0 !important;
+}
+
+html[data-theme="aiox"] [class*="rounded-lg"] {
+  border-radius: 2px !important;
+}
+
+html[data-theme="aiox"] [class*="rounded-md"] {
+  border-radius: 1px !important;
+}
+
+/* Preserve rounded-full for dots, avatars, status indicators */
+html[data-theme="aiox"] [class*="rounded-full"] {
+  border-radius: 9999px !important;
+}
+
+/* --- Backdrop blur: Remove glass effects --- */
+html[data-theme="aiox"] [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* --- Decorative gradients: Flatten to solid surfaces --- */
+html[data-theme="aiox"] [class*="bg-gradient-to-"]:not([class*="squad"]):not([class*="skill"]):not(.text-gradient-neon) {
+  background-image: none !important;
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Preserve gradient text for headlines only */
+html[data-theme="aiox"] .text-gradient-neon {
+  background-image: linear-gradient(90deg, var(--aiox-lime), var(--aiox-lime-bright, #e5ff4d)) !important;
+}
+
+/* --- Ring colors: Use lime for focus rings --- */
+html[data-theme="aiox"] [class*="ring-blue-"],
+html[data-theme="aiox"] [class*="ring-purple-"],
+html[data-theme="aiox"] [class*="ring-cyan-"] {
+  --tw-ring-color: rgba(209, 255, 0, 0.4) !important;
+}
+
+/* ============================================
    REDUCED MOTION — Accessibility
    ============================================ */
 
@@ -1043,4 +1217,152 @@ html[data-theme="aiox"] [class*="badge-count"] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ============================================
+   MONO LABEL SYSTEM — Consistent Cockpit Labels
+   Brandbook: Roboto Mono, 10-11px, uppercase, 0.15-0.2em
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .label-mono {
+  font-family: var(--font-family-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--aiox-gray-dim);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .label-hud {
+  font-family: var(--font-family-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--aiox-lime);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .label-hud-muted {
+  font-family: var(--font-family-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--aiox-gray-muted);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .label-section {
+  font-family: var(--font-family-mono);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--aiox-gray-dim);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(156, 156, 156, 0.12);
+}
+
+/* ============================================
+   HAIRLINE GRID — 1px gap reveals parent bg
+   Brandbook signature: gap-px grid pattern
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-hairline {
+  gap: 1px;
+  background: rgba(156, 156, 156, 0.12);
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-hairline > * {
+  background: var(--aiox-surface-deep, #050505);
+}
+
+/* ============================================
+   OPACITY LADDER — 14 steps for lime
+   Brandbook defines fine-grained opacity levels
+   ============================================ */
+
+html[data-theme="aiox"] {
+  --lime-2: rgba(209, 255, 0, 0.02);
+  --lime-4: rgba(209, 255, 0, 0.04);
+  --lime-6: rgba(209, 255, 0, 0.06);
+  --lime-8: rgba(209, 255, 0, 0.08);
+  --lime-10: rgba(209, 255, 0, 0.10);
+  --lime-15: rgba(209, 255, 0, 0.15);
+  --lime-20: rgba(209, 255, 0, 0.20);
+  --lime-30: rgba(209, 255, 0, 0.30);
+  --lime-40: rgba(209, 255, 0, 0.40);
+  --lime-50: rgba(209, 255, 0, 0.50);
+  --lime-60: rgba(209, 255, 0, 0.60);
+  --lime-70: rgba(209, 255, 0, 0.70);
+  --lime-80: rgba(209, 255, 0, 0.80);
+  --lime-90: rgba(209, 255, 0, 0.90);
+}
+
+html[data-theme="aiox-gold"] {
+  --lime-2: rgba(221, 209, 187, 0.02);
+  --lime-4: rgba(221, 209, 187, 0.04);
+  --lime-6: rgba(221, 209, 187, 0.06);
+  --lime-8: rgba(221, 209, 187, 0.08);
+  --lime-10: rgba(221, 209, 187, 0.10);
+  --lime-15: rgba(221, 209, 187, 0.15);
+  --lime-20: rgba(221, 209, 187, 0.20);
+  --lime-30: rgba(221, 209, 187, 0.30);
+  --lime-40: rgba(221, 209, 187, 0.40);
+  --lime-50: rgba(221, 209, 187, 0.50);
+  --lime-60: rgba(221, 209, 187, 0.60);
+  --lime-70: rgba(221, 209, 187, 0.70);
+  --lime-80: rgba(221, 209, 187, 0.80);
+  --lime-90: rgba(221, 209, 187, 0.90);
+}
+
+/* ============================================
+   GRAIN OVERLAY — Subtle noise texture
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grain-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  z-index: 1;
+}
+
+/* ============================================
+   BENTO DASHBOARD GRID — 4-Col Asymmetric
+   Brandbook "Bento Dashboard" template
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-2 { grid-column: span 2; }
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-3 { grid-column: span 3; }
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-4 { grid-column: span 4; }
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .row-span-2 { grid-row: span 2; }
+
+@media (max-width: 768px) {
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento {
+    grid-template-columns: 1fr;
+  }
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-2,
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-3,
+  :is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-bento .span-4 {
+    grid-column: span 1;
+  }
+}
+
+/* ============================================
+   CONTENT GRID — Auto-fit (min 340px)
+   ============================================ */
+
+:is(html[data-theme="aiox"], html[data-theme="aiox-gold"]) .grid-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 1rem;
 }

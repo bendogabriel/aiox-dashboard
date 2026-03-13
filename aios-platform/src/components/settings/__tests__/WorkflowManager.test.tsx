@@ -105,19 +105,19 @@ vi.mock('../../ui/Toast', () => ({
 vi.mock('../../../lib/utils', () => ({
   cn: (...args: unknown[]) => args.filter(Boolean).join(' '),
   getSquadTheme: () => ({
-    bg: 'bg-purple-500',
-    bgSubtle: 'bg-purple-500/10',
-    borderSubtle: 'border-purple-500/20',
-    textMuted: 'text-purple-400',
+    bg: 'bg-squad-default',
+    bgSubtle: 'bg-squad-default-10',
+    borderSubtle: 'border-squad-default-30',
+    textMuted: 'text-squad-default-muted',
   }),
   squadThemes: new Proxy(
     {},
     {
       get: () => ({
-        bg: 'bg-gray-500',
-        bgSubtle: 'bg-gray-500/10',
-        borderSubtle: 'border-gray-500/20',
-        textMuted: 'text-gray-400',
+        bg: 'bg-squad-default',
+        bgSubtle: 'bg-squad-default-10',
+        borderSubtle: 'border-squad-default-30',
+        textMuted: 'text-squad-default-muted',
       }),
     },
   ),

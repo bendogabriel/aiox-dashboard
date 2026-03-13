@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion';
-
 interface InteractionLineProps {
   x1: number;
   y1: number;
@@ -22,15 +20,11 @@ export function InteractionLine({ x1, y1, x2, y2, color }: InteractionLineProps)
   const height = Math.abs(cy2 - cy1) + 8;
 
   return (
-    <motion.svg
+    <svg
       className="absolute pointer-events-none"
       style={{ left: minX, top: minY, zIndex: 5 }}
       width={width}
       height={height}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 0.5 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
     >
       <line
         x1={cx1 - minX}
@@ -50,6 +44,6 @@ export function InteractionLine({ x1, y1, x2, y2, color }: InteractionLineProps)
           repeatCount="indefinite"
         />
       </line>
-    </motion.svg>
+    </svg>
   );
 }

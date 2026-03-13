@@ -206,7 +206,7 @@ function StepAgentConfig() {
               <div key={i} className="flex items-center gap-2 p-2 bg-[var(--color-bg-elevated,#1a1a1a)] border border-[var(--color-border-default,#333)]">
                 <span className="text-xs font-mono text-[var(--aiox-lime,#D1FF00)]">*{cmd.command}</span>
                 <span className="text-xs text-[var(--color-text-secondary,#999)] flex-1 truncate">{cmd.action}</span>
-                <button type="button" onClick={() => removeCommand(i)} className="text-[var(--color-text-muted,#666)] hover:text-[var(--bb-error,#EF4444)] text-xs">✕</button>
+                <button type="button" onClick={() => removeCommand(i)} className="text-[var(--color-text-muted,#666)] hover:text-[var(--bb-error,#EF4444)] text-xs">x</button>
               </div>
             ))}
           </div>
@@ -250,7 +250,7 @@ function StepAgentConfig() {
           {(agentConfig.capabilities ?? []).map((cap) => (
             <span key={cap} className="inline-flex items-center gap-1 px-2 py-1 bg-[var(--color-bg-elevated,#1a1a1a)] border border-[var(--color-border-default,#333)] text-xs font-mono text-[var(--color-text-secondary,#999)]">
               {cap}
-              <button type="button" onClick={() => removeCapability(cap)} className="text-[var(--color-text-muted,#666)] hover:text-[var(--bb-error,#EF4444)]">✕</button>
+              <button type="button" onClick={() => removeCapability(cap)} className="text-[var(--color-text-muted,#666)] hover:text-[var(--bb-error,#EF4444)]">x</button>
             </span>
           ))}
         </div>

@@ -17,7 +17,7 @@ export const spec: ProjectSpec = {
       displayName: 'Desenvolvimento Squad',
       description: 'Squad de desenvolvimento com nomes em portugues e acentuacao',
       domain: 'desenvolvimento',
-      icon: '🇧🇷',
+      icon: 'Globe',
       agents: [
         {
           id: 'desenvolvedor-senior',
@@ -25,7 +25,7 @@ export const spec: ProjectSpec = {
           role: 'Engenheiro de Software Senior',
           description: 'Responsavel por arquitetura e implementacao de features complexas',
           tier: 'orchestrator',
-          icon: '👨‍💻',
+          icon: 'Laptop',
         },
         {
           id: 'analista-qualidade',
@@ -33,7 +33,7 @@ export const spec: ProjectSpec = {
           role: 'Analista de Qualidade de Software',
           description: 'Garantia de qualidade e testes automatizados',
           tier: 2,
-          icon: '🧪',
+          icon: 'FlaskConical',
         },
       ],
     },
@@ -43,7 +43,7 @@ export const spec: ProjectSpec = {
       displayName: 'Kreativ Team',
       description: 'Kreatives Team mit deutschen Umlauten und Sonderzeichen',
       domain: 'kreativ',
-      icon: '🇩🇪',
+      icon: 'Globe',
       agents: [
         {
           id: 'designer-chef',
@@ -51,7 +51,7 @@ export const spec: ProjectSpec = {
           role: 'Leitender Designer',
           description: 'Verantwortlich fuer das gesamte Design-System',
           tier: 'orchestrator',
-          icon: '🎨',
+          icon: 'Palette',
         },
         {
           id: 'frontend-entwickler',
@@ -59,7 +59,7 @@ export const spec: ProjectSpec = {
           role: 'Frontend-Entwickler',
           description: 'Spezialist fuer React und TypeScript Entwicklung',
           tier: 2,
-          icon: '💻',
+          icon: 'Laptop',
         },
       ],
     },

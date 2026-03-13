@@ -52,6 +52,14 @@ let reconnectAttempts = 0;
 let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 const MAX_RECONNECT_ATTEMPTS = 5;
 
+// Safely convert any timestamp value to a valid ISO string
+function toISOTimestamp(val: unknown): string {
+  if (!val) return new Date().toISOString();
+  if (typeof val === 'number') return new Date(val).toISOString();
+  const d = new Date(String(val));
+  return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+}
+
 // Map server event to MonitorEvent
 function mapServerEvent(raw: Record<string, unknown>): MonitorEvent {
   const data = (raw.data || raw) as Record<string, unknown>;
@@ -70,7 +78,7 @@ function mapServerEvent(raw: Record<string, unknown>): MonitorEvent {
 
   return {
     id: String(raw.id || data.id || `evt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`),
-    timestamp: String(raw.timestamp || data.timestamp || new Date().toISOString()),
+    timestamp: toISOTimestamp(raw.timestamp || data.timestamp),
     type: mappedType,
     agent: String(data.aios_agent || data.agent || 'System'),
     description,

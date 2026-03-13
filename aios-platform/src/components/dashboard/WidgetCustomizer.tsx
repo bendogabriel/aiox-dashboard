@@ -1,6 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Eye, EyeOff, ChevronUp, ChevronDown, RotateCcw, X } from 'lucide-react';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
 import { useDashboardWidgetStore } from '../../stores/dashboardWidgetStore';
 import { cn } from '../../lib/utils';
 
@@ -10,7 +9,7 @@ export function WidgetCustomizer() {
 
   return (
     <>
-      <GlassButton
+      <CockpitButton
         variant="ghost"
         size="sm"
         onClick={() => setCustomizing(true)}
@@ -18,24 +17,16 @@ export function WidgetCustomizer() {
         aria-label="Personalizar widgets"
       >
         Personalizar
-      </GlassButton>
+      </CockpitButton>
 
-      <AnimatePresence>
-        {customizing && (
+      {customizing && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
               className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
               onClick={() => setCustomizing(false)}
             />
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed right-4 top-20 z-[61] w-72 glass-card rounded-2xl shadow-2xl overflow-hidden"
+            <div
+              className="fixed right-4 top-20 z-[61] w-72 glass-card rounded-none shadow-2xl overflow-hidden"
             >
               <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <h3 className="text-sm font-semibold text-primary">Dashboard Widgets</h3>
@@ -92,14 +83,13 @@ export function WidgetCustomizer() {
                   <RotateCcw size={12} />
                   Reset
                 </button>
-                <GlassButton variant="primary" size="sm" onClick={() => setCustomizing(false)}>
+                <CockpitButton variant="primary" size="sm" onClick={() => setCustomizing(false)}>
                   Pronto
-                </GlassButton>
+                </CockpitButton>
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
-    </>
+</>
   );
 }

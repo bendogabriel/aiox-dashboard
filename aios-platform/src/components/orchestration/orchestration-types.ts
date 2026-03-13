@@ -117,14 +117,14 @@ export const phases = [
 
 export function statusLabel(status: string) {
   const map: Record<string, { label: string; color: string }> = {
-    completed: { label: 'Concluído', color: 'text-green-400 bg-green-500/15' },
-    failed: { label: 'Falhou', color: 'text-red-400 bg-red-500/15' },
-    executing: { label: 'Executando', color: 'text-orange-400 bg-orange-500/15' },
-    awaiting_approval: { label: 'Aguardando Aprovação', color: 'text-yellow-400 bg-yellow-500/15' },
-    planning: { label: 'Planejando', color: 'text-purple-400 bg-purple-500/15' },
-    analyzing: { label: 'Analisando', color: 'text-cyan-400 bg-cyan-500/15' },
+    completed: { label: 'Concluído', color: 'text-[var(--color-status-success)] bg-[var(--color-status-success)]/15' },
+    failed: { label: 'Falhou', color: 'text-[var(--bb-error)] bg-[var(--bb-error)]/15' },
+    executing: { label: 'Executando', color: 'text-[var(--bb-flare)] bg-[var(--bb-flare)]/15' },
+    awaiting_approval: { label: 'Aguardando Aprovação', color: 'text-[var(--bb-warning)] bg-[var(--bb-warning)]/15' },
+    planning: { label: 'Planejando', color: 'text-[var(--aiox-gray-muted)] bg-[var(--aiox-gray-muted)]/15' },
+    analyzing: { label: 'Analisando', color: 'text-[var(--aiox-blue)] bg-[var(--aiox-blue)]/15' },
     pending: { label: 'Pendente', color: 'text-white/40 bg-white/5' },
-    started: { label: 'Iniciado', color: 'text-cyan-400 bg-cyan-500/15' },
+    started: { label: 'Iniciado', color: 'text-[var(--aiox-blue)] bg-[var(--aiox-blue)]/15' },
   };
   return map[status] || map.pending;
 }

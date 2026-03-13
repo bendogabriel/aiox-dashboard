@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GlobalSearch } from './GlobalSearch';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, staleTime: Infinity } },
@@ -18,9 +18,9 @@ function SearchStoryWrapper({ startOpen = false }: { startOpen?: boolean }) {
   return (
     <QueryClientProvider client={queryClient}>
       <div style={{ height: '100vh', padding: 24, background: '#0f0f14' }}>
-        <GlassButton variant="primary" onClick={() => setIsOpen(true)}>
+        <CockpitButton variant="primary" onClick={() => setIsOpen(true)}>
           Open Search (Cmd+K)
-        </GlassButton>
+        </CockpitButton>
         <p style={{ marginTop: 16, color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>
           Click the button or press Cmd+K to open global search.
         </p>

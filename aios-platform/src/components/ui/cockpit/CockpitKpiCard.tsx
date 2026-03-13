@@ -1,5 +1,6 @@
 import { cn } from '../../../lib/utils'
 import type { HTMLAttributes } from 'react'
+import { TrendingUp, TrendingDown, ArrowRight } from 'lucide-react'
 
 export interface CockpitKpiCardProps extends HTMLAttributes<HTMLDivElement> {
   label: string
@@ -37,7 +38,7 @@ export function CockpitKpiCard({ label, value, change, trend = 'neutral', classN
       </span>
       {change && (
         <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.6rem', color: trendColors[trend] }}>
-          {trend === 'up' ? '\u2191' : trend === 'down' ? '\u2193' : '\u2192'} {change}
+          {trend === 'up' ? <TrendingUp size={10} style={{ display: 'inline', verticalAlign: 'middle' }} /> : trend === 'down' ? <TrendingDown size={10} style={{ display: 'inline', verticalAlign: 'middle' }} /> : <ArrowRight size={10} style={{ display: 'inline', verticalAlign: 'middle' }} />} {change}
         </span>
       )}
     </div>

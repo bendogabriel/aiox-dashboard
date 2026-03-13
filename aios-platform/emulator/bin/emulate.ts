@@ -7,7 +7,7 @@ import { generate, OUTPUT_DIR } from '../src/generator';
 import { validate } from '../src/validator';
 import { startEngine, fetchEndpoint } from '../src/runner';
 import { formatTestResult, formatSummary, computeTimingMetrics } from '../src/reporter';
-import { archetypes, getArchetype, listArchetypes } from '../src/archetypes/index';
+import { getArchetype, listArchetypes } from '../src/archetypes/index';
 import type { TestResult, EndpointResult } from '../src/types';
 
 const args = process.argv.slice(2);

@@ -20,22 +20,22 @@ import {
 
 const NODE_COLORS: Record<string, string> = {
   // Integration statuses
-  connected: '#D1FF00',
+  connected: 'var(--color-status-success, #4ADE80)',
   partial: '#f59e0b',
-  checking: '#0099FF',
+  checking: 'var(--aiox-gray-muted, #999)',
   disconnected: '#696969',
   error: '#EF4444',
   // Capability levels
-  full: '#D1FF00',
+  full: 'var(--color-status-success, #4ADE80)',
   degraded: '#f59e0b',
   unavailable: '#EF4444',
 };
 
 const EDGE_COLORS = {
-  requires: 'rgba(209, 255, 0, 0.25)',
-  enhancedBy: 'rgba(0, 153, 255, 0.2)',
-  requiresHighlight: 'rgba(209, 255, 0, 0.7)',
-  enhancedByHighlight: 'rgba(0, 153, 255, 0.6)',
+  requires: 'rgba(74, 222, 128, 0.2)',
+  enhancedBy: 'rgba(156, 156, 156, 0.15)',
+  requiresHighlight: 'rgba(74, 222, 128, 0.6)',
+  enhancedByHighlight: 'rgba(156, 156, 156, 0.5)',
   dim: 'rgba(255, 255, 255, 0.03)',
 };
 
@@ -99,7 +99,7 @@ export function DependencyGraph() {
           <Legend color={NODE_COLORS.connected} label="Connected" />
           <Legend color={NODE_COLORS.degraded} label="Degraded" />
           <Legend color={NODE_COLORS.error} label="Down" />
-          <Legend color="#0099FF" label="Enhanced" dashed />
+          <Legend color="var(--aiox-blue)" label="Enhanced" dashed />
         </div>
       </div>
 

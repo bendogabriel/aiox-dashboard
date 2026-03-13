@@ -7,7 +7,7 @@ import {
   Home,
   RefreshCw,
 } from 'lucide-react';
-import { GlassCard, GlassButton } from '../ui';
+import { CockpitCard, CockpitButton } from '../ui';
 import { cn } from '../../lib/utils';
 import {
   useKnowledgeDirectory,
@@ -50,18 +50,18 @@ export function KnowledgeFileExplorer({
   };
 
   return (
-    <GlassCard className="flex flex-col h-full !p-0">
+    <CockpitCard className="flex flex-col h-full !p-0">
       {/* Toolbar */}
       <div className="flex items-center gap-1 p-2 border-b border-glass-border">
-        <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={goHome} aria-label="Inicio">
+        <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={goHome} aria-label="Inicio">
           <Home size={14} />
-        </GlassButton>
-        <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={goUp} disabled={!currentPath} aria-label="Voltar">
+        </CockpitButton>
+        <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={goUp} disabled={!currentPath} aria-label="Voltar">
           <ChevronLeft size={14} />
-        </GlassButton>
-        <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => refetch()} aria-label="Atualizar">
+        </CockpitButton>
+        <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => refetch()} aria-label="Atualizar">
           <RefreshCw size={14} />
-        </GlassButton>
+        </CockpitButton>
 
         {/* Breadcrumbs */}
         <div className="flex items-center gap-1 ml-2 text-xs text-tertiary overflow-x-auto flex-1 min-w-0">
@@ -107,12 +107,12 @@ export function KnowledgeFileExplorer({
                 {item.type === 'directory' ? (
                   <>
                     <ChevronRight size={14} className="flex-shrink-0 text-tertiary" />
-                    <FolderOpen size={16} className="flex-shrink-0 text-yellow-500" />
+                    <FolderOpen size={16} className="flex-shrink-0 text-[var(--bb-warning)]" />
                   </>
                 ) : (
                   <>
                     <span className="w-3.5 flex-shrink-0" />
-                    <span className={FILE_TYPE_COLORS[item.extension || ''] || 'text-gray-400'}>
+                    <span className={FILE_TYPE_COLORS[item.extension || ''] || 'text-tertiary'}>
                       {item.extension === 'md' ? <FileText size={16} /> : <File size={16} />}
                     </span>
                   </>
@@ -128,6 +128,6 @@ export function KnowledgeFileExplorer({
           })
         )}
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }

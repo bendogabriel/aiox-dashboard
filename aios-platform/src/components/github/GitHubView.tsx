@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   RefreshCw,
   GitCommit,
@@ -10,7 +9,7 @@ import {
   Radio,
   Monitor,
 } from 'lucide-react';
-import { GlassCard, GlassButton, Badge, EmptyState, SectionLabel } from '../ui';
+import { CockpitCard, CockpitButton, Badge, EmptyState, SectionLabel } from '../ui';
 import { ICON_SIZES } from '../../lib/icons';
 import { formatRelativeTime, cn } from '../../lib/utils';
 import { useGitHubData } from '../../hooks/useGitHubData';
@@ -49,11 +48,11 @@ export default function GitHubView() {
   if (loading && data.source === 'demo' && !error) {
     return (
       <div className="h-full flex items-center justify-center p-6">
-        <GlassCard padding="lg" className="text-center max-w-md">
+        <CockpitCard padding="lg" className="text-center max-w-md">
           <RefreshCw size={40} className="text-secondary mx-auto mb-4 animate-spin" />
           <h2 className="text-lg font-semibold text-primary mb-2">Checking GitHub...</h2>
           <p className="text-secondary text-sm">Fetching commits, PRs, and issues</p>
-        </GlassCard>
+        </CockpitCard>
       </div>
     );
   }
@@ -64,7 +63,7 @@ export default function GitHubView() {
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-primary">GitHub</h1>
+            <h1 className="heading-display text-xl font-semibold text-primary">GitHub</h1>
             <SourceBadge source={data.source} />
           </div>
           <p className="text-secondary text-sm mt-0.5">
@@ -76,10 +75,10 @@ export default function GitHubView() {
             )}
           </p>
           {error && !isDemo && (
-            <p className="text-xs text-red-400 mt-1">{error}</p>
+            <p className="text-xs text-[var(--bb-error)] mt-1">{error}</p>
           )}
         </div>
-        <GlassButton
+        <CockpitButton
           variant="ghost"
           size="sm"
           onClick={handleRefresh}
@@ -89,13 +88,13 @@ export default function GitHubView() {
           }
         >
           Refresh
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       {/* Git-only notice */}
       {isGitOnly && (
-        <div className="glass-subtle rounded-xl p-3 mb-4 flex items-center gap-2 text-xs text-tertiary flex-shrink-0">
-          <Monitor size={14} className="text-yellow-400 flex-shrink-0" />
+        <div className="glass-subtle rounded-none p-3 mb-4 flex items-center gap-2 text-xs text-tertiary flex-shrink-0">
+          <Monitor size={14} className="text-[var(--bb-warning)] flex-shrink-0" />
           <span>
             Showing local git commits only. Install and authenticate{' '}
             <code className="text-primary font-mono">gh</code> CLI for PRs and issues.
@@ -104,7 +103,7 @@ export default function GitHubView() {
       )}
 
       {/* Tab Navigation */}
-      <div className="flex gap-1 p-1 glass-subtle rounded-xl mb-4 flex-shrink-0 overflow-x-auto" role="tablist" aria-label="GitHub tabs">
+      <div className="flex gap-1 p-1 glass-subtle rounded-none mb-4 flex-shrink-0 overflow-x-auto" role="tablist" aria-label="GitHub tabs">
         {tabs.map((tab) => {
           const disabled = !isLive && !isDemo && tab.id !== 'commits';
           return (
@@ -138,8 +137,7 @@ export default function GitHubView() {
 
       {/* Tab Content */}
       <div className="flex-1 overflow-y-auto glass-scrollbar" tabIndex={0} role="region" aria-label="GitHub content">
-        <AnimatePresence mode="wait">
-          {activeTab === 'commits' && (
+        {activeTab === 'commits' && (
             <CommitsTab
               key="commits"
               commits={data.commits}
@@ -160,8 +158,7 @@ export default function GitHubView() {
               loading={loading && isRefreshing}
             />
           )}
-        </AnimatePresence>
-      </div>
+</div>
     </div>
   );
 }
@@ -218,29 +215,23 @@ function CommitsTab({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+    <div
       className="pb-6"
     >
-      <GlassCard padding="md">
+      <CockpitCard padding="md">
         <SectionLabel count={commits.length}>Commits</SectionLabel>
         <div className="space-y-1">
           {commits.map((commit, index) => (
-            <motion.div
+            <div
               key={`${commit.sha}-${index}`}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.02 }}
               onClick={() => commit.url !== '#' && window.open(commit.url, '_blank')}
               className={cn(
-                'flex items-start justify-between gap-3 glass-subtle rounded-xl p-3 transition-colors',
+                'flex items-start justify-between gap-3 glass-subtle rounded-none p-3 transition-colors',
                 commit.url !== '#' ? 'hover:bg-white/10 cursor-pointer' : ''
               )}
             >
               <div className="flex items-start gap-2.5 min-w-0">
-                <GitCommit size={16} className="text-blue-400 flex-shrink-0 mt-0.5" />
+                <GitCommit size={16} className="text-[var(--aiox-blue)] flex-shrink-0 mt-0.5" />
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono text-xs text-tertiary">{commit.sha}</span>
@@ -261,11 +252,11 @@ function CommitsTab({
               <span className="text-xs text-tertiary flex-shrink-0 whitespace-nowrap">
                 {formatRelativeTime(commit.date)}
               </span>
-            </motion.div>
+            </div>
           ))}
         </div>
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }
 
@@ -289,29 +280,23 @@ function PullsTab({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+    <div
       className="pb-6"
     >
-      <GlassCard padding="md">
+      <CockpitCard padding="md">
         <SectionLabel count={pulls.length}>Pull Requests</SectionLabel>
         <div className="space-y-1">
           {pulls.map((pr, index) => (
-            <motion.div
+            <div
               key={pr.number}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.02 }}
               onClick={() => pr.url !== '#' && window.open(pr.url, '_blank')}
               className={cn(
-                'flex items-start justify-between gap-3 glass-subtle rounded-xl p-3 transition-colors',
+                'flex items-start justify-between gap-3 glass-subtle rounded-none p-3 transition-colors',
                 pr.url !== '#' ? 'hover:bg-white/10 cursor-pointer' : ''
               )}
             >
               <div className="flex items-start gap-2.5 min-w-0">
-                <GitPullRequest size={16} className="text-green-400 flex-shrink-0 mt-0.5" />
+                <GitPullRequest size={16} className="text-[var(--color-status-success)] flex-shrink-0 mt-0.5" />
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-xs text-tertiary font-mono">#{pr.number}</span>
@@ -333,11 +318,11 @@ function PullsTab({
               <span className="text-xs text-tertiary flex-shrink-0 whitespace-nowrap">
                 {formatRelativeTime(pr.createdAt)}
               </span>
-            </motion.div>
+            </div>
           ))}
         </div>
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }
 
@@ -361,29 +346,23 @@ function IssuesTab({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+    <div
       className="pb-6"
     >
-      <GlassCard padding="md">
+      <CockpitCard padding="md">
         <SectionLabel count={issues.length}>Issues</SectionLabel>
         <div className="space-y-1">
           {issues.map((issue, index) => (
-            <motion.div
+            <div
               key={issue.number}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.02 }}
               onClick={() => issue.url !== '#' && window.open(issue.url, '_blank')}
               className={cn(
-                'flex items-start justify-between gap-3 glass-subtle rounded-xl p-3 transition-colors',
+                'flex items-start justify-between gap-3 glass-subtle rounded-none p-3 transition-colors',
                 issue.url !== '#' ? 'hover:bg-white/10 cursor-pointer' : ''
               )}
             >
               <div className="flex items-start gap-2.5 min-w-0">
-                <CircleDot size={16} className="text-green-400 flex-shrink-0 mt-0.5" />
+                <CircleDot size={16} className="text-[var(--color-status-success)] flex-shrink-0 mt-0.5" />
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-xs text-tertiary font-mono">#{issue.number}</span>
@@ -412,11 +391,11 @@ function IssuesTab({
               <span className="text-xs text-tertiary flex-shrink-0 whitespace-nowrap">
                 {formatRelativeTime(issue.createdAt)}
               </span>
-            </motion.div>
+            </div>
           ))}
         </div>
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }
 
@@ -438,12 +417,12 @@ function RefBadge({ refName }: { refName: string }) {
       className={cn(
         'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium flex-shrink-0',
         isTag
-          ? 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/30'
+          ? 'bg-[var(--bb-warning)]/15 text-[var(--bb-warning)] border border-[var(--bb-warning)]/30'
           : isHead
-            ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30'
+            ? 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)] border border-[var(--aiox-blue)]/30'
             : isOrigin
-              ? 'bg-purple-500/15 text-purple-400 border border-purple-500/30'
-              : 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
+              ? 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)] border border-[var(--aiox-gray-muted)]/30'
+              : 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)] border border-[var(--aiox-blue)]/30'
       )}
     >
       <GitBranch size={10} />
@@ -461,13 +440,10 @@ function PrStateBadge({ state }: { state: string }) {
 
 function TabLoader() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       className="flex items-center justify-center py-16"
     >
       <RefreshCw size={24} className="text-secondary animate-spin" />
-    </motion.div>
+    </div>
   );
 }

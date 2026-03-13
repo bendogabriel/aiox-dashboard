@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import {
   Bot,
   Terminal,
@@ -10,7 +9,7 @@ import {
   Mic,
   Ban,
 } from 'lucide-react';
-import { GlassCard, Badge, StatusDot, SectionLabel, Avatar } from '../ui';
+import { CockpitCard, Badge, StatusDot, SectionLabel, Avatar } from '../ui';
 import { cn, formatRelativeTime } from '../../lib/utils';
 import { hasAgentAvatar } from '../../lib/agent-avatars';
 import { getSquadType } from '../../types';
@@ -21,20 +20,17 @@ interface AgentDetailPanelProps {
 }
 
 const tierConfig: Record<AgentTier, { label: string; color: string; bg: string }> = {
-  0: { label: 'Orchestrator', color: 'text-purple-400', bg: 'bg-purple-500/15' },
-  1: { label: 'Master', color: 'text-blue-400', bg: 'bg-blue-500/15' },
-  2: { label: 'Specialist', color: 'text-green-400', bg: 'bg-green-500/15' },
+  0: { label: 'Orchestrator', color: 'text-[var(--aiox-gray-muted)]', bg: 'bg-[var(--aiox-gray-muted)]/15' },
+  1: { label: 'Master', color: 'text-[var(--aiox-blue)]', bg: 'bg-[var(--aiox-blue)]/15' },
+  2: { label: 'Specialist', color: 'text-[var(--color-status-success)]', bg: 'bg-[var(--color-status-success)]/15' },
 };
 
 function Section({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.3 }}
+    <div
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -50,7 +46,7 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
     <div className="space-y-4">
       {/* Profile */}
       <Section delay={0}>
-        <GlassCard padding="lg">
+        <CockpitCard padding="lg">
           <div className="flex items-center gap-4">
             {hasAgentAvatar(agent.name) || hasAgentAvatar(agent.id) ? (
               <Avatar
@@ -60,7 +56,7 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                 squadType={getSquadType(agent.squad)}
               />
             ) : (
-              <div className={cn('w-14 h-14 rounded-xl flex items-center justify-center', tier.bg)}>
+              <div className={cn('w-14 h-14 rounded-none flex items-center justify-center', tier.bg)}>
                 <Bot size={28} className={tier.color} />
               </div>
             )}
@@ -91,13 +87,13 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
               <span>{agent.executionCount} execucoes</span>
             )}
           </div>
-        </GlassCard>
+        </CockpitCard>
       </Section>
 
       {/* Persona */}
       {agent.persona && (
         <Section delay={0.05}>
-          <GlassCard padding="md">
+          <CockpitCard padding="md">
             <SectionLabel>
               <span className="flex items-center gap-1.5">
                 <MessageSquare size={12} />
@@ -124,14 +120,14 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                 </div>
               )}
             </div>
-          </GlassCard>
+          </CockpitCard>
         </Section>
       )}
 
       {/* Core Principles */}
       {agent.corePrinciples && agent.corePrinciples.length > 0 && (
         <Section delay={0.1}>
-          <GlassCard padding="md">
+          <CockpitCard padding="md">
             <SectionLabel count={agent.corePrinciples.length}>
               <span className="flex items-center gap-1.5">
                 <Shield size={12} />
@@ -141,19 +137,19 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
             <ul className="space-y-2">
               {agent.corePrinciples.map((p, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-primary">
-                  <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#8226;</span>
+                  <span className="text-[var(--aiox-blue)] mt-0.5 flex-shrink-0">&#8226;</span>
                   {p}
                 </li>
               ))}
             </ul>
-          </GlassCard>
+          </CockpitCard>
         </Section>
       )}
 
       {/* Commands */}
       {agent.commands && agent.commands.length > 0 && (
         <Section delay={0.15}>
-          <GlassCard padding="md">
+          <CockpitCard padding="md">
             <SectionLabel count={agent.commands.length}>
               <span className="flex items-center gap-1.5">
                 <Terminal size={12} />
@@ -163,7 +159,7 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
             <div className="space-y-2">
               {agent.commands.map((cmd) => (
                 <div key={cmd.command} className="flex items-start gap-3 glass-subtle rounded-lg px-3 py-2">
-                  <span className="text-xs font-mono text-cyan-400 bg-cyan-500/10 rounded px-1.5 py-0.5 flex-shrink-0">
+                  <span className="text-xs font-mono text-[var(--aiox-blue)] bg-[var(--aiox-blue)]/10 rounded px-1.5 py-0.5 flex-shrink-0">
                     {cmd.command}
                   </span>
                   <div className="min-w-0">
@@ -175,14 +171,14 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                 </div>
               ))}
             </div>
-          </GlassCard>
+          </CockpitCard>
         </Section>
       )}
 
       {/* Voice DNA */}
       {agent.voiceDna && (
         <Section delay={0.2}>
-          <GlassCard padding="md">
+          <CockpitCard padding="md">
             <SectionLabel>
               <span className="flex items-center gap-1.5">
                 <Mic size={12} />
@@ -207,7 +203,7 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                   <p className="text-[10px] uppercase tracking-wider text-tertiary mb-1.5">Always Use</p>
                   <div className="flex flex-wrap gap-1.5">
                     {agent.voiceDna.vocabulary.alwaysUse.map((w, i) => (
-                      <span key={i} className="text-xs text-green-400 bg-green-500/10 rounded-md px-2 py-1">
+                      <span key={i} className="text-xs text-[var(--color-status-success)] bg-[var(--color-status-success)]/10 rounded-md px-2 py-1">
                         {w}
                       </span>
                     ))}
@@ -219,7 +215,7 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                   <p className="text-[10px] uppercase tracking-wider text-tertiary mb-1.5">Never Use</p>
                   <div className="flex flex-wrap gap-1.5">
                     {agent.voiceDna.vocabulary.neverUse.map((w, i) => (
-                      <span key={i} className="text-xs text-red-400 bg-red-500/10 rounded-md px-2 py-1 line-through">
+                      <span key={i} className="text-xs text-[var(--bb-error)] bg-[var(--bb-error)]/10 rounded-md px-2 py-1 line-through">
                         {w}
                       </span>
                     ))}
@@ -227,14 +223,14 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                 </div>
               )}
             </div>
-          </GlassCard>
+          </CockpitCard>
         </Section>
       )}
 
       {/* Anti-Patterns */}
       {agent.antiPatterns?.neverDo && agent.antiPatterns.neverDo.length > 0 && (
         <Section delay={0.25}>
-          <GlassCard padding="md">
+          <CockpitCard padding="md">
             <SectionLabel count={agent.antiPatterns.neverDo.length}>
               <span className="flex items-center gap-1.5">
                 <Ban size={12} />
@@ -244,19 +240,19 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
             <ul className="space-y-2">
               {agent.antiPatterns.neverDo.map((item, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-primary">
-                  <X size={14} className="text-red-400 mt-0.5 flex-shrink-0" />
+                  <X size={14} className="text-[var(--bb-error)] mt-0.5 flex-shrink-0" />
                   {item}
                 </li>
               ))}
             </ul>
-          </GlassCard>
+          </CockpitCard>
         </Section>
       )}
 
       {/* Integration */}
       {agent.integration && (
         <Section delay={0.3}>
-          <GlassCard padding="md">
+          <CockpitCard padding="md">
             <SectionLabel>
               <span className="flex items-center gap-1.5">
                 <ArrowRightLeft size={12} />
@@ -269,8 +265,8 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                   <p className="text-[10px] uppercase tracking-wider text-tertiary mb-1.5">Receives From</p>
                   <div className="flex flex-wrap gap-1.5">
                     {agent.integration.receivesFrom.map((a) => (
-                      <Badge key={a} variant="default" size="sm" className="bg-blue-500/10">
-                        <span className="text-blue-400">{a}</span>
+                      <Badge key={a} variant="default" size="sm" className="bg-[var(--aiox-blue)]/10">
+                        <span className="text-[var(--aiox-blue)]">{a}</span>
                       </Badge>
                     ))}
                   </div>
@@ -281,29 +277,29 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                   <p className="text-[10px] uppercase tracking-wider text-tertiary mb-1.5">Handoff To</p>
                   <div className="flex flex-wrap gap-1.5">
                     {agent.integration.handoffTo.map((a) => (
-                      <Badge key={a} variant="default" size="sm" className="bg-orange-500/10">
-                        <span className="text-orange-400">{a}</span>
+                      <Badge key={a} variant="default" size="sm" className="bg-[var(--bb-flare)]/10">
+                        <span className="text-[var(--bb-flare)]">{a}</span>
                       </Badge>
                     ))}
                   </div>
                 </div>
               )}
             </div>
-          </GlassCard>
+          </CockpitCard>
         </Section>
       )}
 
       {/* Quality */}
       {agent.quality && (
         <Section delay={0.35}>
-          <GlassCard padding="md">
+          <CockpitCard padding="md">
             <SectionLabel>Quality Indicators</SectionLabel>
             <div className="flex items-center gap-4">
               <QualityItem label="Voice DNA" active={agent.quality.hasVoiceDna} />
               <QualityItem label="Anti-Patterns" active={agent.quality.hasAntiPatterns} />
               <QualityItem label="Integration" active={agent.quality.hasIntegration} />
             </div>
-          </GlassCard>
+          </CockpitCard>
         </Section>
       )}
     </div>
@@ -314,9 +310,9 @@ function QualityItem({ label, active }: { label: string; active: boolean }) {
   return (
     <div className="flex items-center gap-1.5">
       {active ? (
-        <Check size={14} className="text-green-400" />
+        <Check size={14} className="text-[var(--color-status-success)]" />
       ) : (
-        <X size={14} className="text-red-400" />
+        <X size={14} className="text-[var(--bb-error)]" />
       )}
       <span className={cn('text-xs', active ? 'text-primary' : 'text-tertiary')}>{label}</span>
     </div>

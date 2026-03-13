@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { GlassCard, GlassButton, GlassInput } from '../ui';
+import { CockpitCard, CockpitButton, CockpitInput } from '../ui';
 import { apiClient } from '../../services/api/client';
 import { useToast } from '../ui/Toast';
 import { cn } from '../../lib/utils';
@@ -41,17 +40,17 @@ const predefinedProviders: APIKeyProvider[] = [
 ];
 
 const colorClasses: Record<string, { border: string; bg: string; text: string; iconBg: string }> = {
-  purple: { border: 'border-purple-500/20', bg: 'bg-purple-500/5', text: 'text-purple-400', iconBg: 'bg-purple-500/20' },
-  green: { border: 'border-green-500/20', bg: 'bg-green-500/5', text: 'text-green-400', iconBg: 'bg-green-500/20' },
-  emerald: { border: 'border-emerald-500/20', bg: 'bg-emerald-500/5', text: 'text-emerald-400', iconBg: 'bg-emerald-500/20' },
-  red: { border: 'border-red-500/20', bg: 'bg-red-500/5', text: 'text-red-400', iconBg: 'bg-red-500/20' },
-  cyan: { border: 'border-cyan-500/20', bg: 'bg-cyan-500/5', text: 'text-cyan-400', iconBg: 'bg-cyan-500/20' },
-  blue: { border: 'border-blue-500/20', bg: 'bg-blue-500/5', text: 'text-blue-400', iconBg: 'bg-blue-500/20' },
-  indigo: { border: 'border-indigo-500/20', bg: 'bg-indigo-500/5', text: 'text-indigo-400', iconBg: 'bg-indigo-500/20' },
-  pink: { border: 'border-pink-500/20', bg: 'bg-pink-500/5', text: 'text-pink-400', iconBg: 'bg-pink-500/20' },
-  orange: { border: 'border-orange-500/20', bg: 'bg-orange-500/5', text: 'text-orange-400', iconBg: 'bg-orange-500/20' },
-  yellow: { border: 'border-yellow-500/20', bg: 'bg-yellow-500/5', text: 'text-yellow-400', iconBg: 'bg-yellow-500/20' },
-  gray: { border: 'border-gray-500/20', bg: 'bg-gray-500/5', text: 'text-gray-400', iconBg: 'bg-gray-500/20' },
+  purple: { border: 'border-[var(--aiox-gray-muted)]/20', bg: 'bg-[var(--aiox-gray-muted)]/5', text: 'text-[var(--aiox-gray-muted)]', iconBg: 'bg-[var(--aiox-gray-muted)]/20' },
+  green: { border: 'border-[var(--color-status-success)]/20', bg: 'bg-[var(--color-status-success)]/5', text: 'text-[var(--color-status-success)]', iconBg: 'bg-[var(--color-status-success)]/20' },
+  emerald: { border: 'border-[var(--color-status-success)]/20', bg: 'bg-[var(--color-status-success)]/5', text: 'text-[var(--color-status-success)]', iconBg: 'bg-[var(--color-status-success)]/20' },
+  red: { border: 'border-[var(--bb-error)]/20', bg: 'bg-[var(--bb-error)]/5', text: 'text-[var(--bb-error)]', iconBg: 'bg-[var(--bb-error)]/20' },
+  cyan: { border: 'border-[var(--aiox-blue)]/20', bg: 'bg-[var(--aiox-blue)]/5', text: 'text-[var(--aiox-blue)]', iconBg: 'bg-[var(--aiox-blue)]/20' },
+  blue: { border: 'border-[var(--aiox-blue)]/20', bg: 'bg-[var(--aiox-blue)]/5', text: 'text-[var(--aiox-blue)]', iconBg: 'bg-[var(--aiox-blue)]/20' },
+  indigo: { border: 'border-[var(--aiox-blue)]/20', bg: 'bg-[var(--aiox-blue)]/5', text: 'text-[var(--aiox-blue)]', iconBg: 'bg-[var(--aiox-blue)]/20' },
+  pink: { border: 'border-[var(--bb-flare)]/20', bg: 'bg-[var(--bb-flare)]/5', text: 'text-[var(--bb-flare)]', iconBg: 'bg-[var(--bb-flare)]/20' },
+  orange: { border: 'border-[var(--bb-flare)]/20', bg: 'bg-[var(--bb-flare)]/5', text: 'text-[var(--bb-flare)]', iconBg: 'bg-[var(--bb-flare)]/20' },
+  yellow: { border: 'border-[var(--bb-warning)]/20', bg: 'bg-[var(--bb-warning)]/5', text: 'text-[var(--bb-warning)]', iconBg: 'bg-[var(--bb-warning)]/20' },
+  gray: { border: 'border-[var(--aiox-gray-dim)]/20', bg: 'bg-[var(--aiox-gray-dim)]/5', text: 'text-[var(--aiox-gray-dim)]', iconBg: 'bg-[var(--aiox-gray-dim)]/20' },
 };
 
 interface StoredAPIKey {
@@ -107,30 +106,24 @@ function AddAPIKeyModal({
   return (
     <>
       {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <div
         className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100]"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg z-[101] max-h-[80vh] overflow-hidden px-4"
+      <div
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg z-[101] px-4"
       >
-        <GlassCard className="flex flex-col max-h-[80vh] !bg-gray-900/95 border border-white/10 shadow-2xl">
+        <CockpitCard className="flex flex-col max-h-[80vh] !bg-[#0a0a0a]/95 border border-white/10 shadow-2xl">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-primary">Adicionar API Key</h2>
-            <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
+            <CockpitButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
-            </GlassButton>
+            </CockpitButton>
           </div>
 
           {!showCustomForm ? (
@@ -144,7 +137,7 @@ function AddAPIKeyModal({
                     className={cn(
                       'px-3 py-1 rounded-lg text-xs transition-colors',
                       selectedCategory === cat.id
-                        ? 'bg-blue-500 text-white'
+                        ? 'bg-[var(--aiox-blue)] text-white'
                         : 'bg-white/10 text-secondary hover:bg-white/20'
                     )}
                   >
@@ -167,12 +160,12 @@ function AddAPIKeyModal({
                         key={provider.id}
                         onClick={() => onAddProvider(provider)}
                         className={cn(
-                          'w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left',
+                          'w-full flex items-center gap-3 p-3 rounded-none border transition-all text-left',
                           colors.border,
                           'hover:bg-white/5'
                         )}
                       >
-                        <div className={cn('h-10 w-10 rounded-xl flex items-center justify-center', colors.iconBg)}>
+                        <div className={cn('h-10 w-10 rounded-none flex items-center justify-center', colors.iconBg)}>
                           <span className={cn('font-bold text-sm', colors.text)}>{provider.icon}</span>
                         </div>
                         <div className="flex-1">
@@ -189,7 +182,7 @@ function AddAPIKeyModal({
               {/* Custom Key Button */}
               <button
                 onClick={() => setShowCustomForm(true)}
-                className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-white/20 text-secondary hover:text-primary hover:border-white/40 transition-colors"
+                className="w-full flex items-center justify-center gap-2 p-3 rounded-none border border-dashed border-white/20 text-secondary hover:text-primary hover:border-white/40 transition-colors"
               >
                 <PlusIcon />
                 <span>Adicionar chave personalizada</span>
@@ -201,7 +194,7 @@ function AddAPIKeyModal({
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm text-secondary mb-2">Nome do serviço</label>
-                  <GlassInput
+                  <CockpitInput
                     value={customName}
                     onChange={(e) => setCustomName(e.target.value)}
                     placeholder="Ex: Stripe, Twilio, etc."
@@ -232,22 +225,22 @@ function AddAPIKeyModal({
               </div>
 
               <div className="flex gap-2 mt-6">
-                <GlassButton variant="ghost" onClick={() => setShowCustomForm(false)} className="flex-1">
+                <CockpitButton variant="ghost" onClick={() => setShowCustomForm(false)} className="flex-1">
                   Voltar
-                </GlassButton>
-                <GlassButton
+                </CockpitButton>
+                <CockpitButton
                   variant="primary"
                   onClick={() => customName && onAddCustom(customName, customColor)}
                   disabled={!customName}
                   className="flex-1"
                 >
                   Adicionar
-                </GlassButton>
+                </CockpitButton>
               </div>
             </>
           )}
-        </GlassCard>
-      </motion.div>
+        </CockpitCard>
+      </div>
     </>
   );
 }
@@ -387,11 +380,11 @@ export function APISettings() {
   return (
     <div className="space-y-6">
       {/* Sync Status Banner */}
-      <GlassCard className="!bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20">
+      <CockpitCard className="!bg-gradient-to-r from-[var(--aiox-blue)]/10 to-[var(--aiox-gray-muted)]/10 border-[var(--aiox-blue)]/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-blue-400">
+            <div className="h-10 w-10 rounded-none bg-[var(--aiox-blue)]/20 flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--aiox-blue)]">
                 <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
               </svg>
             </div>
@@ -400,7 +393,7 @@ export function APISettings() {
               <p className="text-xs text-tertiary">
                 {envVarCount > 0 ? (
                   <>
-                    <span className="text-green-400">{envVarCount} via env</span>
+                    <span className="text-[var(--color-status-success)]">{envVarCount} via env</span>
                     {manualCount > 0 && <span className="text-secondary"> • {manualCount} manual</span>}
                   </>
                 ) : (
@@ -409,7 +402,7 @@ export function APISettings() {
               </p>
             </div>
           </div>
-          <GlassButton
+          <CockpitButton
             variant="ghost"
             size="sm"
             onClick={() => refetchEnvVars()}
@@ -417,21 +410,21 @@ export function APISettings() {
           >
             <RefreshIcon />
             <span className="ml-1 text-xs">Sincronizar</span>
-          </GlassButton>
+          </CockpitButton>
         </div>
-      </GlassCard>
+      </CockpitCard>
 
-      <GlassCard>
+      <CockpitCard>
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-sm text-tertiary">
               Configure suas chaves de API. Chaves via variáveis de ambiente têm prioridade.
             </p>
           </div>
-          <GlassButton variant="primary" size="sm" onClick={() => setShowAddModal(true)}>
+          <CockpitButton variant="primary" size="sm" onClick={() => setShowAddModal(true)}>
             <PlusIcon />
             <span className="ml-1">Adicionar</span>
-          </GlassButton>
+          </CockpitButton>
         </div>
 
         <div className="space-y-4">
@@ -452,20 +445,20 @@ export function APISettings() {
                 <div
                   key={key.id}
                   className={cn(
-                    'p-4 rounded-xl border',
-                    hasEnvVar ? 'border-green-500/30 bg-green-500/5' : colors.border,
+                    'p-4 rounded-none border',
+                    hasEnvVar ? 'border-[var(--color-status-success)]/30 bg-[var(--color-status-success)]/5' : colors.border,
                     !hasEnvVar && colors.bg
                   )}
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <div className={cn('h-10 w-10 rounded-xl flex items-center justify-center', colors.iconBg)}>
+                    <div className={cn('h-10 w-10 rounded-none flex items-center justify-center', colors.iconBg)}>
                       <span className={cn('font-bold text-sm', colors.text)}>{key.icon}</span>
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <p className="text-primary font-medium">{key.name}</p>
                         {hasEnvVar && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-green-500/20 text-green-400 border border-green-500/30">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-[var(--color-status-success)]/20 text-[var(--color-status-success)] border border-[var(--color-status-success)]/30">
                             ENV
                           </span>
                         )}
@@ -474,28 +467,28 @@ export function APISettings() {
                         <p className="text-xs text-tertiary">{provider.description}</p>
                       )}
                     </div>
-                    <GlassButton
+                    <CockpitButton
                       variant="ghost"
                       size="icon"
                       onClick={() => deleteKey(key.id)}
-                      className="text-red-400 hover:bg-red-500/10"
+                      className="text-[var(--bb-error)] hover:bg-[var(--bb-error)]/10"
                       title="Remover"
                       aria-label="Remover"
                     >
                       <TrashIcon />
-                    </GlassButton>
+                    </CockpitButton>
                   </div>
 
                   {hasEnvVar ? (
-                    <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                    <div className="p-3 rounded-lg bg-[var(--color-status-success)]/10 border border-[var(--color-status-success)]/20">
                       <div className="flex items-center gap-2 mb-1">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-green-400">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--color-status-success)]">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
-                        <span className="text-xs text-green-400 font-medium">Configurado via variável de ambiente</span>
+                        <span className="text-xs text-[var(--color-status-success)] font-medium">Configurado via variável de ambiente</span>
                       </div>
-                      <p className="text-[10px] text-green-400/70">
-                        <code className="bg-green-500/10 px-1 rounded">{provider?.envVar}</code>
+                      <p className="text-[10px] text-[var(--color-status-success)]/70">
+                        <code className="bg-[var(--color-status-success)]/10 px-1 rounded">{provider?.envVar}</code>
                         {envPreview && <span className="ml-2">= {envPreview}</span>}
                       </p>
                       <p className="text-[10px] text-tertiary mt-1">
@@ -505,7 +498,7 @@ export function APISettings() {
                   ) : (
                     <>
                       <div className="relative">
-                        <GlassInput
+                        <CockpitInput
                           type={isVisible ? 'text' : 'password'}
                           value={key.value}
                           onChange={(e) => updateKeyValue(key.id, e.target.value)}
@@ -532,9 +525,9 @@ export function APISettings() {
             })
           )}
         </div>
-      </GlassCard>
+      </CockpitCard>
 
-      <GlassCard>
+      <CockpitCard>
         <h2 className="text-lg font-semibold text-primary mb-4">Configurações de Modelo</h2>
 
         <div className="space-y-4">
@@ -559,7 +552,7 @@ export function APISettings() {
                 min="0"
                 max="100"
                 defaultValue="70"
-                className="w-24 accent-blue-500"
+                className="w-24 accent-[var(--aiox-blue)]"
                 aria-label="Temperatura"
               />
             }
@@ -577,18 +570,17 @@ export function APISettings() {
             }
           />
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       <div className="flex justify-end">
-        <GlassButton variant="primary" onClick={handleSaveKeys}>
+        <CockpitButton variant="primary" onClick={handleSaveKeys}>
           Salvar API Keys
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       {/* Add API Key Modal */}
       {createPortal(
-        <AnimatePresence>
-          {showAddModal && (
+        showAddModal ? (
             <AddAPIKeyModal
               providers={filteredProviders}
               selectedCategory={selectedCategory}
@@ -597,8 +589,7 @@ export function APISettings() {
               onAddCustom={addCustomKey}
               onClose={() => setShowAddModal(false)}
             />
-          )}
-        </AnimatePresence>,
+        ) : null,
         document.body,
       )}
     </div>

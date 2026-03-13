@@ -186,12 +186,12 @@ function Dropdown({
               className={cn(
                 'w-full text-left px-3 py-2 text-xs font-mono transition-colors',
                 opt.id === value
-                  ? 'bg-[#D1FF00]/10 text-[#D1FF00]'
+                  ? 'bg-[var(--aiox-lime)]/10 text-[var(--aiox-lime)]'
                   : 'text-white/60 hover:bg-white/5 hover:text-white/80',
               )}
             >
               {opt.label}
-              {opt.id === value && <span className="float-right text-[#D1FF00]">&#10003;</span>}
+              {opt.id === value && <span className="float-right text-[var(--aiox-lime)]">&#10003;</span>}
             </button>
           ))}
         </div>
@@ -361,7 +361,7 @@ export function VoiceSettings({
                   value={geminiApiKey}
                   onChange={(e) => setGeminiApiKey(e.target.value)}
                   placeholder="AIza..."
-                  className="flex-1 bg-white/5 border border-white/10 px-3 py-2 rounded-none text-xs font-mono text-white/70 placeholder-white/20 focus:border-[#00C8FF]/30 focus:outline-none transition-colors"
+                  className="flex-1 bg-white/5 border border-white/10 px-3 py-2 rounded-none text-xs font-mono text-white/70 placeholder-white/20 focus:border-[var(--aiox-lime)]/30 focus:outline-none transition-colors"
                   autoComplete="off"
                 />
                 <button
@@ -373,7 +373,7 @@ export function VoiceSettings({
                 </button>
               </div>
               {!geminiApiKey && (
-                <p className="mt-1.5 text-[8px] font-mono text-amber-500/60">
+                <p className="mt-1.5 text-[8px] font-mono text-[var(--bb-warning)]/60">
                   Obtenha em aistudio.google.com &rarr; API Keys
                 </p>
               )}
@@ -480,7 +480,7 @@ export function VoiceSettings({
                   value={ttsApiKey}
                   onChange={(e) => setTTSApiKey(e.target.value)}
                   placeholder={ttsProvider === 'elevenlabs' ? 'xi-...' : ttsProvider === 'fal' ? 'fal_...' : 'sk-...'}
-                  className="flex-1 bg-white/5 border border-white/10 px-3 py-2 rounded-none text-xs font-mono text-white/70 placeholder-white/20 focus:border-[#D1FF00]/30 focus:outline-none transition-colors"
+                  className="flex-1 bg-white/5 border border-white/10 px-3 py-2 rounded-none text-xs font-mono text-white/70 placeholder-white/20 focus:border-[var(--aiox-lime)]/30 focus:outline-none transition-colors"
                   autoComplete="off"
                 />
                 <button
@@ -492,7 +492,7 @@ export function VoiceSettings({
                 </button>
               </div>
               {!ttsApiKey && (
-                <p className="mt-1.5 text-[8px] font-mono text-amber-500/60">
+                <p className="mt-1.5 text-[8px] font-mono text-[var(--bb-warning)]/60">
                   {ttsProvider === 'elevenlabs'
                     ? 'Obtenha em elevenlabs.io → Profile → API Key'
                     : ttsProvider === 'fal'
@@ -536,7 +536,7 @@ export function VoiceSettings({
                 onClick={() => setTTSEffectsEnabled(!ttsEffectsEnabled)}
                 className={cn(
                   'relative w-10 h-5 rounded-full transition-colors',
-                  ttsEffectsEnabled ? 'bg-[#D1FF00]/30' : 'bg-white/10',
+                  ttsEffectsEnabled ? 'bg-[var(--aiox-lime)]/30' : 'bg-white/10',
                 )}
                 role="switch"
                 aria-checked={ttsEffectsEnabled}
@@ -546,7 +546,7 @@ export function VoiceSettings({
                   className={cn(
                     'absolute top-0.5 w-4 h-4 rounded-full transition-all',
                     ttsEffectsEnabled
-                      ? 'left-[22px] bg-[#D1FF00]'
+                      ? 'left-[22px] bg-[var(--aiox-lime)]'
                       : 'left-0.5 bg-white/40',
                   )}
                 />
@@ -559,15 +559,15 @@ export function VoiceSettings({
         {!isCloudProvider && (
           <div className="px-4 py-3 border-t border-white/5">
             <div className="flex gap-2 items-start">
-              <span className="text-amber-500/70 mt-0.5 flex-shrink-0">
+              <span className="text-[var(--bb-warning)]/70 mt-0.5 flex-shrink-0">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                   <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
                 </svg>
               </span>
-              <p className="text-[8px] font-mono text-amber-500/50 leading-relaxed">
+              <p className="text-[8px] font-mono text-[var(--bb-warning)]/50 leading-relaxed">
                 A voz nativa do browser e limitada. Para qualidade JARVIS,
-                selecione <strong className="text-amber-500/70">ElevenLabs</strong> ou <strong className="text-amber-500/70">OpenAI</strong> como motor.
+                selecione <strong className="text-[var(--bb-warning)]/70">ElevenLabs</strong> ou <strong className="text-[var(--bb-warning)]/70">OpenAI</strong> como motor.
               </p>
             </div>
           </div>
@@ -607,13 +607,13 @@ export function VoiceSettings({
                     className={cn(
                       'w-full text-left px-3 py-2 text-xs font-mono transition-colors',
                       lang.code === language
-                        ? 'bg-[#D1FF00]/10 text-[#D1FF00]'
+                        ? 'bg-[var(--aiox-lime)]/10 text-[var(--aiox-lime)]'
                         : 'text-white/60 hover:bg-white/5 hover:text-white/80',
                     )}
                   >
                     {lang.label}
                     {lang.code === language && (
-                      <span className="float-right text-[#D1FF00]">&#10003;</span>
+                      <span className="float-right text-[var(--aiox-lime)]">&#10003;</span>
                     )}
                   </button>
                 ))}
@@ -654,12 +654,12 @@ export function VoiceSettings({
                   className={cn(
                     'w-full text-left px-3 py-2 text-xs font-mono transition-colors',
                     !selectedDeviceId
-                      ? 'bg-[#D1FF00]/10 text-[#D1FF00]'
+                      ? 'bg-[var(--aiox-lime)]/10 text-[var(--aiox-lime)]'
                       : 'text-white/60 hover:bg-white/5 hover:text-white/80',
                   )}
                 >
                   Padrao do sistema
-                  {!selectedDeviceId && <span className="float-right text-[#D1FF00]">&#10003;</span>}
+                  {!selectedDeviceId && <span className="float-right text-[var(--aiox-lime)]">&#10003;</span>}
                 </button>
                 {audioDevices.map((device) => (
                   <button
@@ -668,13 +668,13 @@ export function VoiceSettings({
                     className={cn(
                       'w-full text-left px-3 py-2 text-xs font-mono transition-colors',
                       device.deviceId === selectedDeviceId
-                        ? 'bg-[#D1FF00]/10 text-[#D1FF00]'
+                        ? 'bg-[var(--aiox-lime)]/10 text-[var(--aiox-lime)]'
                         : 'text-white/60 hover:bg-white/5 hover:text-white/80',
                     )}
                   >
                     {device.label}
                     {device.deviceId === selectedDeviceId && (
-                      <span className="float-right text-[#D1FF00]">&#10003;</span>
+                      <span className="float-right text-[var(--aiox-lime)]">&#10003;</span>
                     )}
                   </button>
                 ))}

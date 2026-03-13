@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
 interface ContextMenuItem {
@@ -65,15 +64,10 @@ export function ContextMenu({ items, children, className }: ContextMenuProps) {
     >
       {children}
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
+      {isOpen && (
+          <div
             ref={menuRef}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.1 }}
-            className="absolute z-50 min-w-[160px] py-1 glass-lg rounded-xl shadow-2xl border border-glass-border"
+            className="absolute z-50 min-w-[160px] py-1 glass-lg rounded-none shadow-2xl border border-glass-border"
             style={{ left: position.x, top: position.y }}
             role="menu"
           >
@@ -105,9 +99,8 @@ export function ContextMenu({ items, children, className }: ContextMenuProps) {
                 </button>
               )
             )}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

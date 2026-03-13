@@ -107,7 +107,7 @@ export function MarketplaceSearch() {
             flex-1 bg-transparent font-mono text-sm
             text-[var(--color-text-primary,#fff)]
             placeholder:text-[var(--color-text-muted,#666)]
-            focus:outline-none
+            focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--aiox-lime)]/50
           "
         />
         {localQuery && (

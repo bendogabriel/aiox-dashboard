@@ -195,13 +195,11 @@ export function IntegrationCard({ name, description, icon, status, message, last
             textTransform: 'uppercase' as const,
             letterSpacing: '0.06em',
             fontWeight: 500,
-            color: status === 'connected' ? 'var(--aiox-cream, #E5E5E5)' : 'var(--aiox-dark, #050505)',
-            background: status === 'connected'
-              ? 'transparent'
-              : 'var(--aiox-lime, #D1FF00)',
+            color: status === 'connected' ? 'var(--aiox-cream, #E5E5E5)' : 'var(--aiox-cream, #E5E5E5)',
+            background: 'transparent',
             border: status === 'connected'
               ? '1px solid rgba(255,255,255,0.1)'
-              : '1px solid var(--aiox-lime, #D1FF00)',
+              : '1px solid rgba(156, 156, 156, 0.25)',
             cursor: 'pointer',
             transition: 'opacity 0.15s',
           }}

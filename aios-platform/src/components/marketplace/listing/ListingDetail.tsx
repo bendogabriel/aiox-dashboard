@@ -5,7 +5,7 @@
 import { useState, lazy, Suspense } from 'react';
 import {
   ArrowLeft, Download, Clock, Star, Zap, Shield,
-  ChevronRight, ExternalLink, Check, X,
+  ChevronRight, ExternalLink, Check, X, Bot,
 } from 'lucide-react';
 import { useMarketplaceStore } from '../../../stores/marketplaceStore';
 import { useUIStore } from '../../../stores/uiStore';
@@ -61,7 +61,7 @@ function ListingHeader({ listing }: { listing: MarketplaceListing }) {
         border border-[var(--color-border-default,#333)]
         text-[var(--aiox-lime,#D1FF00)]
       ">
-        {IconComponent ? <IconComponent size={28} /> : <span className="text-2xl">🤖</span>}
+        {IconComponent ? <IconComponent size={28} /> : <Bot size={28} />}
       </div>
       <div className="flex-1 min-w-0">
         <h1 className="font-mono text-lg font-semibold text-[var(--color-text-primary,#fff)]">
@@ -506,7 +506,7 @@ function HireAgentModal({
             {/* Agent summary */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 flex items-center justify-center bg-[var(--color-bg-elevated,#1a1a1a)] border border-[var(--color-border-default,#333)] text-[var(--aiox-lime,#D1FF00)]">
-                {listing.icon ? (() => { const I = getIconComponent(listing.icon); return I ? <I size={18} /> : <span>🤖</span>; })() : <span>🤖</span>}
+                {listing.icon ? (() => { const I = getIconComponent(listing.icon); return I ? <I size={18} /> : <Bot size={18} />; })() : <Bot size={18} />}
               </div>
               <div>
                 <p className="text-sm font-mono font-semibold text-[var(--color-text-primary,#fff)]">{listing.name}</p>

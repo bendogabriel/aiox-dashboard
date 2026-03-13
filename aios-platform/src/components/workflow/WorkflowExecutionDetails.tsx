@@ -1,5 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { GlassButton, Badge, Avatar } from '../ui';
+import { CockpitButton, Badge, Avatar } from '../ui';
 import type { LiveExecutionState, LiveExecutionStep } from '../../hooks/useWorkflows';
 import type { SquadType } from '../../types';
 import { cn } from '../../lib/utils';
@@ -38,12 +37,9 @@ export function WorkflowExecutionDetails({
   const totalSteps = state.steps.length;
 
   return (
-    <AnimatePresence>
-      {(selectedStep || isStartNode || isEndNode) && (
-        <motion.div
-          initial={{ width: 0, opacity: 0 }}
-          animate={{ width: 360, opacity: 1 }}
-          exit={{ width: 0, opacity: 0 }}
+    <>
+    {(selectedStep || isStartNode || isEndNode) && (
+        <div
           className="border-l border-white/10 flex flex-col overflow-hidden backdrop-blur-xl"
           style={{
             background: `
@@ -59,7 +55,7 @@ export function WorkflowExecutionDetails({
               <div
                 className={cn(
                   'h-6 w-6 rounded-lg flex items-center justify-center',
-                  isEndNode && state.status !== 'completed' && 'bg-gradient-to-br from-gray-500 to-slate-500'
+                  isEndNode && state.status !== 'completed' && 'bg-gradient-to-br from-gray-500 to-gray-600'
                 )}
                 style={{
                   background: isStartNode
@@ -77,9 +73,9 @@ export function WorkflowExecutionDetails({
                 {isStartNode ? 'Início do Workflow' : isEndNode ? 'Resultado Final' : 'Detalhes do Step'}
               </h2>
             </div>
-            <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSelectedNodeId(null)} aria-label="Fechar detalhes">
+            <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSelectedNodeId(null)} aria-label="Fechar detalhes">
               <CloseIcon />
-            </GlassButton>
+            </CockpitButton>
           </div>
 
           {/* Content */}
@@ -90,7 +86,7 @@ export function WorkflowExecutionDetails({
               <>
                 {/* Workflow Info */}
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-xl flex items-center justify-center bg-[rgba(209,255,0,0.08)]">
+                  <div className="h-12 w-12 rounded-none flex items-center justify-center bg-[rgba(209,255,0,0.08)]">
                     <RocketIcon />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -102,7 +98,7 @@ export function WorkflowExecutionDetails({
 
                 {/* Demand/Input */}
                 <div
-                  className="rounded-xl p-3"
+                  className="rounded-none p-3"
                   style={{
                     background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, transparent 100%)',
                     border: '1px solid rgba(209, 255, 0, 0.12)'
@@ -121,7 +117,7 @@ export function WorkflowExecutionDetails({
 
                 {/* Expected Outputs */}
                 <div
-                  className="rounded-xl p-3"
+                  className="rounded-none p-3"
                   style={{
                     background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                     border: '1px solid rgba(255, 255, 255, 0.05)'
@@ -153,7 +149,7 @@ export function WorkflowExecutionDetails({
 
                 {/* Timeline Preview */}
                 <div
-                  className="rounded-xl p-3"
+                  className="rounded-none p-3"
                   style={{
                     background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                     border: '1px solid rgba(255, 255, 255, 0.05)'
@@ -175,7 +171,7 @@ export function WorkflowExecutionDetails({
                       <p className="text-[10px] text-white/60">Executando</p>
                     </div>
                     <div className="p-2 rounded-lg bg-white/5">
-                      <p className="text-lg font-bold text-gray-400">{pendingSteps}</p>
+                      <p className="text-lg font-bold text-tertiary">{pendingSteps}</p>
                       <p className="text-[10px] text-white/60">Pendentes</p>
                     </div>
                   </div>
@@ -189,13 +185,13 @@ export function WorkflowExecutionDetails({
                 {/* Final Status */}
                 <div className="flex items-center gap-3">
                   <div className={cn(
-                    'h-12 w-12 rounded-xl flex items-center justify-center',
+                    'h-12 w-12 rounded-none flex items-center justify-center',
                     state.status === 'completed' && 'bg-[rgba(209,255,0,0.10)]',
-                    state.status === 'failed' && 'bg-gradient-to-br from-red-500/30 to-rose-500/30',
+                    state.status === 'failed' && 'bg-gradient-to-br from-[var(--bb-error)]/30 to-[var(--bb-error)]/20',
                     state.status === 'running' && 'bg-[rgba(209,255,0,0.12)]'
                   )}>
                     {state.status === 'completed' && <span style={{ color: 'color-mix(in srgb, var(--color-accent, #D1FF00) 70%, transparent)' }}><CheckIcon size={20} /></span>}
-                    {state.status === 'failed' && <span className="text-red-400"><XIcon /></span>}
+                    {state.status === 'failed' && <span className="text-[var(--bb-error)]"><XIcon /></span>}
                     {state.status === 'running' && <SpinnerIcon size={20} />}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -220,7 +216,7 @@ export function WorkflowExecutionDetails({
 
                 {/* Original Demand */}
                 <div
-                  className="rounded-xl p-3"
+                  className="rounded-none p-3"
                   style={{
                     background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                     border: '1px solid rgba(255, 255, 255, 0.05)'
@@ -239,7 +235,7 @@ export function WorkflowExecutionDetails({
 
                 {/* All Outputs Summary */}
                 <div
-                  className="rounded-xl p-3"
+                  className="rounded-none p-3"
                   style={{
                     background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                     border: '1px solid rgba(255, 255, 255, 0.05)'
@@ -280,7 +276,7 @@ export function WorkflowExecutionDetails({
                 {/* Final Result */}
                 {state.status === 'completed' && state.steps.length > 0 && (
                   <div
-                    className="rounded-xl p-3"
+                    className="rounded-none p-3"
                     style={{
                       background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, transparent 100%)',
                       border: '1px solid rgba(209, 255, 0, 0.12)'
@@ -323,7 +319,7 @@ export function WorkflowExecutionDetails({
                 {/* Error if failed */}
                 {state.status === 'failed' && state.error && (
                   <div
-                    className="rounded-xl p-3 border-l-2 border-red-500"
+                    className="rounded-none p-3 border-l-2 border-[var(--bb-error)]"
                     style={{
                       background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, transparent 100%)',
                       border: '1px solid rgba(239, 68, 68, 0.2)',
@@ -332,9 +328,9 @@ export function WorkflowExecutionDetails({
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <XIcon />
-                      <span className="text-xs font-semibold text-red-400">Erro</span>
+                      <span className="text-xs font-semibold text-[var(--bb-error)]">Erro</span>
                     </div>
-                    <p className="text-sm text-red-300">{state.error}</p>
+                    <p className="text-sm text-[var(--bb-error)]">{state.error}</p>
                   </div>
                 )}
               </>
@@ -387,7 +383,7 @@ export function WorkflowExecutionDetails({
                   {/* Progress (Running) */}
                   {selectedStep.status === 'running' && (
                     <div
-                      className="rounded-xl p-3 space-y-2"
+                      className="rounded-none p-3 space-y-2"
                       style={{
                         background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.08) 0%, rgba(209, 255, 0, 0.04) 100%)',
                         border: '1px solid rgba(209, 255, 0, 0.15)'
@@ -398,10 +394,8 @@ export function WorkflowExecutionDetails({
                         <span className="text-xs font-semibold" style={{ color: 'var(--color-accent, #D1FF00)' }}>Processando...</span>
                       </div>
                       <div className="h-2 rounded-full bg-black/30 overflow-hidden">
-                        <motion.div
+                        <div
                           className="h-full rounded-full"
-                          animate={{ x: ['-100%', '100%'] }}
-                          transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
                           style={{ width: '50%', background: 'linear-gradient(to right, var(--color-accent, #D1FF00), color-mix(in srgb, var(--color-accent, #D1FF00) 70%, #000))', boxShadow: '0 0 10px rgba(209, 255, 0, 0.3)' }}
                         />
                       </div>
@@ -418,7 +412,7 @@ export function WorkflowExecutionDetails({
 
                   {/* Input/Request - O QUE FOI SOLICITADO */}
                   <div
-                    className="rounded-xl p-3"
+                    className="rounded-none p-3"
                     style={{
                       background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, transparent 100%)',
                       border: '1px solid rgba(209, 255, 0, 0.12)'
@@ -443,7 +437,7 @@ export function WorkflowExecutionDetails({
 
                     return (
                       <div
-                        className="rounded-xl p-3"
+                        className="rounded-none p-3"
                         style={{
                           background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                           border: '1px solid rgba(255, 255, 255, 0.05)'
@@ -476,7 +470,7 @@ export function WorkflowExecutionDetails({
                   {/* Role/Function */}
                   {(output?.role || config?.role) && (
                     <div
-                      className="rounded-xl p-3"
+                      className="rounded-none p-3"
                       style={{
                         background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                         border: '1px solid rgba(255, 255, 255, 0.05)'
@@ -495,7 +489,7 @@ export function WorkflowExecutionDetails({
                   {/* Response - OUTPUT PRODUZIDO */}
                   {response && (
                     <div
-                      className="rounded-xl p-3"
+                      className="rounded-none p-3"
                       style={{
                         background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.06) 0%, transparent 100%)',
                         border: '1px solid rgba(209, 255, 0, 0.12)'
@@ -529,7 +523,7 @@ export function WorkflowExecutionDetails({
                   {/* LLM Metadata */}
                   {output?.llmMetadata && (
                     <div
-                      className="rounded-xl p-3"
+                      className="rounded-none p-3"
                       style={{
                         background: 'linear-gradient(135deg, rgba(209, 255, 0, 0.04) 0%, transparent 100%)',
                         border: '1px solid rgba(255, 255, 255, 0.05)'
@@ -569,7 +563,7 @@ export function WorkflowExecutionDetails({
                   {/* Error */}
                   {selectedStep.status === 'failed' && selectedStep.error && (
                     <div
-                      className="rounded-xl p-3 border-l-2 border-red-500"
+                      className="rounded-none p-3 border-l-2 border-[var(--bb-error)]"
                       style={{
                         background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, transparent 100%)',
                         border: '1px solid rgba(239, 68, 68, 0.2)',
@@ -578,9 +572,9 @@ export function WorkflowExecutionDetails({
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <XIcon />
-                        <span className="text-xs font-semibold text-red-400">Erro</span>
+                        <span className="text-xs font-semibold text-[var(--bb-error)]">Erro</span>
                       </div>
-                      <p className="text-sm text-red-300">{selectedStep.error}</p>
+                      <p className="text-sm text-[var(--bb-error)]">{selectedStep.error}</p>
                     </div>
                   )}
 
@@ -591,7 +585,7 @@ export function WorkflowExecutionDetails({
                         <CodeIcon />
                         <span>Ver JSON completo</span>
                       </summary>
-                      <pre className="mt-2 p-3 bg-black/30 rounded-xl overflow-x-auto text-white/60 text-[10px] leading-relaxed">
+                      <pre className="mt-2 p-3 bg-black/30 rounded-none overflow-x-auto text-white/60 text-[10px] leading-relaxed">
                         {JSON.stringify(output, null, 2)}
                       </pre>
                     </details>
@@ -600,8 +594,8 @@ export function WorkflowExecutionDetails({
               );
             })()}
           </div>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 }

@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
 import { Clock, Calendar, Play, Pause, RefreshCw } from 'lucide-react';
-import { GlassCard, GlassButton, Badge } from '../ui';
+import { CockpitCard, CockpitButton, Badge } from '../ui';
 import type { OvernightProgram } from '../../types/overnight';
 
 interface ScheduleInfoProps {
@@ -53,7 +52,7 @@ export default function ScheduleInfo({ program }: ScheduleInfoProps) {
   const isScheduled = program.triggerType === 'scheduled' && program.schedule;
 
   return (
-    <GlassCard padding="md">
+    <CockpitCard padding="md">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-medium text-primary flex items-center gap-2">
           <Calendar size={14} />
@@ -74,28 +73,28 @@ export default function ScheduleInfo({ program }: ScheduleInfoProps) {
             <div className="text-right">
               <p className="text-xs text-tertiary uppercase tracking-wide mb-0.5">Next Run</p>
               <p className="text-sm text-primary flex items-center gap-1">
-                <Clock size={12} className="text-cyan-400" />
+                <Clock size={12} className="text-[var(--aiox-blue)]" />
                 {getNextRun(program.schedule)}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 pt-2 border-t border-white/5">
-            <GlassButton
+            <CockpitButton
               size="sm"
               variant="primary"
               leftIcon={<Play size={12} />}
               className="flex-1"
             >
               Run Now
-            </GlassButton>
-            <GlassButton
+            </CockpitButton>
+            <CockpitButton
               size="sm"
               variant="ghost"
               leftIcon={<Pause size={12} />}
             >
               Disable
-            </GlassButton>
+            </CockpitButton>
           </div>
 
           <p className="text-[10px] text-tertiary font-mono">
@@ -107,16 +106,16 @@ export default function ScheduleInfo({ program }: ScheduleInfoProps) {
           <p className="text-xs text-tertiary">
             This program runs on-demand only. No automatic schedule configured.
           </p>
-          <GlassButton
+          <CockpitButton
             size="sm"
             variant="primary"
             leftIcon={<Play size={12} />}
             className="w-full"
           >
             Run Now
-          </GlassButton>
+          </CockpitButton>
         </div>
       )}
-    </GlassCard>
+    </CockpitCard>
   );
 }

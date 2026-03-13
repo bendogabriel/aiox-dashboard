@@ -7,7 +7,7 @@ import {
   ChevronRight,
   ChevronDown,
 } from 'lucide-react';
-import { GlassCard, GlassButton, Badge, StatusDot, ProgressBar } from '../ui';
+import { CockpitCard, CockpitButton, Badge, StatusDot, ProgressBar } from '../ui';
 import type { StatusType } from '../ui/StatusDot';
 import type {
   VaultWorkspace,
@@ -21,6 +21,7 @@ import type {
 } from '../../types/vault';
 import { useVaultStore } from '../../stores/vaultStore';
 import { cn } from '../../lib/utils';
+import { getIconComponent } from '../../lib/icons';
 
 // ── Props ──
 
@@ -35,12 +36,12 @@ interface WorkspaceDetailProps {
 // ── Constants ──
 
 const CATEGORY_COLORS: Record<string, { border: string; text: string; bg: string }> = {
-  purple: { border: 'border-l-purple-400', text: 'text-purple-400', bg: 'bg-purple-500/10' },
-  green: { border: 'border-l-green-400', text: 'text-green-400', bg: 'bg-green-500/10' },
-  yellow: { border: 'border-l-yellow-400', text: 'text-yellow-400', bg: 'bg-yellow-500/10' },
-  orange: { border: 'border-l-orange-400', text: 'text-orange-400', bg: 'bg-orange-500/10' },
-  emerald: { border: 'border-l-emerald-400', text: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-  blue: { border: 'border-l-blue-400', text: 'text-blue-400', bg: 'bg-blue-500/10' },
+  purple: { border: 'border-l-[var(--aiox-gray-muted)]', text: 'text-[var(--aiox-gray-muted)]', bg: 'bg-[var(--aiox-gray-muted)]/10' },
+  green: { border: 'border-l-[var(--color-status-success)]', text: 'text-[var(--color-status-success)]', bg: 'bg-[var(--color-status-success)]/10' },
+  yellow: { border: 'border-l-[var(--bb-warning)]', text: 'text-[var(--bb-warning)]', bg: 'bg-[var(--bb-warning)]/10' },
+  orange: { border: 'border-l-[var(--bb-flare)]', text: 'text-[var(--bb-flare)]', bg: 'bg-[var(--bb-flare)]/10' },
+  emerald: { border: 'border-l-[var(--color-status-success)]', text: 'text-[var(--color-status-success)]', bg: 'bg-[var(--color-status-success)]/10' },
+  blue: { border: 'border-l-[var(--aiox-blue)]', text: 'text-[var(--aiox-blue)]', bg: 'bg-[var(--aiox-blue)]/10' },
 };
 
 const STATUS_DOT_MAP: Record<string, StatusType> = {
@@ -79,7 +80,7 @@ function DataCategoryCard({
   const visibleItems = category.items.slice(0, MAX_VISIBLE_ITEMS);
 
   return (
-    <GlassCard
+    <CockpitCard
       variant="subtle"
       padding="none"
       className={cn('border-l-4', colors.border)}
@@ -89,7 +90,7 @@ function DataCategoryCard({
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <span className={cn('text-lg', colors.text)}>{category.icon}</span>
+            {(() => { const Icon = getIconComponent(category.icon || 'Folder'); return <Icon size={18} className={colors.text} />; })()}
             <span className="text-sm font-medium text-primary">{category.name}</span>
           </div>
           <StatusDot
@@ -114,7 +115,7 @@ function DataCategoryCard({
           <span className="text-xs text-tertiary">{category.items.length} items</span>
         </div>
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
@@ -155,9 +156,9 @@ function DataItemRow({
 
 function TemplateGroupCard({ group }: { group: TemplateGroup }) {
   return (
-    <GlassCard variant="subtle" padding="md" aria-label={`${group.name} templates`}>
+    <CockpitCard variant="subtle" padding="md" aria-label={`${group.name} templates`}>
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-lg">{group.icon}</span>
+        {(() => { const Icon = getIconComponent(group.icon || 'FileText'); return <Icon size={18} className="text-secondary" />; })()}
         <span className="text-sm font-medium text-primary">{group.area}</span>
       </div>
 
@@ -167,8 +168,8 @@ function TemplateGroupCard({ group }: { group: TemplateGroup }) {
             <span
               className={cn(
                 'w-1.5 h-1.5 rounded-full',
-                tmpl.status === 'filled' && 'bg-green-400',
-                tmpl.status === 'partial' && 'bg-yellow-400',
+                tmpl.status === 'filled' && 'bg-[var(--color-status-success)]',
+                tmpl.status === 'partial' && 'bg-[var(--bb-warning)]',
                 tmpl.status === 'empty' && 'bg-white/20'
               )}
             />
@@ -185,7 +186,7 @@ function TemplateGroupCard({ group }: { group: TemplateGroup }) {
       />
 
       <span className="text-[10px] text-tertiary">{group.templates.length} templates</span>
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
@@ -268,7 +269,7 @@ function TaxonomyTree({
               onClick={() => toggleSection(section.id)}
             >
               {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-              <span>{section.icon}</span>
+              {(() => { const Icon = getIconComponent(section.icon || 'Folder'); return <Icon size={14} />; })()}
               <span>{section.name}</span>
             </button>
             {isExpanded && (
@@ -293,10 +294,10 @@ function TaxonomyNodeDetail({ node }: { node: TaxonomyNode | null }) {
   }
 
   const typeColors: Record<string, string> = {
-    namespace: 'bg-purple-500/15 text-purple-400',
-    entity: 'bg-blue-500/15 text-blue-400',
-    term: 'bg-green-500/15 text-green-400',
-    workflow: 'bg-orange-500/15 text-orange-400',
+    namespace: 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]',
+    entity: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+    term: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
+    workflow: 'bg-[var(--bb-flare)]/15 text-[var(--bb-flare)]',
   };
 
   return (
@@ -338,20 +339,20 @@ function TaxonomyNodeDetail({ node }: { node: TaxonomyNode | null }) {
 
 function CSuitePersonaCard({ persona }: { persona: CSuitePersona }) {
   return (
-    <GlassCard
+    <CockpitCard
       variant="subtle"
       padding="md"
       className={cn(
         'border-l-4',
         persona.isActive
-          ? 'border-l-[#D1FF00]'
+          ? 'border-l-[var(--aiox-lime)]'
           : 'border-l-transparent'
       )}
       aria-label={`${persona.name} - ${persona.role}`}
     >
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-lg">{persona.icon}</span>
+          {(() => { const Icon = getIconComponent(persona.icon || 'User'); return <Icon size={20} />; })()}
           <div>
             <div className="text-sm font-medium text-primary">{persona.name}</div>
             <div className="text-[10px] text-tertiary">{persona.role}</div>
@@ -378,7 +379,7 @@ function CSuitePersonaCard({ persona }: { persona: CSuitePersona }) {
           </div>
         </div>
       )}
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
@@ -436,7 +437,7 @@ export default function WorkspaceDetail({
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">{workspace.icon}</span>
+          {(() => { const Icon = getIconComponent(workspace.icon || 'FolderOpen'); return <Icon size={28} className="text-primary" />; })()}
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-semibold text-primary">{workspace.name}</h2>
@@ -466,7 +467,7 @@ export default function WorkspaceDetail({
       </div>
 
       {/* ── Tab Bar ── */}
-      <div className="flex items-center gap-1 p-1 glass rounded-xl" role="tablist">
+      <div className="flex items-center gap-1 p-1 glass rounded-none" role="tablist">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -565,7 +566,7 @@ function TabTemplates({
         {TEMPLATE_FILTER_CHIPS.map((chip) => {
           const isActive = filter === chip;
           return (
-            <GlassButton
+            <CockpitButton
               key={chip}
               size="sm"
               variant={isActive ? 'primary' : 'ghost'}
@@ -573,7 +574,7 @@ function TabTemplates({
               className="text-xs"
             >
               {chip}
-            </GlassButton>
+            </CockpitButton>
           );
         })}
       </div>
@@ -608,7 +609,7 @@ function TabTaxonomias({
   return (
     <div className="flex gap-4 min-h-[400px]">
       {/* Left: Tree (30%) */}
-      <GlassCard
+      <CockpitCard
         variant="subtle"
         padding="sm"
         className="w-[30%] overflow-y-auto glass-scrollbar flex-shrink-0"
@@ -618,12 +619,12 @@ function TabTaxonomias({
           selectedNodeId={selectedNode?.id ?? null}
           onSelectNode={onSelectNode}
         />
-      </GlassCard>
+      </CockpitCard>
 
       {/* Right: Detail (70%) */}
-      <GlassCard variant="subtle" padding="none" className="flex-1 overflow-y-auto glass-scrollbar">
+      <CockpitCard variant="subtle" padding="none" className="flex-1 overflow-y-auto glass-scrollbar">
         <TaxonomyNodeDetail node={selectedNode} />
-      </GlassCard>
+      </CockpitCard>
     </div>
   );
 }

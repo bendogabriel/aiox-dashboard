@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Play } from 'lucide-react';
-import { Dialog, GlassButton, GlassInput, GlassTextarea, useToast } from '../ui';
+import { Dialog, CockpitButton, CockpitInput, CockpitTextarea, useToast } from '../ui';
 import { useStartWorkflow } from '../../hooks/useEngine';
 import type { WorkflowDef } from '../../services/api/engine';
 
@@ -49,17 +49,17 @@ export default function WorkflowTriggerModal({ workflow, onClose }: WorkflowTrig
 
   const footer = (
     <>
-      <GlassButton variant="ghost" onClick={handleClose}>
+      <CockpitButton variant="ghost" onClick={handleClose}>
         Cancelar
-      </GlassButton>
-      <GlassButton
+      </CockpitButton>
+      <CockpitButton
         variant="primary"
         leftIcon={<Play className="h-3.5 w-3.5" />}
         onClick={handleSubmit}
         loading={startWorkflow.isPending}
       >
         Iniciar Workflow
-      </GlassButton>
+      </CockpitButton>
     </>
   );
 
@@ -73,25 +73,26 @@ export default function WorkflowTriggerModal({ workflow, onClose }: WorkflowTrig
       footer={footer}
     >
       <div className="space-y-4">
-        <GlassTextarea
-          label="Mensagem / Input"
+        <CockpitTextarea
+          label="O que este workflow deve processar?"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           error={error}
-          placeholder="Descreva o que o workflow deve processar..."
+          placeholder="Ex: Analisar o módulo de autenticação e gerar relatório de debt técnico..."
           rows={4}
+          hint="Descreva em linguagem natural a tarefa para o workflow executar"
         />
 
-        <GlassInput
-          label="Parent Job ID (opcional)"
+        <CockpitInput
+          label="Vincular a um Job existente (opcional)"
           value={parentJobId}
           onChange={(e) => setParentJobId(e.target.value)}
-          placeholder="ID de um job pai, se aplicável"
-          hint="Vincular a um job existente"
+          placeholder="Cole aqui o ID de um job pai, se quiser vincular"
+          hint="Deixe vazio para criar um workflow independente"
         />
 
         {startWorkflow.isError && (
-          <div className="text-sm text-red-400 bg-red-500/10 p-3 rounded-lg">
+          <div className="text-sm text-[var(--bb-error)] bg-[var(--bb-error)]/10 p-3 rounded-lg">
             {(startWorkflow.error as Error).message || 'Erro ao iniciar workflow'}
           </div>
         )}

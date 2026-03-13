@@ -1,7 +1,7 @@
 /**
  * Consolidated UI Primitive Component Tests
  *
- * Tests for: GlassButton, GlassCard, Badge, Avatar, EmptyState,
+ * Tests for: CockpitButton, CockpitCard, Badge, Avatar, EmptyState,
  *            ErrorBoundary, Dialog, ContextMenu
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -52,32 +52,43 @@ vi.mock('../../../lib/agent-avatars', () => ({
 }));
 
 // Mock theme module
-vi.mock('../../../lib/theme', () => ({
-  getSquadTheme: (squadType: string) => ({
-    gradient: `from-squad-${squadType} to-squad-${squadType}-dark`,
-    primary: `var(--squad-${squadType})`,
-    bg: `bg-squad-${squadType}/10`,
-    bgSubtle: `bg-squad-${squadType}/5`,
-    bgHover: `hover:bg-squad-${squadType}/15`,
-    border: `border-squad-${squadType}`,
-    borderSubtle: `border-squad-${squadType}/30`,
-    text: `text-squad-${squadType}`,
-    textMuted: `text-squad-${squadType}/70`,
-    badge: `bg-squad-${squadType}/10 text-squad-${squadType}`,
-    card: `border-squad-${squadType}/20`,
-    cardHover: `hover:border-squad-${squadType}/40`,
-    iconBg: `bg-squad-${squadType}/10`,
-    dot: `bg-squad-${squadType}`,
-    ring: `ring-squad-${squadType}`,
-    borderLeft: `border-l-squad-${squadType}`,
-    glow: `shadow-squad-${squadType}/20`,
-    gradientBg: `bg-gradient-to-br from-squad-${squadType}/10 to-squad-${squadType}/5`,
-    gradientSubtle: `bg-gradient-to-br from-squad-${squadType}/5 to-transparent`,
-  }),
-}));
+vi.mock('../../../lib/theme', () => {
+  const statusMap: Record<string, { text: string; bg: string; dot: string; border: string }> = {
+    online: { text: 'text-status-success-muted', bg: 'bg-status-success-10', dot: 'bg-status-success', border: 'border-status-success-30' },
+    busy: { text: 'text-status-warning-muted', bg: 'bg-status-warning-10', dot: 'bg-status-warning', border: 'border-status-warning-30' },
+    offline: { text: 'text-squad-default-muted', bg: 'bg-squad-default-10', dot: 'bg-squad-default', border: 'border-squad-default-30' },
+    error: { text: 'text-status-error-muted', bg: 'bg-status-error-10', dot: 'bg-status-error', border: 'border-status-error-30' },
+    success: { text: 'text-status-success-muted', bg: 'bg-status-success-10', dot: 'bg-status-success', border: 'border-status-success-30' },
+  };
+  return {
+    getSquadTheme: (squadType: string) => ({
+      gradient: `from-squad-${squadType} to-squad-${squadType}-dark`,
+      primary: `var(--squad-${squadType})`,
+      bg: `bg-squad-${squadType}`,
+      bgSubtle: `bg-squad-${squadType}-10`,
+      bgHover: `hover:bg-squad-${squadType}-20`,
+      border: `border-squad-${squadType}`,
+      borderSubtle: `border-squad-${squadType}-30`,
+      text: `text-squad-${squadType}`,
+      textMuted: `text-squad-${squadType}-muted`,
+      badge: `bg-squad-${squadType}-10 border-squad-${squadType}-20 text-squad-${squadType}-muted`,
+      card: `bg-squad-${squadType}-5 border-squad-${squadType}-20`,
+      cardHover: `hover:bg-squad-${squadType}-10 hover:border-squad-${squadType}-30`,
+      iconBg: `bg-squad-${squadType}-20`,
+      dot: `bg-squad-${squadType}`,
+      ring: `ring-squad-${squadType}-20 focus:ring-squad-${squadType}-40`,
+      borderLeft: `border-l-squad-${squadType}`,
+      glow: `shadow-squad-${squadType}-30`,
+      gradientBg: `bg-gradient-to-br from-squad-${squadType}-10 to-squad-${squadType}-10`,
+      gradientSubtle: `from-squad-${squadType}-20 to-squad-${squadType}-20`,
+      cssVar: `var(--squad-${squadType}-default)`,
+    }),
+    getStatusTheme: (status: string) => statusMap[status] || statusMap.offline,
+  };
+});
 
-import { GlassButton } from '../GlassButton';
-import { GlassCard } from '../GlassCard';
+import { CockpitButton } from '../cockpit/CockpitButton';
+import { CockpitCard } from '../cockpit/CockpitCard';
 import { Badge } from '../Badge';
 import { Avatar } from '../Avatar';
 import { EmptyState, NoSearchResults, NoMessages, NoActivity, ErrorState } from '../EmptyState';
@@ -86,39 +97,39 @@ import { Dialog } from '../Dialog';
 import { ContextMenu } from '../ContextMenu';
 
 // ============================================================
-// GlassButton
+// CockpitButton
 // ============================================================
-describe('GlassButton', () => {
+describe('CockpitButton', () => {
   it('renders with children text', () => {
-    render(<GlassButton>Click me</GlassButton>);
+    render(<CockpitButton>Click me</CockpitButton>);
     expect(screen.getByRole('button')).toHaveTextContent('Click me');
   });
 
   it('handles click events', async () => {
     const onClick = vi.fn();
-    const { user } = render(<GlassButton onClick={onClick}>Go</GlassButton>);
+    const { user } = render(<CockpitButton onClick={onClick}>Go</CockpitButton>);
     await user.click(screen.getByRole('button'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   it('is disabled when disabled prop is true', () => {
-    render(<GlassButton disabled>Disabled</GlassButton>);
+    render(<CockpitButton disabled>Disabled</CockpitButton>);
     expect(screen.getByRole('button')).toBeDisabled();
   });
 
   it('does not fire onClick when disabled', async () => {
     const onClick = vi.fn();
     const { user } = render(
-      <GlassButton onClick={onClick} disabled>
+      <CockpitButton onClick={onClick} disabled>
         No click
-      </GlassButton>
+      </CockpitButton>
     );
     await user.click(screen.getByRole('button'));
     expect(onClick).not.toHaveBeenCalled();
   });
 
   it('shows loading spinner and disables the button', () => {
-    render(<GlassButton loading>Save</GlassButton>);
+    render(<CockpitButton loading>Save</CockpitButton>);
     const button = screen.getByRole('button');
     expect(button).toBeDisabled();
     expect(button.querySelector('svg')).toBeInTheDocument();
@@ -127,125 +138,125 @@ describe('GlassButton', () => {
   });
 
   it('hides children text when loading', () => {
-    render(<GlassButton loading>Save</GlassButton>);
+    render(<CockpitButton loading>Save</CockpitButton>);
     expect(screen.queryByText('Save')).not.toBeInTheDocument();
   });
 
   it('applies variant classes', () => {
-    const { rerender } = render(<GlassButton variant="default">A</GlassButton>);
+    const { rerender } = render(<CockpitButton variant="default">A</CockpitButton>);
     expect(screen.getByRole('button')).toHaveClass('glass-button');
 
-    rerender(<GlassButton variant="primary">B</GlassButton>);
+    rerender(<CockpitButton variant="primary">B</CockpitButton>);
     expect(screen.getByRole('button')).toHaveClass('glass-button-primary');
 
-    rerender(<GlassButton variant="ghost">C</GlassButton>);
+    rerender(<CockpitButton variant="ghost">C</CockpitButton>);
     expect(screen.getByRole('button')).toHaveClass('bg-transparent');
   });
 
   it('applies size classes', () => {
-    const { rerender } = render(<GlassButton size="sm">S</GlassButton>);
+    const { rerender } = render(<CockpitButton size="sm">S</CockpitButton>);
     expect(screen.getByRole('button')).toHaveClass('h-8');
 
-    rerender(<GlassButton size="md">M</GlassButton>);
+    rerender(<CockpitButton size="md">M</CockpitButton>);
     expect(screen.getByRole('button')).toHaveClass('h-10');
 
-    rerender(<GlassButton size="lg">L</GlassButton>);
+    rerender(<CockpitButton size="lg">L</CockpitButton>);
     expect(screen.getByRole('button')).toHaveClass('h-12');
 
-    rerender(<GlassButton size="icon">I</GlassButton>);
+    rerender(<CockpitButton size="icon">I</CockpitButton>);
     expect(screen.getByRole('button')).toHaveClass('h-11', 'w-11');
   });
 
   it('renders left and right icons', () => {
     render(
-      <GlassButton
+      <CockpitButton
         leftIcon={<span data-testid="left-icon">L</span>}
         rightIcon={<span data-testid="right-icon">R</span>}
       >
         Text
-      </GlassButton>
+      </CockpitButton>
     );
     expect(screen.getByTestId('left-icon')).toBeInTheDocument();
     expect(screen.getByTestId('right-icon')).toBeInTheDocument();
   });
 
   it('applies custom className', () => {
-    render(<GlassButton className="my-extra-class">Btn</GlassButton>);
+    render(<CockpitButton className="my-extra-class">Btn</CockpitButton>);
     expect(screen.getByRole('button')).toHaveClass('my-extra-class');
   });
 
   it('forwards ref', () => {
     const ref = vi.fn();
-    render(<GlassButton ref={ref}>Ref</GlassButton>);
+    render(<CockpitButton ref={ref}>Ref</CockpitButton>);
     expect(ref).toHaveBeenCalled();
   });
 });
 
 // ============================================================
-// GlassCard
+// CockpitCard
 // ============================================================
-describe('GlassCard', () => {
+describe('CockpitCard', () => {
   it('renders children', () => {
-    render(<GlassCard>Card body</GlassCard>);
+    render(<CockpitCard>Card body</CockpitCard>);
     expect(screen.getByText('Card body')).toBeInTheDocument();
   });
 
   it('applies default variant class', () => {
-    const { container } = render(<GlassCard>C</GlassCard>);
+    const { container } = render(<CockpitCard>C</CockpitCard>);
     expect(container.firstChild).toHaveClass('glass');
   });
 
   it('applies subtle variant', () => {
-    const { container } = render(<GlassCard variant="subtle">S</GlassCard>);
+    const { container } = render(<CockpitCard variant="subtle">S</CockpitCard>);
     expect(container.firstChild).toHaveClass('glass-subtle');
   });
 
   it('applies strong variant', () => {
-    const { container } = render(<GlassCard variant="strong">G</GlassCard>);
+    const { container } = render(<CockpitCard variant="strong">G</CockpitCard>);
     expect(container.firstChild).toHaveClass('glass-lg');
   });
 
   it('applies interactive class when interactive', () => {
-    const { container } = render(<GlassCard interactive>I</GlassCard>);
+    const { container } = render(<CockpitCard interactive>I</CockpitCard>);
     expect(container.firstChild).toHaveClass('glass-interactive');
   });
 
   it('applies padding sizes', () => {
-    const { container, rerender } = render(<GlassCard padding="none">C</GlassCard>);
+    const { container, rerender } = render(<CockpitCard padding="none">C</CockpitCard>);
     expect(container.firstChild).not.toHaveClass('p-3', 'p-4', 'p-6');
 
-    rerender(<GlassCard padding="sm">C</GlassCard>);
+    rerender(<CockpitCard padding="sm">C</CockpitCard>);
     expect(container.firstChild).toHaveClass('p-3');
 
-    rerender(<GlassCard padding="md">C</GlassCard>);
+    rerender(<CockpitCard padding="md">C</CockpitCard>);
     expect(container.firstChild).toHaveClass('p-4');
 
-    rerender(<GlassCard padding="lg">C</GlassCard>);
+    rerender(<CockpitCard padding="lg">C</CockpitCard>);
     expect(container.firstChild).toHaveClass('p-6');
   });
 
   it('applies radius sizes', () => {
-    const { container, rerender } = render(<GlassCard radius="sm">C</GlassCard>);
+    const { container, rerender } = render(<CockpitCard radius="sm">C</CockpitCard>);
     expect(container.firstChild).toHaveClass('rounded-xl');
 
-    rerender(<GlassCard radius="lg">C</GlassCard>);
+    rerender(<CockpitCard radius="lg">C</CockpitCard>);
     expect(container.firstChild).toHaveClass('rounded-glass');
   });
 
   it('applies custom className', () => {
-    const { container } = render(<GlassCard className="extra">C</GlassCard>);
+    const { container } = render(<CockpitCard className="extra">C</CockpitCard>);
     expect(container.firstChild).toHaveClass('extra');
   });
 
   it('forwards ref', () => {
     const ref = vi.fn();
-    render(<GlassCard ref={ref}>C</GlassCard>);
+    render(<CockpitCard ref={ref}>C</CockpitCard>);
     expect(ref).toHaveBeenCalled();
   });
 
   it('handles onClick', async () => {
     const onClick = vi.fn();
-    const { user } = render(<GlassCard onClick={onClick}>Click</GlassCard>);
+    const { user } = render(<CockpitCard onClick={onClick}>Click</CockpitCard>);
     await user.click(screen.getByText('Click'));
     expect(onClick).toHaveBeenCalled();
   });
@@ -266,42 +277,42 @@ describe('Badge', () => {
   });
 
   it('applies squad variant with squad type colors', () => {
-    const { container, rerender } = render(
+    const { rerender } = render(
       <Badge variant="squad" squadType="copywriting">
         Copy
       </Badge>
     );
-    expect(container.querySelector('.bg-orange-500\\/15')).toBeInTheDocument();
+    expect(screen.getByText('Copy')).toHaveClass('bg-squad-copywriting-10');
 
     rerender(
       <Badge variant="squad" squadType="design">
         Design
       </Badge>
     );
-    expect(container.querySelector('.bg-purple-500\\/15')).toBeInTheDocument();
+    expect(screen.getByText('Design')).toHaveClass('bg-squad-design-10');
 
     rerender(
       <Badge variant="squad" squadType="development">
         Dev
       </Badge>
     );
-    expect(container.querySelector('.bg-blue-500\\/15')).toBeInTheDocument();
+    expect(screen.getByText('Dev')).toHaveClass('bg-squad-development-10');
   });
 
   it('applies status variant styles', () => {
-    const { container, rerender } = render(
+    const { rerender } = render(
       <Badge variant="status" status="online">
         Online
       </Badge>
     );
-    expect(container.querySelector('.text-green-500')).toBeInTheDocument();
+    expect(screen.getByText('Online')).toHaveClass('text-status-success-muted');
 
     rerender(
       <Badge variant="status" status="error">
         Error
       </Badge>
     );
-    expect(container.querySelector('.text-red-500')).toBeInTheDocument();
+    expect(screen.getByText('Error')).toHaveClass('text-status-error-muted');
   });
 
   it('applies count variant', () => {

@@ -7,7 +7,7 @@ import {
   Trash2,
   Terminal,
 } from 'lucide-react';
-import { GlassCard, GlassButton } from '../ui';
+import { CockpitCard, CockpitButton } from '../ui';
 import { useMonitorStore } from '../../stores/monitorStore';
 import { cn } from '../../lib/utils';
 import { useMonitorSSE } from '../../hooks/useMonitorSSE';
@@ -41,18 +41,18 @@ function CurrentToolIndicator({
   }, [tool.startedAt]);
 
   return (
-    <GlassCard padding="sm" variant="subtle" className="flex-shrink-0">
+    <CockpitCard padding="sm" variant="subtle" className="flex-shrink-0">
       <div className="flex items-center gap-3">
         <div className="relative">
-          <Terminal className="h-4 w-4 text-green-400" />
-          <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-green-500 animate-ping" />
+          <Terminal className="h-4 w-4 text-[var(--color-status-success)]" />
+          <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-[var(--color-status-success)] animate-ping" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-primary">
               Executing: {tool.name}
             </span>
-            <span className="text-xs text-green-400 font-mono w-8">
+            <span className="text-xs text-[var(--color-status-success)] font-mono w-8">
               {dots.padEnd(3, '\u00A0')}
             </span>
           </div>
@@ -61,7 +61,7 @@ function CurrentToolIndicator({
           </span>
         </div>
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
@@ -101,19 +101,19 @@ export default function LiveMonitor({ viewToggle }: { viewToggle?: React.ReactNo
       <div className="flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
           <Activity className="h-5 w-5 text-primary" />
-          <h1 className="text-lg font-bold text-primary">Monitor</h1>
+          <h1 className="heading-display text-xl font-semibold text-primary">Monitor</h1>
           {viewToggle}
           <ConnectionStatus />
         </div>
 
-        <GlassButton
+        <CockpitButton
           size="sm"
           variant="ghost"
           leftIcon={<Trash2 className="h-4 w-4" />}
           onClick={clearEvents}
         >
           Clear
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       {/* AlertBanner (if alerts exist) */}
@@ -132,34 +132,34 @@ export default function LiveMonitor({ viewToggle }: { viewToggle?: React.ReactNo
       <EventList />
 
       {/* Stats footer */}
-      <GlassCard padding="sm" variant="subtle" className="flex-shrink-0">
+      <CockpitCard padding="sm" variant="subtle" className="flex-shrink-0">
         <div className="grid grid-cols-4 gap-4">
           <StatBlock
             icon={Activity}
             label="Total Events"
             value={stats.total}
-            color="text-blue-400"
+            color="text-[var(--aiox-blue)]"
           />
           <StatBlock
             icon={CheckCircle2}
             label="Success Rate"
             value={`${stats.successRate}%`}
-            color="text-green-400"
+            color="text-[var(--color-status-success)]"
           />
           <StatBlock
             icon={AlertCircle}
             label="Errors"
             value={stats.errorCount}
-            color="text-red-400"
+            color="text-[var(--bb-error)]"
           />
           <StatBlock
             icon={Wifi}
             label="Sessions"
             value={stats.activeSessions}
-            color="text-cyan-400"
+            color="text-[var(--aiox-blue)]"
           />
         </div>
-      </GlassCard>
+      </CockpitCard>
     </div>
   );
 }

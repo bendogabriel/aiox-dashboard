@@ -47,10 +47,10 @@ function sendDesktopNotification(title: string, body?: string, type?: ToastType)
   if (document.hasFocus()) return; // Only when tab is not focused
 
   const iconMap: Record<ToastType, string> = {
-    success: '✅',
-    error: '❌',
-    warning: '⚠️',
-    info: 'ℹ️',
+    success: '[OK]',
+    error: '[ERR]',
+    warning: '[WARN]',
+    info: '[INFO]',
   };
 
   try {

@@ -54,7 +54,7 @@ export function EnvGenerator() {
           textAlign: 'left',
         }}
       >
-        <FileDown size={14} style={{ color: 'var(--aiox-lime, #D1FF00)' }} />
+        <FileDown size={14} style={{ color: 'var(--aiox-gray-dim, #696969)' }} />
         <span style={{ flex: 1, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
           Env Generator
         </span>
@@ -76,9 +76,9 @@ export function EnvGenerator() {
                   fontFamily: 'inherit',
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
-                  background: tab === t ? 'rgba(209, 255, 0, 0.08)' : 'rgba(255,255,255,0.02)',
-                  border: `1px solid ${tab === t ? 'rgba(209, 255, 0, 0.2)' : 'rgba(255,255,255,0.06)'}`,
-                  color: tab === t ? 'var(--aiox-lime, #D1FF00)' : 'var(--aiox-gray-muted, #999)',
+                  background: tab === t ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255,255,255,0.02)',
+                  border: `1px solid ${tab === t ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255,255,255,0.06)'}`,
+                  color: tab === t ? 'var(--aiox-cream, #E5E5E5)' : 'var(--aiox-gray-muted, #999)',
                   cursor: 'pointer',
                 }}
               >

@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Badge } from '../ui';
 import { AgentExplorerCard } from '../agents/AgentCard';
 import { useAgents } from '../../hooks/useAgents';
@@ -36,9 +35,7 @@ export function EmptyChat() {
     return (
       <div className="h-full flex flex-col p-6 overflow-hidden">
         {/* Header with back button */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="mb-6"
         >
           <div className="flex items-center gap-3 mb-1">
@@ -61,7 +58,7 @@ export function EmptyChat() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Agents Grid */}
         <div className="flex-1 overflow-y-auto glass-scrollbar pr-2">
@@ -71,11 +68,8 @@ export function EmptyChat() {
               if (tierAgents.length === 0) return null;
 
               return (
-                <motion.div
+                <div
                   key={tier}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: tier * 0.1 }}
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <span className={cn('text-sm font-semibold', getTierTheme(tier).text)}>
@@ -86,20 +80,17 @@ export function EmptyChat() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {tierAgents.map((agent, index) => (
-                      <motion.div
+                      <div
                         key={agent.id}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.03 }}
                       >
                         <AgentExplorerCard
                           agent={agent}
                           onClick={() => selectAgent(agent)}
                         />
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -112,7 +103,7 @@ export function EmptyChat() {
   if (agentsLoading || squadsLoading) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-2 border-[#0099FF] border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-2 border-[var(--aiox-blue)] border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -120,12 +111,10 @@ export function EmptyChat() {
   // Squad selection — show all squads as clickable cards
   return (
     <div className="h-full flex flex-col p-6 overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
+      <div
         className="mb-6 text-center"
       >
-        <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#D1FF00] to-[#a8cc00] flex items-center justify-center mx-auto mb-4">
+        <div className="h-14 w-14 rounded-none bg-gradient-to-br from-[var(--aiox-lime)] to-[var(--aiox-lime-muted)] flex items-center justify-center mx-auto mb-4">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
           </svg>
@@ -136,22 +125,34 @@ export function EmptyChat() {
         <p className="text-secondary text-sm">
           Selecione um squad para ver os agents disponíveis
         </p>
-      </motion.div>
+      </div>
 
       <div className="flex-1 overflow-y-auto glass-scrollbar pr-2">
+        {(!squads || squads.length === 0) && !squadsLoading && (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="h-12 w-12 rounded-none bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-tertiary">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <p className="text-secondary text-sm font-medium mb-1">Engine offline</p>
+            <p className="text-tertiary text-xs max-w-xs">
+              O engine não está rodando. Inicie-o com <code className="px-1.5 py-0.5 bg-white/5 rounded text-[var(--aiox-lime)] text-[10px]">cd engine && bun run dev</code> para carregar os squads e agents.
+            </p>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {(squads || []).map((squad: Squad, index: number) => {
             const squadType = squad.type || getSquadType(squad.id);
             return (
-              <motion.button
+              <button
                 key={squad.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.03 }}
                 onClick={() => setSelectedSquadId(squad.id)}
                 className={cn(
-                  'glass-card rounded-xl p-4 text-left transition-all group',
-                  'hover:bg-white/10 hover:border-[#D1FF00]/30',
+                  'glass-card rounded-none p-4 text-left transition-all group',
+                  'hover:bg-white/10 hover:border-[var(--aiox-lime)]/30',
                   'border border-white/10'
                 )}
               >
@@ -167,7 +168,7 @@ export function EmptyChat() {
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-primary text-sm font-semibold truncate group-hover:text-[#D1FF00] transition-colors">
+                      <h3 className="text-primary text-sm font-semibold truncate group-hover:text-[var(--aiox-lime)] transition-colors">
                         {squad.name}
                       </h3>
                       <Badge variant="squad" squadType={squadType} size="sm">
@@ -182,7 +183,7 @@ export function EmptyChat() {
                     </p>
                   </div>
                 </div>
-              </motion.button>
+              </button>
             );
           })}
         </div>

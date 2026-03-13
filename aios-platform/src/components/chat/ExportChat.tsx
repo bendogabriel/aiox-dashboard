@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { GlassButton, useToast } from '../ui';
+import { CockpitButton, useToast } from '../ui';
 import { cn } from '../../lib/utils';
 import type { ChatSession } from '../../types';
 
@@ -400,32 +399,25 @@ export function ExportChatModal({ isOpen, onClose, session }: ExportChatModalPro
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
+    <>
+    {isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
             onClick={onClose}
           />
 
           {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          <div
             className="fixed top-[5%] left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl max-h-[90vh] flex flex-col mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="glass-card rounded-2xl overflow-hidden flex flex-col h-full">
+            <div className="glass-card rounded-none overflow-hidden flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl glass-subtle flex items-center justify-center text-primary">
+                  <div className="h-10 w-10 rounded-none glass-subtle flex items-center justify-center text-primary">
                     <ExportIcon />
                   </div>
                   <div>
@@ -451,16 +443,16 @@ export function ExportChatModal({ isOpen, onClose, session }: ExportChatModalPro
                       key={format.id}
                       onClick={() => setSelectedFormat(format.id)}
                       className={cn(
-                        'p-3 rounded-xl border transition-all duration-200',
+                        'p-3 rounded-none border transition-all duration-200',
                         'flex flex-col items-center gap-2',
                         selectedFormat === format.id
-                          ? 'bg-blue-500/20 border-blue-500/50 text-blue-400'
+                          ? 'bg-[var(--aiox-blue)]/20 border-[var(--aiox-blue)]/50 text-[var(--aiox-blue)]'
                           : 'bg-white/5 border-white/10 text-secondary hover:bg-white/10 hover:text-primary'
                       )}
                     >
                       <span className={cn(
                         'transition-colors',
-                        selectedFormat === format.id ? 'text-blue-400' : 'text-tertiary'
+                        selectedFormat === format.id ? 'text-[var(--aiox-blue)]' : 'text-tertiary'
                       )}>
                         {format.icon}
                       </span>
@@ -475,10 +467,10 @@ export function ExportChatModal({ isOpen, onClose, session }: ExportChatModalPro
 
               {/* Preview */}
               <div className="flex-1 overflow-hidden p-4 min-h-0">
-                <div className="h-full overflow-y-auto glass-scrollbar rounded-xl glass-subtle p-4">
+                <div className="h-full overflow-y-auto glass-scrollbar rounded-none glass-subtle p-4">
                   <pre className={cn(
                     'text-xs whitespace-pre-wrap font-mono leading-relaxed',
-                    selectedFormat === 'json' ? 'text-green-400' : 'text-secondary'
+                    selectedFormat === 'json' ? 'text-[var(--color-status-success)]' : 'text-secondary'
                   )}>
                     {getPreviewContent()}
                   </pre>
@@ -493,30 +485,30 @@ export function ExportChatModal({ isOpen, onClose, session }: ExportChatModalPro
                   <span>{(new Blob([exportContent]).size / 1024).toFixed(1)} KB</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <GlassButton
+                  <CockpitButton
                     variant="ghost"
                     size="sm"
                     onClick={handleCopy}
                     leftIcon={copied ? <CheckIcon /> : <CopyIcon />}
                   >
                     {copied ? 'Copiado!' : 'Copiar'}
-                  </GlassButton>
-                  <GlassButton
+                  </CockpitButton>
+                  <CockpitButton
                     variant="primary"
                     size="sm"
                     onClick={handleDownload}
                     leftIcon={<DownloadIcon />}
                   >
                     Download
-                  </GlassButton>
+                  </CockpitButton>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 }
 
 // Export button for chat header
@@ -527,7 +519,7 @@ interface ExportChatButtonProps {
 
 export function ExportChatButton({ onClick, disabled }: ExportChatButtonProps) {
   return (
-    <GlassButton
+    <CockpitButton
       variant="ghost"
       size="icon"
       onClick={onClick}
@@ -537,6 +529,6 @@ export function ExportChatButton({ onClick, disabled }: ExportChatButtonProps) {
       className="h-8 w-8"
     >
       <ExportIcon />
-    </GlassButton>
+    </CockpitButton>
   );
 }

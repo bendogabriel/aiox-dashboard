@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import type { DomainId } from './world-layout';
 import { useDomains } from './DomainContext';
 import { useMonitorStore, type MonitorEvent } from '../../stores/monitorStore';
@@ -17,11 +16,13 @@ interface WorldNotificationsProps {
   maxVisible?: number;
 }
 
-const TYPE_ICONS: Record<WorldNotification['type'], string> = {
-  info: 'i',
-  success: '\u2713',
-  warning: '!',
-  task: '\u2192',
+import { Info, CheckCircle, AlertTriangle, ArrowRight, type LucideIcon } from 'lucide-react';
+
+const TYPE_ICONS: Record<WorldNotification['type'], LucideIcon> = {
+  info: Info,
+  success: CheckCircle,
+  warning: AlertTriangle,
+  task: ArrowRight,
 };
 
 // Demo notifications that cycle for ambience
@@ -147,37 +148,27 @@ export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) 
     >
       {/* Live indicator when connected */}
       {monitorConnected && notifications.length > 0 && (
-        <motion.div
+        <div
           className="flex items-center gap-1 self-end mr-1 pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
         >
-          <motion.div
+          <div
             className="w-1.5 h-1.5 rounded-full"
             style={{ background: '#10B981' }}
-            animate={{ opacity: [1, 0.3, 1] }}
-            transition={{ duration: 1.2, repeat: Infinity }}
           />
           <span className="text-[7px] font-bold" style={{ color: '#10B981' }}>LIVE FEED</span>
-        </motion.div>
+        </div>
       )}
-      <AnimatePresence mode="popLayout">
-        {notifications.slice(0, maxVisible).map((notif) => {
+      {notifications.slice(0, maxVisible).map((notif) => {
           const d = domains[notif.domain];
           return (
-            <motion.div
+            <div
               key={notif.id}
-              layout
               className="pointer-events-auto rounded-lg px-2.5 py-1.5 flex items-start gap-2"
               style={{
                 background: 'rgba(0,0,0,0.75)',
                 backdropFilter: 'blur(8px)',
                 border: `1px solid ${d.tileColor}33`,
               }}
-              initial={{ opacity: 0, x: 40, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 40, scale: 0.9 }}
-              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
             >
               {/* Type icon */}
               <span
@@ -185,13 +176,11 @@ export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) 
                 style={{
                   width: 14,
                   height: 14,
-                  fontSize: '8px',
-                  fontWeight: 700,
                   background: `${d.tileColor}33`,
                   color: d.tileColor,
                 }}
               >
-                {TYPE_ICONS[notif.type]}
+                {(() => { const Icon = TYPE_ICONS[notif.type]; return <Icon size={8} />; })()}
               </span>
 
               {/* Message */}
@@ -206,10 +195,9 @@ export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) 
                   {d.label}
                 </span>
               </div>
-            </motion.div>
+            </div>
           );
         })}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

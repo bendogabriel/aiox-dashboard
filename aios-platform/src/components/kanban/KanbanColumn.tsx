@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Plus, type LucideIcon } from 'lucide-react';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
 import { cn } from '../../lib/utils';
 import { StoryCard } from './StoryCard';
 import type { Story, StoryStatus } from '../../stores/storyStore';
@@ -43,7 +42,7 @@ export function KanbanColumn({
   return (
     <div
       className={cn(
-        'flex flex-col min-w-[300px] max-w-[300px] rounded-xl transition-colors duration-200',
+        'flex flex-col min-w-[300px] max-w-[300px] rounded-none transition-colors duration-200',
         isOver && 'ring-2 kanban-drop-highlight'
       )}
     >
@@ -62,13 +61,11 @@ export function KanbanColumn({
             <span className="text-sm font-semibold text-primary">
               {column.label}
             </span>
-            <motion.span
-              animate={{ rotate: collapsed ? -90 : 0 }}
-              transition={{ duration: 0.15 }}
+            <span
               className="text-tertiary"
             >
               <ChevronDown size={14} />
-            </motion.span>
+            </span>
           </button>
 
           {/* Count badge */}
@@ -78,7 +75,7 @@ export function KanbanColumn({
         </div>
 
         {/* Add story button */}
-        <GlassButton
+        <CockpitButton
           variant="ghost"
           size="icon"
           className="h-7 w-7 opacity-0 group-hover:opacity-100 hover:!opacity-100 transition-opacity"
@@ -87,17 +84,12 @@ export function KanbanColumn({
           style={{ opacity: 1 }}
         >
           <Plus size={14} />
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       {/* Drop zone */}
-      <AnimatePresence initial={false}>
-        {!collapsed && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      {!collapsed && (
+          <div
             className="overflow-hidden"
           >
             <div
@@ -105,7 +97,7 @@ export function KanbanColumn({
               className={cn(
                 'flex flex-col gap-2 px-1.5 pb-2 min-h-[80px] rounded-lg transition-all duration-200',
                 isOver
-                  ? 'kanban-drop-zone bg-blue-500/5 ring-2 ring-blue-500/20 ring-inset scale-[1.01]'
+                  ? 'kanban-drop-zone bg-[var(--aiox-lime)]/5 ring-2 ring-[var(--aiox-lime)]/20 ring-inset scale-[1.01]'
                   : ''
               )}
             >
@@ -115,27 +107,17 @@ export function KanbanColumn({
               >
                 {stories.length > 0 ? (
                   stories.map((story, index) => (
-                    <motion.div
+                    <div
                       key={story.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.25,
-                        delay: index * 0.04,
-                        ease: [0, 0, 0.2, 1],
-                      }}
                     >
                       <StoryCard
                         story={story}
                         onClick={() => onStoryClick(story)}
                       />
-                    </motion.div>
+                    </div>
                   ))
                 ) : (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2, duration: 0.3 }}
+                  <div
                     className="flex flex-col items-center justify-center py-8 gap-2"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-tertiary/40">
@@ -146,17 +128,16 @@ export function KanbanColumn({
                     <p className="text-[11px] text-tertiary/60">Sem stories</p>
                     <button
                       onClick={() => onAddStory(column.id)}
-                      className="text-[10px] text-blue-400/70 hover:text-blue-400 transition-colors"
+                      className="text-[10px] text-[var(--aiox-lime)]/70 hover:text-[var(--aiox-lime)] transition-colors"
                     >
                       + Adicionar
                     </button>
-                  </motion.div>
+                  </div>
                 )}
               </SortableContext>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Server, Database, KeyRound, MessageSquare, Send,
   Check, X, ChevronRight, ChevronLeft, Zap, Plus, Trash2, Copy,
@@ -454,11 +453,7 @@ export function SetupWizard() {
   };
 
   return createPortal(
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
+    <div
       style={{
         position: 'fixed',
         inset: 0,
@@ -469,11 +464,7 @@ export function SetupWizard() {
         background: 'rgba(5, 5, 5, 0.95)',
       }}
     >
-      <motion.div
-        initial={{ opacity: 0, y: 30, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 20, scale: 0.96 }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      <div
         style={{
           width: '100%',
           maxWidth: 560,
@@ -558,18 +549,12 @@ export function SetupWizard() {
 
         {/* Step Content */}
         <div style={{ padding: '0 24px 20px' }}>
-          <AnimatePresence mode="wait">
-            <motion.div
+          <div
               key={step}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
             >
               {renderStep()}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+            </div>
+</div>
 
         {/* Footer */}
         <div style={{
@@ -601,8 +586,8 @@ export function SetupWizard() {
             </button>
           </div>
         </div>
-      </motion.div>
-    </motion.div>,
+      </div>
+    </div>,
     document.body,
   );
 }

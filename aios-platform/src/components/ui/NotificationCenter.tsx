@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useToastStore, type NotificationItem } from '../../stores/toastStore';
 import { cn } from '../../lib/utils';
 
 const typeConfig = {
-  success: { color: 'text-emerald-400', bg: 'bg-emerald-500/10', label: 'Sucesso' },
-  error: { color: 'text-red-400', bg: 'bg-red-500/10', label: 'Erro' },
-  warning: { color: 'text-amber-400', bg: 'bg-amber-500/10', label: 'Aviso' },
-  info: { color: 'text-blue-400', bg: 'bg-blue-500/10', label: 'Info' },
+  success: { color: 'text-[var(--color-status-success)]', bg: 'bg-[var(--color-status-success)]/10', label: 'Sucesso' },
+  error: { color: 'text-[var(--bb-error)]', bg: 'bg-[var(--bb-error)]/10', label: 'Erro' },
+  warning: { color: 'text-[var(--bb-warning)]', bg: 'bg-[var(--bb-warning)]/10', label: 'Aviso' },
+  info: { color: 'text-[var(--aiox-blue)]', bg: 'bg-[var(--aiox-blue)]/10', label: 'Info' },
 };
 
 function timeAgo(timestamp: number): string {
@@ -38,37 +37,24 @@ export function NotificationCenter() {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" />
         </svg>
         {/* Badge */}
-        <AnimatePresence>
-          {unreadCount > 0 && (
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-              className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-bold"
+        {unreadCount > 0 && (
+            <span
+              className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-[var(--bb-error)] text-white text-[9px] font-bold"
             >
               {unreadCount > 9 ? '9+' : unreadCount}
-            </motion.span>
+            </span>
           )}
-        </AnimatePresence>
-      </button>
+</button>
 
       {/* Dropdown */}
-      <AnimatePresence>
-        {open && (
+      {open && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
               className="fixed inset-0 z-40"
               onClick={() => setOpen(false)}
             />
-            <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.95 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="absolute right-0 top-full mt-2 z-50 w-80 max-h-[420px] overflow-hidden rounded-xl border border-white/10 shadow-2xl"
+            <div
+              className="absolute right-0 top-full mt-2 z-50 w-80 max-h-[420px] overflow-hidden rounded-none border border-white/10 shadow-2xl"
               style={{ background: 'rgba(15,15,15,0.95)', backdropFilter: 'blur(12px)' }}
             >
               {/* Header */}
@@ -100,21 +86,17 @@ export function NotificationCenter() {
                   ))
                 )}
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }
 
 function NotificationRow({ item, index }: { item: NotificationItem; index: number }) {
   const config = typeConfig[item.type];
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -8 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.03 }}
+    <div
       className={cn(
         'flex items-start gap-3 px-4 py-3 border-b border-white/5 hover:bg-white/5 transition-colors',
         !item.read && 'bg-white/[0.02]'
@@ -135,6 +117,6 @@ function NotificationRow({ item, index }: { item: NotificationItem; index: numbe
           <p className="text-[11px] text-tertiary mt-0.5 line-clamp-2">{item.message}</p>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

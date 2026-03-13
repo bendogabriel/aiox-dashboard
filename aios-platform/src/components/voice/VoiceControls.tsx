@@ -151,7 +151,7 @@ function AudioLevelRing({ level, active }: { level: number; active: boolean }) {
         cy={RING_SIZE / 2}
         r={RING_RADIUS}
         fill="none"
-        stroke={active ? '#D1FF00' : 'rgba(209,255,0,0.25)'}
+        stroke={active ? 'var(--aiox-lime)' : 'rgba(209,255,0,0.25)'}
         strokeWidth={RING_STROKE}
         strokeLinecap="round"
         strokeDasharray={RING_CIRCUMFERENCE}
@@ -311,9 +311,9 @@ export function VoiceControls({
             className={cn(
               'w-10 h-10 rounded-full border flex items-center justify-center',
               'transition-all duration-200',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D1FF00]/50',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--aiox-lime)]/50',
               isMuted
-                ? 'bg-red-500/20 text-red-400 border-red-500/40 hover:bg-red-500/30'
+                ? 'bg-[var(--bb-error)]/20 text-[var(--bb-error)] border-[var(--bb-error)]/40 hover:bg-[var(--bb-error)]/30'
                 : 'bg-white/5 text-white/40 border-white/10 hover:text-white/80 hover:border-white/30',
             )}
             aria-label={isMuted ? 'Ativar microfone' : 'Silenciar microfone'}
@@ -343,24 +343,24 @@ export function VoiceControls({
               className={cn(
                 'relative z-[1] rounded-full border-2 flex items-center justify-center',
                 'transition-all duration-150 select-none touch-none',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D1FF00]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--aiox-lime)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--aiox-dark)]',
                 // Size
                 'w-[88px] h-[88px]',
                 // Base idle
                 !isActive && !isDisabled && !isMuted &&
-                  'border-[#D1FF00]/60 text-[#D1FF00]/60 hover:border-[#D1FF00] hover:text-[#D1FF00]',
+                  'border-[var(--aiox-lime)]/60 text-[var(--aiox-lime)]/60 hover:border-[var(--aiox-lime)] hover:text-[var(--aiox-lime)]',
                 // Active / listening
                 isActive && !isMuted &&
-                  'border-[#D1FF00] text-[#D1FF00] bg-[#D1FF00]/20',
+                  'border-[var(--aiox-lime)] text-[var(--aiox-lime)] bg-[var(--aiox-lime)]/20',
                 // Muted
                 isMuted && !isDisabled &&
-                  'border-red-500/40 text-red-400 bg-red-500/10',
+                  'border-[var(--bb-error)]/40 text-[var(--bb-error)] bg-[var(--bb-error)]/10',
                 // Disabled (thinking / speaking)
                 isDisabled &&
                   'border-white/20 text-white/20 opacity-50 cursor-not-allowed',
                 // Not supported
                 !isSupported &&
-                  'border-red-500/40 text-red-500/40 cursor-not-allowed',
+                  'border-[var(--bb-error)]/40 text-[var(--bb-error)]/40 cursor-not-allowed',
               )}
               style={{
                 ...(isActive && !isMuted
@@ -399,9 +399,9 @@ export function VoiceControls({
             className={cn(
               'w-10 h-10 rounded-full border flex items-center justify-center',
               'transition-all duration-200',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D1FF00]/50',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--aiox-lime)]/50',
               showSettings
-                ? 'bg-[#D1FF00]/15 text-[#D1FF00] border-[#D1FF00]/40'
+                ? 'bg-[var(--aiox-lime)]/15 text-[var(--aiox-lime)] border-[var(--aiox-lime)]/40'
                 : 'bg-white/5 text-white/40 border-white/10 hover:text-white/80 hover:border-white/30',
             )}
             aria-label="Configuracoes de voz"
@@ -416,12 +416,12 @@ export function VoiceControls({
           className={cn(
             'flex items-center gap-1.5',
             'text-[10px] uppercase tracking-[0.08em] font-mono text-center',
-            isDisabled ? 'text-white/20' : isMuted ? 'text-red-400/80' : 'text-white/40',
+            isDisabled ? 'text-white/20' : isMuted ? 'text-[var(--bb-error)]/80' : 'text-white/40',
           )}
         >
           {showPulsingDot && (
             <span
-              className="inline-block w-1.5 h-1.5 rounded-full bg-[#D1FF00]"
+              className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--aiox-lime)]"
               style={{ animation: 'vc-dot-pulse 1.2s ease-in-out infinite' }}
               aria-hidden="true"
             />
@@ -451,7 +451,7 @@ export function VoiceControls({
       {/* ---- Injected keyframes ---- */}
       <style>{`
         @keyframes vc-border-pulse {
-          0%, 100% { border-color: #D1FF00; }
+          0%, 100% { border-color: var(--aiox-lime); }
           50% { border-color: rgba(209,255,0,0.5); }
         }
 

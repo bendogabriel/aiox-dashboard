@@ -164,7 +164,7 @@ log.info('Endpoints:', {
   stream: '/stream/agent (SSE)',
   webhook: '/webhook/:squadId, /webhook/orchestrator',
   whatsapp: '/whatsapp/webhook, /whatsapp/events (SSE), /whatsapp/send, /whatsapp/status',
-  registry: '/registry/project, /registry/squads, /registry/agents, /registry/workflows, /registry/tasks',
+  registry: '/registry/project, /registry/squads, /registry/agents, /registry/workflows, /registry/tasks, /registry/commands, /registry/resources, /registry/resource-types',
   integrations: '/integrations (CRUD), /integrations/secrets (vault)',
   telegram: '/telegram/status, /telegram/webhook, /telegram/send, /telegram/events (SSE)',
   googleAuth: '/auth/google/status, /auth/google/url, /auth/google/callback, /auth/google/refresh, /auth/google/disconnect',

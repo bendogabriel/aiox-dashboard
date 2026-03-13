@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { Pencil, Eye, Save, X } from 'lucide-react';
-import { GlassCard, GlassButton, GlassTextarea, Badge } from '../ui';
+import { CockpitCard, CockpitButton, CockpitTextarea, Badge } from '../ui';
 import { cn } from '../../lib/utils';
 import type { VaultDocument } from '../../types/vault';
 
 // ── Type badge color map ──
 
 const typeBadgeColors: Record<VaultDocument['type'], string> = {
-  offerbook: 'bg-green-500/15 text-green-400',
-  brand: 'bg-orange-500/15 text-orange-400',
-  narrative: 'bg-purple-500/15 text-purple-400',
-  strategy: 'bg-blue-500/15 text-blue-400',
-  diagnostic: 'bg-yellow-500/15 text-yellow-400',
-  proof: 'bg-emerald-500/15 text-emerald-400',
-  template: 'bg-cyan-500/15 text-cyan-400',
-  generic: 'bg-gray-500/15 text-gray-400',
+  offerbook: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
+  brand: 'bg-[var(--bb-flare)]/15 text-[var(--bb-flare)]',
+  narrative: 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]',
+  strategy: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  diagnostic: 'bg-[var(--bb-warning)]/15 text-[var(--bb-warning)]',
+  proof: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
+  template: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  generic: 'bg-[var(--aiox-gray-dim)]/15 text-tertiary',
 };
 
 // ── Status badge mapping ──
@@ -77,7 +77,7 @@ function DocumentViewer({ document, onSave }: DocumentViewerProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* ── Metadata Bar ── */}
-      <GlassCard padding="sm" aria-label="Document metadata">
+      <CockpitCard padding="sm" aria-label="Document metadata">
         <div className="flex flex-row flex-wrap items-center gap-3">
           {/* Type badge */}
           <Badge className={cn(typeBadgeColors[document.type])}>
@@ -104,15 +104,15 @@ function DocumentViewer({ document, onSave }: DocumentViewerProps) {
             {document.taxonomy}
           </Badge>
         </div>
-      </GlassCard>
+      </CockpitCard>
 
       {/* ── Content Area ── */}
-      <GlassCard aria-label="Document content">
+      <CockpitCard aria-label="Document content">
         {/* Toolbar */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-primary">{document.name}</h2>
           {isEditing ? (
-            <GlassButton
+            <CockpitButton
               variant="ghost"
               size="sm"
               leftIcon={<Eye className="w-4 h-4" />}
@@ -120,9 +120,9 @@ function DocumentViewer({ document, onSave }: DocumentViewerProps) {
               aria-label="Switch to preview mode"
             >
               Preview
-            </GlassButton>
+            </CockpitButton>
           ) : (
-            <GlassButton
+            <CockpitButton
               variant="ghost"
               size="sm"
               leftIcon={<Pencil className="w-4 h-4" />}
@@ -133,21 +133,21 @@ function DocumentViewer({ document, onSave }: DocumentViewerProps) {
               aria-label="Switch to edit mode"
             >
               Edit
-            </GlassButton>
+            </CockpitButton>
           )}
         </div>
 
         {/* Content */}
         {isEditing ? (
           <div className="flex flex-col gap-3">
-            <GlassTextarea
+            <CockpitTextarea
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
               className="min-h-[300px] font-mono text-sm"
               aria-label="Document content editor"
             />
             <div className="flex items-center gap-2 justify-end">
-              <GlassButton
+              <CockpitButton
                 variant="ghost"
                 size="sm"
                 leftIcon={<X className="w-4 h-4" />}
@@ -155,8 +155,8 @@ function DocumentViewer({ document, onSave }: DocumentViewerProps) {
                 aria-label="Cancel editing"
               >
                 Cancel
-              </GlassButton>
-              <GlassButton
+              </CockpitButton>
+              <CockpitButton
                 variant="primary"
                 size="sm"
                 leftIcon={<Save className="w-4 h-4" />}
@@ -164,17 +164,17 @@ function DocumentViewer({ document, onSave }: DocumentViewerProps) {
                 aria-label="Save document"
               >
                 Save
-              </GlassButton>
+              </CockpitButton>
             </div>
           </div>
         ) : (
           <div className="prose-vault">{renderMarkdown(document.content)}</div>
         )}
-      </GlassCard>
+      </CockpitCard>
 
       {/* ── Agent Consumers Footer ── */}
       {document.consumers.length > 0 && (
-        <GlassCard padding="sm" aria-label="Agent consumers">
+        <CockpitCard padding="sm" aria-label="Agent consumers">
           <div className="flex flex-row flex-wrap items-center gap-2">
             <span className="text-xs text-tertiary font-medium">Usado por:</span>
             {document.consumers.map((agent) => (
@@ -183,7 +183,7 @@ function DocumentViewer({ document, onSave }: DocumentViewerProps) {
               </Badge>
             ))}
           </div>
-        </GlassCard>
+        </CockpitCard>
       )}
     </div>
   );

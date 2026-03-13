@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-
 interface ShortcutHintProps {
   keys: string[];
   children: React.ReactNode;
@@ -44,14 +42,9 @@ export function ShortcutHint({ keys, children, position = 'bottom', delay = 600 
       onMouseLeave={handleMouseLeave}
     >
       {children}
-      <AnimatePresence>
-        {show && (
-          <motion.span
+      {show && (
+          <span
             className={`absolute z-[100] pointer-events-none ${posStyles[position]}`}
-            initial={origins[position].initial}
-            animate={origins[position].animate}
-            exit={origins[position].exit}
-            transition={{ duration: 0.15 }}
           >
             <span className="flex items-center gap-0.5 px-1.5 py-1 rounded-lg bg-black/90 border border-white/10 whitespace-nowrap">
               {keys.map((key, i) => (
@@ -63,9 +56,8 @@ export function ShortcutHint({ keys, children, position = 'bottom', delay = 600 
                 </span>
               ))}
             </span>
-          </motion.span>
+          </span>
         )}
-      </AnimatePresence>
-    </span>
+</span>
   );
 }

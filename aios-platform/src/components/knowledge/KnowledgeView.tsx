@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Database,
   LayoutGrid,
@@ -13,7 +12,7 @@ import {
   ChevronRight,
   FlaskConical,
 } from 'lucide-react';
-import { GlassCard, GlassButton, Badge } from '../ui';
+import { CockpitCard, CockpitButton, Badge } from '../ui';
 import { cn } from '../../lib/utils';
 import {
   useKnowledgeOverview,
@@ -50,9 +49,9 @@ function OverviewTab({
   onSelectFile: (path: string) => void;
 }) {
   const stats = useMemo(() => [
-    { label: 'Arquivos', value: overview?.totalFiles ?? 0, icon: FileText, color: 'text-blue-400' },
-    { label: 'Pastas', value: overview?.totalDirectories ?? 0, icon: Folder, color: 'text-yellow-400' },
-    { label: 'Tamanho Total', value: formatFileSize(overview?.totalSize ?? 0), icon: HardDrive, color: 'text-green-400' },
+    { label: 'Arquivos', value: overview?.totalFiles ?? 0, icon: FileText, color: 'text-[var(--aiox-blue)]' },
+    { label: 'Pastas', value: overview?.totalDirectories ?? 0, icon: Folder, color: 'text-[var(--bb-warning)]' },
+    { label: 'Tamanho Total', value: formatFileSize(overview?.totalSize ?? 0), icon: HardDrive, color: 'text-[var(--color-status-success)]' },
   ], [overview]);
 
   const topExtensions = useMemo(() => {
@@ -67,27 +66,27 @@ function OverviewTab({
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {stats.map((s) => (
-          <GlassCard key={s.label} className="flex items-center gap-3 !py-3">
+          <CockpitCard key={s.label} className="flex items-center gap-3 !py-3">
             <s.icon size={20} className={s.color} />
             <div>
-              <p className="text-lg font-semibold text-primary">{s.value}</p>
+              <p className="text-sm font-semibold text-primary">{s.value}</p>
               <p className="text-xs text-tertiary">{s.label}</p>
             </div>
-          </GlassCard>
+          </CockpitCard>
         ))}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         {/* File types */}
-        <GlassCard className="space-y-3">
+        <CockpitCard className="space-y-3">
           <h3 className="text-sm font-semibold text-primary">Tipos de Arquivo</h3>
           {topExtensions.length > 0 ? (
             <div className="space-y-2">
               {topExtensions.map(([ext, count]) => (
                 <div key={ext} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className={cn('w-2 h-2 rounded-full', FILE_TYPE_COLORS[ext] ? 'bg-current' : 'bg-gray-500')} />
-                    <span className={cn('text-xs font-mono', FILE_TYPE_COLORS[ext] || 'text-gray-400')}>.{ext}</span>
+                    <div className={cn('w-2 h-2 rounded-full', FILE_TYPE_COLORS[ext] ? 'bg-current' : 'bg-[var(--aiox-gray-dim)]')} />
+                    <span className={cn('text-xs font-mono', FILE_TYPE_COLORS[ext] || 'text-tertiary')}>.{ext}</span>
                   </div>
                   <span className="text-xs text-tertiary">{count}</span>
                 </div>
@@ -96,10 +95,10 @@ function OverviewTab({
           ) : (
             <p className="text-xs text-tertiary">Nenhum arquivo encontrado</p>
           )}
-        </GlassCard>
+        </CockpitCard>
 
         {/* Recent files */}
-        <GlassCard className="space-y-3">
+        <CockpitCard className="space-y-3">
           <h3 className="text-sm font-semibold text-primary">Arquivos Recentes</h3>
           {recentFilesFiltered.length > 0 ? (
             <div className="space-y-1">
@@ -109,7 +108,7 @@ function OverviewTab({
                   onClick={() => onSelectFile(file.path)}
                   className="w-full flex items-center gap-2 px-2 py-1 rounded-lg text-left hover:bg-white/5 transition-colors group"
                 >
-                  <FileText size={12} className={FILE_TYPE_COLORS[file.extension] || 'text-gray-400'} />
+                  <FileText size={12} className={FILE_TYPE_COLORS[file.extension] || 'text-tertiary'} />
                   <span className="text-xs text-primary truncate flex-1">{file.name}</span>
                   <span className="text-[10px] text-tertiary opacity-0 group-hover:opacity-100 transition-opacity">
                     {formatFileSize(file.size)}
@@ -120,7 +119,7 @@ function OverviewTab({
           ) : (
             <p className="text-xs text-tertiary">Nenhum arquivo recente</p>
           )}
-        </GlassCard>
+        </CockpitCard>
       </div>
     </div>
   );
@@ -150,13 +149,13 @@ function AgentsTab({
 
   if (squadEntries.length === 0) {
     return (
-      <GlassCard className="flex items-center justify-center py-12">
+      <CockpitCard className="flex items-center justify-center py-12">
         <div className="text-center">
           <Users size={32} className="mx-auto mb-2 text-tertiary opacity-30" />
           <p className="text-sm text-secondary">Nenhum agente com knowledge</p>
           <p className="text-xs text-tertiary mt-1">Agentes com pastas de conhecimento aparecerão aqui</p>
         </div>
-      </GlassCard>
+      </CockpitCard>
     );
   }
 
@@ -168,7 +167,7 @@ function AgentsTab({
         const agentList = agents || [];
 
         return (
-          <GlassCard key={squadId} className="!p-0 overflow-hidden">
+          <CockpitCard key={squadId} className="!p-0 overflow-hidden">
             <button
               onClick={() => toggleSquad(squadId)}
               className="w-full flex items-center justify-between p-3 hover:bg-white/5 transition-colors"
@@ -176,27 +175,22 @@ function AgentsTab({
             >
               <div className="flex items-center gap-2">
                 {isExpanded ? <ChevronDown size={14} className="text-tertiary" /> : <ChevronRight size={14} className="text-tertiary" />}
-                <Users size={14} className="text-green-400" />
+                <Users size={14} className="text-[var(--color-status-success)]" />
                 <span className="text-sm font-medium text-primary">{squad?.name || squadId}</span>
                 <Badge variant="subtle" size="sm">{agentList.length} agentes</Badge>
               </div>
             </button>
 
-            <AnimatePresence>
-              {isExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+            {isExpanded && (
+                <div
                   className="overflow-hidden"
                 >
                   <div className="border-t border-glass-border p-2 space-y-1">
                     {agentList.map((agent) => (
                       <div key={agent.agentId} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 transition-colors">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
-                            <span className="text-[10px] font-bold text-green-400">
+                          <div className="w-6 h-6 rounded-full bg-[var(--color-status-success)]/20 flex items-center justify-center">
+                            <span className="text-[10px] font-bold text-[var(--color-status-success)]">
                               {agent.agentName.charAt(0).toUpperCase()}
                             </span>
                           </div>
@@ -215,10 +209,9 @@ function AgentsTab({
                       </div>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
-          </GlassCard>
+</CockpitCard>
         );
       })}
     </div>
@@ -265,11 +258,11 @@ export default function KnowledgeView() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
-            <Database size={18} className="text-amber-400" />
+          <div className="w-9 h-9 rounded-none bg-[var(--bb-warning)]/10 flex items-center justify-center">
+            <Database size={18} className="text-[var(--bb-warning)]" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-primary">Knowledge Base</h1>
+            <h1 className="heading-display text-xl font-semibold text-primary">Knowledge Base</h1>
             <p className="text-xs text-tertiary">Explorar e visualizar a base de conhecimento</p>
           </div>
         </div>
@@ -286,9 +279,9 @@ export default function KnowledgeView() {
 
       {/* Mock data alert */}
       {isMockData && (
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
-          <FlaskConical size={14} className="text-amber-400 flex-shrink-0" />
-          <span className="text-xs text-amber-300/80">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--bb-warning)]/10 border border-[var(--bb-warning)]/20">
+          <FlaskConical size={14} className="text-[var(--bb-warning)] flex-shrink-0" />
+          <span className="text-xs text-[var(--bb-warning)]/80">
             Exibindo dados de demonstracao — API indisponivel ou sem dados
           </span>
         </div>
@@ -308,9 +301,9 @@ export default function KnowledgeView() {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1 flex-shrink-0">
+        <div className="flex items-center gap-1 bg-white/5 rounded-none p-1 flex-shrink-0">
           {TABS.map((tab) => (
-            <GlassButton
+            <CockpitButton
               key={tab.id}
               variant={activeTab === tab.id ? 'default' : 'ghost'}
               size="sm"
@@ -322,19 +315,14 @@ export default function KnowledgeView() {
             >
               <tab.icon size={14} />
               {tab.label}
-            </GlassButton>
+            </CockpitButton>
           ))}
         </div>
       </div>
 
       {/* Content */}
-      <AnimatePresence mode="wait">
-        <motion.div
+      <div
           key={activeTab}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.15 }}
           className="flex-1"
         >
           {activeTab === 'overview' && (
@@ -374,10 +362,8 @@ export default function KnowledgeView() {
           {activeTab === 'agents' && (
             <AgentsTab agentsBySquad={agentsBySquad} squads={squads} />
           )}
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Status bar */}
+        </div>
+{/* Status bar */}
       <div className="flex items-center justify-between text-[10px] text-tertiary pt-2 border-t border-glass-border">
         <span>
           {overview?.totalFiles ?? 0} arquivos · {overview?.totalDirectories ?? 0} pastas · {totalAgents} agentes

@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import { GlassCard, Badge } from '../ui';
+import { CockpitCard, Badge } from '../ui';
 import { cn, squadLabels } from '../../lib/utils';
 import { getSquadTheme } from '../../lib/theme';
 import { getSquadImageUrl } from '../../lib/agent-avatars';
@@ -15,11 +14,9 @@ export function SquadCard({ squad, selected, onClick }: SquadCardProps) {
   const theme = getSquadTheme((squad.type || 'default') as SquadType);
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+    <div
     >
-      <GlassCard
+      <CockpitCard
         interactive
         onClick={onClick}
         className={cn(
@@ -79,7 +76,7 @@ export function SquadCard({ squad, selected, onClick }: SquadCardProps) {
             </Badge>
           </div>
         </div>
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }

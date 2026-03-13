@@ -106,10 +106,10 @@ vi.mock('../../../hooks/useSquads', () => ({
 vi.mock('../../../lib/utils', () => ({
   cn: (...args: unknown[]) => args.filter(Boolean).join(' '),
   getSquadTheme: () => ({
-    bg: 'bg-blue-500',
-    bgSubtle: 'bg-blue-500/10',
-    borderSubtle: 'border-blue-500/20',
-    textMuted: 'text-blue-400',
+    bg: 'bg-squad-development',
+    bgSubtle: 'bg-squad-development-10',
+    borderSubtle: 'border-squad-development-30',
+    textMuted: 'text-squad-development-muted',
   }),
 }));
 

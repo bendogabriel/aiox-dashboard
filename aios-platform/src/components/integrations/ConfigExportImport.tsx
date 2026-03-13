@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Upload, X, Check, AlertTriangle } from 'lucide-react';
 import { downloadConfigExport, parseConfigImport, applyConfigImport, type ConfigExport } from '../../lib/config-export';
 import { primaryBtnStyle, secondaryBtnStyle, hintStyle } from './shared-styles';
@@ -11,11 +10,7 @@ function ImportModal({ config, onApply, onClose }: { config: ConfigExport; onApp
   const integrationCount = Object.keys(config.integrations).length;
 
   return createPortal(
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.15 }}
+    <div
       style={{
         position: 'fixed',
         inset: 0,
@@ -27,11 +22,7 @@ function ImportModal({ config, onApply, onClose }: { config: ConfigExport; onApp
       }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <motion.div
-        initial={{ opacity: 0, y: 20, scale: 0.97 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 10, scale: 0.97 }}
-        transition={{ duration: 0.2 }}
+      <div
         style={{
           width: '100%',
           maxWidth: 460,
@@ -54,7 +45,7 @@ function ImportModal({ config, onApply, onClose }: { config: ConfigExport; onApp
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
             fontWeight: 600,
-            color: 'var(--aiox-lime, #D1FF00)',
+            color: 'var(--aiox-cream, #E5E5E5)',
           }}>
             Import Config
           </h2>
@@ -104,8 +95,8 @@ function ImportModal({ config, onApply, onClose }: { config: ConfigExport; onApp
             </button>
           </div>
         </div>
-      </motion.div>
-    </motion.div>,
+      </div>
+    </div>,
     document.body,
   );
 }
@@ -172,8 +163,8 @@ export function ConfigExportImport() {
           onClick={handleExport}
           style={btnStyle}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = 'var(--aiox-lime, #D1FF00)';
-            e.currentTarget.style.borderColor = 'rgba(209, 255, 0, 0.3)';
+            e.currentTarget.style.color = 'var(--aiox-cream, #E5E5E5)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = 'var(--aiox-gray-muted, #999)';
@@ -240,9 +231,9 @@ export function ConfigExportImport() {
           padding: '8px 16px',
           fontSize: '12px',
           fontFamily: 'var(--font-family-mono)',
-          background: 'rgba(209,255,0,0.08)',
-          border: '1px solid rgba(209,255,0,0.2)',
-          color: 'var(--aiox-lime)',
+          background: 'rgba(74, 222, 128, 0.06)',
+          border: '1px solid rgba(74, 222, 128, 0.15)',
+          color: 'var(--color-status-success, #4ADE80)',
           zIndex: 9998,
         }}>
           <Check size={14} style={{ display: 'inline', marginRight: 6 }} />
@@ -252,15 +243,13 @@ export function ConfigExportImport() {
       )}
 
       {/* Import confirmation modal */}
-      <AnimatePresence>
-        {pendingImport && (
+      {pendingImport && (
           <ImportModal
             config={pendingImport}
             onApply={handleApply}
             onClose={() => setPendingImport(null)}
           />
         )}
-      </AnimatePresence>
-    </>
+</>
   );
 }

@@ -5,7 +5,6 @@
  */
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import {
   CheckCircle2,
   MessageSquareText,
@@ -17,7 +16,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import { GlassButton } from '../ui/GlassButton';
+import { CockpitButton } from '../ui/cockpit/CockpitButton';
 import { getSquadInlineStyle } from '../../lib/theme';
 import type { ExecutionPlan } from './orchestration-types';
 
@@ -46,17 +45,14 @@ export function PlanApprovalCard({ plan, onApprove, onRevise, isSubmitting }: Pl
   const uniqueSquads = [...new Set(plan.steps.map(s => s.squadId))];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-2xl border border-yellow-500/30 bg-gradient-to-b from-yellow-500/5 to-transparent overflow-hidden"
+    <div
+      className="rounded-none border border-[var(--bb-warning)]/30 bg-gradient-to-b from-[var(--bb-warning)]/5 to-transparent overflow-hidden"
     >
       {/* Header */}
-      <div className="px-6 py-4 border-b border-yellow-500/20 bg-yellow-500/5">
+      <div className="px-6 py-4 border-b border-[var(--bb-warning)]/20 bg-[var(--bb-warning)]/5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-yellow-500/15 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-yellow-400" />
+          <div className="w-10 h-10 rounded-none bg-[var(--bb-warning)]/15 flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-[var(--bb-warning)]" />
           </div>
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-white">Plano de Execução</h3>
@@ -86,13 +82,11 @@ export function PlanApprovalCard({ plan, onApprove, onRevise, isSubmitting }: Pl
           </button>
         )}
         {showReasoning && plan.reasoning && (
-          <motion.p
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+          <p
             className="text-xs text-white/40 italic pl-4 border-l-2 border-white/10"
           >
             {plan.reasoning}
-          </motion.p>
+          </p>
         )}
 
         {/* Squad summary */}
@@ -118,12 +112,9 @@ export function PlanApprovalCard({ plan, onApprove, onRevise, isSubmitting }: Pl
       <div className="px-6 pb-4">
         <div className="space-y-2">
           {plan.steps.map((step, index) => (
-            <motion.div
+            <div
               key={step.id}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.08 }}
-              className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors group"
+              className="flex items-start gap-3 p-3 rounded-none bg-white/5 border border-white/10 hover:border-white/20 transition-colors group"
             >
               {/* Step number */}
               <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -157,7 +148,7 @@ export function PlanApprovalCard({ plan, onApprove, onRevise, isSubmitting }: Pl
                   </div>
                 )}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
@@ -166,16 +157,14 @@ export function PlanApprovalCard({ plan, onApprove, onRevise, isSubmitting }: Pl
       <div className="px-6 py-4 border-t border-white/10 space-y-3">
         {/* Revise input */}
         {showReviseInput && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+          <div
             className="space-y-2"
           >
             <textarea
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
               placeholder="Descreva os ajustes que deseja no plano..."
-              className="w-full h-20 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-white/30 resize-none focus:outline-none focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 transition-all"
+              className="w-full h-20 bg-white/5 border border-white/10 rounded-none px-3 py-2 text-sm text-white placeholder:text-white/30 resize-none focus:outline-none focus:border-[var(--bb-warning)]/50 focus:ring-2 focus:ring-[var(--bb-warning)]/20 transition-all"
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
@@ -185,30 +174,30 @@ export function PlanApprovalCard({ plan, onApprove, onRevise, isSubmitting }: Pl
               }}
             />
             <div className="flex gap-2 justify-end">
-              <GlassButton
+              <CockpitButton
                 variant="ghost"
                 size="sm"
                 onClick={() => { setShowReviseInput(false); setFeedback(''); }}
                 disabled={isSubmitting}
               >
                 Cancelar
-              </GlassButton>
-              <GlassButton
+              </CockpitButton>
+              <CockpitButton
                 size="sm"
                 onClick={handleRevise}
                 disabled={!feedback.trim() || isSubmitting}
               >
                 <Send className="w-3.5 h-3.5 mr-1.5" />
                 Enviar Ajustes
-              </GlassButton>
+              </CockpitButton>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* Main action buttons */}
         {!showReviseInput && (
           <div className="flex gap-3">
-            <GlassButton
+            <CockpitButton
               variant="ghost"
               className="flex-1 py-2.5"
               onClick={() => setShowReviseInput(true)}
@@ -216,18 +205,18 @@ export function PlanApprovalCard({ plan, onApprove, onRevise, isSubmitting }: Pl
             >
               <MessageSquareText className="w-4 h-4 mr-2" />
               Solicitar Ajustes
-            </GlassButton>
-            <GlassButton
-              className="flex-1 py-2.5 bg-green-500/15 border-green-500/30 hover:bg-green-500/25"
+            </CockpitButton>
+            <CockpitButton
+              className="flex-1 py-2.5 bg-[var(--color-status-success)]/15 border-[var(--color-status-success)]/30 hover:bg-[var(--color-status-success)]/25"
               onClick={onApprove}
               disabled={isSubmitting}
             >
               <CheckCircle2 className="w-4 h-4 mr-2" />
               {isSubmitting ? 'Iniciando...' : 'Aprovar e Executar'}
-            </GlassButton>
+            </CockpitButton>
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

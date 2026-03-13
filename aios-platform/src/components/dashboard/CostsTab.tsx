@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import { GlassCard } from '../ui';
+import { CockpitCard } from '../ui';
 import { useCostSummary } from '../../hooks/useDashboard';
 import { useTokenUsage } from '../../hooks/useExecute';
 import { useDashboardOverview } from '../../hooks/useDashboardOverview';
@@ -29,37 +28,34 @@ export function CostsTab() {
   });
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+    <div
       className="space-y-6 pb-6"
     >
       {/* Cost Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <GlassCard className="bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+        <CockpitCard className="bg-gradient-to-br from-[var(--color-status-success)]/10 to-transparent border-[var(--color-status-success)]/20">
           <p className="text-sm text-secondary mb-1">Hoje</p>
-          <p className="text-3xl font-bold text-primary">${(costSummary?.today ?? 0).toFixed(2)}</p>
-          <div className="flex items-center gap-1 mt-2 text-xs text-green-400">
+          <p className="text-lg font-bold text-primary">${(costSummary?.today ?? 0).toFixed(2)}</p>
+          <div className="flex items-center gap-1 mt-2 text-xs text-[var(--color-status-success)]">
             <TrendUpIcon />
             <span>Estimativa</span>
           </div>
-        </GlassCard>
+        </CockpitCard>
 
-        <GlassCard className="bg-gradient-to-br from-blue-500/10 to-transparent border-blue-500/20">
+        <CockpitCard className="bg-gradient-to-br from-[var(--aiox-blue)]/10 to-transparent border-[var(--aiox-blue)]/20">
           <p className="text-sm text-secondary mb-1">Esta Semana</p>
-          <p className="text-3xl font-bold text-primary">${(costSummary?.thisWeek ?? 0).toFixed(2)}</p>
-        </GlassCard>
+          <p className="text-lg font-bold text-primary">${(costSummary?.thisWeek ?? 0).toFixed(2)}</p>
+        </CockpitCard>
 
-        <GlassCard className="bg-gradient-to-br from-purple-500/10 to-transparent border-purple-500/20">
+        <CockpitCard className="bg-gradient-to-br from-[var(--aiox-gray-muted)]/10 to-transparent border-[var(--aiox-gray-muted)]/20">
           <p className="text-sm text-secondary mb-1">Este Mês</p>
-          <p className="text-3xl font-bold text-primary">${(costSummary?.thisMonth ?? 0).toFixed(2)}</p>
-        </GlassCard>
+          <p className="text-lg font-bold text-primary">${(costSummary?.thisMonth ?? 0).toFixed(2)}</p>
+        </CockpitCard>
       </div>
 
       {/* Cost by Provider */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <GlassCard>
+        <CockpitCard>
           <h2 className="font-semibold text-primary mb-4">Custo por Provider</h2>
           <div className="space-y-4">
             <CostProviderRow
@@ -75,9 +71,9 @@ export function CostsTab() {
               color="green"
             />
           </div>
-        </GlassCard>
+        </CockpitCard>
 
-        <GlassCard>
+        <CockpitCard>
           <h2 className="font-semibold text-primary mb-4">Trend de Custos (7 dias)</h2>
           {costSummary?.trend && (
             <LineChart
@@ -87,11 +83,11 @@ export function CostsTab() {
               showLabels
             />
           )}
-        </GlassCard>
+        </CockpitCard>
       </div>
 
       {/* Cost by Squad */}
-      <GlassCard>
+      <CockpitCard>
         <h2 className="font-semibold text-primary mb-4">Custo por Squad</h2>
         {costSummary?.bySquad && Object.keys(costSummary.bySquad).length > 0 ? (
           <BarChart
@@ -108,7 +104,7 @@ export function CostsTab() {
         ) : (
           <p className="text-center text-tertiary py-8">Nenhum dado de custo por squad</p>
         )}
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 }

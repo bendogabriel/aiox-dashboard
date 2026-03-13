@@ -17,7 +17,7 @@ import {
   Activity,
   Layers,
 } from 'lucide-react';
-import { GlassButton } from '../ui/GlassButton';
+import { CockpitButton } from '../ui/cockpit/CockpitButton';
 
 /**
  * TaskOrchestrator is a large page-level component that manages SSE
@@ -49,23 +49,23 @@ function PhaseProgress({ currentStatus }: { currentStatus: string }) {
                 isActive
                   ? 'bg-white/10 border-white/20 shadow-lg'
                   : isCompleted
-                  ? 'bg-green-500/10 border-green-500/30'
+                  ? 'bg-[var(--color-status-success)]/10 border-[var(--color-status-success)]/30'
                   : 'bg-white/5 border-white/10'
               }`}
             >
               {isActive ? (
-                <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+                <Loader2 className="w-4 h-4 animate-spin text-[var(--aiox-blue)]" />
               ) : isCompleted ? (
-                <CheckCircle2 className="w-4 h-4 text-green-400" />
+                <CheckCircle2 className="w-4 h-4 text-[var(--color-status-success)]" />
               ) : (
                 <Icon className="w-4 h-4 text-white/40" />
               )}
-              <span className={`text-sm font-medium ${isActive ? 'text-cyan-400' : isCompleted ? 'text-green-400' : 'text-white/40'}`}>
+              <span className={`text-sm font-medium ${isActive ? 'text-[var(--aiox-blue)]' : isCompleted ? 'text-[var(--color-status-success)]' : 'text-white/40'}`}>
                 {phase.label}
               </span>
             </div>
             {index < phases.length - 1 && (
-              <div className={`w-8 h-0.5 ${currentPhaseIndex > index ? 'bg-green-500' : 'bg-white/10'}`} />
+              <div className={`w-8 h-0.5 ${currentPhaseIndex > index ? 'bg-[var(--color-status-success)]' : 'bg-white/10'}`} />
             )}
           </div>
         );
@@ -95,8 +95,8 @@ function TaskOrchestratorShell({
       <div className="relative z-10 p-6 border-b border-white/10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center border border-cyan-500/30">
-              <Workflow className="w-7 h-7 text-cyan-400" />
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--aiox-blue)]/20 to-[var(--aiox-blue)]/20 flex items-center justify-center border border-[var(--aiox-blue)]/30">
+              <Workflow className="w-7 h-7 text-[var(--aiox-blue)]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Orquestrador de Tarefas</h1>
@@ -107,15 +107,15 @@ function TaskOrchestratorShell({
           {(isRunning || status === 'completed') && (
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
-                <Clock className="w-4 h-4 text-cyan-400" />
+                <Clock className="w-4 h-4 text-[var(--aiox-blue)]" />
                 <span className="text-sm font-mono text-white/80">{elapsed || '00:00'}</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
-                <MessageSquare className="w-4 h-4 text-purple-400" />
+                <MessageSquare className="w-4 h-4 text-[var(--aiox-gray-muted)]" />
                 <span className="text-sm font-mono text-white/80">{tokenCount?.toLocaleString() || 0} tokens</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
-                <Bot className="w-4 h-4 text-green-400" />
+                <Bot className="w-4 h-4 text-[var(--color-status-success)]" />
                 <span className="text-sm font-mono text-white/80">{agentCount || 0} agentes</span>
               </div>
             </div>
@@ -138,9 +138,9 @@ function TaskOrchestratorShell({
                 className="w-full h-32 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 resize-none"
               />
               <div className="absolute bottom-3 right-3">
-                <GlassButton disabled={isRunning} onClick={fn()} aria-label={isRunning ? 'Executando' : undefined}>
+                <CockpitButton disabled={isRunning} onClick={fn()} aria-label={isRunning ? 'Executando' : undefined}>
                   {isRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Zap className="w-4 h-4 mr-2" />Executar</>}
-                </GlassButton>
+                </CockpitButton>
               </div>
             </div>
           </div>
@@ -148,7 +148,7 @@ function TaskOrchestratorShell({
           {status === 'executing' && (
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <Users className="w-4 h-4 text-cyan-400" />
+                <Users className="w-4 h-4 text-[var(--aiox-blue)]" />
                 <h2 className="text-sm font-medium text-white/70">Squads Ativados</h2>
               </div>
               <div className="space-y-3">
@@ -156,7 +156,7 @@ function TaskOrchestratorShell({
                   <div key={squad} className="p-4 rounded-2xl border bg-white/5 border-white/10">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5">
-                        <Layers className="w-5 h-5 text-cyan-400" />
+                        <Layers className="w-5 h-5 text-[var(--aiox-blue)]" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-white" aria-label={`Squad ${squad}`}>{squad}</h3>
@@ -175,8 +175,8 @@ function TaskOrchestratorShell({
           {status === 'idle' && (
             <div className="h-full flex items-center justify-center">
               <div className="text-center max-w-md">
-                <div className="w-32 h-32 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 flex items-center justify-center border border-cyan-500/20">
-                  <Sparkles className="w-16 h-16 text-cyan-400/50" />
+                <div className="w-32 h-32 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-[var(--aiox-blue)]/10 to-[var(--aiox-blue)]/10 flex items-center justify-center border border-[var(--aiox-blue)]/20">
+                  <Sparkles className="w-16 h-16 text-[var(--aiox-blue)]/50" />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-3">Pronto para Orquestrar</h2>
                 <p className="text-white/50 leading-relaxed">
@@ -187,16 +187,16 @@ function TaskOrchestratorShell({
           )}
 
           {status === 'completed' && (
-            <div className="p-6 rounded-2xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 text-center">
-              <CheckCircle2 className="w-12 h-12 text-green-400 mx-auto mb-3" />
+            <div className="p-6 rounded-2xl bg-gradient-to-r from-[var(--color-status-success)]/10 to-[var(--color-status-success)]/10 border border-[var(--color-status-success)]/30 text-center">
+              <CheckCircle2 className="w-12 h-12 text-[var(--color-status-success)] mx-auto mb-3" />
               <h2 className="text-xl font-bold text-white mb-2">Tarefa Concluida!</h2>
               <p className="text-white/60">{agentCount || 3} agentes executados com sucesso</p>
             </div>
           )}
 
           {status === 'failed' && (
-            <div className="p-6 rounded-2xl bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/30 text-center">
-              <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
+            <div className="p-6 rounded-2xl bg-gradient-to-r from-[var(--bb-error)]/10 to-[var(--bb-error)]/10 border border-[var(--bb-error)]/30 text-center">
+              <AlertCircle className="w-12 h-12 text-[var(--bb-error)] mx-auto mb-3" />
               <h2 className="text-xl font-bold text-white mb-2">Erro na Execucao</h2>
               <p className="text-white/60">LLM provider timeout after 30s</p>
             </div>
@@ -205,7 +205,7 @@ function TaskOrchestratorShell({
           {isRunning && (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <Loader2 className="w-12 h-12 animate-spin text-cyan-400 mx-auto mb-4" />
+                <Loader2 className="w-12 h-12 animate-spin text-[var(--aiox-blue)] mx-auto mb-4" />
                 <p className="text-white/60">Processando demanda...</p>
               </div>
             </div>
@@ -216,13 +216,13 @@ function TaskOrchestratorShell({
         {status !== 'idle' && (
           <div className="w-80 border-l border-white/10 p-6 overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
-              <Terminal className="w-5 h-5 text-cyan-400" />
+              <Terminal className="w-5 h-5 text-[var(--aiox-blue)]" />
               <h2 className="font-semibold text-white">Eventos em Tempo Real</h2>
             </div>
             <div className="space-y-2">
               {['task:analyzing', 'task:squads-selected', 'task:planning'].map((evt, i) => (
                 <div key={i} className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-xs font-mono text-cyan-400">{evt}</span>
+                  <span className="text-xs font-mono text-[var(--aiox-blue)]">{evt}</span>
                 </div>
               ))}
             </div>

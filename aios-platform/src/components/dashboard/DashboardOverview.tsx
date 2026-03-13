@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
 import {
   type LucideIcon,
   BarChart3,
@@ -8,7 +7,8 @@ import {
   DollarSign,
   Settings,
 } from 'lucide-react';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
+import { CockpitSectionDivider } from '../ui/cockpit';
 import { ICON_SIZES } from '../../lib/icons';
 import { cn } from '../../lib/utils';
 import { WidgetCustomizer } from './WidgetCustomizer';
@@ -20,6 +20,14 @@ import { CostsTab } from './CostsTab';
 import { SystemTab } from './SystemTab';
 
 type TabType = 'overview' | 'agents' | 'mcp' | 'costs' | 'system';
+
+const TAB_LABELS: Record<TabType, { label: string; num: string }> = {
+  overview: { label: 'Visão Geral', num: '01' },
+  agents: { label: 'Agents', num: '02' },
+  mcp: { label: 'MCP & Tools', num: '03' },
+  costs: { label: 'Custos', num: '04' },
+  system: { label: 'Sistema', num: '05' },
+};
 
 export function DashboardOverview({ viewToggle }: { viewToggle?: React.ReactNode } = {}) {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -38,8 +46,8 @@ export function DashboardOverview({ viewToggle }: { viewToggle?: React.ReactNode
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
-            <p className="text-secondary text-sm mt-0.5">
+            <h1 className="heading-display text-xl font-semibold text-primary">Dashboard</h1>
+            <p className="text-secondary text-sm mt-0.5 label-mono">
               Analytics do AIOS Core Platform
             </p>
           </div>
@@ -47,14 +55,17 @@ export function DashboardOverview({ viewToggle }: { viewToggle?: React.ReactNode
         </div>
         <div className="flex items-center gap-2">
           <WidgetCustomizer />
-          <GlassButton variant="ghost" size="sm" leftIcon={<RefreshIcon />}>
+          <CockpitButton variant="ghost" size="sm" leftIcon={<RefreshIcon />}>
             Atualizar
-          </GlassButton>
+          </CockpitButton>
         </div>
       </div>
 
+      {/* Tech Divider */}
+      <div className="divider-tech mb-4 flex-shrink-0" aria-hidden="true" />
+
       {/* Tab Navigation */}
-      <div className="flex gap-1 p-1 glass-subtle rounded-xl mb-4 flex-shrink-0 overflow-x-auto" role="tablist" aria-label="Abas do painel">
+      <div className="flex gap-1 p-1 glass-subtle rounded-none mb-4 flex-shrink-0 overflow-x-auto" role="tablist" aria-label="Abas do painel">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -75,15 +86,20 @@ export function DashboardOverview({ viewToggle }: { viewToggle?: React.ReactNode
         ))}
       </div>
 
+      {/* Section Header */}
+      <CockpitSectionDivider
+        label={TAB_LABELS[activeTab].label}
+        num={TAB_LABELS[activeTab].num}
+        className="mb-4 flex-shrink-0"
+      />
+
       {/* Tab Content */}
       <div className="flex-1 overflow-y-auto glass-scrollbar">
-        <AnimatePresence mode="wait">
-          {activeTab === 'overview' && <OverviewTab key="overview" />}
-          {activeTab === 'agents' && <AgentsTab key="agents" />}
-          {activeTab === 'mcp' && <MCPTab key="mcp" />}
-          {activeTab === 'costs' && <CostsTab key="costs" />}
-          {activeTab === 'system' && <SystemTab key="system" />}
-        </AnimatePresence>
+        {activeTab === 'overview' && <OverviewTab key="overview" />}
+        {activeTab === 'agents' && <AgentsTab key="agents" />}
+        {activeTab === 'mcp' && <MCPTab key="mcp" />}
+        {activeTab === 'costs' && <CostsTab key="costs" />}
+        {activeTab === 'system' && <SystemTab key="system" />}
       </div>
     </div>
   );

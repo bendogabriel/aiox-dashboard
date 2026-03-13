@@ -4,7 +4,6 @@
  * Allows switching to any running task or navigating to the orchestrator.
  */
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, ChevronUp, ChevronDown, ExternalLink } from 'lucide-react';
 import { useOrchestrationStore } from '../../stores/orchestrationStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -25,10 +24,10 @@ export function RunningTasksIndicator() {
   if (runningTasks.length === 0 || currentView === 'bob') return null;
 
   const statusEmoji: Record<string, string> = {
-    analyzing: '🔍',
-    planning: '📋',
-    awaiting_approval: '⏳',
-    executing: '⚡',
+    analyzing: '[...]',
+    planning: '[PLN]',
+    awaiting_approval: '[WAT]',
+    executing: '[RUN]',
   };
 
   const statusLabel: Record<string, string> = {
@@ -39,13 +38,8 @@ export function RunningTasksIndicator() {
   };
 
   return (
-    <motion.div
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 100, opacity: 0 }}
-      className="fixed bottom-4 right-4 z-50"
-    >
-      <div className="bg-black/90 backdrop-blur-xl border border-white/15 rounded-xl shadow-2xl shadow-black/50 overflow-hidden min-w-[280px]">
+    <div className="fixed bottom-4 right-4 z-50 transition-opacity duration-200">
+      <div className="bg-[var(--aiox-surface,#0a0a0a)] border border-white/15 overflow-hidden min-w-[280px]">
         {/* Header — always visible */}
         <button
           onClick={() => runningTasks.length > 1 ? setExpanded(!expanded) : navigateToBob(runningTasks[0]?.taskId)}
@@ -78,14 +72,8 @@ export function RunningTasksIndicator() {
         </button>
 
         {/* Expanded task list */}
-        <AnimatePresence>
-          {expanded && runningTasks.length > 1 && (
-            <motion.div
-              initial={{ height: 0 }}
-              animate={{ height: 'auto' }}
-              exit={{ height: 0 }}
-              className="overflow-hidden border-t border-white/10"
-            >
+        {expanded && runningTasks.length > 1 && (
+          <div className="border-t border-white/10">
               <div className="max-h-[200px] overflow-auto">
                 {runningTasks.map((task) => {
                   const isActive = task.taskId === activeTaskId;
@@ -98,7 +86,7 @@ export function RunningTasksIndicator() {
                         isActive ? 'bg-white/5' : ''
                       }`}
                     >
-                      <span className="text-sm">{statusEmoji[task.status] || '🔄'}</span>
+                      <span className="text-sm">{statusEmoji[task.status] || '[...]'}</span>
                       <div className="flex-1 min-w-0">
                         <p className="text-[11px] text-white/80 truncate">
                           {truncate(task.demand, 35)}
@@ -118,11 +106,10 @@ export function RunningTasksIndicator() {
                   );
                 })}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          </div>
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 }
 

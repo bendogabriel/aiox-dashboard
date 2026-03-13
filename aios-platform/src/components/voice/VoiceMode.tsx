@@ -1,6 +1,5 @@
 import { useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useVoiceStore } from '../../stores/voiceStore';
 import type { VoiceState, TranscriptEntry } from '../../stores/voiceStore';
 import { Avatar } from '../ui/Avatar';
@@ -134,17 +133,12 @@ export function VoiceMode({
   const mergedHistory = storeHistory.length > 0 ? storeHistory : history;
 
   return createPortal(
-    <AnimatePresence>
-      {isActive && (
-        <motion.div
+    isActive ? (
+        <div
           ref={overlayRef}
           key="voice-overlay"
           className="fixed inset-0 z-[300] flex flex-col items-center justify-center"
-          style={{ background: '#050505' }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          style={{ background: 'var(--aiox-dark)' }}
           role="dialog"
           aria-modal="true"
           aria-label="Modo voz"
@@ -217,16 +211,16 @@ export function VoiceMode({
                   style={{
                     background:
                       state === 'thinking'
-                        ? '#0099FF'
+                        ? 'var(--aiox-blue)'
                         : state === 'idle'
                           ? 'rgba(209,255,0,0.3)'
-                          : '#D1FF00',
+                          : 'var(--aiox-lime)',
                     boxShadow:
                       state === 'idle'
                         ? 'none'
                         : state === 'thinking'
-                          ? '0 0 6px #0099FF'
-                          : '0 0 6px #D1FF00',
+                          ? '0 0 6px var(--aiox-blue)'
+                          : '0 0 6px var(--aiox-lime)',
                     animation:
                       state === 'listening' || state === 'speaking'
                         ? 'vm-dot-pulse 1.5s ease-in-out infinite'
@@ -270,26 +264,20 @@ export function VoiceMode({
           </div>
 
           {/* Error toast */}
-          <AnimatePresence>
-            {error && (
-              <motion.div
+          {error && (
+              <div
                 key="voice-error"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
                 className="absolute bottom-36 left-1/2 -translate-x-1/2 z-20"
               >
                 <div
-                  className="px-4 py-2 rounded-none border border-red-500/30 font-mono text-xs text-red-400"
+                  className="px-4 py-2 rounded-none border border-[var(--bb-error)]/30 font-mono text-xs text-[var(--bb-error)]"
                   style={{ background: 'rgba(220,38,38,0.1)', backdropFilter: 'blur(8px)' }}
                 >
                   {error}
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
-
-          {/* Bottom area -- controls + waveform */}
+{/* Bottom area -- controls + waveform */}
           <div className="absolute bottom-0 left-0 right-0 pb-6 flex flex-col items-center gap-4 z-10">
             <VoiceWaveform
               timeDomainData={timeDomainData}
@@ -360,9 +348,8 @@ export function VoiceMode({
               50% { opacity: 0.4; }
             }
           `}</style>
-        </motion.div>
-      )}
-    </AnimatePresence>,
+        </div>
+    ) : null,
     document.body,
   );
 }

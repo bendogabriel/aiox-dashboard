@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import type { AgentLiveActivity } from '../../stores/agentActivityStore';
 
 interface LiveSpeechBubbleProps {
@@ -43,19 +42,15 @@ export function LiveSpeechBubble({ activity, x, y, color }: LiveSpeechBubbleProp
   const bubbleH = 22;
 
   return (
-    <AnimatePresence>
-      {activity.isActive && (
-        <motion.div
+    <>
+    {activity.isActive && (
+        <div
           className="absolute pointer-events-none"
           style={{
             left: x - bubbleW / 2 + 20,
             top: y - 34,
             zIndex: 35,
           }}
-          initial={{ opacity: 0, scale: 0.6, y: 6 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.6, y: -6 }}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
         >
           {/* Bubble body */}
           <div
@@ -95,15 +90,13 @@ export function LiveSpeechBubble({ activity, x, y, color }: LiveSpeechBubbleProp
 
             {/* Active pulse dot */}
             {activity.isActive && activity.type === 'tool_call' && (
-              <motion.div
+              <div
                 className="flex-shrink-0 rounded-full"
                 style={{
                   width: 4,
                   height: 4,
                   backgroundColor: '#fff',
                 }}
-                animate={{ opacity: [1, 0.3, 1] }}
-                transition={{ duration: 0.8, repeat: Infinity }}
               />
             )}
           </div>
@@ -124,8 +117,8 @@ export function LiveSpeechBubble({ activity, x, y, color }: LiveSpeechBubbleProp
               fill={style.bg}
             />
           </svg>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 }

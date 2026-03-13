@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useMemo, KeyboardEvent } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { GlassButton } from '../ui';
+import { CockpitButton } from '../ui';
 import { cn } from '../../lib/utils';
 import { useVoiceStore } from '../../stores/voiceStore';
 import type { MessageAttachment } from '../../types';
@@ -318,39 +317,32 @@ export function ChatInput({
     : 'Digite sua mensagem...';
 
   return (
-    <motion.div
+    <div
       ref={dropZoneRef}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       className={cn(
-        'glass-lg rounded-2xl p-2 transition-all duration-200 relative',
-        isDragging && 'ring-2 ring-blue-500 ring-offset-2 ring-offset-transparent bg-blue-500/5'
+        'glass-lg rounded-none p-2 transition-all duration-200 relative',
+        isDragging && 'ring-2 ring-[var(--aiox-lime)] ring-offset-2 ring-offset-transparent bg-[var(--aiox-lime)]/5'
       )}
     >
       {/* Drag overlay */}
-      <AnimatePresence>
-        {isDragging && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-2 rounded-xl border-2 border-dashed border-blue-500/50 bg-blue-500/10 flex items-center justify-center z-10 pointer-events-none"
+      {isDragging && (
+          <div
+            className="absolute inset-2 rounded-none border-2 border-dashed border-[var(--aiox-lime)]/50 bg-[var(--aiox-lime)]/10 flex items-center justify-center z-10 pointer-events-none"
           >
             <div className="text-center">
-              <div className="h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-2">
+              <div className="h-12 w-12 rounded-full bg-[var(--aiox-lime)]/20 flex items-center justify-center mx-auto mb-2">
                 <AttachIcon />
               </div>
-              <p className="text-sm text-blue-500 font-medium">Solte os arquivos aqui</p>
-              <p className="text-xs text-blue-400 mt-1">Imagens, PDFs, documentos (max 10MB)</p>
+              <p className="text-sm text-[var(--aiox-lime)] font-medium">Solte os arquivos aqui</p>
+              <p className="text-xs text-[var(--aiox-lime)] mt-1">Imagens, PDFs, documentos (max 10MB)</p>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-      {/* Hidden file input - keyboard accessible via attach button */}
+{/* Hidden file input - keyboard accessible via attach button */}
       <input
         ref={fileInputRef}
         type="file"
@@ -363,26 +355,19 @@ export function ChatInput({
       />
 
       {/* Attached Files Preview */}
-      <AnimatePresence>
-        {pendingFiles.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+      {pendingFiles.length > 0 && (
+          <div
             className="px-2 pb-2"
           >
             <div className="flex flex-wrap gap-2">
               {pendingFiles.map((file) => (
-                <motion.div
+                <div
                   key={file.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
                   className={cn(
                     'relative group rounded-lg overflow-hidden border',
                     file.preview
                       ? 'w-20 h-20 border-white/20'
-                      : 'flex items-center gap-2 px-2 py-1.5 bg-blue-500/10 border-blue-500/20'
+                      : 'flex items-center gap-2 px-2 py-1.5 bg-[var(--aiox-lime)]/10 border-[var(--aiox-lime)]/20'
                   )}
                 >
                   {file.preview ? (
@@ -397,7 +382,7 @@ export function ChatInput({
                         <button
                           onClick={() => removeFile(file.id)}
                           aria-label={`Remover arquivo ${file.name}`}
-                          className="p-1 bg-red-500/80 rounded-full text-white hover:bg-red-500 transition-colors"
+                          className="p-1 bg-[var(--bb-error)]/80 rounded-full text-white hover:bg-[var(--bb-error)] transition-colors"
                         >
                           <CloseIcon aria-hidden="true" />
                         </button>
@@ -423,20 +408,18 @@ export function ChatInput({
                       <button
                         onClick={() => removeFile(file.id)}
                         aria-label={`Remover arquivo ${file.name}`}
-                        className="text-tertiary hover:text-red-500 transition-colors p-0.5"
+                        className="text-tertiary hover:text-[var(--bb-error)] transition-colors p-0.5"
                       >
                         <CloseIcon aria-hidden="true" />
                       </button>
                     </>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-
-      {/* Slash Command Autocomplete */}
+{/* Slash Command Autocomplete */}
       <SlashCommandMenu
         query={slashQuery}
         isVisible={slashMenuVisible}
@@ -447,19 +430,19 @@ export function ChatInput({
 
       <div className="flex items-end gap-2">
         {/* Attachment Button */}
-        <GlassButton
+        <CockpitButton
           variant="ghost"
           size="icon"
           aria-label="Anexar arquivo"
           className={cn(
             'h-10 w-10 md:h-10 md:w-10 flex-shrink-0 touch-manipulation',
-            pendingFiles.length > 0 && 'text-blue-500 bg-blue-500/10'
+            pendingFiles.length > 0 && 'text-[var(--aiox-lime)] bg-[var(--aiox-lime)]/10'
           )}
           disabled={disabled}
           onClick={() => fileInputRef.current?.click()}
         >
           <AttachIcon aria-hidden="true" />
-        </GlassButton>
+        </CockpitButton>
 
         {/* Input Area */}
         <div className="flex-1 relative">
@@ -474,7 +457,7 @@ export function ChatInput({
             className={cn(
               'w-full resize-none bg-transparent',
               'text-primary placeholder:text-tertiary',
-              'focus:outline-none',
+              'focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--aiox-lime)]/50',
               'py-2.5 px-1',
               'text-sm leading-relaxed',
               'max-h-[200px]',
@@ -484,7 +467,7 @@ export function ChatInput({
         </div>
 
         {/* Voice Mode Button */}
-        <GlassButton
+        <CockpitButton
           variant="ghost"
           size="icon"
           aria-label="Ativar modo voz"
@@ -493,21 +476,21 @@ export function ChatInput({
           onClick={activateVoiceMode}
         >
           <MicIcon aria-hidden="true" />
-        </GlassButton>
+        </CockpitButton>
 
         {/* Send/Stop Button */}
         {isStreaming ? (
-          <GlassButton
+          <CockpitButton
             variant="ghost"
             size="icon"
             aria-label="Parar geracao"
-            className="h-10 w-10 flex-shrink-0 text-red-500 bg-red-500/10 hover:bg-red-500/20 transition-all duration-200 touch-manipulation"
+            className="h-10 w-10 flex-shrink-0 text-[var(--bb-error)] bg-[var(--bb-error)]/10 hover:bg-[var(--bb-error)]/20 transition-all duration-200 touch-manipulation"
             onClick={onStop}
           >
             <StopIcon aria-hidden="true" />
-          </GlassButton>
+          </CockpitButton>
         ) : (
-          <GlassButton
+          <CockpitButton
             variant="primary"
             size="icon"
             aria-label={isProcessingFiles ? 'Processando arquivos' : 'Enviar mensagem'}
@@ -524,7 +507,7 @@ export function ChatInput({
             ) : (
               <SendIcon aria-hidden="true" />
             )}
-          </GlassButton>
+          </CockpitButton>
         )}
       </div>
 
@@ -535,7 +518,7 @@ export function ChatInput({
           {' '}para enviar ·{' '}
           <kbd className="px-1 py-0.5 rounded bg-black/5 dark:bg-white/5">Shift+Enter</kbd>
           {' '}para nova linha ·{' '}
-          <span className="text-blue-400">**negrito**</span> <span className="text-purple-400">*italico*</span>
+          <span className="text-[var(--aiox-blue)]">**negrito**</span> <span className="text-[var(--aiox-gray-muted)]">*italico*</span>
         </span>
         <span>{message.length}/4000</span>
       </div>
@@ -543,6 +526,6 @@ export function ChatInput({
       <div className="flex md:hidden justify-end px-2 pt-1 text-[10px] text-tertiary">
         <span>{message.length}/4000</span>
       </div>
-    </motion.div>
+    </div>
   );
 }

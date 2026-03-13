@@ -95,7 +95,7 @@ export const InChatContext: Story = {
     <div className="glass rounded-2xl p-4 space-y-4">
       <div className="space-y-3">
         <div className="flex justify-end">
-          <div className="bg-blue-500 text-white rounded-2xl rounded-br-md px-4 py-2 max-w-[80%]">
+          <div className="bg-[var(--aiox-blue)] text-white rounded-2xl rounded-br-md px-4 py-2 max-w-[80%]">
             Can you help me write a product description?
           </div>
         </div>
@@ -118,7 +118,7 @@ export const StreamingWithMessage: Story = {
     <div className="glass rounded-2xl p-4 space-y-4">
       <div className="space-y-3">
         <div className="flex justify-end">
-          <div className="bg-blue-500 text-white rounded-2xl rounded-br-md px-4 py-2 max-w-[80%]">
+          <div className="bg-[var(--aiox-blue)] text-white rounded-2xl rounded-br-md px-4 py-2 max-w-[80%]">
             Write a tagline for an eco-friendly water bottle
           </div>
         </div>

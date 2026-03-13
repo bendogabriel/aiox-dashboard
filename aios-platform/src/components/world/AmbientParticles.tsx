@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import type { DomainId } from './world-layout';
 import { useDomains } from './DomainContext';
 
@@ -22,14 +21,14 @@ interface Particle {
   char?: string;
 }
 
-// Domain-specific particle characters
+// Domain-specific particle characters (ASCII-only)
 const DOMAIN_CHARS: Record<DomainId, string[]> = {
-  content: ['\u2726', '\u2666', '\u25C7'],
-  sales:   ['$', '◆', '▲'],
+  content: ['+', '*', ':'],
+  sales:   ['$', '#', '^'],
   dev:     ['<', '/', '>'],
-  design:  ['\u25CF', '\u25D0', '\u2605'],
-  data:    ['0', '1', '\u2B21'],
-  ops:     ['\u2699', '\u25CE', '\u2B22'],
+  design:  ['.', '~', '-'],
+  data:    ['0', '1', '|'],
+  ops:     ['=', '%', '&'],
 };
 
 const PARTICLE_COUNT = 12;
@@ -67,7 +66,7 @@ export function AmbientParticles({ domain, roomWidth, roomHeight }: AmbientParti
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 1 }}>
       {particles.map((p) => (
-        <motion.div
+        <div
           key={p.id}
           className="absolute select-none"
           style={{
@@ -77,21 +76,9 @@ export function AmbientParticles({ domain, roomWidth, roomHeight }: AmbientParti
             color: d.tileColor,
             fontFamily: 'monospace',
           }}
-          animate={{
-            x: [0, p.driftX, 0],
-            y: [0, p.driftY, 0],
-            opacity: [0, p.opacity, 0],
-            scale: [0.5, 1, 0.5],
-          }}
-          transition={{
-            duration: p.duration,
-            repeat: Infinity,
-            delay: p.delay,
-            ease: 'easeInOut',
-          }}
         >
           {p.char}
-        </motion.div>
+        </div>
       ))}
     </div>
   );

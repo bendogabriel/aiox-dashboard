@@ -1,11 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { agentsApi } from '../services/api';
+import { useEngineStore } from '../stores/engineStore';
 import type { Agent, AgentSummary, AgentCommand, SearchFilters } from '../types';
 import { getSquadType } from '../types';
 
 export function useAgents(squadId?: string | null, options?: { refetchInterval?: number | false }) {
+  // Include engine status so agents refetch when engine comes online
+  const engineStatus = useEngineStore((s) => s.status);
   return useQuery<AgentSummary[]>({
-    queryKey: ['agents', squadId || 'all'],
+    queryKey: ['agents', squadId || 'all', engineStatus],
     queryFn: async () => {
       if (squadId) {
         return agentsApi.getAgentsBySquad(squadId);

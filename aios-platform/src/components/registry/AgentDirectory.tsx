@@ -5,7 +5,6 @@
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
   Users,
@@ -95,13 +94,8 @@ function CollapsibleSection({
           )}
         />
       </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+      {open && (
+          <div
             className="overflow-hidden"
           >
             <div className="px-3 pb-2 space-y-1">
@@ -114,10 +108,9 @@ function CollapsibleSection({
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }
 
@@ -137,14 +130,10 @@ function AgentCard({
   const color = getAgentColor(agent.id);
 
   return (
-    <motion.button
-      custom={index}
-      variants={cardVariants}
-      initial="hidden"
-      animate="visible"
+    <button
       onClick={() => onSelect(agent)}
       className={cn(
-        'group w-full text-left p-4 rounded-xl transition-all duration-200',
+        'group w-full text-left p-4 rounded-none transition-all duration-200',
         'border border-white/10 bg-white/[0.03] backdrop-blur-sm',
         'hover:bg-white/[0.06] hover:border-white/20',
         'focus:outline-none focus-visible:ring-1 focus-visible:ring-white/30'
@@ -198,7 +187,7 @@ function AgentCard({
           {agent.archetype} &middot; {agent.zodiac}
         </div>
       </div>
-    </motion.button>
+    </button>
   );
 }
 
@@ -226,11 +215,7 @@ function AgentDetailPanel({
   }, []);
 
   return (
-    <motion.div
-      variants={panelVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
+    <div
       className={cn(
         'absolute inset-y-0 right-0 z-10 flex flex-col overflow-hidden',
         'w-full sm:w-[420px] lg:w-[460px]',
@@ -477,7 +462,7 @@ function AgentDetailPanel({
           />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -599,15 +584,10 @@ export default function AgentDirectory() {
       </div>
 
       {/* ---- Detail Panel (slide-in) ---- */}
-      <AnimatePresence>
-        {selectedAgent && (
+      {selectedAgent && (
           <>
             {/* Backdrop (mobile: full overlay, desktop: semi-transparent) */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
+            <div
               className="absolute inset-0 z-[5] bg-black/40 sm:bg-black/20 backdrop-blur-sm sm:backdrop-blur-none"
               onClick={handleClose}
               aria-hidden="true"
@@ -619,7 +599,6 @@ export default function AgentDirectory() {
             />
           </>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

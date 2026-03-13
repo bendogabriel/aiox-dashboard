@@ -95,18 +95,18 @@ function MessageBubble({
     <div
       className={cn(
         'relative pl-3 py-2 pr-3 font-mono text-sm leading-relaxed',
-        isAgent ? 'bg-[#D1FF00]/5' : 'bg-white/5',
+        isAgent ? 'bg-[var(--aiox-lime)]/5' : 'bg-white/5',
         isNew && 'animate-[vt-fadeIn_300ms_ease-out_both]',
       )}
       style={{
-        borderLeft: `2px solid ${isAgent ? '#D1FF00' : 'rgba(255,255,255,0.15)'}`,
+        borderLeft: `2px solid ${isAgent ? 'var(--aiox-lime)' : 'rgba(255,255,255,0.15)'}`,
       }}
     >
       <div className="flex items-baseline justify-between gap-2 mb-0.5">
         <span
           className={cn(
             'text-[10px] uppercase tracking-[0.08em] font-mono',
-            isAgent ? 'text-[#D1FF00]/50' : 'text-white/30',
+            isAgent ? 'text-[var(--aiox-lime)]/50' : 'text-white/30',
           )}
         >
           {isAgent ? 'AGENTE' : 'VOCE'}
@@ -117,7 +117,7 @@ function MessageBubble({
           </span>
         )}
       </div>
-      <p className={cn('font-mono', isAgent ? 'text-[#D1FF00]/90' : 'text-white/70')}>
+      <p className={cn('font-mono', isAgent ? 'text-[var(--aiox-lime)]/90' : 'text-white/70')}>
         {text}
       </p>
     </div>
@@ -127,21 +127,21 @@ function MessageBubble({
 function ThinkingIndicator() {
   return (
     <div
-      className="relative pl-3 py-2 pr-3 bg-[#0099FF]/5 animate-[vt-fadeIn_300ms_ease-out_both]"
+      className="relative pl-3 py-2 pr-3 bg-[var(--aiox-blue)]/5 animate-[vt-fadeIn_300ms_ease-out_both]"
       style={{ borderLeft: '2px solid rgba(0,153,255,0.4)' }}
     >
       <div className="flex items-center gap-2">
-        <span className="text-[10px] uppercase tracking-[0.08em] font-mono text-[#0099FF]/50">
+        <span className="text-[10px] uppercase tracking-[0.08em] font-mono text-[var(--aiox-blue)]/50">
           AGENTE
         </span>
       </div>
       <div className="flex items-center gap-2 mt-1">
         <span className="inline-flex gap-[3px]">
-          <span className="w-[5px] h-[5px] rounded-full bg-[#0099FF] animate-[vt-dot_1.4s_ease-in-out_infinite]" />
-          <span className="w-[5px] h-[5px] rounded-full bg-[#0099FF] animate-[vt-dot_1.4s_ease-in-out_0.2s_infinite]" />
-          <span className="w-[5px] h-[5px] rounded-full bg-[#0099FF] animate-[vt-dot_1.4s_ease-in-out_0.4s_infinite]" />
+          <span className="w-[5px] h-[5px] rounded-full bg-[var(--aiox-blue)] animate-[vt-dot_1.4s_ease-in-out_infinite]" />
+          <span className="w-[5px] h-[5px] rounded-full bg-[var(--aiox-blue)] animate-[vt-dot_1.4s_ease-in-out_0.2s_infinite]" />
+          <span className="w-[5px] h-[5px] rounded-full bg-[var(--aiox-blue)] animate-[vt-dot_1.4s_ease-in-out_0.4s_infinite]" />
         </span>
-        <span className="text-xs font-mono text-[#0099FF]/50">
+        <span className="text-xs font-mono text-[var(--aiox-blue)]/50">
           Processando resposta...
         </span>
       </div>
@@ -179,13 +179,13 @@ function CopyButton({ getText }: { getText: () => string }) {
         'text-[10px] font-mono uppercase tracking-[0.08em]',
         'bg-white/5 hover:bg-white/10 transition-colors',
         'text-white/30 hover:text-white/60',
-        'focus:outline-none focus-visible:ring-1 focus-visible:ring-[#D1FF00]/40',
+        'focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--aiox-lime)]/40',
       )}
       style={{ borderRadius: 0 }}
       aria-label="Copiar transcricao"
     >
       {copied ? (
-        <span className="text-[#D1FF00]/80">Copiado!</span>
+        <span className="text-[var(--aiox-lime)]/80">Copiado!</span>
       ) : (
         <>
           {/* Copy icon (clipboard) */}
@@ -340,20 +340,20 @@ export function VoiceTranscript({
             {/* Current agent transcript with typewriter (speaking) */}
             {showSpeakingBubble && (
               <div
-                className="relative pl-3 py-2 pr-3 bg-[#D1FF00]/5 animate-[vt-fadeIn_300ms_ease-out_both]"
-                style={{ borderLeft: '2px solid #D1FF00' }}
+                className="relative pl-3 py-2 pr-3 bg-[var(--aiox-lime)]/5 animate-[vt-fadeIn_300ms_ease-out_both]"
+                style={{ borderLeft: '2px solid var(--aiox-lime)' }}
               >
                 <div className="flex items-baseline justify-between gap-2 mb-0.5">
-                  <span className="text-[10px] uppercase tracking-[0.08em] font-mono text-[#D1FF00]/50">
+                  <span className="text-[10px] uppercase tracking-[0.08em] font-mono text-[var(--aiox-lime)]/50">
                     AGENTE
                   </span>
                   <span className="text-[10px] font-mono text-white/20 tabular-nums">
                     agora
                   </span>
                 </div>
-                <p className="font-mono text-sm text-[#D1FF00]/90 leading-relaxed">
+                <p className="font-mono text-sm text-[var(--aiox-lime)]/90 leading-relaxed">
                   {displayedAgentText}
-                  <span className="inline-block w-[2px] h-[14px] bg-[#D1FF00]/60 ml-0.5 align-middle animate-[vt-blink_1s_step-end_infinite]" />
+                  <span className="inline-block w-[2px] h-[14px] bg-[var(--aiox-lime)]/60 ml-0.5 align-middle animate-[vt-blink_1s_step-end_infinite]" />
                 </p>
               </div>
             )}

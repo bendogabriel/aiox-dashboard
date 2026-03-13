@@ -70,8 +70,8 @@ vi.mock('../../../stores/orchestrationStore', () => ({
 
 // Mock UI components used by Header
 vi.mock('../../ui', () => ({
-  GlassCard: ({ children, ...props }: Record<string, unknown>) => <div data-testid="glass-card" {...props}>{children}</div>,
-  GlassButton: ({ children, ...props }: Record<string, unknown>) => {
+  CockpitCard: ({ children, ...props }: Record<string, unknown>) => <div data-testid="glass-card" {...props}>{children}</div>,
+  CockpitButton: ({ children, ...props }: Record<string, unknown>) => {
     const { variant: _v, size: _s, ...rest } = props;
     return <button data-testid="glass-button" {...rest}>{children}</button>;
   },

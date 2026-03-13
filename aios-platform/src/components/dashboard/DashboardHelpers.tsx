@@ -1,33 +1,24 @@
 import { type LucideIcon } from 'lucide-react';
-import { GlassCard, Badge } from '../ui';
+import { CockpitCard, Badge } from '../ui';
 import { ICON_SIZES } from '../../lib/icons';
 import { cn } from '../../lib/utils';
 
-export function QuickStatCard({ label, value, icon: Icon, color }: {
+export function QuickStatCard({ label, value, icon: Icon }: {
   label: string;
   value: string | number;
   icon: LucideIcon;
-  color: string;
+  color?: string;
 }) {
-  const colorClasses: Record<string, string> = {
-    blue: 'from-blue-500/20 border-blue-500/30',
-    green: 'from-green-500/20 border-green-500/30',
-    purple: 'from-purple-500/20 border-purple-500/30',
-    orange: 'from-orange-500/20 border-orange-500/30',
-    yellow: 'from-yellow-500/20 border-yellow-500/30',
-    red: 'from-red-500/20 border-red-500/30',
-  };
-
   return (
     <div className={cn(
-      'p-4 rounded-xl bg-gradient-to-br to-transparent border',
-      colorClasses[color] || colorClasses.blue
+      'p-4 rounded-none border',
+      'border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]'
     )}>
       <div className="flex items-center gap-2 mb-2">
         <Icon size={ICON_SIZES.xl} className="text-secondary" />
         <span className="text-xs text-tertiary uppercase tracking-wider">{label}</span>
       </div>
-      <p className="text-2xl font-bold text-primary">{value}</p>
+      <p className="text-lg font-bold text-primary">{value}</p>
     </div>
   );
 }
@@ -38,13 +29,13 @@ export function HealthCard({ title, status, details }: {
   details: Array<{ label: string; ok?: boolean; value?: string | number }>;
 }) {
   const statusColors = {
-    healthy: 'border-green-500/30 bg-green-500/5',
-    partial: 'border-yellow-500/30 bg-yellow-500/5',
-    error: 'border-red-500/30 bg-red-500/5',
+    healthy: 'border-[var(--color-status-success)]/30 bg-[var(--color-status-success)]/5',
+    partial: 'border-[var(--bb-warning)]/30 bg-[var(--bb-warning)]/5',
+    error: 'border-[var(--bb-error)]/30 bg-[var(--bb-error)]/5',
   };
 
   return (
-    <GlassCard className={statusColors[status]}>
+    <CockpitCard className={statusColors[status]}>
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-medium text-primary">{title}</h3>
         <Badge
@@ -60,8 +51,8 @@ export function HealthCard({ title, status, details }: {
           <div key={i} className="flex items-center justify-between text-sm">
             <span className="text-secondary">{d.label}</span>
             {d.ok !== undefined ? (
-              <span className={d.ok ? 'text-green-400' : 'text-red-400'}>
-                {d.ok ? '\u2713' : '\u2717'}
+              <span className={d.ok ? 'text-[var(--color-status-success)]' : 'text-[var(--bb-error)]'}>
+                {d.ok ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="inline"><polyline points="20 6 9 17 4 12" /></svg> : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="inline"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>}
               </span>
             ) : (
               <span className="text-primary font-medium truncate max-w-[120px] text-right">{d.value}</span>
@@ -69,7 +60,7 @@ export function HealthCard({ title, status, details }: {
           </div>
         ))}
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
@@ -80,12 +71,12 @@ export function CostProviderRow({ name, cost, tokens, color }: {
   color: string;
 }) {
   const colorClasses: Record<string, string> = {
-    purple: 'bg-purple-500',
-    green: 'bg-green-500',
+    purple: 'bg-[var(--aiox-gray-muted)]',
+    green: 'bg-[var(--color-status-success)]',
   };
 
   return (
-    <div className="flex items-center justify-between p-3 rounded-xl glass-subtle">
+    <div className="flex items-center justify-between p-3 rounded-none glass-subtle">
       <div className="flex items-center gap-3">
         <div className={cn('h-3 w-3 rounded-full', colorClasses[color])} />
         <div>
@@ -113,14 +104,14 @@ export function ServiceHealthCard({ name, healthy, latency, error }: {
 
   return (
     <div className={cn(
-      'p-4 rounded-xl border',
-      healthy ? 'glass-subtle border-green-500/20' : 'glass-subtle border-red-500/20'
+      'p-4 rounded-none border',
+      healthy ? 'glass-subtle border-[var(--color-status-success)]/20' : 'glass-subtle border-[var(--bb-error)]/20'
     )}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className={cn(
             'h-3 w-3 rounded-full',
-            healthy ? 'bg-green-500' : 'bg-red-500'
+            healthy ? 'bg-[var(--color-status-success)]' : 'bg-[var(--bb-error)]'
           )} />
           <span className="text-primary font-medium">{name}</span>
         </div>
@@ -129,7 +120,7 @@ export function ServiceHealthCard({ name, healthy, latency, error }: {
         )}
       </div>
       {!healthy && error && (
-        <p className="text-xs text-red-400 mt-2">{getErrorDisplay(error)}</p>
+        <p className="text-xs text-[var(--bb-error)] mt-2">{getErrorDisplay(error)}</p>
       )}
     </div>
   );

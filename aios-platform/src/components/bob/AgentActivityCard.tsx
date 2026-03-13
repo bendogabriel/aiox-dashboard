@@ -1,13 +1,13 @@
 import { Bot } from 'lucide-react';
-import { GlassCard, StatusDot } from '../ui';
+import { CockpitCard, StatusDot } from '../ui';
 import type { BobAgent } from '../../stores/bobStore';
 import { cn } from '../../lib/utils';
 
 const statusBorder: Record<BobAgent['status'], string> = {
-  working: 'border-l-green-500',
-  waiting: 'border-l-blue-500',
+  working: 'border-l-[var(--color-status-success)]',
+  waiting: 'border-l-[var(--aiox-blue)]',
   completed: 'border-l-gray-500',
-  failed: 'border-l-red-500',
+  failed: 'border-l-[var(--bb-error)]',
 };
 
 const statusDotMap: Record<BobAgent['status'], { dot: 'working' | 'success' | 'waiting' | 'error'; label: string }> = {
@@ -27,12 +27,12 @@ export default function AgentActivityCard({
   const mapped = statusDotMap[agent.status];
 
   return (
-    <GlassCard
+    <CockpitCard
       padding="sm"
       className={cn(
         'border-l-[3px]',
         statusBorder[agent.status],
-        isCurrent && 'ring-2 ring-blue-500/30 animate-pulse',
+        isCurrent && 'ring-2 ring-[var(--aiox-lime)]/30 animate-pulse',
       )}
     >
       <div className="flex items-center justify-between gap-3">
@@ -49,6 +49,6 @@ export default function AgentActivityCard({
         />
       </div>
       <p className="text-xs text-secondary mt-1.5 truncate">{agent.task}</p>
-    </GlassCard>
+    </CockpitCard>
   );
 }

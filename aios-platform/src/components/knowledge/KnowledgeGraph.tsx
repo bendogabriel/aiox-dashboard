@@ -1,7 +1,6 @@
 import { useMemo, useState, useRef, useCallback, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Plus, Minus, RefreshCw } from 'lucide-react';
-import { GlassCard, GlassButton, Badge } from '../ui';
+import { CockpitCard, CockpitButton, Badge } from '../ui';
 import type { KnowledgeOverview, AgentKnowledge } from '../../hooks/useKnowledge';
 
 // ── Types ──
@@ -41,7 +40,7 @@ const LEGEND = [
   { type: 'file', color: NODE_COLORS.file, label: 'Arquivo' },
 ];
 
-// ── Force layout ──
+// ── Force ──
 
 function computeLayout(nodes: GraphNode[], edges: GraphEdge[], w: number, h: number): GraphNode[] {
   const pos = nodes.map((n) => ({ ...n }));
@@ -201,28 +200,28 @@ export function KnowledgeGraph({ overview, agentKnowledge, agentsBySquad, onSele
 
   if (nodes.length === 0) {
     return (
-      <GlassCard className="flex-1 flex items-center justify-center">
+      <CockpitCard className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <p className="text-sm text-secondary">Sem dados para o grafo</p>
           <p className="text-xs text-tertiary mt-1">Adicione arquivos ao knowledge base para visualizar</p>
         </div>
-      </GlassCard>
+      </CockpitCard>
     );
   }
 
   return (
-    <GlassCard className="flex-1 flex flex-col !p-0 overflow-hidden relative">
+    <CockpitCard className="flex-1 flex flex-col !p-0 overflow-hidden relative">
       {/* Controls */}
       <div className="absolute top-3 right-3 z-10 flex items-center gap-1">
-        <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom((z) => Math.min(3, z + 0.2))} aria-label="Zoom in">
+        <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom((z) => Math.min(3, z + 0.2))} aria-label="Zoom in">
           <Plus size={14} />
-        </GlassButton>
-        <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom((z) => Math.max(0.3, z - 0.2))} aria-label="Zoom out">
+        </CockpitButton>
+        <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom((z) => Math.max(0.3, z - 0.2))} aria-label="Zoom out">
           <Minus size={14} />
-        </GlassButton>
-        <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} aria-label="Reset">
+        </CockpitButton>
+        <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} aria-label="Reset">
           <RefreshCw size={14} />
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       {/* Legend */}
@@ -280,11 +279,8 @@ export function KnowledgeGraph({ overview, agentKnowledge, agentsBySquad, onSele
             const hovered = hoveredNode === node.id;
             const isAgent = node.type === 'agent';
             return (
-              <motion.g
+              <g
                 key={node.id}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 20, delay: i * 0.02 }}
                 style={{ cursor: node.type === 'file' ? 'pointer' : 'default' }}
                 onMouseEnter={() => setHoveredNode(node.id)}
                 onMouseLeave={() => setHoveredNode(null)}
@@ -319,7 +315,7 @@ export function KnowledgeGraph({ overview, agentKnowledge, agentsBySquad, onSele
                 >
                   {node.type === 'agent' ? 'A' : node.type === 'directory' ? 'D' : 'F'}
                 </text>
-              </motion.g>
+              </g>
             );
           })}
         </g>
@@ -327,7 +323,7 @@ export function KnowledgeGraph({ overview, agentKnowledge, agentsBySquad, onSele
 
       {/* Tooltip */}
       {hoveredData && (
-        <div className="absolute bottom-3 left-3 z-10 glass-card px-3 py-2 rounded-xl border border-glass-border">
+        <div className="absolute bottom-3 left-3 z-10 glass-card px-3 py-2 rounded-none border border-glass-border">
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: hoveredData.color }} />
             <span className="text-xs font-medium text-primary">{hoveredData.label}</span>
@@ -342,6 +338,6 @@ export function KnowledgeGraph({ overview, agentKnowledge, agentsBySquad, onSele
         <span>{nodes.filter((n) => n.type === 'directory').length} pastas</span>
         <span>{nodes.filter((n) => n.type === 'file').length} arquivos</span>
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }

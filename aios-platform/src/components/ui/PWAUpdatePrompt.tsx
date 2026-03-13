@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { GlassButton } from './GlassButton';
+import { CockpitButton } from './cockpit/CockpitButton';
 
 const RefreshIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -108,17 +107,13 @@ export function PWAUpdatePrompt() {
   return (
     <>
       {/* Update Available Prompt */}
-      <AnimatePresence>
-        {needRefresh && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.95 }}
+      {needRefresh && (
+          <div
             className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-50"
           >
-            <div className="glass-card rounded-xl p-4 shadow-lg">
+            <div className="glass-card rounded-none p-4 shadow-lg">
               <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 flex-shrink-0">
+                <div className="h-10 w-10 rounded-lg bg-[var(--aiox-blue)]/20 flex items-center justify-center text-[var(--aiox-blue)] flex-shrink-0">
                   <RefreshIcon />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -127,41 +122,35 @@ export function PWAUpdatePrompt() {
                     Uma atualização está pronta para ser instalada.
                   </p>
                   <div className="flex items-center gap-2 mt-3">
-                    <GlassButton
+                    <CockpitButton
                       variant="primary"
                       size="sm"
                       onClick={handleUpdate}
                       leftIcon={<RefreshIcon />}
                     >
                       Atualizar
-                    </GlassButton>
-                    <GlassButton
+                    </CockpitButton>
+                    <CockpitButton
                       variant="ghost"
                       size="sm"
                       onClick={() => setNeedRefresh(false)}
                     >
                       Depois
-                    </GlassButton>
+                    </CockpitButton>
                   </div>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-
-      {/* Install App Prompt */}
-      <AnimatePresence>
-        {showInstallPrompt && deferredPrompt && (
-          <motion.div
-            initial={{ opacity: 0, y: -50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -50, scale: 0.95 }}
+{/* Install App Prompt */}
+      {showInstallPrompt && deferredPrompt && (
+          <div
             className="fixed top-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-50"
           >
-            <div className="glass-card rounded-xl p-4 shadow-lg">
+            <div className="glass-card rounded-none p-4 shadow-lg">
               <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white flex-shrink-0">
+                <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[var(--aiox-blue)] to-[var(--aiox-gray-muted)] flex items-center justify-center text-white flex-shrink-0">
                   <DownloadIcon />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -179,29 +168,28 @@ export function PWAUpdatePrompt() {
                     Instale o app para acesso rápido e experiência offline.
                   </p>
                   <div className="flex items-center gap-2 mt-3">
-                    <GlassButton
+                    <CockpitButton
                       variant="primary"
                       size="sm"
                       onClick={handleInstall}
                       leftIcon={<DownloadIcon />}
                     >
                       Instalar
-                    </GlassButton>
-                    <GlassButton
+                    </CockpitButton>
+                    <CockpitButton
                       variant="ghost"
                       size="sm"
                       onClick={handleDismissInstall}
                     >
                       Agora não
-                    </GlassButton>
+                    </CockpitButton>
                   </div>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </>
+</>
   );
 }
 

@@ -118,7 +118,7 @@ export const CustomIcon: Story = {
         fill="none"
         stroke="currentColor"
         strokeWidth="1.5"
-        className="text-blue-500"
+        className="text-[var(--aiox-blue)]"
       >
         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
       </svg>

@@ -20,9 +20,9 @@ const LABELS: Record<IntegrationId, string> = {
 };
 
 const STATUS_COLORS: Record<IntegrationStatus, string> = {
-  connected: 'var(--aiox-lime, #D1FF00)',
+  connected: 'var(--color-status-success, #4ADE80)',
   partial: 'var(--aiox-warning, #f59e0b)',
-  checking: 'var(--aiox-blue, #0099FF)',
+  checking: 'var(--aiox-gray-muted, #999)',
   disconnected: 'var(--aiox-gray-dim, #696969)',
   error: 'var(--color-status-error, #EF4444)',
 };
@@ -63,7 +63,7 @@ export function HealthCard() {
   return (
     <div style={{
       background: 'var(--aiox-surface, #0a0a0a)',
-      border: `1px solid ${allHealthy ? 'rgba(209, 255, 0, 0.12)' : 'rgba(239, 68, 68, 0.15)'}`,
+      border: '1px solid rgba(255,255,255,0.08)',
       fontFamily: 'var(--font-family-mono, monospace)',
     }}>
       {/* Header */}
@@ -75,7 +75,7 @@ export function HealthCard() {
         borderBottom: '1px solid rgba(255,255,255,0.04)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Activity size={14} style={{ color: allHealthy ? 'var(--aiox-lime)' : 'var(--color-status-error)' }} />
+          <Activity size={14} style={{ color: 'var(--aiox-gray-dim, #696969)' }} />
           <span style={{
             fontSize: '11px',
             textTransform: 'uppercase',
@@ -91,7 +91,7 @@ export function HealthCard() {
           {monitorEnabled && (
             <span style={{
               fontSize: '9px',
-              color: 'var(--aiox-lime, #D1FF00)',
+              color: 'var(--aiox-gray-muted, #999)',
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
@@ -104,7 +104,7 @@ export function HealthCard() {
             fontSize: '11px',
             fontFamily: 'var(--font-family-display, var(--font-family-mono))',
             fontWeight: 700,
-            color: allHealthy ? 'var(--aiox-lime)' : 'var(--color-status-error)',
+            color: 'var(--aiox-cream, #E5E5E5)',
           }}>
             {connectedCount}/{totalCount}
           </span>
@@ -145,7 +145,7 @@ export function HealthCard() {
                 fontSize: '8px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                color: STATUS_COLORS[entry.status],
+                color: 'var(--aiox-gray-muted, #999)',
                 textAlign: 'center',
                 lineHeight: '1.2',
               }}>
@@ -158,7 +158,7 @@ export function HealthCard() {
                 <span style={{
                   fontSize: '7px',
                   color: uptime >= 95
-                    ? 'var(--aiox-lime, #D1FF00)'
+                    ? 'var(--color-status-success, #4ADE80)'
                     : uptime >= 70
                       ? 'var(--aiox-warning, #f59e0b)'
                       : 'var(--color-status-error, #EF4444)',
@@ -179,7 +179,7 @@ export function HealthCard() {
         padding: '1px 0',
         background: 'rgba(255,255,255,0.04)',
       }}>
-        <CapStat label="Full" value={summary.full} total={summary.total} color="var(--aiox-lime, #D1FF00)" />
+        <CapStat label="Full" value={summary.full} total={summary.total} color="var(--color-status-success, #4ADE80)" />
         <CapStat label="Degraded" value={summary.degraded} total={summary.total} color="var(--aiox-warning, #f59e0b)" />
         <CapStat label="Unavail" value={summary.unavailable} total={summary.total} color="var(--color-status-error, #EF4444)" />
       </div>
@@ -206,7 +206,7 @@ export function HealthCard() {
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
             fontFamily: 'inherit',
-            color: monitorEnabled ? 'var(--aiox-lime, #D1FF00)' : 'var(--aiox-gray-dim, #696969)',
+            color: monitorEnabled ? 'var(--aiox-cream, #E5E5E5)' : 'var(--aiox-gray-dim, #696969)',
           }}
           aria-label={monitorEnabled ? 'Disable auto-monitoring' : 'Enable auto-monitoring'}
         >
@@ -324,7 +324,7 @@ function CapStat({ label, value, total, color }: { label: string; value: number;
 
 function EventRow({ event }: { event: HealthEvent }) {
   const isRecovery = event.newStatus === 'connected' || event.newStatus === 'partial';
-  const color = isRecovery ? 'var(--aiox-lime, #D1FF00)' : 'var(--color-status-error, #EF4444)';
+  const color = isRecovery ? 'var(--color-status-success, #4ADE80)' : 'var(--color-status-error, #EF4444)';
   const Icon = isRecovery ? ArrowUp : ArrowDown;
 
   return (

@@ -13,14 +13,14 @@ const workingSession: TerminalSession = {
     '> aios-platform@0.1.0 typecheck',
     '> tsc --noEmit',
     '',
-    '\u2713 No type errors found',
+    'PASS No type errors found',
     '',
     '$ npm run lint',
     '',
     '> aios-platform@0.1.0 lint',
     '> eslint src/ --ext .ts,.tsx',
     '',
-    '\u2713 All files passed linting',
+    'PASS All files passed linting',
   ],
 };
 
@@ -33,7 +33,7 @@ const idleSession: TerminalSession = {
   output: [
     '$ npm run test -- --coverage',
     '',
-    'PASS src/components/ui/__tests__/GlassCard.test.tsx',
+    'PASS src/components/ui/__tests__/CockpitCard.test.tsx',
     'PASS src/components/ui/__tests__/Badge.test.tsx',
     '',
     'Test Suites: 2 passed, 2 total',

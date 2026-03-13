@@ -30,7 +30,7 @@ const config: Record<SellerVerification, {
   enterprise: {
     label: 'Enterprise',
     icon: Building2,
-    className: 'text-amber-400 border-amber-400/30 bg-amber-400/10',
+    className: 'text-[var(--bb-warning)] border-[var(--bb-warning)]/30 bg-[var(--bb-warning)]/10',
   },
 };
 

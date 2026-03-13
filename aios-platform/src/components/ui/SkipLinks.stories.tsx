@@ -49,13 +49,13 @@ export const Visible: Story = {
       <div className="flex gap-4">
         <a
           href="#main-content"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-lg outline-none text-sm"
+          className="px-4 py-2 bg-[var(--aiox-blue)] text-white rounded-lg shadow-lg outline-none text-sm"
         >
           Pular para o conteudo principal
         </a>
         <a
           href="#navigation"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-lg outline-none text-sm"
+          className="px-4 py-2 bg-[var(--aiox-blue)] text-white rounded-lg shadow-lg outline-none text-sm"
         >
           Pular para a navegacao
         </a>

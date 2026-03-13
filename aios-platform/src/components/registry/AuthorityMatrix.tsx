@@ -6,7 +6,6 @@
  */
 
 import { useState, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Shield,
   Users,
@@ -151,12 +150,8 @@ function MatrixView({
             const isSelected = selectedAgent === agent.id;
 
             return (
-              <motion.tr
+              <tr
                 key={agent.id}
-                custom={i}
-                variants={rowVariants}
-                initial="hidden"
-                animate="visible"
                 onClick={() => onSelectAgent(isSelected ? null : agent.id)}
                 className={cn(
                   'border-b border-white/5 cursor-pointer transition-colors duration-150',
@@ -275,7 +270,7 @@ function MatrixView({
                     {agent.commands.length}
                   </span>
                 </td>
-              </motion.tr>
+              </tr>
             );
           })}
         </tbody>
@@ -285,7 +280,7 @@ function MatrixView({
 }
 
 // ---------------------------------------------------------------------------
-// Graph View — circular SVG layout with arrows
+// Graph View — circular SVG with arrows
 // ---------------------------------------------------------------------------
 
 interface NodePosition {
@@ -467,12 +462,8 @@ function GraphView({
           const initial = node.agent.name.charAt(0).toUpperCase();
 
           return (
-            <motion.g
+            <g
               key={node.agent.id}
-              custom={i}
-              variants={nodeVariants}
-              initial="hidden"
-              animate="visible"
               className="cursor-pointer"
               onMouseEnter={() => setHoveredAgent(node.agent.id)}
               onMouseLeave={() => setHoveredAgent(null)}
@@ -567,7 +558,7 @@ function GraphView({
                   </text>
                 </>
               )}
-            </motion.g>
+            </g>
           );
         })}
       </svg>
@@ -593,11 +584,7 @@ function AgentSidebar({
   const color = getAgentColor(agent.id);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
-      transition={{ duration: 0.2 }}
+    <div
       className={cn(
         'flex-shrink-0 w-72 border-l border-white/10 bg-white/[0.02] backdrop-blur-sm',
         'overflow-y-auto'
@@ -735,7 +722,7 @@ function AgentSidebar({
           Close
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -856,14 +843,9 @@ export default function AuthorityMatrix() {
 
       {/* ---- Content ---- */}
       <div className="flex-1 flex overflow-hidden">
-        <AnimatePresence mode="wait">
-          {viewMode === 'matrix' ? (
-            <motion.div
+        {viewMode === 'matrix' ? (
+            <div
               key="matrix"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
               className="flex-1 overflow-hidden"
             >
               <MatrixView
@@ -872,14 +854,10 @@ export default function AuthorityMatrix() {
                 selectedAgent={selectedAgent}
                 onSelectAgent={handleSelectAgent}
               />
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
+            <div
               key="graph"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
               className="flex-1 flex overflow-hidden"
             >
               <GraphView
@@ -890,8 +868,7 @@ export default function AuthorityMatrix() {
               />
 
               {/* Sidebar when agent selected in graph */}
-              <AnimatePresence>
-                {selectedAgentDef && (
+              {selectedAgentDef && (
                   <AgentSidebar
                     agent={selectedAgentDef}
                     agentMap={agentMap}
@@ -899,11 +876,9 @@ export default function AuthorityMatrix() {
                     onNavigate={(id) => setSelectedAgent(id)}
                   />
                 )}
-              </AnimatePresence>
-            </motion.div>
+</div>
           )}
-        </AnimatePresence>
-      </div>
+</div>
     </div>
   );
 }

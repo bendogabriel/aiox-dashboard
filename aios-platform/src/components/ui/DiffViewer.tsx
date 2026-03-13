@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
 interface DiffLine {
@@ -139,7 +138,7 @@ export function DiffViewer({
         }}
       >
         {/* Expand/collapse chevron */}
-        <motion.svg
+        <svg
           width="12"
           height="12"
           viewBox="0 0 24 24"
@@ -147,11 +146,9 @@ export function DiffViewer({
           stroke="currentColor"
           strokeWidth="2"
           className="text-tertiary flex-shrink-0"
-          animate={{ rotate: isCollapsed ? -90 : 0 }}
-          transition={{ duration: 0.15 }}
         >
           <polyline points="6 9 12 15 18 9" />
-        </motion.svg>
+        </svg>
 
         {/* File type badge */}
         <span
@@ -183,13 +180,8 @@ export function DiffViewer({
       </button>
 
       {/* Diff content */}
-      <AnimatePresence>
-        {!isCollapsed && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+      {!isCollapsed && (
+          <div
             className="overflow-hidden"
           >
             <div
@@ -201,8 +193,8 @@ export function DiffViewer({
                   key={i}
                   className={cn(
                     'flex',
-                    line.type === 'added' && 'bg-emerald-500/10',
-                    line.type === 'removed' && 'bg-red-500/10',
+                    line.type === 'added' && 'bg-[var(--color-status-success)]/10',
+                    line.type === 'removed' && 'bg-[var(--bb-error)]/10',
                   )}
                 >
                   {/* Line numbers */}
@@ -263,10 +255,9 @@ export function DiffViewer({
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }
 

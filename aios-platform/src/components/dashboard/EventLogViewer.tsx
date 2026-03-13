@@ -167,9 +167,9 @@ const pillBaseStyle: React.CSSProperties = {
 
 const pillActiveStyle: React.CSSProperties = {
   ...pillBaseStyle,
-  background: 'rgba(209, 255, 0, 0.1)',
-  color: 'var(--aiox-lime, #D1FF00)',
-  borderColor: 'rgba(209, 255, 0, 0.25)',
+  background: 'rgba(255, 255, 255, 0.06)',
+  color: 'var(--aiox-cream, #E5E5E5)',
+  borderColor: 'rgba(255, 255, 255, 0.2)',
 };
 
 const statCardStyle: React.CSSProperties = {
@@ -288,7 +288,7 @@ export function EventLogViewer() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <BarChart3
             size={14}
-            style={{ color: 'var(--aiox-lime, #D1FF00)' }}
+            style={{ color: 'var(--aiox-gray-dim, #696969)' }}
           />
           <span
             style={{
@@ -375,7 +375,7 @@ export function EventLogViewer() {
               ...statValueStyle,
               color:
                 stats.recoveryCount > 0
-                  ? 'var(--aiox-lime, #D1FF00)'
+                  ? 'var(--color-status-success, #4ADE80)'
                   : 'var(--aiox-cream, #E5E5E5)',
             }}
           >
@@ -650,9 +650,9 @@ export function EventLogViewer() {
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
               fontWeight: 600,
-              background: 'rgba(209, 255, 0, 0.06)',
-              color: 'var(--aiox-lime, #D1FF00)',
-              border: '1px solid rgba(209, 255, 0, 0.15)',
+              background: 'rgba(255, 255, 255, 0.04)',
+              color: 'var(--aiox-cream, #E5E5E5)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
               borderRadius: 0,
               cursor: 'pointer',
             }}
@@ -670,7 +670,7 @@ export function EventLogViewer() {
 function EventLogRow({ event }: { event: HealthEvent }) {
   const isRecovery = isRecoveryEvent(event);
   const color = isRecovery
-    ? 'var(--aiox-lime, #D1FF00)'
+    ? 'var(--color-status-success, #4ADE80)'
     : 'var(--color-status-error, #EF4444)';
   const Icon = isRecovery ? CheckCircle : AlertTriangle;
 
@@ -777,7 +777,7 @@ function EventLogRow({ event }: { event: HealthEvent }) {
             <div
               style={{
                 width: `${(capFull / capTotal) * 100}%`,
-                background: 'var(--aiox-lime, #D1FF00)',
+                background: 'var(--color-status-success, #4ADE80)',
                 height: '100%',
               }}
             />

@@ -112,7 +112,7 @@ export function ProjectTabs() {
             }}
             autoFocus
             placeholder="project name"
-            className="h-6 w-28 px-2 text-xs bg-white/5 border border-glass-border rounded text-primary placeholder:text-tertiary focus:outline-none focus:border-blue-500/50"
+            className="h-6 w-28 px-2 text-xs bg-white/5 border border-glass-border rounded text-primary placeholder:text-tertiary focus:outline-none focus:border-[var(--aiox-lime)]/50"
             aria-label="Nome do projeto"
           />
         </div>
@@ -240,7 +240,7 @@ function SortableTab({
         {/* Active indicator (bottom border) */}
         {isActive && (
           <span
-            className="absolute bottom-0 left-1 right-1 h-0.5 bg-blue-500 rounded-full"
+            className="absolute bottom-0 left-1 right-1 h-0.5 bg-[var(--aiox-blue)] rounded-full"
             aria-hidden="true"
           />
         )}

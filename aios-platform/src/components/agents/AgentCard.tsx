@@ -1,6 +1,5 @@
 import { memo } from 'react';
-import { motion } from 'framer-motion';
-import { GlassCard, Avatar, Badge } from '../ui';
+import { CockpitCard, Avatar, Badge } from '../ui';
 import { cn, getTierTheme } from '../../lib/utils';
 import { getIconComponent } from '../../lib/icons';
 import { hasAgentAvatar } from '../../lib/agent-avatars';
@@ -52,15 +51,14 @@ export const AgentCard = memo(function AgentCard({ agent, selected, compact = fa
 
   if (compact) {
     return (
-      <motion.div
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.99 }}
+      <div
+
         onClick={onClick}
         className={cn(
-          'group glass-subtle rounded-xl p-3 cursor-pointer transition-all duration-200',
+          'group glass-subtle rounded-none p-3 cursor-pointer transition-all duration-200',
           'hover:bg-white/30 dark:hover:bg-white/10',
-          selected && 'ring-2 ring-blue-500/50 bg-blue-500/10',
-          highlight && !selected && 'border-l-2 border-l-amber-500/70 bg-amber-500/5'
+          selected && 'ring-2 ring-[var(--aiox-lime)]/50 bg-[var(--aiox-lime)]/10',
+          highlight && !selected && 'border-l-2 border-l-[var(--bb-warning)]/70 bg-[var(--bb-warning)]/5'
         )}
       >
         <div className="flex items-center gap-3">
@@ -73,7 +71,7 @@ export const AgentCard = memo(function AgentCard({ agent, selected, compact = fa
             />
           ) : agent.icon ? (
             <div className={cn(
-              'h-10 w-10 rounded-xl flex items-center justify-center',
+              'h-10 w-10 rounded-none flex items-center justify-center',
               `bg-gradient-to-br ${getTierTheme(normalizedTier).gradient} bg-opacity-20`
             )}>
               {(() => { const Icon = getIconComponent(agent.icon); return <Icon size={18} />; })()}
@@ -107,8 +105,8 @@ export const AgentCard = memo(function AgentCard({ agent, selected, compact = fa
             className={cn(
               'p-1.5 rounded-lg transition-all',
               favorited
-                ? 'text-yellow-500 opacity-100'
-                : 'text-tertiary opacity-0 group-hover:opacity-100 hover:text-yellow-500'
+                ? 'text-[var(--bb-warning)] opacity-100'
+                : 'text-tertiary opacity-0 group-hover:opacity-100 hover:text-[var(--bb-warning)]'
             )}
             title={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
             aria-label={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
@@ -116,22 +114,21 @@ export const AgentCard = memo(function AgentCard({ agent, selected, compact = fa
             <StarIcon filled={favorited} />
           </button>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+    <div
+
       onClick={onClick}
       className="cursor-pointer group"
     >
-      <GlassCard
+      <CockpitCard
         interactive
         className={cn(
           'transition-all duration-200',
-          selected && 'ring-2 ring-blue-500/50 bg-blue-500/10'
+          selected && 'ring-2 ring-[var(--aiox-lime)]/50 bg-[var(--aiox-lime)]/10'
         )}
       >
         <div className="flex items-start gap-4">
@@ -144,7 +141,7 @@ export const AgentCard = memo(function AgentCard({ agent, selected, compact = fa
             />
           ) : agent.icon ? (
             <div className={cn(
-              'h-14 w-14 rounded-xl flex items-center justify-center flex-shrink-0',
+              'h-14 w-14 rounded-none flex items-center justify-center flex-shrink-0',
               `bg-gradient-to-br ${getTierTheme(normalizedTier).gradient}`
             )}>
               {(() => { const Icon = getIconComponent(agent.icon); return <Icon size={24} />; })()}
@@ -165,8 +162,8 @@ export const AgentCard = memo(function AgentCard({ agent, selected, compact = fa
                 className={cn(
                   'absolute -top-1 -right-1 p-1.5 rounded-lg transition-all z-10',
                   favorited
-                    ? 'text-yellow-500 opacity-100'
-                    : 'text-tertiary opacity-0 group-hover:opacity-100 hover:text-yellow-500'
+                    ? 'text-[var(--bb-warning)] opacity-100'
+                    : 'text-tertiary opacity-0 group-hover:opacity-100 hover:text-[var(--bb-warning)]'
                 )}
                 title={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                 aria-label={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
@@ -216,8 +213,8 @@ export const AgentCard = memo(function AgentCard({ agent, selected, compact = fa
             )}
           </div>
         </div>
-      </GlassCard>
-    </motion.div>
+      </CockpitCard>
+    </div>
   );
 });
 
@@ -232,7 +229,7 @@ export const AgentExplorerCard = memo(function AgentExplorerCard({ agent, select
   const squadType = getSquadTypeUtil(agent.squad);
   const { isFavorite, toggleFavorite } = useFavoritesStore();
   const favorited = isFavorite(agent.id);
-  const isAiox = useUIStore((s) => s.theme) === 'aiox';
+  const isAiox = useUIStore((s) => s.theme === 'aiox' || s.theme === 'aiox-gold');
   // Normalize tier to valid value (0, 1, or 2)
   const normalizedTier: AgentTier = (agent.tier === 0 || agent.tier === 1 || agent.tier === 2) ? agent.tier : 2;
 
@@ -246,26 +243,25 @@ export const AgentExplorerCard = memo(function AgentExplorerCard({ agent, select
   };
 
   return (
-    <motion.div
-      whileHover={isAiox ? { scale: 1 } : { scale: 1.02, y: -2 }}
-      whileTap={{ scale: 0.98 }}
+    <div
+
       onClick={onClick}
       className={cn(
         'group relative p-4 cursor-pointer transition-all duration-200 overflow-hidden',
         isAiox
-          ? 'border border-[rgba(156,156,156,0.15)] hover:border-[#D1FF00]/30'
-          : 'rounded-2xl border border-white/10 hover:border-white/20',
-        selected && (isAiox ? 'ring-2 ring-[#D1FF00]/50 border-[#D1FF00]/30' : 'ring-2 ring-blue-500/50 border-blue-500/30')
+          ? 'border border-[rgba(156,156,156,0.15)] hover:border-[var(--aiox-lime)]/30'
+          : 'rounded-none border border-white/10 hover:border-white/20',
+        selected && (isAiox ? 'ring-2 ring-[var(--aiox-lime)]/50 border-[var(--aiox-lime)]/30' : 'ring-2 ring-[var(--aiox-lime)]/50 border-[var(--aiox-lime)]/30')
       )}
       style={{
-        background: isAiox ? '#0a0a0a' : `linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)`,
+        background: isAiox ? 'var(--aiox-surface)' : `linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)`,
       }}
     >
       {/* Tier indicator */}
       <div
         className={cn(
           'absolute top-0 left-0 right-0 h-1',
-          isAiox ? 'bg-[#D1FF00]' : cn('bg-gradient-to-r', getTierTheme(normalizedTier).gradient)
+          isAiox ? 'bg-[var(--aiox-lime)]' : cn('bg-gradient-to-r', getTierTheme(normalizedTier).gradient)
         )}
       />
 
@@ -282,8 +278,8 @@ export const AgentExplorerCard = memo(function AgentExplorerCard({ agent, select
           <div className={cn(
             'h-12 w-12 flex items-center justify-center flex-shrink-0',
             isAiox
-              ? 'bg-[#D1FF00]/15 border border-[rgba(156,156,156,0.15)]'
-              : `rounded-xl bg-gradient-to-br ${getTierTheme(normalizedTier).gradient}`
+              ? 'bg-[var(--aiox-lime)]/15 border border-[rgba(156,156,156,0.15)]'
+              : `rounded-none bg-gradient-to-br ${getTierTheme(normalizedTier).gradient}`
           )}>
             {(() => { const Icon = getIconComponent(agent.icon); return <Icon size={22} />; })()}
           </div>
@@ -315,8 +311,8 @@ export const AgentExplorerCard = memo(function AgentExplorerCard({ agent, select
                 className={cn(
                   'p-1 rounded-lg transition-all',
                   favorited
-                    ? 'text-yellow-500 opacity-100'
-                    : 'text-white/30 opacity-0 group-hover:opacity-100 hover:text-yellow-500'
+                    ? 'text-[var(--bb-warning)] opacity-100'
+                    : 'text-white/30 opacity-0 group-hover:opacity-100 hover:text-[var(--bb-warning)]'
                 )}
                 title={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                 aria-label={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
@@ -359,6 +355,6 @@ export const AgentExplorerCard = memo(function AgentExplorerCard({ agent, select
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 });

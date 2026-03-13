@@ -1,4 +1,4 @@
-import { Dialog, Badge, GlassButton } from '../ui';
+import { Dialog, Badge, CockpitButton } from '../ui';
 import { cn } from '../../lib/utils';
 import type { Story } from '../../stores/storyStore';
 
@@ -19,33 +19,33 @@ const statusLabels: Record<Story['status'], string> = {
 };
 
 const statusColors: Record<Story['status'], string> = {
-  backlog: 'bg-gray-500/15 text-gray-500',
-  in_progress: 'bg-blue-500/15 text-blue-500',
-  ai_review: 'bg-purple-500/15 text-purple-500',
-  human_review: 'bg-orange-500/15 text-orange-500',
-  pr_created: 'bg-cyan-500/15 text-cyan-500',
-  done: 'bg-green-500/15 text-green-500',
-  error: 'bg-red-500/15 text-red-500',
+  backlog: 'bg-[var(--aiox-gray-dim)]/15 text-tertiary',
+  in_progress: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  ai_review: 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]',
+  human_review: 'bg-[var(--bb-flare)]/15 text-[var(--bb-flare)]',
+  pr_created: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  done: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
+  error: 'bg-[var(--bb-error)]/15 text-[var(--bb-error)]',
 };
 
 const priorityColors: Record<Story['priority'], string> = {
-  low: 'bg-gray-500/15 text-gray-500',
-  medium: 'bg-blue-500/15 text-blue-500',
-  high: 'bg-orange-500/15 text-orange-500',
-  critical: 'bg-red-500/15 text-red-500',
+  low: 'bg-[var(--aiox-gray-dim)]/15 text-tertiary',
+  medium: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  high: 'bg-[var(--bb-flare)]/15 text-[var(--bb-flare)]',
+  critical: 'bg-[var(--bb-error)]/15 text-[var(--bb-error)]',
 };
 
 const complexityColors: Record<Story['complexity'], string> = {
-  simple: 'bg-green-500/15 text-green-500',
-  standard: 'bg-blue-500/15 text-blue-500',
-  complex: 'bg-purple-500/15 text-purple-500',
+  simple: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
+  standard: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  complex: 'bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]',
 };
 
 const categoryColors: Record<Story['category'], string> = {
-  feature: 'bg-blue-500/15 text-blue-500',
-  fix: 'bg-red-500/15 text-red-500',
-  refactor: 'bg-yellow-500/15 text-yellow-600 dark:text-yellow-400',
-  docs: 'bg-green-500/15 text-green-500',
+  feature: 'bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]',
+  fix: 'bg-[var(--bb-error)]/15 text-[var(--bb-error)]',
+  refactor: 'bg-[var(--bb-warning)]/15 text-[var(--bb-warning)]',
+  docs: 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]',
 };
 
 function formatDate(dateStr: string): string {
@@ -68,9 +68,9 @@ export function StoryDetailModal({ story, isOpen, onClose }: StoryDetailModalPro
       title={story.title}
       size="lg"
       footer={
-        <GlassButton variant="ghost" onClick={onClose}>
+        <CockpitButton variant="ghost" onClick={onClose}>
           Fechar
-        </GlassButton>
+        </CockpitButton>
       }
     >
       <div className="space-y-4">
@@ -136,7 +136,7 @@ export function StoryDetailModal({ story, isOpen, onClose }: StoryDetailModalPro
             <h3 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-1.5">
               Notas Tecnicas
             </h3>
-            <pre className="text-xs text-primary font-mono bg-[var(--color-background-hover)] p-3 rounded-xl whitespace-pre-wrap leading-relaxed">
+            <pre className="text-xs text-primary font-mono bg-[var(--color-background-hover)] p-3 rounded-none whitespace-pre-wrap leading-relaxed">
               {story.technicalNotes}
             </pre>
           </div>

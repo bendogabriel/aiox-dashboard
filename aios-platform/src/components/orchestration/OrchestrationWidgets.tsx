@@ -1,5 +1,4 @@
 import { useState, useEffect, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Loader2,
   Bot,
@@ -14,40 +13,25 @@ import {
 import type { TaskState, SquadSelection } from './orchestration-types';
 import { getSquadColor, phases } from './orchestration-types';
 
-// Pre-compute random values outside component to preserve purity
-const PARTICLE_DATA = Array.from({ length: 20 }, (_, i) => ({
-  x: ((i * 37 + 13) % 100) + '%',
-  duration: (i % 10) + 10,
-  delay: (i * 0.25) % 5,
-}));
+/**
+ * Pre-defined phase color map.
+ * Dynamic Tailwind classes like `bg-${color}-500/20` do NOT work with JIT —
+ * we use inline style objects instead.
+ */
+const PHASE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
+  analyzing:         { bg: 'var(--color-accent-subtle, #D1FF0033)', border: 'color-mix(in srgb, var(--color-accent, #D1FF00) 40%, transparent)', text: 'var(--color-accent, #D1FF00)' },
+  planning:          { bg: 'color-mix(in srgb, var(--aiox-blue, #0099FF) 20%, transparent)', border: 'color-mix(in srgb, var(--aiox-blue, #0099FF) 40%, transparent)', text: 'var(--aiox-blue, #0099FF)' },
+  awaiting_approval: { bg: 'color-mix(in srgb, var(--color-status-warning, #FFB800) 20%, transparent)', border: 'color-mix(in srgb, var(--color-status-warning, #FFB800) 40%, transparent)', text: 'var(--color-status-warning, #FFB800)' },
+  executing:         { bg: 'var(--color-accent-subtle, #D1FF0033)', border: 'color-mix(in srgb, var(--color-accent, #D1FF00) 40%, transparent)', text: 'var(--color-accent, #D1FF00)' },
+  completed:         { bg: 'var(--color-accent-subtle, #D1FF0033)', border: 'color-mix(in srgb, var(--color-accent, #D1FF00) 40%, transparent)', text: 'var(--color-accent, #D1FF00)' },
+  failed:            { bg: 'color-mix(in srgb, var(--color-status-error, #FF3B30) 20%, transparent)', border: 'color-mix(in srgb, var(--color-status-error, #FF3B30) 40%, transparent)', text: 'var(--color-status-error, #FF3B30)' },
+};
 
-export const BackgroundParticles = memo(function BackgroundParticles() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {PARTICLE_DATA.map((p, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-1 h-1 bg-cyan-500/30 rounded-full"
-          initial={{
-            x: p.x,
-            y: '100%',
-            opacity: 0,
-          }}
-          animate={{
-            y: '-10%',
-            opacity: [0, 0.5, 0],
-          }}
-          transition={{
-            duration: p.duration,
-            repeat: Infinity,
-            delay: p.delay,
-            ease: 'linear',
-          }}
-        />
-      ))}
-    </div>
-  );
-});
+const PHASE_COLORS_DEFAULT = { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)', text: 'rgba(255,255,255,0.4)' };
+
+function getPhaseColor(phaseId: string) {
+  return PHASE_COLORS[phaseId] ?? PHASE_COLORS_DEFAULT;
+}
 
 export const LiveMetrics = memo(function LiveMetrics({ state }: { state: TaskState }) {
   const [elapsed, setElapsed] = useState(() =>
@@ -83,53 +67,34 @@ export const LiveMetrics = memo(function LiveMetrics({ state }: { state: TaskSta
 
   return (
     <div className="flex flex-wrap items-center gap-2 md:gap-6">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10"
-      >
-        <Clock className="w-3.5 h-3.5 md:w-4 md:h-4 text-cyan-400" />
+      <div className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 bg-white/5 border border-white/10">
+        <Clock className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--aiox-blue)]" />
         <span className="text-xs md:text-sm font-mono text-white/80">
           {Math.floor(elapsed / 60).toString().padStart(2, '0')}:
           {(elapsed % 60).toString().padStart(2, '0')}
         </span>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10 hidden sm:flex"
-      >
-        <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4 text-purple-400" />
+      <div className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 bg-white/5 border border-white/10 hidden sm:flex">
+        <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--aiox-gray-muted)]" />
         <span className="text-xs md:text-sm font-mono text-white/80">
           {totalTokens.toLocaleString()} tok
         </span>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10 hidden md:flex"
-      >
-        <Coins className="w-4 h-4 text-yellow-400" />
+      <div className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 bg-white/5 border border-white/10 hidden md:flex">
+        <Coins className="w-4 h-4 text-[var(--bb-warning)]" />
         <span className="text-sm font-mono text-white/80">
           ${estimatedCost.toFixed(4)}
         </span>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10"
-      >
-        <Bot className="w-3.5 h-3.5 md:w-4 md:h-4 text-green-400" />
+      <div className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 bg-white/5 border border-white/10">
+        <Bot className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-status-success)]" />
         <span className="text-xs md:text-sm font-mono text-white/80">
           {state.agentOutputs.length + state.streamingOutputs.size} agentes
         </span>
-      </motion.div>
+      </div>
     </div>
   );
 });
@@ -144,53 +109,63 @@ export const PhaseProgress = memo(function PhaseProgress({ currentStatus }: { cu
         const isCompleted = currentPhaseIndex > index || currentStatus === 'completed';
         const isFailed = currentStatus === 'failed';
         const Icon = phase.icon;
+        const colors = getPhaseColor(phase.id);
+
+        // Determine styles: completed (green), active (phase color with border-left accent), inactive (muted)
+        const completedStyle = {
+          backgroundColor: 'color-mix(in srgb, var(--color-status-success, #4ADE80) 10%, transparent)',
+          borderColor: 'color-mix(in srgb, var(--color-status-success, #4ADE80) 30%, transparent)',
+          borderLeftWidth: '3px',
+          borderLeftColor: 'var(--color-status-success, #4ADE80)',
+        };
+        const activeStyle = {
+          backgroundColor: colors.bg,
+          borderColor: colors.border,
+          borderLeftWidth: '3px',
+          borderLeftColor: colors.text,
+        };
+        const inactiveStyle = {
+          backgroundColor: 'rgba(255,255,255,0.05)',
+          borderColor: 'rgba(255,255,255,0.1)',
+        };
+
+        const itemStyle = isCompleted
+          ? completedStyle
+          : isActive
+          ? activeStyle
+          : inactiveStyle;
 
         return (
           <div key={phase.id} className="flex items-center">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className={`relative flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl transition-all duration-300 ${
-                isCompleted
-                  ? 'bg-green-500/10 border border-green-500/30'
-                  : isActive
-                  ? `bg-${phase.color}-500/20 border border-${phase.color}-500/40 shadow-lg shadow-${phase.color}-500/20`
-                  : 'bg-white/5 border border-white/10'
-              }`}
+            <div
+              className="relative flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 border transition-all duration-200"
+              style={itemStyle}
             >
-              {isActive && !isFailed && !isCompleted && (
-                <motion.div
-                  className="absolute inset-0 rounded-xl"
-                  style={{
-                    background: `linear-gradient(90deg, transparent, rgba(var(--${phase.color}-rgb), 0.1), transparent)`,
-                  }}
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                />
-              )}
               <div className="relative">
                 {isActive && !isFailed && !isCompleted ? (
-                  <Loader2 className={`w-4 h-4 animate-spin text-${phase.color}-400`} />
+                  <Loader2 className="w-4 h-4 animate-spin" style={{ color: colors.text }} />
                 ) : isCompleted ? (
-                  <CheckCircle2 className="w-4 h-4 text-green-400" />
+                  <CheckCircle2 className="w-4 h-4 text-[var(--color-status-success)]" />
                 ) : (
                   <Icon className="w-4 h-4 text-white/40" />
                 )}
               </div>
               <span
-                className={`text-xs md:text-sm font-medium hidden sm:inline ${
-                  isCompleted ? 'text-green-400' : isActive ? `text-${phase.color}-400` : 'text-white/40'
-                }`}
+                className="text-xs md:text-sm font-medium hidden sm:inline"
+                style={{
+                  color: isCompleted ? 'var(--color-status-success, #4ADE80)' : isActive ? colors.text : 'rgba(255,255,255,0.4)',
+                }}
               >
                 {phase.label}
               </span>
-            </motion.div>
+            </div>
             {index < phases.length - 1 && (
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: currentPhaseIndex > index ? 1 : 0 }}
-                className="w-4 md:w-8 h-0.5 bg-gradient-to-r from-green-500 to-green-400 origin-left hidden sm:block"
+              <div
+                className="w-4 md:w-8 h-0.5 origin-left hidden sm:block transition-transform duration-200"
+                style={{
+                  backgroundColor: 'var(--color-status-success, #4ADE80)',
+                  transform: currentPhaseIndex > index ? 'scaleX(1)' : 'scaleX(0)',
+                }}
               />
             )}
           </div>
@@ -205,34 +180,21 @@ export const SquadCard = memo(function SquadCard({ selection, isActive }: { sele
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <motion.div
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      whileHover={{ scale: 1.02 }}
-      className="relative p-4 rounded-2xl border backdrop-blur-xl transition-all duration-300 cursor-pointer"
+    <div
+      className="relative p-4 border transition-all duration-300 cursor-pointer"
       style={{
         backgroundColor: color.bg,
         borderColor: color.border,
-        boxShadow: isActive ? `0 0 30px ${color.glow}, 0 0 0 2px ${color.text}` : 'none',
+        borderLeftWidth: isActive ? '3px' : '1px',
+        borderLeftColor: isActive ? color.text : color.border,
       }}
       onClick={() => setExpanded(!expanded)}
     >
-      {isActive && (
-        <motion.div
-          className="absolute inset-0 rounded-2xl"
-          style={{
-            background: `linear-gradient(45deg, transparent, ${color.bg}, transparent)`,
-          }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-        />
-      )}
-
       <div className="relative">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
+              className="w-10 h-10 flex items-center justify-center"
               style={{ backgroundColor: color.bg, border: `1px solid ${color.border}` }}
             >
               <Layers className="w-5 h-5" style={{ color: color.text }} />
@@ -244,7 +206,7 @@ export const SquadCard = memo(function SquadCard({ selection, isActive }: { sele
           </div>
           <div className="flex items-center gap-2">
             <span
-              className="px-2 py-1 rounded-lg text-xs font-medium"
+              className="px-2 py-1 text-xs font-medium"
               style={{ backgroundColor: color.bg, color: color.text }}
             >
               {selection.agentCount} agentes
@@ -257,30 +219,21 @@ export const SquadCard = memo(function SquadCard({ selection, isActive }: { sele
           </div>
         </div>
 
-        <AnimatePresence>
-          {expanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
-            >
+        {expanded && (
+          <div className="transition-opacity duration-200">
               <div className="flex flex-wrap gap-2 pt-3 border-t border-white/10">
                 {selection.agents.map((agent) => (
-                  <motion.span
+                  <span
                     key={agent.id}
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium bg-black/20 text-white/80"
+                    className="px-3 py-1.5 text-xs font-medium bg-black/20 text-white/80"
                   >
                     {agent.name || agent.id}
-                  </motion.span>
+                  </span>
                 ))}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          </div>
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 });

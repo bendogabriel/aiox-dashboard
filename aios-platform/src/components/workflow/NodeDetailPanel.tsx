@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import { GlassButton, Badge, Avatar } from '../ui';
+import { CockpitButton, Badge, Avatar } from '../ui';
 import { cn, formatRelativeTime, getSquadTheme } from '../../lib/utils';
 import { CloseIcon, ClockIcon, TokenIcon, CheckIcon, SpinnerIcon, FileIcon, CodeIcon, ImageFileIcon } from './WorkflowIcons';
 import { formatDuration, formatTokens } from './workflow-utils';
@@ -15,7 +14,7 @@ export function NodeDetailPanel({
 }) {
   // Get gradient color from centralized theme
   const getNodeGradient = (squadType: string | undefined): string => {
-    if (!squadType) return 'from-blue-500 to-cyan-500';
+    if (!squadType) return 'from-[var(--aiox-blue)] to-[var(--aiox-blue)]';
     const theme = getSquadTheme(squadType as SquadType);
     return theme.gradient;
   };
@@ -38,14 +37,14 @@ export function NodeDetailPanel({
   const getFileColor = (type: string) => {
     switch (type) {
       case 'markdown':
-        return 'text-blue-500';
+        return 'text-[var(--aiox-blue)]';
       case 'json':
       case 'code':
-        return 'text-purple-500';
+        return 'text-[var(--aiox-gray-muted)]';
       case 'image':
-        return 'text-green-500';
+        return 'text-[var(--color-status-success)]';
       default:
-        return 'text-gray-400';
+        return 'text-[var(--aiox-gray-dim)]';
     }
   };
 
@@ -54,15 +53,15 @@ export function NodeDetailPanel({
       className="h-full flex flex-col w-80 backdrop-blur-xl"
       style={{
         background: `
-          radial-gradient(ellipse 80% 50% at 100% 100%, rgba(140, 60, 180, 0.12) 0%, transparent 50%),
-          radial-gradient(ellipse 60% 80% at 0% 0%, rgba(60, 180, 200, 0.10) 0%, transparent 50%),
+          radial-gradient(ellipse 80% 50% at 100% 100%, color-mix(in srgb, var(--aiox-gray-muted) 12%, transparent) 0%, transparent 50%),
+          radial-gradient(ellipse 60% 80% at 0% 0%, color-mix(in srgb, var(--aiox-blue) 10%, transparent) 0%, transparent 50%),
           rgba(15, 15, 20, 0.65)
         `
       }}
     >
       <div className="p-4 border-b border-white/10 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+          <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-[var(--aiox-blue)] to-[var(--aiox-blue)] flex items-center justify-center">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="3" />
               <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
@@ -70,9 +69,9 @@ export function NodeDetailPanel({
           </div>
           <h3 className="text-xs font-semibold text-white/70 uppercase tracking-wider">Detalhes do Nó</h3>
         </div>
-        <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={onClose} aria-label="Fechar">
+        <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={onClose} aria-label="Fechar">
           <CloseIcon />
-        </GlassButton>
+        </CockpitButton>
       </div>
 
       <div className="flex-1 overflow-y-auto glass-scrollbar p-4 space-y-4">
@@ -88,10 +87,10 @@ export function NodeDetailPanel({
           ) : (
             <div
               className={cn(
-                'h-12 w-12 rounded-xl flex items-center justify-center',
-                node.type === 'start' && 'bg-green-500/20 text-green-500',
-                node.type === 'end' && 'bg-blue-500/20 text-blue-500',
-                node.type === 'checkpoint' && 'bg-yellow-500/20 text-yellow-500'
+                'h-12 w-12 rounded-none flex items-center justify-center',
+                node.type === 'start' && 'bg-[var(--color-status-success)]/20 text-[var(--color-status-success)]',
+                node.type === 'end' && 'bg-[var(--aiox-blue)]/20 text-[var(--aiox-blue)]',
+                node.type === 'checkpoint' && 'bg-[var(--bb-warning)]/20 text-[var(--bb-warning)]'
               )}
             >
               {node.type === 'start' && (
@@ -143,10 +142,10 @@ export function NodeDetailPanel({
         {/* Progress */}
         {node.progress !== undefined && (
           <div
-            className="rounded-xl p-3 space-y-2"
+            className="rounded-none p-3 space-y-2"
             style={{
-              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%)',
-              border: '1px solid rgba(59, 130, 246, 0.2)'
+              background: 'linear-gradient(135deg, color-mix(in srgb, var(--aiox-blue) 10%, transparent) 0%, color-mix(in srgb, var(--aiox-blue) 10%, transparent) 100%)',
+              border: '1px solid color-mix(in srgb, var(--aiox-blue) 20%, transparent)'
             }}
           >
             <div className="flex items-center justify-between text-xs">
@@ -154,15 +153,12 @@ export function NodeDetailPanel({
               <span className="text-white font-semibold">{node.progress}%</span>
             </div>
             <div className="h-2 rounded-full bg-black/30 overflow-hidden">
-              <motion.div
+              <div
                 className={cn(
                   'h-full rounded-full bg-gradient-to-r',
                   getNodeGradient(node.squadType)
                 )}
-                initial={{ width: 0 }}
-                animate={{ width: `${node.progress}%` }}
-                transition={{ duration: 0.5 }}
-                style={{ boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)' }}
+                style={{ boxShadow: '0 0 10px color-mix(in srgb, var(--aiox-blue) 50%, transparent)' }}
               />
             </div>
             {node.startedAt && (
@@ -177,14 +173,14 @@ export function NodeDetailPanel({
         {/* Request - What was asked */}
         {node.request && (
           <div
-            className="rounded-xl p-3"
+            className="rounded-none p-3"
             style={{
-              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, transparent 100%)',
+              background: 'linear-gradient(135deg, color-mix(in srgb, var(--aiox-blue) 8%, transparent) 0%, transparent 100%)',
               border: '1px solid rgba(255, 255, 255, 0.05)'
             }}
           >
             <div className="flex items-center gap-2 mb-2">
-              <div className="h-5 w-5 rounded-md bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+              <div className="h-5 w-5 rounded-md bg-gradient-to-br from-[var(--aiox-blue)] to-[var(--aiox-blue)] flex items-center justify-center">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
@@ -200,16 +196,16 @@ export function NodeDetailPanel({
         {/* Current Action */}
         {node.currentAction && node.status === 'active' && (
           <div
-            className="rounded-xl p-3 border-l-2 border-orange-500"
+            className="rounded-none p-3 border-l-2 border-[var(--bb-flare)]"
             style={{
-              background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, transparent 100%)',
-              border: '1px solid rgba(249, 115, 22, 0.2)',
+              background: 'linear-gradient(135deg, color-mix(in srgb, var(--bb-flare) 15%, transparent) 0%, transparent 100%)',
+              border: '1px solid color-mix(in srgb, var(--bb-flare) 20%, transparent)',
               borderLeftWidth: '2px'
             }}
           >
             <div className="flex items-center gap-2 mb-1">
               <SpinnerIcon />
-              <span className="text-xs font-semibold text-orange-400">Ação Atual</span>
+              <span className="text-xs font-semibold text-[var(--bb-flare)]">Ação Atual</span>
             </div>
             <p className="text-sm text-white/90">{node.currentAction}</p>
           </div>
@@ -218,15 +214,15 @@ export function NodeDetailPanel({
         {/* Todo List */}
         {node.todos && node.todos.length > 0 && (
           <div
-            className="rounded-xl p-3"
+            className="rounded-none p-3"
             style={{
-              background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, transparent 100%)',
+              background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-status-success) 8%, transparent) 0%, transparent 100%)',
               border: '1px solid rgba(255, 255, 255, 0.05)'
             }}
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="h-5 w-5 rounded-md bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                <div className="h-5 w-5 rounded-md bg-gradient-to-br from-[var(--color-status-success)] to-[var(--color-status-success)] flex items-center justify-center">
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M9 11l3 3L22 4" />
                     <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
@@ -240,19 +236,16 @@ export function NodeDetailPanel({
             </div>
             <div className="space-y-2">
               {node.todos.map((todo, index) => (
-                <motion.div
+                <div
                   key={todo.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.03 }}
                   className="flex items-start gap-2"
                 >
                   <div
                     className={cn(
                       'h-4 w-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5',
-                      todo.status === 'completed' && 'bg-green-500/20 text-green-400',
-                      todo.status === 'in-progress' && 'bg-orange-500/20 text-orange-400',
-                      todo.status === 'pending' && 'bg-gray-500/20 text-gray-400'
+                      todo.status === 'completed' && 'bg-[var(--color-status-success)]/20 text-[var(--color-status-success)]',
+                      todo.status === 'in-progress' && 'bg-[var(--bb-flare)]/20 text-[var(--bb-flare)]',
+                      todo.status === 'pending' && 'bg-[var(--aiox-gray-dim)]/20 text-[var(--aiox-gray-dim)]'
                     )}
                   >
                     {todo.status === 'completed' && <CheckIcon />}
@@ -266,7 +259,7 @@ export function NodeDetailPanel({
                   >
                     {todo.text}
                   </span>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -275,15 +268,15 @@ export function NodeDetailPanel({
         {/* Generated Files */}
         {node.files && node.files.length > 0 && (
           <div
-            className="rounded-xl p-3"
+            className="rounded-none p-3"
             style={{
-              background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, transparent 100%)',
+              background: 'linear-gradient(135deg, color-mix(in srgb, var(--aiox-gray-muted) 8%, transparent) 0%, transparent 100%)',
               border: '1px solid rgba(255, 255, 255, 0.05)'
             }}
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="h-5 w-5 rounded-md bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <div className="h-5 w-5 rounded-md bg-gradient-to-br from-[var(--aiox-gray-muted)] to-[var(--bb-flare)] flex items-center justify-center">
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
                   </svg>
@@ -296,11 +289,8 @@ export function NodeDetailPanel({
             </div>
             <div className="space-y-2">
               {node.files.map((file, index) => (
-                <motion.div
+                <div
                   key={file.id}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
                   className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors"
                 >
                   <div className={cn('flex-shrink-0', getFileColor(file.type))}>
@@ -312,7 +302,7 @@ export function NodeDetailPanel({
                       {file.size} · {formatRelativeTime(file.createdAt)}
                     </p>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -321,20 +311,20 @@ export function NodeDetailPanel({
         {/* Output/Result */}
         {node.output && (
           <div
-            className="rounded-xl p-3 border-l-2 border-green-500"
+            className="rounded-none p-3 border-l-2 border-[var(--color-status-success)]"
             style={{
-              background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, transparent 100%)',
-              border: '1px solid rgba(34, 197, 94, 0.2)',
+              background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-status-success) 15%, transparent) 0%, transparent 100%)',
+              border: '1px solid color-mix(in srgb, var(--color-status-success) 20%, transparent)',
               borderLeftWidth: '2px'
             }}
           >
             <div className="flex items-center gap-2 mb-2">
-              <div className="h-5 w-5 rounded-md bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+              <div className="h-5 w-5 rounded-md bg-gradient-to-br from-[var(--color-status-success)] to-[var(--color-status-success)] flex items-center justify-center">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
-              <span className="text-xs font-semibold text-green-400">Resultado</span>
+              <span className="text-xs font-semibold text-[var(--color-status-success)]">Resultado</span>
             </div>
             <p className="text-sm text-white/90">{node.output}</p>
           </div>
@@ -343,19 +333,19 @@ export function NodeDetailPanel({
         {/* Waiting Message */}
         {node.status === 'waiting' && (
           <div
-            className="rounded-xl p-3 border-l-2 border-yellow-500"
+            className="rounded-none p-3 border-l-2 border-[var(--bb-warning)]"
             style={{
-              background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, transparent 100%)',
-              border: '1px solid rgba(234, 179, 8, 0.2)',
+              background: 'linear-gradient(135deg, color-mix(in srgb, var(--bb-warning) 15%, transparent) 0%, transparent 100%)',
+              border: '1px solid color-mix(in srgb, var(--bb-warning) 20%, transparent)',
               borderLeftWidth: '2px'
             }}
           >
             <div className="flex items-center gap-2">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-yellow-400">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--bb-warning)]">
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12 6 12 12 16 14" />
               </svg>
-              <span className="text-xs text-yellow-400">{node.currentAction || 'Aguardando dependências...'}</span>
+              <span className="text-xs text-[var(--bb-warning)]">{node.currentAction || 'Aguardando dependências...'}</span>
             </div>
           </div>
         )}
@@ -364,7 +354,7 @@ export function NodeDetailPanel({
         {node.tools && node.tools.length > 0 && (
           <div className="pt-3 mt-3 border-t border-white/10">
             <div className="flex items-center gap-2 mb-2">
-              <div className="h-4 w-4 rounded bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center">
+              <div className="h-4 w-4 rounded bg-gradient-to-br from-[var(--aiox-gray-dim)] to-[var(--aiox-gray-charcoal)] flex items-center justify-center">
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
                 </svg>
@@ -383,7 +373,7 @@ export function NodeDetailPanel({
         {node.tokens && node.tokens.total > 0 && (
           <div className="pt-3 mt-3 border-t border-white/10">
             <div className="flex items-center gap-2 mb-2">
-              <div className="h-4 w-4 rounded bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+              <div className="h-4 w-4 rounded bg-gradient-to-br from-[var(--bb-warning)] to-[var(--bb-flare)] flex items-center justify-center">
                 <TokenIcon />
               </div>
               <span className="text-[10px] font-medium text-white/50 uppercase tracking-wider">Uso de Tokens</span>
@@ -391,7 +381,7 @@ export function NodeDetailPanel({
             <div
               className="rounded-lg p-2 space-y-1.5"
               style={{
-                background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, transparent 100%)',
+                background: 'linear-gradient(135deg, color-mix(in srgb, var(--bb-warning) 8%, transparent) 0%, transparent 100%)',
                 border: '1px solid rgba(255, 255, 255, 0.05)'
               }}
             >
@@ -405,7 +395,7 @@ export function NodeDetailPanel({
               </div>
               <div className="flex items-center justify-between pt-1.5 border-t border-white/10">
                 <span className="text-[10px] text-white/50 font-medium">Total</span>
-                <span className="text-xs text-amber-400 font-semibold">{formatTokens(node.tokens.total)}</span>
+                <span className="text-xs text-[var(--bb-warning)] font-semibold">{formatTokens(node.tokens.total)}</span>
               </div>
             </div>
           </div>
@@ -546,7 +536,7 @@ export function ToolBadge({ tool }: { tool: AgentTool }) {
       <span className="opacity-70">{toolIcons[tool.id] || toolIcons['api']}</span>
       <span>{tool.name}</span>
       {tool.connected && (
-        <span className="h-1 w-1 rounded-full bg-green-500" />
+        <span className="h-1 w-1 rounded-full bg-[var(--color-status-success)]" />
       )}
     </div>
   );

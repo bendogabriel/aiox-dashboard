@@ -92,7 +92,7 @@ export class MetricEvaluator {
       return { value, raw, durationMs };
     } finally {
       // Cleanup temp file
-      try { await Bun.write(tmpFile, ''); Bun.spawn(['rm', '-f', tmpFile]); } catch {}
+      try { await Bun.write(tmpFile, ''); Bun.spawn(['rm', '-f', tmpFile]); } catch { /* no-op */ }
     }
   }
 

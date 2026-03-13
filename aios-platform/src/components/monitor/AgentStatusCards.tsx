@@ -1,4 +1,4 @@
-import { GlassCard, StatusDot, Badge } from '../ui';
+import { CockpitCard, StatusDot, Badge } from '../ui';
 import type { StatusType } from '../ui/StatusDot';
 import { useAgents } from '../../hooks/useAgents';
 
@@ -11,11 +11,11 @@ export default function AgentStatusCards() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
         {Array.from({ length: 4 }).map((_, i) => (
-          <GlassCard key={i} padding="sm" variant="subtle" className="animate-pulse">
+          <CockpitCard key={i} padding="sm" variant="subtle" className="animate-pulse">
             <div className="h-4 w-24 bg-white/5 rounded mb-2" />
             <div className="h-3 w-32 bg-white/5 rounded mb-2" />
             <div className="h-3 w-16 bg-white/5 rounded" />
-          </GlassCard>
+          </CockpitCard>
         ))}
       </div>
     );
@@ -41,7 +41,7 @@ export default function AgentStatusCards() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
       {agentCards.map((agent) => (
-        <GlassCard key={agent.id} padding="sm" variant="subtle">
+        <CockpitCard key={agent.id} padding="sm" variant="subtle">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-primary truncate">
               {agent.name}
@@ -64,7 +64,7 @@ export default function AgentStatusCards() {
               {agent.model}
             </Badge>
           </div>
-        </GlassCard>
+        </CockpitCard>
       ))}
     </div>
   );

@@ -10,11 +10,11 @@ export const spec: ProjectSpec = {
   aiosCore: {
     constitution: true,
     coreAgents: [
-      { id: 'architect', name: 'Architect', role: 'System Architect', description: 'System architecture and technology decisions', tier: 1, icon: '🏗️' },
-      { id: 'pm', name: 'Product Manager', role: 'Product Manager', description: 'Product requirements and roadmap management', tier: 1, icon: '📋' },
-      { id: 'po', name: 'Product Owner', role: 'Product Owner', description: 'Story validation and backlog prioritization', tier: 1, icon: '✅' },
-      { id: 'sm', name: 'Scrum Master', role: 'Scrum Master', description: 'Story creation and sprint management', tier: 1, icon: '🔄' },
-      { id: 'analyst', name: 'Business Analyst', role: 'Business Analyst', description: 'Requirements analysis and documentation', tier: 1, icon: '📊' },
+      { id: 'architect', name: 'Architect', role: 'System Architect', description: 'System architecture and technology decisions', tier: 1, icon: 'Landmark' },
+      { id: 'pm', name: 'Product Manager', role: 'Product Manager', description: 'Product requirements and roadmap management', tier: 1, icon: 'ClipboardList' },
+      { id: 'po', name: 'Product Owner', role: 'Product Owner', description: 'Story validation and backlog prioritization', tier: 1, icon: 'CheckCircle' },
+      { id: 'sm', name: 'Scrum Master', role: 'Scrum Master', description: 'Story creation and sprint management', tier: 1, icon: 'RefreshCw' },
+      { id: 'analyst', name: 'Business Analyst', role: 'Business Analyst', description: 'Requirements analysis and documentation', tier: 1, icon: 'BarChart3' },
     ],
     workflows: [
       {
@@ -67,7 +67,7 @@ export const spec: ProjectSpec = {
       displayName: 'Engineering Squad',
       description: 'Core development and implementation',
       domain: 'development',
-      icon: '⚙️',
+      icon: 'Cog',
       agents: [
         { id: 'dev-lead', name: 'Dev Lead', role: 'Lead Software Engineer', description: 'Leads development', tier: 'orchestrator' },
         { id: 'frontend-dev', name: 'Frontend Dev', role: 'Frontend Developer', description: 'React/TypeScript', tier: 2 },
@@ -81,7 +81,7 @@ export const spec: ProjectSpec = {
       displayName: 'Design System Squad',
       description: 'Design system and UI/UX',
       domain: 'design-system',
-      icon: '🎨',
+      icon: 'Palette',
       agents: [
         { id: 'design-chief', name: 'Design Chief', role: 'Design Architect', description: 'Design leadership', tier: 'orchestrator' },
         { id: 'ui-dev', name: 'UI Developer', role: 'UI Component Developer', description: 'Component library', tier: 2 },
@@ -93,7 +93,7 @@ export const spec: ProjectSpec = {
       displayName: 'Analytics Squad',
       description: 'Data and metrics',
       domain: 'analytics',
-      icon: '📊',
+      icon: 'BarChart3',
       agents: [
         { id: 'data-lead', name: 'Data Lead', role: 'Analytics Lead', description: 'Data analysis', tier: 'orchestrator' },
         { id: 'metrics-analyst', name: 'Metrics Analyst', role: 'Metrics Analyst', description: 'Metrics tracking', tier: 2 },
@@ -105,7 +105,7 @@ export const spec: ProjectSpec = {
       displayName: 'Content Squad',
       description: 'Content creation and management',
       domain: 'content',
-      icon: '📝',
+      icon: 'FileText',
       agents: [
         { id: 'content-lead', name: 'Content Lead', role: 'Content Strategist', description: 'Content strategy', tier: 'orchestrator' },
         { id: 'copywriter', name: 'Copywriter', role: 'Technical Copywriter', description: 'Technical writing', tier: 2 },
@@ -117,7 +117,7 @@ export const spec: ProjectSpec = {
       displayName: 'Marketing Squad',
       description: 'Marketing and growth',
       domain: 'marketing',
-      icon: '📣',
+      icon: 'Megaphone',
       agents: [
         { id: 'marketing-lead', name: 'Marketing Lead', role: 'Marketing Strategist', description: 'Marketing strategy', tier: 'orchestrator' },
       ],
@@ -128,7 +128,7 @@ export const spec: ProjectSpec = {
       displayName: 'DevOps Squad',
       description: 'Infrastructure and deployment',
       domain: 'infrastructure',
-      icon: '🚀',
+      icon: 'Rocket',
       agents: [
         { id: 'devops-lead', name: 'DevOps Lead', role: 'DevOps Engineer', description: 'CI/CD and infrastructure', tier: 'orchestrator' },
         { id: 'sre', name: 'SRE', role: 'Site Reliability Engineer', description: 'Reliability and monitoring', tier: 2 },
@@ -140,7 +140,7 @@ export const spec: ProjectSpec = {
       displayName: 'Advisory Squad',
       description: 'Strategic advisory and consulting',
       domain: 'advisory',
-      icon: '🧠',
+      icon: 'Brain',
       agents: [
         { id: 'advisor', name: 'Advisor', role: 'Strategic Advisor', description: 'Strategic guidance', tier: 1 },
       ],
@@ -151,7 +151,7 @@ export const spec: ProjectSpec = {
       displayName: 'Creator Squad',
       description: 'Creative content and media production',
       domain: 'creative',
-      icon: '✨',
+      icon: 'Sparkles',
       agents: [
         { id: 'creative-director', name: 'Creative Director', role: 'Creative Director', description: 'Creative direction', tier: 'orchestrator' },
         { id: 'media-producer', name: 'Media Producer', role: 'Media Producer', description: 'Media production', tier: 2 },

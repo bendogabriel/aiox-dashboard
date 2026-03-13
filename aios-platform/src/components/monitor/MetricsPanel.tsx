@@ -1,5 +1,5 @@
 import { Cpu, HardDrive, Clock, Zap } from 'lucide-react';
-import { GlassCard, ProgressBar } from '../ui';
+import { CockpitCard, ProgressBar } from '../ui';
 import { useMonitorStore } from '../../stores/monitorStore';
 import { useRealtimeMetrics } from '../../hooks/useDashboard';
 import { cn } from '../../lib/utils';
@@ -23,7 +23,7 @@ function MetricCard({ icon: Icon, label, value, unit, showProgress, color }: Met
   const variant = showProgress ? getVariant(value) : 'default';
 
   return (
-    <GlassCard padding="sm" variant="subtle">
+    <CockpitCard padding="sm" variant="subtle">
       <div className="flex items-center gap-2 mb-2">
         <Icon className={cn('h-4 w-4', color)} />
         <span className="text-[10px] text-tertiary uppercase tracking-wider font-medium">
@@ -43,7 +43,7 @@ function MetricCard({ icon: Icon, label, value, unit, showProgress, color }: Met
           className="mt-2"
         />
       )}
-    </GlassCard>
+    </CockpitCard>
   );
 }
 
@@ -66,28 +66,28 @@ export default function MetricsPanel() {
         label="Active"
         value={realtime?.activeExecutions ?? metrics.cpu}
         unit="exec"
-        color="text-blue-400"
+        color="text-[var(--aiox-blue)]"
       />
       <MetricCard
         icon={HardDrive}
         label="Errors/min"
         value={realtime?.errorsPerMinute ?? metrics.memory}
         unit=""
-        color="text-purple-400"
+        color="text-[var(--aiox-gray-muted)]"
       />
       <MetricCard
         icon={Clock}
         label="Latency"
         value={metrics.latency}
         unit="ms"
-        color="text-yellow-400"
+        color="text-[var(--bb-warning)]"
       />
       <MetricCard
         icon={Zap}
         label="Throughput"
         value={metrics.throughput}
         unit="req/min"
-        color="text-green-400"
+        color="text-[var(--color-status-success)]"
       />
     </div>
   );

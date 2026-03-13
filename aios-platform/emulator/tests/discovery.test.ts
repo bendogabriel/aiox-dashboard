@@ -2,7 +2,7 @@
 // Tests that the engine correctly discovers generated projects.
 // Requires engine to be available at ../engine/
 
-import { describe, test, expect, beforeAll, afterAll } from 'bun:test';
+import { describe, test, expect, afterAll } from 'bun:test';
 import { generate } from '../src/generator';
 import { startEngine, fetchEndpoint } from '../src/runner';
 import { getArchetype } from '../src/archetypes/index';

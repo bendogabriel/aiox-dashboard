@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import { GlassButton, Badge, Avatar, GlassCard } from '../ui';
+import { CockpitButton, Badge, Avatar, CockpitCard } from '../ui';
 import { cn, formatRelativeTime } from '../../lib/utils';
 import type { WorkflowMission } from './types';
 
@@ -52,20 +51,14 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
   const totalNodes = mission.nodes.filter((n) => n.type === 'agent').length;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       className="fixed inset-0 z-[60] flex items-center justify-center p-4"
     >
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
       {/* Modal */}
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
+      <div
         className="relative z-10 w-full max-w-2xl glass-lg rounded-3xl overflow-hidden"
       >
         {/* Header */}
@@ -74,9 +67,9 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
             <h2 className="text-primary text-lg font-semibold">{mission.name}</h2>
             <p className="text-tertiary text-sm">Missão #{mission.id}</p>
           </div>
-          <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
+          <CockpitButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
             <CloseIcon />
-          </GlassButton>
+          </CockpitButton>
         </div>
 
         {/* Content */}
@@ -93,25 +86,25 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
               icon={<TargetIcon />}
               label="Progresso"
               value={`${mission.progress}%`}
-              color="text-blue-500"
+              color="text-[var(--aiox-blue)]"
             />
             <StatCard
               icon={<CheckCircleIcon />}
               label="Concluídas"
               value={`${completedNodes}/${totalNodes}`}
-              color="text-green-500"
+              color="text-[var(--color-status-success)]"
             />
             <StatCard
               icon={<UsersIcon />}
               label="Agents"
               value={mission.agents.length.toString()}
-              color="text-purple-500"
+              color="text-[var(--aiox-gray-muted)]"
             />
             <StatCard
               icon={<ClockIcon />}
               label="Tempo"
               value={formatRelativeTime(mission.startedAt || '')}
-              color="text-orange-500"
+              color="text-[var(--bb-flare)]"
             />
           </div>
 
@@ -122,11 +115,8 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
               <span className="text-primary font-medium">{mission.progress}%</span>
             </div>
             <div className="h-3 rounded-full bg-white/10 overflow-hidden">
-              <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
-                initial={{ width: 0 }}
-                animate={{ width: `${mission.progress}%` }}
-                transition={{ duration: 0.5 }}
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[var(--aiox-blue)] via-[var(--aiox-gray-muted)] to-[var(--bb-flare)]"
               />
             </div>
           </div>
@@ -136,7 +126,7 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
             <h3 className="text-sm font-semibold text-secondary mb-3">Agents Envolvidos</h3>
             <div className="grid grid-cols-2 gap-3">
               {mission.agents.map((agent) => (
-                <GlassCard
+                <CockpitCard
                   key={agent.id}
                   variant="subtle"
                   padding="sm"
@@ -173,7 +163,7 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
                     {agent.status === 'waiting' && 'Aguardando'}
                     {agent.status === 'completed' && 'Concluído'}
                   </Badge>
-                </GlassCard>
+                </CockpitCard>
               ))}
             </div>
           </div>
@@ -185,23 +175,20 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
               {mission.nodes
                 .filter((n) => n.type === 'agent' || n.type === 'checkpoint')
                 .map((node, index) => (
-                  <motion.div
+                  <div
                     key={node.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
                     className={cn(
-                      'flex items-center gap-3 p-3 rounded-xl',
+                      'flex items-center gap-3 p-3 rounded-none',
                       'glass-subtle'
                     )}
                   >
                     <div
                       className={cn(
                         'h-8 w-8 rounded-lg flex items-center justify-center text-xs font-bold',
-                        node.status === 'completed' && 'bg-green-500/20 text-green-500',
-                        node.status === 'active' && 'bg-orange-500/20 text-orange-500',
-                        node.status === 'waiting' && 'bg-yellow-500/20 text-yellow-500',
-                        node.status === 'idle' && 'bg-gray-500/20 text-gray-500'
+                        node.status === 'completed' && 'bg-[var(--color-status-success)]/20 text-[var(--color-status-success)]',
+                        node.status === 'active' && 'bg-[var(--bb-flare)]/20 text-[var(--bb-flare)]',
+                        node.status === 'waiting' && 'bg-[var(--bb-warning)]/20 text-[var(--bb-warning)]',
+                        node.status === 'idle' && 'bg-[var(--aiox-gray-dim)]/20 text-tertiary'
                       )}
                     >
                       {index + 1}
@@ -219,10 +206,10 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
                       <p
                         className={cn(
                           'text-xs',
-                          node.status === 'completed' && 'text-green-500',
-                          node.status === 'active' && 'text-orange-500',
-                          node.status === 'waiting' && 'text-yellow-500',
-                          node.status === 'idle' && 'text-gray-500'
+                          node.status === 'completed' && 'text-[var(--color-status-success)]',
+                          node.status === 'active' && 'text-[var(--bb-flare)]',
+                          node.status === 'waiting' && 'text-[var(--bb-warning)]',
+                          node.status === 'idle' && 'text-tertiary'
                         )}
                       >
                         {node.status === 'completed' && 'Concluído'}
@@ -231,7 +218,7 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
                         {node.status === 'idle' && 'Pendente'}
                       </p>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
             </div>
           </div>
@@ -242,12 +229,12 @@ export function WorkflowMissionDetail({ mission, onClose }: WorkflowMissionDetai
           <p className="text-tertiary text-xs">
             Iniciado {formatRelativeTime(mission.startedAt || '')}
           </p>
-          <GlassButton variant="primary" onClick={onClose}>
+          <CockpitButton variant="primary" onClick={onClose}>
             Fechar
-          </GlassButton>
+          </CockpitButton>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
@@ -263,10 +250,10 @@ function StatCard({
   color: string;
 }) {
   return (
-    <GlassCard variant="subtle" padding="sm" className="text-center">
+    <CockpitCard variant="subtle" padding="sm" className="text-center">
       <div className={cn('flex items-center justify-center mb-1', color)}>{icon}</div>
       <p className="text-primary text-lg font-bold">{value}</p>
       <p className="text-tertiary text-[10px]">{label}</p>
-    </GlassCard>
+    </CockpitCard>
   );
 }

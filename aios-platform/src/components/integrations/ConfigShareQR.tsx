@@ -66,7 +66,7 @@ export function ConfigShareQR() {
           textAlign: 'left',
         }}
       >
-        <QrCode size={14} style={{ color: 'var(--aiox-blue, #0099FF)' }} />
+        <QrCode size={14} style={{ color: 'var(--aiox-gray-dim, #696969)' }} />
         <span style={{ flex: 1, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
           Share Config (QR)
         </span>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useSalesStore } from './store';
 import { AGENT_META } from './seed';
-import type { SalesAgent, Lead, Message, ActivityEvent, AgentStatus } from './types';
+import type { SalesAgent, Lead, Message, Conversation, ActivityEvent, AgentStatus } from './types';
 
 // ─── Config ──────────────────────────────────────────────
 
@@ -129,38 +129,50 @@ export function useLiveData() {
       const updatedAgents: SalesAgent[] = store.agents.map((agent) => {
         const convs = agentConvs[agent.id] || [];
         if (convs.length === 0) {
-          return { ...agent, status: 'ocioso' as AgentStatus, activeConversations: 0, currentLead: null, messages: [] };
+          return { ...agent, status: 'ocioso' as AgentStatus, activeConversations: 0, currentLead: null, messages: [], conversations: [] };
         }
 
-        // Use the most recent conversation as the "current lead"
-        const primaryConv = convs[0];
-        const convMessages = (msgByConv[primaryConv.id] || [])
-          .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        // Build ALL conversations for this agent
+        const allConversations: Conversation[] = convs.map((conv) => {
+          const convMessages = (msgByConv[conv.id] || [])
+            .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
-        const lead: Lead = {
-          id: primaryConv.id,
-          name: primaryConv.lead_name || primaryConv.phone,
-          phone: primaryConv.phone,
-          temperature: inferTemperature(primaryConv.state),
-          source: primaryConv.channel === 'waha' ? 'WhatsApp' : primaryConv.channel,
-          product: (primaryConv.metadata?.product as string) || undefined,
-          cartValue: (primaryConv.metadata?.cart_value as number) || undefined,
-        };
+          const lead: Lead = {
+            id: conv.id,
+            name: conv.lead_name || conv.phone,
+            phone: conv.phone,
+            temperature: inferTemperature(conv.state),
+            source: conv.channel === 'waha' ? 'WhatsApp' : conv.channel,
+            product: (conv.metadata?.product as string) || undefined,
+            cartValue: (conv.metadata?.cart_value as number) || undefined,
+          };
 
-        const mappedMessages: Message[] = convMessages.slice(-20).map((m) => ({
-          id: m.id,
-          direction: m.direction === 'inbound' ? 'lead' as const : 'agent' as const,
-          text: m.content || '',
-          timestamp: new Date(m.created_at),
-          source: 'whatsapp' as const,
-        }));
+          const mappedMessages: Message[] = convMessages.slice(-20).map((m) => ({
+            id: m.id,
+            direction: m.direction === 'inbound' ? 'lead' as const : 'agent' as const,
+            text: m.content || '',
+            timestamp: new Date(m.created_at),
+            source: 'whatsapp' as const,
+          }));
+
+          return {
+            id: conv.id,
+            lead,
+            messages: mappedMessages,
+            startedAt: new Date(conv.started_at),
+          };
+        });
+
+        // Primary conversation (most recent) for backward compat
+        const primary = allConversations[0];
 
         return {
           ...agent,
-          status: mapConversationStateToAgentStatus(primaryConv.state),
+          status: mapConversationStateToAgentStatus(convs[0].state),
           activeConversations: convs.length,
-          currentLead: lead,
-          messages: mappedMessages,
+          currentLead: primary.lead,
+          messages: primary.messages,
+          conversations: allConversations,
         };
       });
 

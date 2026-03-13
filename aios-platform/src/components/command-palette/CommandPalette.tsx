@@ -5,7 +5,6 @@
  */
 
 import { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Command } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { AGENT_COLORS } from '../../lib/agent-colors';
@@ -249,23 +248,15 @@ export function CommandPalette() {
   let flatIndex = -1;
 
   return (
-    <AnimatePresence>
-      {commandPaletteOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+    <>
+    {commandPaletteOpen && (
+        <div
           className="fixed inset-0 z-[60] flex items-start justify-center pt-[15vh]"
           style={{ backdropFilter: 'blur(8px)', background: 'rgba(0,0,0,0.5)' }}
           onClick={handleBackdropClick}
         >
-          <motion.div
-            initial={{ opacity: 0, y: -16, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -12, scale: 0.97 }}
-            transition={{ duration: 0.2, ease: [0, 0, 0.2, 1] }}
-            className="w-full max-w-lg mx-4 rounded-xl overflow-hidden shadow-2xl"
+          <div
+            className="w-full max-w-lg mx-4 rounded-none overflow-hidden shadow-2xl"
             style={{
               background: 'var(--color-background-raised, rgba(20, 20, 30, 0.97))',
               border: '1px solid var(--glass-border-color, rgba(255,255,255,0.1))',
@@ -286,7 +277,7 @@ export function CommandPalette() {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Buscar comandos..."
-                className="flex-1 bg-transparent text-sm text-primary placeholder:text-quaternary focus:outline-none"
+                className="flex-1 bg-transparent text-sm text-primary placeholder:text-quaternary focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--aiox-lime)]/50"
                 aria-label="Buscar comandos"
               />
               <div className="flex items-center gap-1 flex-shrink-0">
@@ -387,9 +378,9 @@ export function CommandPalette() {
                 {filtered.length} comando{filtered.length !== 1 ? 's' : ''}
               </span>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 }

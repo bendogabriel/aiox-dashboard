@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
 interface ProgressBarProps {
@@ -66,15 +65,12 @@ export function ProgressBar({
         aria-valuemax={100}
       >
         {animate ? (
-          <motion.div
+          <div
             className={cn(
               'h-full rounded-full',
               variantColors[variant],
               glow && glowShadows[variant],
             )}
-            initial={{ width: 0 }}
-            animate={{ width: `${clampedValue}%` }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           />
         ) : (
           <div

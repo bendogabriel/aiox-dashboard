@@ -3,7 +3,6 @@
  * Accessed via /share/{taskId} URL.
  */
 import { useEffect, useState, lazy, Suspense } from 'react';
-import { motion } from 'framer-motion';
 import {
   Loader2,
   CheckCircle2,
@@ -16,7 +15,7 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import { GlassButton } from '../ui/GlassButton';
+import { CockpitButton } from '../ui/cockpit/CockpitButton';
 const MarkdownRenderer = lazy(() => import('../chat/MarkdownRenderer'));
 import { getSquadInlineStyle } from '../../lib/theme';
 import { supabaseTasksService } from '../../services/supabase/tasks';
@@ -86,13 +85,13 @@ export default function SharedTaskView() {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md">
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto" />
+          <AlertCircle className="w-12 h-12 text-[var(--bb-error)] mx-auto" />
           <h2 className="text-lg font-semibold text-white/90">Task Not Found</h2>
           <p className="text-sm text-white/50">{error || 'This shared link may have expired or the task does not exist.'}</p>
-          <GlassButton variant="ghost" size="sm" onClick={() => setCurrentView('chat')}>
+          <CockpitButton variant="ghost" size="sm" onClick={() => setCurrentView('chat')}>
             <ArrowLeft size={14} />
             Back to Chat
-          </GlassButton>
+          </CockpitButton>
         </div>
       </div>
     );
@@ -108,18 +107,18 @@ export default function SharedTaskView() {
       <div className="p-4 md:p-6 border-b border-white/10">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2 md:gap-3 min-w-0">
-            <GlassButton variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={() => setCurrentView('chat')}>
+            <CockpitButton variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={() => setCurrentView('chat')}>
               <ArrowLeft size={16} />
-            </GlassButton>
+            </CockpitButton>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-base md:text-lg font-semibold text-white/90">Shared Orchestration</h1>
                 <span
                   className={cn(
                     'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
-                    isCompleted && 'bg-emerald-500/20 text-emerald-400',
-                    isFailed && 'bg-red-500/20 text-red-400',
-                    !isCompleted && !isFailed && 'bg-yellow-500/20 text-yellow-400'
+                    isCompleted && 'bg-[var(--color-status-success)]/20 text-[var(--color-status-success)]',
+                    isFailed && 'bg-[var(--bb-error)]/20 text-[var(--bb-error)]',
+                    !isCompleted && !isFailed && 'bg-[var(--bb-warning)]/20 text-[var(--bb-warning)]'
                   )}
                 >
                   {isCompleted && <CheckCircle2 size={12} />}
@@ -133,19 +132,19 @@ export default function SharedTaskView() {
             </div>
           </div>
 
-          <GlassButton
+          <CockpitButton
             variant="ghost"
             size="sm"
             onClick={handleCopyLink}
             className="text-xs"
           >
-            {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+            {copied ? <Check size={14} className="text-[var(--color-status-success)]" /> : <Copy size={14} />}
             {copied ? 'Copied!' : 'Copy Link'}
-          </GlassButton>
+          </CockpitButton>
         </div>
 
         {/* Demand */}
-        <div className="glass-card border border-white/10 rounded-xl p-4">
+        <div className="glass-card border border-white/10 rounded-none p-4">
           <p className="text-sm text-white/80">{task.demand}</p>
         </div>
 
@@ -188,11 +187,9 @@ export default function SharedTaskView() {
               {task.squads.map((squad) => {
                 const style = getSquadInlineStyle(squad.squadId);
                 return (
-                  <motion.div
+                  <div
                     key={squad.squadId}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="glass-card border border-white/10 rounded-xl p-3"
+                    className="glass-card border border-white/10 rounded-none p-3"
                     style={{ borderLeftColor: style.color, borderLeftWidth: 3 }}
                   >
                     <div className="flex items-center gap-2 mb-2">
@@ -210,7 +207,7 @@ export default function SharedTaskView() {
                         ))}
                       </div>
                     )}
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
@@ -228,12 +225,9 @@ export default function SharedTaskView() {
                 const timeMs = output.output.processingTimeMs;
 
                 return (
-                  <motion.div
+                  <div
                     key={output.stepId}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="glass-card border border-white/10 rounded-xl p-4"
+                    className="glass-card border border-white/10 rounded-none p-4"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -252,7 +246,7 @@ export default function SharedTaskView() {
                         </Suspense>
                       </div>
                     )}
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
@@ -262,9 +256,9 @@ export default function SharedTaskView() {
         {/* Error */}
         {task.error && (
           <section>
-            <h2 className="text-sm font-medium text-red-400 mb-2">Error</h2>
-            <div className="glass-card border border-red-500/20 rounded-xl p-4">
-              <pre className="text-xs text-red-300 whitespace-pre-wrap">{task.error}</pre>
+            <h2 className="text-sm font-medium text-[var(--bb-error)] mb-2">Error</h2>
+            <div className="glass-card border border-[var(--bb-error)]/20 rounded-none p-4">
+              <pre className="text-xs text-[var(--bb-error)] whitespace-pre-wrap">{task.error}</pre>
             </div>
           </section>
         )}

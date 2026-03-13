@@ -9,7 +9,6 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   type LucideIcon,
   ClipboardList,
@@ -25,18 +24,16 @@ import { ICON_SIZES } from '../../lib/icons';
 
 // Icons
 const ChevronIcon = ({ expanded }: { expanded: boolean }) => (
-  <motion.svg
+  <svg
     width="14"
     height="14"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
-    animate={{ rotate: expanded ? 180 : 0 }}
-    transition={{ duration: 0.2 }}
   >
     <polyline points="6 9 12 15 18 9" />
-  </motion.svg>
+  </svg>
 );
 
 const ClearIcon = () => (
@@ -56,12 +53,12 @@ const levelIcons: Record<LogLevel, LucideIcon> = {
 };
 
 const levelColors: Record<LogLevel, string> = {
-  info: 'text-blue-400 bg-blue-500/10',
-  success: 'text-green-400 bg-green-500/10',
-  warning: 'text-yellow-400 bg-yellow-500/10',
-  error: 'text-red-400 bg-red-500/10',
-  tool: 'text-purple-400 bg-purple-500/10',
-  agent: 'text-cyan-400 bg-cyan-500/10',
+  info: 'text-[var(--aiox-blue)] bg-[var(--aiox-blue)]/10',
+  success: 'text-[var(--color-status-success)] bg-[var(--color-status-success)]/10',
+  warning: 'text-[var(--bb-warning)] bg-[var(--bb-warning)]/10',
+  error: 'text-[var(--bb-error)] bg-[var(--bb-error)]/10',
+  tool: 'text-[var(--aiox-gray-muted)] bg-[var(--aiox-gray-muted)]/10',
+  agent: 'text-[var(--aiox-blue)] bg-[var(--aiox-blue)]/10',
 };
 
 interface ExecutionLogPanelProps {
@@ -98,25 +95,23 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
   }
 
   return (
-    <div className={cn('rounded-xl border border-white/10 overflow-hidden', className)}>
+    <div className={cn('rounded-none border border-white/10 overflow-hidden', className)}>
       {/* Header - Always visible */}
       <button
         onClick={() => setExpanded(!expanded)}
         className={cn(
           'w-full flex items-center justify-between px-3 py-2 transition-colors',
           'hover:bg-white/5',
-          isExecuting ? 'bg-orange-500/10' : 'bg-white/5'
+          isExecuting ? 'bg-[var(--bb-flare)]/10' : 'bg-white/5'
         )}
       >
         <div className="flex items-center gap-2">
           {isExecuting ? (
-            <motion.div
-              className="h-2 w-2 rounded-full bg-orange-500"
-              animate={{ opacity: [1, 0.5, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
+            <div
+              className="h-2 w-2 rounded-full bg-[var(--bb-flare)]"
             />
           ) : (
-            <div className="h-2 w-2 rounded-full bg-green-500" />
+            <div className="h-2 w-2 rounded-full bg-[var(--color-status-success)]" />
           )}
           <span className="text-xs font-medium text-primary">
             {isExecuting ? 'Executando...' : 'Log de Execução'}
@@ -141,25 +136,15 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
       {/* Progress bar when executing */}
       {isExecuting && currentExecution.totalSteps > 1 && (
         <div className="h-0.5 bg-black/20">
-          <motion.div
-            className="h-full bg-gradient-to-r from-orange-500 to-yellow-500"
-            initial={{ width: 0 }}
-            animate={{ width: `${progressPercent}%` }}
-            transition={{ duration: 0.3 }}
+          <div
+            className="h-full bg-gradient-to-r from-[var(--bb-flare)] to-[var(--bb-warning)]"
           />
         </div>
       )}
 
       {/* Expandable Log Content */}
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
+      {expanded && (
+          <div>
             <div className="max-h-[300px] overflow-y-auto glass-scrollbar" tabIndex={0} role="region" aria-label="Painel de log de execucao">
               {/* Clear button */}
               {hasLogs && !isExecuting && (
@@ -169,7 +154,7 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
                       e.stopPropagation();
                       clearLogs();
                     }}
-                    className="flex items-center gap-1 text-[10px] text-tertiary hover:text-red-400 transition-colors"
+                    className="flex items-center gap-1 text-[10px] text-tertiary hover:text-[var(--bb-error)] transition-colors"
                   >
                     <ClearIcon />
                     Limpar
@@ -180,11 +165,8 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
               {/* Log entries */}
               <div className="p-2 space-y-1">
                 {logs.map((log, index) => (
-                  <motion.div
+                  <div
                     key={log.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.02 }}
                     className={cn(
                       'flex items-start gap-2 px-2 py-1.5 rounded-lg text-xs',
                       levelColors[log.level]
@@ -226,7 +208,7 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
                     <span className="text-[9px] text-tertiary flex-shrink-0">
                       {log.timestamp.toLocaleTimeString()}
                     </span>
-                  </motion.div>
+                  </div>
                 ))}
                 <div ref={logsEndRef} />
               </div>
@@ -238,10 +220,9 @@ export function ExecutionLogPanel({ className }: ExecutionLogPanelProps) {
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }
 

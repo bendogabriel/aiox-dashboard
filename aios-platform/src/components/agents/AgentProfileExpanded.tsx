@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Avatar, Badge, GlassButton, useToast } from '../ui';
+import { Avatar, Badge, CockpitButton, useToast } from '../ui';
 import { useFavoritesStore } from '../../hooks/useFavorites';
 import { cn, getTierTheme } from '../../lib/utils';
 import { getIconComponent } from '../../lib/icons';
 import type { Agent, AgentCommand } from '../../types';
 import { getSquadType } from '../../types';
 import { getAgentAvatarUrl } from '../../lib/agent-avatars';
+
+const XIcon = () => (
+  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-[var(--bb-error)] inline" style={{ display: 'inline' }}>
+    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
 
 // Icons
 const CloseIcon = () => (
@@ -86,41 +91,33 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
   };
 
   return createPortal(
-    <AnimatePresence>
-      {isOpen && (
+    isOpen ? (
         <>
           {/* Full-screen centering wrapper */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             onClick={onClose}
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           >
           {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          <div
             onClick={(e) => e.stopPropagation()}
             className="w-full md:max-w-2xl max-h-[85vh] flex flex-col"
           >
-            <div className="glass-card rounded-2xl overflow-hidden flex flex-col h-full">
+            <div className="glass-card rounded-none overflow-hidden flex flex-col h-full">
               {/* Actions — floating over hero */}
               <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-                <GlassButton
+                <CockpitButton
                   variant="ghost"
                   size="icon"
                   onClick={handleFavoriteToggle}
-                  className={cn('backdrop-blur-sm', favorited && 'text-yellow-500')}
+                  className={cn('backdrop-blur-sm', favorited && 'text-[var(--bb-warning)]')}
                   aria-label={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                 >
                   <StarIcon filled={favorited} />
-                </GlassButton>
-                <GlassButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar" className="backdrop-blur-sm">
+                </CockpitButton>
+                <CockpitButton variant="ghost" size="icon" onClick={onClose} aria-label="Fechar" className="backdrop-blur-sm">
                   <CloseIcon />
-                </GlassButton>
+                </CockpitButton>
               </div>
 
               {/* Hero Avatar Section */}
@@ -137,19 +134,19 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                     <img
                       src={getAgentAvatarUrl(agent.id)}
                       alt={agent.name}
-                      className="h-36 w-36 rounded-2xl object-cover ring-2 ring-white/20 shadow-2xl"
+                      className="h-36 w-36 rounded-none object-cover ring-2 ring-white/20 shadow-none"
                       style={{ boxShadow: '0 0 40px rgba(209, 255, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4)' }}
                     />
                   ) : agent.icon ? (
                     <div className={cn(
-                      'h-36 w-36 rounded-2xl flex items-center justify-center',
+                      'h-36 w-36 rounded-none flex items-center justify-center',
                       `bg-gradient-to-br ${getTierTheme(normalizedTier).gradient}`
                     )}>
                       {(() => { const Icon = getIconComponent(agent.icon); return <Icon size={56} />; })()}
                     </div>
                   ) : (
                     <div className="h-36 w-36">
-                      <Avatar name={agent.name} size="xl" squadType={squadType} className="!h-36 !w-36 !text-4xl !rounded-2xl" />
+                      <Avatar name={agent.name} size="xl" squadType={squadType} className="!h-36 !w-36 !text-4xl !rounded-none" />
                     </div>
                   )}
                   {/* Tier badge */}
@@ -177,7 +174,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
 
                 {/* When to use */}
                 {agent.whenToUse && (
-                  <div className="mt-4 mx-6 p-3 glass-subtle rounded-xl relative">
+                  <div className="mt-4 mx-6 p-3 glass-subtle rounded-none relative">
                     <p className="text-xs text-tertiary">
                       <span className="text-primary font-medium">Quando usar:</span> {agent.whenToUse}
                     </p>
@@ -187,7 +184,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
 
               {/* Tabs */}
               <div className="px-6 py-3 border-b border-white/10">
-                <div className="flex gap-1 p-1 glass-subtle rounded-xl" role="tablist" aria-label="Informacoes do agente">
+                <div className="flex gap-1 p-1 glass-subtle rounded-none" role="tablist" aria-label="Informacoes do agente">
                   {[
                     { id: 'overview', label: 'Visão Geral' },
                     { id: 'commands', label: `Comandos ${agent.commands?.length ? `(${agent.commands.length})` : ''}` },
@@ -214,13 +211,9 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
 
               {/* Content */}
               <div className="flex-1 overflow-y-auto p-6 glass-scrollbar" tabIndex={0} role="region" aria-label="Conteudo do perfil do agente">
-                <AnimatePresence mode="wait">
-                  {activeTab === 'overview' && (
-                    <motion.div
+                {activeTab === 'overview' && (
+                    <div
                       key="overview"
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 10 }}
                       className="space-y-6"
                     >
                       {/* Core Principles */}
@@ -242,7 +235,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                       {agent.mindSource && (
                         <div>
                           <h3 className="text-sm font-semibold text-primary mb-3">Fonte de Conhecimento</h3>
-                          <div className="glass-subtle rounded-xl p-4 space-y-3">
+                          <div className="glass-subtle rounded-none p-4 space-y-3">
                             {agent.mindSource.name && (
                               <p className="text-sm text-primary font-medium">{agent.mindSource.name}</p>
                             )}
@@ -277,7 +270,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                           <h3 className="text-sm font-semibold text-primary mb-3">Integração</h3>
                           <div className="grid grid-cols-2 gap-3">
                             {agent.integration.receivesFrom && agent.integration.receivesFrom.length > 0 && (
-                              <div className="glass-subtle rounded-xl p-3">
+                              <div className="glass-subtle rounded-none p-3">
                                 <p className="text-xs text-tertiary mb-2">Recebe de:</p>
                                 <div className="space-y-1">
                                   {agent.integration.receivesFrom.map((src, i) => (
@@ -287,7 +280,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                               </div>
                             )}
                             {agent.integration.handoffTo && agent.integration.handoffTo.length > 0 && (
-                              <div className="glass-subtle rounded-xl p-3">
+                              <div className="glass-subtle rounded-none p-3">
                                 <p className="text-xs text-tertiary mb-2">Passa para:</p>
                                 <div className="space-y-1">
                                   {agent.integration.handoffTo.map((dest, i) => (
@@ -299,15 +292,12 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                           </div>
                         </div>
                       )}
-                    </motion.div>
+                    </div>
                   )}
 
                   {activeTab === 'commands' && (
-                    <motion.div
+                    <div
                       key="commands"
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 10 }}
                       className="space-y-3"
                     >
                       {agent.commands && agent.commands.length > 0 ? (
@@ -328,15 +318,12 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                           <p className="text-tertiary text-xs mt-1">Este agent aceita mensagens livres</p>
                         </div>
                       )}
-                    </motion.div>
+                    </div>
                   )}
 
                   {activeTab === 'persona' && (
-                    <motion.div
+                    <div
                       key="persona"
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 10 }}
                       className="space-y-6"
                     >
                       {/* Persona Details */}
@@ -375,7 +362,7 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                           <h3 className="text-sm font-semibold text-primary mb-3">Voice DNA</h3>
                           <div className="space-y-3">
                             {agent.voiceDna.sentenceStarters && agent.voiceDna.sentenceStarters.length > 0 && (
-                              <div className="glass-subtle rounded-xl p-3">
+                              <div className="glass-subtle rounded-none p-3">
                                 <p className="text-xs text-tertiary mb-2">Frases iniciais típicas:</p>
                                 <div className="flex flex-wrap gap-2">
                                   {agent.voiceDna.sentenceStarters.slice(0, 5).map((starter, i) => (
@@ -387,11 +374,11 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                               </div>
                             )}
                             {agent.voiceDna.vocabulary?.alwaysUse && agent.voiceDna.vocabulary.alwaysUse.length > 0 && (
-                              <div className="glass-subtle rounded-xl p-3">
+                              <div className="glass-subtle rounded-none p-3">
                                 <p className="text-xs text-tertiary mb-2">Vocabulário preferido:</p>
                                 <div className="flex flex-wrap gap-1">
                                   {agent.voiceDna.vocabulary.alwaysUse.slice(0, 8).map((word, i) => (
-                                    <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
+                                    <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-[var(--color-status-success)]/10 text-[var(--color-status-success)] border border-[var(--color-status-success)]/20">
                                       {word}
                                     </span>
                                   ))}
@@ -406,11 +393,11 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                       {agent.antiPatterns?.neverDo && agent.antiPatterns.neverDo.length > 0 && (
                         <div>
                           <h3 className="text-sm font-semibold text-primary mb-3">Anti-padrões</h3>
-                          <div className="glass-subtle rounded-xl p-3">
+                          <div className="glass-subtle rounded-none p-3">
                             <ul className="space-y-1">
                               {agent.antiPatterns.neverDo.slice(0, 5).map((item, i) => (
-                                <li key={i} className="flex items-start gap-2 text-xs text-red-400">
-                                  <span className="text-red-500">{'\u2715'}</span>
+                                <li key={i} className="flex items-start gap-2 text-xs text-[var(--bb-error)]">
+                                  <XIcon />
                                   {item}
                                 </li>
                               ))}
@@ -418,14 +405,13 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                           </div>
                         </div>
                       )}
-                    </motion.div>
+                    </div>
                   )}
-                </AnimatePresence>
-              </div>
+</div>
 
               {/* Footer */}
               <div className="p-6 border-t border-white/10">
-                <GlassButton
+                <CockpitButton
                   variant="primary"
                   className="w-full"
                   onClick={() => {
@@ -435,14 +421,13 @@ export function AgentProfileExpanded({ agent, isOpen, onClose, onStartChat }: Ag
                   leftIcon={<ChatIcon />}
                 >
                   Iniciar Conversa com {agent.name}
-                </GlassButton>
+                </CockpitButton>
               </div>
             </div>
-          </motion.div>
-          </motion.div>
+          </div>
+          </div>
         </>
-      )}
-    </AnimatePresence>,
+    ) : null,
     document.body
   );
 }
@@ -456,7 +441,7 @@ interface CommandCardProps {
 
 function CommandCard({ command, onCopy, copied }: CommandCardProps) {
   return (
-    <div className="glass-subtle rounded-xl p-4 hover:bg-white/5 transition-colors">
+    <div className="glass-subtle rounded-none p-4 hover:bg-white/5 transition-colors">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -465,7 +450,7 @@ function CommandCard({ command, onCopy, copied }: CommandCardProps) {
               onClick={onCopy}
               className={cn(
                 'p-1 rounded transition-colors',
-                copied ? 'text-green-500' : 'text-tertiary hover:text-primary'
+                copied ? 'text-[var(--color-status-success)]' : 'text-tertiary hover:text-primary'
               )}
               aria-label="Copiar comando"
             >

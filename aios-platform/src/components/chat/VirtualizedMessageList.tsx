@@ -2,7 +2,6 @@
 
 import { useRef, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { AnimatePresence } from 'framer-motion';
 import { MessageBubble } from './MessageBubble';
 import type { Message } from '../../types';
 
@@ -78,8 +77,7 @@ export function VirtualizedMessageList({ messages, className }: VirtualizedMessa
             transform: `translateY(${items[0]?.start ?? 0}px)`,
           }}
         >
-          <AnimatePresence mode="popLayout">
-            {items.map((virtualRow) => {
+          {items.map((virtualRow) => {
               const message = messages[virtualRow.index];
               const prevMessage = messages[virtualRow.index - 1];
               const nextMessage = messages[virtualRow.index + 1];
@@ -105,8 +103,7 @@ export function VirtualizedMessageList({ messages, className }: VirtualizedMessa
                 </div>
               );
             })}
-          </AnimatePresence>
-        </div>
+</div>
       </div>
     </div>
   );
@@ -141,8 +138,7 @@ export function SmartMessageList({
   if (messages.length < virtualizationThreshold) {
     return (
       <div className={`space-y-4 ${className || ''}`}>
-        <AnimatePresence mode="popLayout">
-          {messages.map((message, index) => (
+        {messages.map((message, index) => (
             <MessageBubble
               key={message.id}
               message={message}
@@ -156,8 +152,7 @@ export function SmartMessageList({
               }
             />
           ))}
-        </AnimatePresence>
-        <div ref={scrollRef} />
+<div ref={scrollRef} />
       </div>
     );
   }

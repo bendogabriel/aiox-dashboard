@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
 import {
   Activity,
   Terminal,
@@ -10,7 +9,7 @@ import {
   Clock,
   Loader2,
 } from 'lucide-react';
-import { GlassCard } from '../ui';
+import { CockpitCard } from '../ui';
 import { useMonitorStore, type MonitorEvent } from '../../stores/monitorStore';
 import { useExecutionHistory } from '../../hooks/useExecute';
 import { useActivityFeed } from '../../hooks/useActivityFeed';
@@ -29,15 +28,17 @@ interface TimelineItem {
 }
 
 const typeConfig: Record<ActivityType, { icon: typeof Activity; color: string }> = {
-  execution: { icon: CheckCircle, color: 'text-green-400' },
-  tool_call: { icon: Terminal, color: 'text-blue-400' },
-  message: { icon: MessageSquare, color: 'text-cyan-400' },
-  error: { icon: AlertTriangle, color: 'text-red-400' },
-  system: { icon: Activity, color: 'text-purple-400' },
+  execution: { icon: CheckCircle, color: 'text-[var(--color-status-success)]' },
+  tool_call: { icon: Terminal, color: 'text-[var(--aiox-blue)]' },
+  message: { icon: MessageSquare, color: 'text-[var(--aiox-blue)]' },
+  error: { icon: AlertTriangle, color: 'text-[var(--bb-error)]' },
+  system: { icon: Activity, color: 'text-[var(--aiox-gray-muted)]' },
 };
 
 function formatTimeAgo(dateString: string): string {
-  const diff = Date.now() - new Date(dateString).getTime();
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return '--';
+  const diff = Date.now() - d.getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return 'agora';
   if (mins < 60) return `${mins}min`;
@@ -109,8 +110,12 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
       }
     }
 
-    // Sort by timestamp descending
-    timeline.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    // Sort by timestamp descending (invalid dates go to the end)
+    timeline.sort((a, b) => {
+      const ta = new Date(b.timestamp).getTime();
+      const tb = new Date(a.timestamp).getTime();
+      return (isNaN(ta) ? 0 : ta) - (isNaN(tb) ? 0 : tb);
+    });
 
     return timeline;
   }, [monitorEvents, historyData, activityData]);
@@ -123,16 +128,20 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
     const groups: Record<string, TimelineItem[]> = {};
     filtered.forEach((item) => {
       const date = new Date(item.timestamp);
-      const today = new Date();
       let label: string;
-      if (date.toDateString() === today.toDateString()) {
-        label = 'Hoje';
+      if (isNaN(date.getTime())) {
+        label = '--/--';
       } else {
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-        label = date.toDateString() === yesterday.toDateString()
-          ? 'Ontem'
-          : date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        const today = new Date();
+        if (date.toDateString() === today.toDateString()) {
+          label = 'Hoje';
+        } else {
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+          label = date.toDateString() === yesterday.toDateString()
+            ? 'Ontem'
+            : date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        }
       }
       if (!groups[label]) groups[label] = [];
       groups[label].push(item);
@@ -145,15 +154,15 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Activity size={22} className="text-blue-400" />
-          <h1 className="text-xl font-semibold text-primary">Monitor</h1>
+          <Activity size={22} className="text-[var(--aiox-blue)]" />
+          <h1 className="heading-display text-xl font-semibold text-primary">Monitor</h1>
           {viewToggle}
           <span className="text-xs text-tertiary">({items.length} eventos)</span>
           {isActivityLoading && (
             <Loader2 size={14} className="text-tertiary animate-spin" />
           )}
           {!hasRealData && !isActivityLoading && (
-            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[var(--bb-warning)]/15 text-[var(--bb-warning)] border border-[var(--bb-warning)]/20">
               No data
             </span>
           )}
@@ -169,7 +178,7 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
             className={cn(
               'px-3 py-1 rounded-full text-xs font-medium transition-colors',
               filterType === type
-                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                ? 'bg-[var(--aiox-blue)]/20 text-[var(--aiox-blue)] border border-[var(--aiox-blue)]/30'
                 : 'bg-white/5 text-tertiary hover:text-primary border border-transparent'
             )}
           >
@@ -180,13 +189,13 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
 
       {/* Timeline */}
       {Object.keys(grouped).length === 0 ? (
-        <GlassCard padding="md">
+        <CockpitCard padding="md">
           <div className="text-center py-12 text-tertiary">
             <Clock size={32} className="mx-auto mb-3 opacity-40" />
             <p className="text-sm">Nenhuma atividade registrada</p>
             <p className="text-xs mt-1">Eventos aparecerão aqui conforme o sistema opera</p>
           </div>
-        </GlassCard>
+        </CockpitCard>
       ) : (
         <div className="space-y-6">
           {Object.entries(grouped).map(([dateLabel, dateItems]) => (
@@ -199,18 +208,15 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
                   const StatusIcon = item.status === 'error' ? XCircle : item.status === 'success' ? CheckCircle : Clock;
 
                   return (
-                    <motion.div
+                    <div
                       key={item.id}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.2, delay: idx * 0.03 }}
                       className="relative flex items-start gap-3 py-2 px-3 rounded-lg hover:bg-white/[0.03] transition-colors group"
                     >
                       {/* Timeline dot */}
                       <div
                         className={cn(
                           'absolute -left-[31px] top-3 w-3 h-3 rounded-full border-2 border-[var(--color-background)]',
-                          item.status === 'error' ? 'bg-red-400' : item.status === 'success' ? 'bg-green-400' : 'bg-white/30'
+                          item.status === 'error' ? 'bg-[var(--bb-error)]' : item.status === 'success' ? 'bg-[var(--color-status-success)]' : 'bg-white/30'
                         )}
                       />
 
@@ -229,11 +235,11 @@ export default function ActivityTimeline({ viewToggle }: { viewToggle?: React.Re
                           size={12}
                           className={cn(
                             'flex-shrink-0 mt-1',
-                            item.status === 'error' ? 'text-red-400' : item.status === 'success' ? 'text-green-400' : 'text-tertiary'
+                            item.status === 'error' ? 'text-[var(--bb-error)]' : item.status === 'success' ? 'text-[var(--color-status-success)]' : 'text-tertiary'
                           )}
                         />
                       )}
-                    </motion.div>
+                    </div>
                   );
                 })}
               </div>

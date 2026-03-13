@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import type { WorkflowMission } from './types';
 
@@ -14,32 +13,29 @@ export function WorkflowListView({
   return (
     <div className="p-6 space-y-4 overflow-y-auto h-full">
       {mission.nodes.map((node, index) => (
-        <motion.div
+        <div
           key={node.id}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.05 }}
           onClick={() => onSelectNode(node.id)}
           className={cn(
-            'glass-subtle rounded-xl p-4 cursor-pointer transition-all',
+            'glass-subtle rounded-none p-4 cursor-pointer transition-all',
             'hover:bg-white/10',
-            selectedNodeId === node.id && 'ring-2 ring-blue-500'
+            selectedNodeId === node.id && 'ring-2 ring-[var(--aiox-lime)]'
           )}
         >
           <div className="flex items-center gap-4">
             <div
               className={cn(
-                'h-10 w-10 rounded-xl flex items-center justify-center text-sm font-bold',
-                node.status === 'completed' && 'bg-green-500/20 text-green-500',
-                node.status === 'active' && 'bg-orange-500/20 text-orange-500',
-                node.status === 'waiting' && 'bg-yellow-500/20 text-yellow-500',
-                node.status === 'idle' && 'bg-gray-500/20 text-gray-500'
+                'h-10 w-10 rounded-none flex items-center justify-center text-sm font-bold',
+                node.status === 'completed' && 'bg-[var(--color-status-success)]/20 text-[var(--color-status-success)]',
+                node.status === 'active' && 'bg-[var(--bb-flare)]/20 text-[var(--bb-flare)]',
+                node.status === 'waiting' && 'bg-[var(--bb-warning)]/20 text-[var(--bb-warning)]',
+                node.status === 'idle' && 'bg-[var(--aiox-gray-dim)]/20 text-tertiary'
               )}
             >
               {index + 1}
             </div>
             <div className="flex-1">
-              <p className="text-primary font-medium">{node.label}</p>
+              <p className="text-sm text-primary font-medium">{node.label}</p>
               {node.agentName && (
                 <p className="text-secondary text-sm">{node.agentName}</p>
               )}
@@ -51,7 +47,7 @@ export function WorkflowListView({
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
       ))}
     </div>
   );

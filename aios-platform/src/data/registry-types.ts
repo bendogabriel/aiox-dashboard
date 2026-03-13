@@ -12,7 +12,7 @@ export interface AgentDefinition {
   name: string;
   /** Role title, e.g. "Full Stack Developer" */
   title: string;
-  /** Emoji icon, e.g. "💻" */
+  /** Lucide icon name, e.g. "Laptop" */
   icon: string;
   /** Persona archetype, e.g. "Builder", "Guardian" */
   archetype: string;

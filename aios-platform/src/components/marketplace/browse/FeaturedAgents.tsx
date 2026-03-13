@@ -3,7 +3,7 @@
  * Story 2.4
  */
 import { memo } from 'react';
-import { Star, Download } from 'lucide-react';
+import { Star, Download, Bot } from 'lucide-react';
 import { useFeaturedListings } from '../../../hooks/useMarketplace';
 import { RatingStars, PriceBadge, SellerBadge } from '../shared';
 import { getIconComponent } from '../../../lib/icons';
@@ -93,7 +93,7 @@ const FeaturedCard = memo(function FeaturedCard({
             border border-[var(--color-border-default,#333)]
             text-[var(--aiox-lime,#D1FF00)]
           ">
-            {IconComponent ? <IconComponent size={20} /> : <span className="text-lg">🤖</span>}
+            {IconComponent ? <IconComponent size={20} /> : <Bot size={20} />}
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-mono text-sm font-semibold text-[var(--color-text-primary,#fff)] truncate">

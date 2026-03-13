@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+// Mock engine URL as empty so hasEngine() returns false — tests exercise apiClient path
+vi.mock('../../lib/connection', () => ({
+  getEngineUrl: vi.fn(() => ''),
+}));
+
 vi.mock('../api/client', () => ({
   apiClient: {
     get: vi.fn(),

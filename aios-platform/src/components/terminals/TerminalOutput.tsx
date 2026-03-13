@@ -1,5 +1,4 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
 
 interface TerminalOutputProps {
@@ -45,7 +44,7 @@ function parseAnsiLine(line: string): StyledSegment[] {
     const codes = match[1].split(';').map(Number);
     for (const code of codes) {
       if (code === 0) {
-        currentClasses = 'text-gray-300';
+        currentClasses = 'text-secondary';
       } else if (code === 1) {
         currentClasses = currentClasses.includes('font-bold')
           ? currentClasses
@@ -75,7 +74,7 @@ function hasAnsiCodes(line: string): boolean {
 
 function getHeuristicClass(line: string): string {
   if (line.startsWith('$')) return 'terminal-prompt';
-  if (/^PASS|passed|✓/.test(line)) return 'terminal-success';
+  if (/^PASS|passed/.test(line)) return 'terminal-success';
   if (/FAIL|error|Error/.test(line)) return 'terminal-error';
   return 'terminal-text';
 }
@@ -147,21 +146,16 @@ export function TerminalOutput({ lines, isActive }: TerminalOutputProps) {
         )}
       </div>
 
-      <AnimatePresence>
-        {!isAtBottom && (
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
+      {!isAtBottom && (
+          <button
             onClick={scrollToBottom}
             className="absolute bottom-3 right-3 p-1.5 rounded-lg glass text-xs text-secondary hover:text-primary flex items-center gap-1 transition-colors"
             aria-label="Scroll to bottom"
           >
             <ArrowDown className="h-3 w-3" />
             <span>Bottom</span>
-          </motion.button>
+          </button>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 }

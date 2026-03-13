@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Search, Shield } from 'lucide-react';
-import { GlassButton, GlassInput } from '../ui';
+import { CockpitButton, CockpitInput } from '../ui';
 import { useVaultStore } from '../../stores/vaultStore';
 import VaultOverview from './VaultOverview';
 import WorkspaceDetail from './WorkspaceDetail';
@@ -45,21 +44,21 @@ export default function VaultView() {
         <div className="flex items-center gap-2">
           {level === 1 && (
             <div className="flex items-center gap-3">
-              <Shield size={22} className="text-cyan-400" />
-              <h1 className="text-xl font-semibold text-primary">Vault</h1>
+              <Shield size={22} className="text-[var(--aiox-blue)]" />
+              <h1 className="heading-display text-xl font-semibold text-primary">Vault</h1>
             </div>
           )}
 
           {level === 2 && selectedWorkspace && (
             <>
-              <GlassButton
+              <CockpitButton
                 size="sm"
                 variant="ghost"
                 onClick={goBack}
                 leftIcon={<ChevronLeft size={14} />}
               >
                 Vault
-              </GlassButton>
+              </CockpitButton>
               <span className="text-tertiary text-sm">/</span>
               <span className="text-sm text-primary font-medium">
                 {selectedWorkspace.name}
@@ -69,14 +68,14 @@ export default function VaultView() {
 
           {level === 3 && selectedDocument && (
             <>
-              <GlassButton
+              <CockpitButton
                 size="sm"
                 variant="ghost"
                 onClick={goBack}
                 leftIcon={<ChevronLeft size={14} />}
               >
                 {documentCategory}
-              </GlassButton>
+              </CockpitButton>
               <span className="text-tertiary text-sm">/</span>
               <span className="text-sm text-primary font-medium">
                 {selectedDocument.name}
@@ -86,7 +85,7 @@ export default function VaultView() {
         </div>
 
         {/* Search */}
-        <GlassInput
+        <CockpitInput
           placeholder="Search vault..."
           leftIcon={<Search size={16} />}
           value={searchQuery}
@@ -96,32 +95,21 @@ export default function VaultView() {
 
       {/* Content with AnimatePresence */}
       <div className="flex-1 overflow-y-auto glass-scrollbar">
-        <AnimatePresence mode="wait">
-          {level === 1 && (
-            <motion.div
+        {level === 1 && (
+            <div
               key="vault-overview"
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
               className="p-6"
             >
               <VaultOverview
                 searchQuery={searchQuery}
                 onSelectWorkspace={selectWorkspace}
               />
-            </motion.div>
+            </div>
           )}
 
           {level === 2 && selectedWorkspace && (
-            <motion.div
+            <div
               key={`workspace-${selectedWorkspace.id}`}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
               className="p-6"
             >
               <WorkspaceDetail
@@ -129,24 +117,18 @@ export default function VaultView() {
                 searchQuery={searchQuery}
                 onSelectDocument={selectDocument}
               />
-            </motion.div>
+            </div>
           )}
 
           {level === 3 && selectedDocument && (
-            <motion.div
+            <div
               key={`document-${selectedDocument.id}`}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
               className="p-6"
             >
               <DocumentViewer document={selectedDocument} />
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-      </div>
+</div>
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { searchAgents } from '../../services/api/agents';
 import { useSquads } from '../../hooks/useSquads';
@@ -205,24 +204,17 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
   }, [isOpen, onClose]);
 
   return (
-    <AnimatePresence>
-      {isOpen && (
+    <>
+    {isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
             onClick={onClose}
           />
 
           {/* Search Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          <div
             className="fixed top-[15%] left-0 right-0 mx-auto z-50 w-full max-w-2xl px-4"
             onClick={(e) => e.stopPropagation()}
           >
@@ -310,7 +302,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                             const isSelected = globalIndex === selectedIndex;
                             const ActionIcon = getIconComponent(action.icon);
                             return (
-                              <motion.button
+                              <button
                                 key={action.id}
                                 data-index={globalIndex}
                                 onClick={() => { playSound('navigate'); action.action(); }}
@@ -320,7 +312,6 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                                   action.type === 'command' ? 'border-l-amber-500/50' : 'border-l-blue-500/50',
                                   isSelected ? 'bg-white/15' : 'hover:bg-white/5'
                                 )}
-                                whileTap={{ scale: 0.98 }}
                               >
                                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10">
                                   <ActionIcon size={16} />
@@ -332,7 +323,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                                 <span className="text-[9px] text-tertiary uppercase px-1.5 py-0.5 rounded bg-white/5">
                                   {action.type === 'command' ? 'cmd' : 'view'}
                                 </span>
-                              </motion.button>
+                              </button>
                             );
                           })}
                         </div>
@@ -356,7 +347,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                             const squadType = getSquadType(agent.squad);
 
                             return (
-                              <motion.button
+                              <button
                                 key={agent.id}
                                 data-index={globalIndex}
                                 onClick={() => handleSelectAgent(agent)}
@@ -368,7 +359,6 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                                     ? 'bg-white/15'
                                     : 'hover:bg-white/5'
                                 )}
-                                whileTap={{ scale: 0.98 }}
                               >
                                 {/* Avatar */}
                                 <div className={cn(
@@ -403,7 +393,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                                 )}>
                                   <ArrowRightIcon />
                                 </div>
-                              </motion.button>
+                              </button>
                             );
                           })}
                         </div>
@@ -427,8 +417,8 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
               {flatItems.length > 0 && (
                 <div className="px-4 py-2 border-t border-white/10 flex items-center gap-4 text-[10px] text-tertiary">
                   <span className="flex items-center gap-1">
-                    <kbd className="px-1 py-0.5 rounded bg-white/10 font-mono">↑</kbd>
-                    <kbd className="px-1 py-0.5 rounded bg-white/10 font-mono">↓</kbd>
+                    <kbd className="px-1 py-0.5 rounded bg-white/10 font-mono text-[8px]">UP</kbd>
+                    <kbd className="px-1 py-0.5 rounded bg-white/10 font-mono text-[8px]">DN</kbd>
                     <span>navegar</span>
                   </span>
                   <span className="flex items-center gap-1">
@@ -442,11 +432,11 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         </>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 }
 
 // Hook for global keyboard shortcut - uses shared Zustand store

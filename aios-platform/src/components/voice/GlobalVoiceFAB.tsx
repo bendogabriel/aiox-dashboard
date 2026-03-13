@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Mic } from 'lucide-react';
 import { useVoiceStore } from '../../stores/voiceStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -31,15 +30,11 @@ export function GlobalVoiceFAB() {
   }, []);
 
   return (
-    <AnimatePresence>
-      {!hidden && (
-        <motion.button
+    <>
+    {!hidden && (
+        <button
           ref={btnRef}
           onClick={handleClick}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.2 }}
           className="fixed z-[200] flex items-center justify-center group
                      bottom-11 right-5
                      md:bottom-11 md:right-6"
@@ -52,11 +47,6 @@ export function GlobalVoiceFAB() {
             cursor: 'pointer',
             outline: 'none',
           }}
-          whileHover={{
-            background: 'rgba(209,255,0,0.15)',
-            borderColor: 'rgba(209,255,0,0.4)',
-          }}
-          whileTap={{ scale: 0.95 }}
           aria-label="Ativar modo voz"
         >
           {/* Pulse ring */}
@@ -93,8 +83,8 @@ export function GlobalVoiceFAB() {
               50% { transform: scale(1.08); opacity: 0.5; }
             }
           `}</style>
-        </motion.button>
+        </button>
       )}
-    </AnimatePresence>
-  );
+    </>
+);
 }

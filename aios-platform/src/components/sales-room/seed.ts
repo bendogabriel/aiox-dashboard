@@ -7,43 +7,43 @@ export const INITIAL_AGENTS: SalesAgent[] = [
   {
     id: 'sdr-aaron-ross', name: 'Aaron (SDR)', avatar: 'A', status: 'ocioso',
     activeConversations: 0, resolvedToday: 0, conversionRate: 0, avgResponseTime: 0,
-    currentLead: null, messages: [],
+    currentLead: null, messages: [], conversations: [], conversations: [],
   },
   {
     id: 'pre-venda-jeb-blount', name: 'Jeb (Pre-Venda)', avatar: 'J', status: 'ocioso',
     activeConversations: 0, resolvedToday: 0, conversionRate: 0, avgResponseTime: 0,
-    currentLead: null, messages: [],
+    currentLead: null, messages: [], conversations: [],
   },
   {
     id: 'closer-jordan-belfort', name: 'Jordan (Closer)', avatar: 'J', status: 'ocioso',
     activeConversations: 0, resolvedToday: 0, conversionRate: 0, avgResponseTime: 0,
-    currentLead: null, messages: [],
+    currentLead: null, messages: [], conversations: [],
   },
   {
     id: 'pos-venda-joey-coleman', name: 'Joey (Pos-Venda)', avatar: 'P', status: 'ocioso',
     activeConversations: 0, resolvedToday: 0, conversionRate: 0, avgResponseTime: 0,
-    currentLead: null, messages: [],
+    currentLead: null, messages: [], conversations: [],
   },
   // === SUPPORT PIPELINE (4 agents) ===
   {
     id: 'triage-natasha', name: 'Natasha (Triagem)', avatar: 'N', status: 'ocioso',
     activeConversations: 0, resolvedToday: 0, conversionRate: 0, avgResponseTime: 0,
-    currentLead: null, messages: [],
+    currentLead: null, messages: [], conversations: [],
   },
   {
     id: 'tech-lucas', name: 'Lucas (Tech)', avatar: 'L', status: 'ocioso',
     activeConversations: 0, resolvedToday: 0, conversionRate: 0, avgResponseTime: 0,
-    currentLead: null, messages: [],
+    currentLead: null, messages: [], conversations: [],
   },
   {
     id: 'billing-amanda', name: 'Amanda (Financeiro)', avatar: 'F', status: 'ocioso',
     activeConversations: 0, resolvedToday: 0, conversionRate: 0, avgResponseTime: 0,
-    currentLead: null, messages: [],
+    currentLead: null, messages: [], conversations: [],
   },
   {
     id: 'content-diego', name: 'Diego (Conteudo)', avatar: 'D', status: 'ocioso',
     activeConversations: 0, resolvedToday: 0, conversionRate: 0, avgResponseTime: 0,
-    currentLead: null, messages: [],
+    currentLead: null, messages: [], conversations: [],
   },
 ];
 

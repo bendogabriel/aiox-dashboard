@@ -1,6 +1,7 @@
 import { apiClient } from './client';
 import { engineApi } from './engine';
 import { getEngineUrl } from '../../lib/connection';
+import { useEngineStore } from '../../stores/engineStore';
 import type { Squad, SquadDetail, SquadStats, EcosystemOverview } from '../../types';
 import type { AgentConnection } from '../../mocks/squads';
 
@@ -14,10 +15,15 @@ function hasEngine(): boolean {
   return !!getEngineUrl();
 }
 
+/** Check if engine is reachable */
+function isEngineOnline(): boolean {
+  return hasEngine() && useEngineStore.getState().status === 'online';
+}
+
 export const squadsApi = {
   // Get all squads — engine-first, fallback to apiClient
   getSquads: async (params?: SquadsParams): Promise<Squad[]> => {
-    if (hasEngine()) {
+    if (isEngineOnline()) {
       try {
         const data = await engineApi.getRegistrySquads();
         let squads: Squad[] = data.squads.map((s) => ({
@@ -36,13 +42,14 @@ export const squadsApi = {
         // Engine unavailable — fall through to apiClient
       }
     }
+    if (hasEngine() && !isEngineOnline()) return []; // Engine configured but offline — skip fallback
     const response = await apiClient.get<{ squads: Squad[]; total: number }>('/squads', params);
     return response.squads || [];
   },
 
   // Get squad by ID with agents — engine-first
   getSquad: async (squadId: string): Promise<SquadDetail> => {
-    if (hasEngine()) {
+    if (isEngineOnline()) {
       try {
         const [squadsData, agentsData] = await Promise.all([
           engineApi.getRegistrySquads(),
@@ -69,6 +76,9 @@ export const squadsApi = {
       } catch {
         // Engine unavailable — fall through
       }
+    }
+    if (hasEngine() && !isEngineOnline()) {
+      throw new Error(`Engine offline — cannot fetch squad ${squadId}`);
     }
     const response = await apiClient.get<{ squad: SquadDetail }>(`/squads/${squadId}`);
     return response.squad;

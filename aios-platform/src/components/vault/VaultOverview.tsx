@@ -1,6 +1,7 @@
 import { Shield, FileText, Layout, Plus } from 'lucide-react';
-import { GlassCard, GlassButton, Badge, ProgressBar } from '../ui';
+import { CockpitCard, CockpitButton, Badge, ProgressBar } from '../ui';
 import { cn } from '../../lib/utils';
+import { getIconComponent } from '../../lib/icons';
 import { useVaultStore } from '../../stores/vaultStore';
 import type { VaultWorkspace, VaultActivityType } from '../../types/vault';
 
@@ -23,21 +24,21 @@ function timeAgo(ts: string): string {
 }
 
 const activityTypeColors: Record<VaultActivityType, string> = {
-  taxonomy_updated: 'text-blue-400',
-  template_created: 'text-green-400',
-  document_ingested: 'text-purple-400',
-  document_validated: 'text-emerald-400',
-  workspace_created: 'text-yellow-400',
-  csuite_activated: 'text-orange-400',
+  taxonomy_updated: 'text-[var(--aiox-blue)]',
+  template_created: 'text-[var(--color-status-success)]',
+  document_ingested: 'text-[var(--aiox-gray-muted)]',
+  document_validated: 'text-[var(--color-status-success)]',
+  workspace_created: 'text-[var(--bb-warning)]',
+  csuite_activated: 'text-[var(--bb-flare)]',
 };
 
 const activityDotBg: Record<VaultActivityType, string> = {
-  taxonomy_updated: 'bg-blue-400',
-  template_created: 'bg-green-400',
-  document_ingested: 'bg-purple-400',
-  document_validated: 'bg-emerald-400',
-  workspace_created: 'bg-yellow-400',
-  csuite_activated: 'bg-orange-400',
+  taxonomy_updated: 'bg-[var(--aiox-blue)]',
+  template_created: 'bg-[var(--color-status-success)]',
+  document_ingested: 'bg-[var(--aiox-gray-muted)]',
+  document_validated: 'bg-[var(--color-status-success)]',
+  workspace_created: 'bg-[var(--bb-warning)]',
+  csuite_activated: 'bg-[var(--bb-flare)]',
 };
 
 const statusBadge: Record<VaultWorkspace['status'], { label: string; status: 'success' | 'warning' | 'offline' }> = {
@@ -70,11 +71,11 @@ export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: V
     <div className="space-y-6">
       {/* ── KPI Cards ── */}
       <div className="grid grid-cols-3 gap-3">
-        <GlassCard padding="sm" aria-label="Enterprise status">
+        <CockpitCard padding="sm" aria-label="Enterprise status">
           <div className="flex items-center gap-3">
             <div className={cn(
               'flex items-center justify-center w-9 h-9 rounded-lg',
-              hasEnterprise ? 'bg-green-500/15 text-green-400' : 'bg-gray-500/15 text-gray-400'
+              hasEnterprise ? 'bg-[var(--color-status-success)]/15 text-[var(--color-status-success)]' : 'bg-[var(--aiox-gray-dim)]/15 text-tertiary'
             )}>
               <Shield className="w-5 h-5" />
             </div>
@@ -82,17 +83,17 @@ export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: V
               <p className="text-xs text-tertiary truncate">Enterprise Status</p>
               <p className={cn(
                 'text-sm font-semibold',
-                hasEnterprise ? 'text-green-400' : 'text-gray-400'
+                hasEnterprise ? 'text-[var(--color-status-success)]' : 'text-tertiary'
               )}>
                 {hasEnterprise ? 'Active' : 'Inactive'}
               </p>
             </div>
           </div>
-        </GlassCard>
+        </CockpitCard>
 
-        <GlassCard padding="sm" aria-label="Total documents">
+        <CockpitCard padding="sm" aria-label="Total documents">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-blue-500/15 text-blue-400">
+            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--aiox-blue)]/15 text-[var(--aiox-blue)]">
               <FileText className="w-5 h-5" />
             </div>
             <div className="min-w-0">
@@ -100,11 +101,11 @@ export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: V
               <p className="text-sm font-semibold text-primary">{totalDocs}</p>
             </div>
           </div>
-        </GlassCard>
+        </CockpitCard>
 
-        <GlassCard padding="sm" aria-label="Total templates">
+        <CockpitCard padding="sm" aria-label="Total templates">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-purple-500/15 text-purple-400">
+            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--aiox-gray-muted)]/15 text-[var(--aiox-gray-muted)]">
               <Layout className="w-5 h-5" />
             </div>
             <div className="min-w-0">
@@ -112,23 +113,23 @@ export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: V
               <p className="text-sm font-semibold text-primary">{totalTemplates}</p>
             </div>
           </div>
-        </GlassCard>
+        </CockpitCard>
       </div>
 
       {/* ── Workspaces ── */}
       <section>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-primary">Workspaces</h3>
-          <GlassButton variant="ghost" size="sm" disabled leftIcon={<Plus className="w-4 h-4" />}>
+          <CockpitButton variant="ghost" size="sm" disabled leftIcon={<Plus className="w-4 h-4" />}>
             Novo Workspace
-          </GlassButton>
+          </CockpitButton>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {filteredWorkspaces.map((ws) => {
             const badge = statusBadge[ws.status];
             return (
-              <GlassCard
+              <CockpitCard
                 key={ws.id}
                 interactive
                 padding="sm"
@@ -138,7 +139,7 @@ export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: V
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-lg flex-shrink-0" aria-hidden="true">{ws.icon}</span>
+                    {(() => { const Icon = getIconComponent(ws.icon || 'FolderOpen'); return <Icon size={20} className="flex-shrink-0" aria-hidden="true" />; })()}
                     <span className="text-sm font-medium text-primary truncate">{ws.name}</span>
                   </div>
                   <Badge variant="status" status={badge.status} size="sm">
@@ -157,7 +158,7 @@ export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: V
                   showLabel
                   label="Health"
                 />
-              </GlassCard>
+              </CockpitCard>
             );
           })}
         </div>
@@ -167,7 +168,7 @@ export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: V
       <section>
         <h3 className="text-sm font-semibold text-primary mb-3">Atividade Recente</h3>
 
-        <GlassCard padding="sm" aria-label="Recent activity feed">
+        <CockpitCard padding="sm" aria-label="Recent activity feed">
           {recentActivities.length === 0 ? (
             <p className="text-xs text-tertiary text-center py-4">Nenhuma atividade recente</p>
           ) : (
@@ -193,7 +194,7 @@ export default function VaultOverview({ searchQuery = '', onSelectWorkspace }: V
               ))}
             </ul>
           )}
-        </GlassCard>
+        </CockpitCard>
       </section>
     </div>
   );

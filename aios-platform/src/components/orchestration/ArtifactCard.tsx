@@ -3,7 +3,6 @@
  * copy, download, and vault import actions.
  */
 import { useState, memo, lazy, Suspense } from 'react';
-import { motion } from 'framer-motion';
 import {
   Copy,
   Check,
@@ -30,10 +29,10 @@ const TYPE_ICONS = {
 } as const;
 
 const TYPE_COLORS = {
-  code: { bg: 'bg-blue-500/10', border: 'border-blue-500/30', text: 'text-blue-400' },
-  diagram: { bg: 'bg-purple-500/10', border: 'border-purple-500/30', text: 'text-purple-400' },
-  data: { bg: 'bg-green-500/10', border: 'border-green-500/30', text: 'text-green-400' },
-  table: { bg: 'bg-orange-500/10', border: 'border-orange-500/30', text: 'text-orange-400' },
+  code: { bg: 'bg-[var(--aiox-blue)]/10', border: 'border-[var(--aiox-blue)]/30', text: 'text-[var(--aiox-blue)]' },
+  diagram: { bg: 'bg-[var(--aiox-gray-muted)]/10', border: 'border-[var(--aiox-gray-muted)]/30', text: 'text-[var(--aiox-gray-muted)]' },
+  data: { bg: 'bg-[var(--color-status-success)]/10', border: 'border-[var(--color-status-success)]/30', text: 'text-[var(--color-status-success)]' },
+  table: { bg: 'bg-[var(--bb-flare)]/10', border: 'border-[var(--bb-flare)]/30', text: 'text-[var(--bb-flare)]' },
   markdown: { bg: 'bg-white/5', border: 'border-white/10', text: 'text-white/60' },
 } as const;
 
@@ -78,11 +77,8 @@ export const ArtifactCard = memo(function ArtifactCard({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
-      className={`rounded-xl border ${colors.border} ${colors.bg} overflow-hidden`}
+    <div
+      className={`rounded-none border ${colors.border} ${colors.bg} overflow-hidden`}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2">
@@ -112,7 +108,7 @@ export const ArtifactCard = memo(function ArtifactCard({
             className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors"
             aria-label="Copiar"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-[var(--color-status-success)]" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
 
           {/* Download */}
@@ -130,7 +126,7 @@ export const ArtifactCard = memo(function ArtifactCard({
           {onSaveToVault && artifact.type !== 'markdown' && (
             <button
               onClick={() => onSaveToVault(artifact)}
-              className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-cyan-400 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-[var(--aiox-blue)] transition-colors"
               aria-label="Salvar no Vault"
             >
               <Vault className="w-3.5 h-3.5" />
@@ -142,9 +138,9 @@ export const ArtifactCard = memo(function ArtifactCard({
             onClick={() => setExpanded(!expanded)}
             className="p-1.5 rounded-lg hover:bg-white/10 text-white/30 transition-colors"
           >
-            <motion.span animate={{ rotate: expanded ? 180 : 0 }} className="block">
+            <span className="block">
               <ChevronDown className="w-3.5 h-3.5" />
-            </motion.span>
+            </span>
           </button>
         </div>
       </div>
@@ -173,6 +169,6 @@ export const ArtifactCard = memo(function ArtifactCard({
           </div>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 });

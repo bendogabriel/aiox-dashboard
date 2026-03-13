@@ -8,18 +8,18 @@
 
 import { Hono } from 'hono';
 import { existsSync, readdirSync, readFileSync, statSync } from 'fs';
-import { resolve, join, basename, extname } from 'path';
+import { resolve, join, basename } from 'path';
 import { parse as parseYaml } from 'yaml';
 import { getProjectPaths, aiosCorePath, squadsPath, projectPath } from '../lib/config';
 import { getDb } from '../lib/db';
 import * as queue from '../core/job-queue';
 import { getAvailableWorkflows, listWorkflows } from '../core/workflow-engine';
-import { getAvailableBundles, getActiveBundle } from '../core/team-bundle';
-import { getPoolStatus } from '../core/process-pool';
+import { getAvailableBundles } from '../core/team-bundle';
+// import { getPoolStatus } from '../core/process-pool';
 import { getWSClientCount } from '../lib/ws';
-import { getMigrationStatus } from '../lib/db';
+// import { getMigrationStatus } from '../lib/db';
 import { log } from '../lib/logger';
-import { parseArtifacts } from '../lib/artifact-parser';
+// import { parseArtifacts } from '../lib/artifact-parser';
 
 const stubs = new Hono();
 const now = () => new Date().toISOString();
@@ -78,7 +78,7 @@ stubs.get('/agents', (c) => {
   try {
     const agents = discoverAllAgents();
     return c.json({ agents, total: agents.length });
-  } catch (e) { return c.json({ agents: [], total: 0 }); }
+  } catch { return c.json({ agents: [], total: 0 }); }
 });
 
 stubs.get('/agents/search', (c) => {
@@ -96,7 +96,7 @@ stubs.get('/agents/status', (c) => {
   const activeIds = new Set(running.jobs.map(j => j.agent_id));
 
   // Build per-agent stats from DB
-  let agentStats: Record<string, { total: number; done: number; avgDur: number }> = {};
+  const agentStats: Record<string, { total: number; done: number; avgDur: number }> = {};
   try {
     const db = getDb();
     const rows = db.query<{ agent_id: string; total: number; done: number; avg_dur: number }, []>(`
@@ -190,10 +190,95 @@ stubs.get('/agents/:squadId/:agentId', (c) => {
 });
 
 stubs.get('/agents/:squadId/:agentId/commands', (c) => {
-  const { agentId } = c.req.param();
-  // Parse commands from agent file if they exist
-  return c.json({ agentId, commands: [] });
+  const { squadId, agentId } = c.req.param();
+  // Discover commands from task files that reference this agent
+  const commands = discoverSquadCommands(squadId, agentId);
+  return c.json({ agentId, commands });
 });
+
+// ── Commands (REAL from tasks metadata) ──────────────────
+
+stubs.get('/commands', (c) => {
+  const squadFilter = c.req.query('squad');
+  const commands = discoverSquadCommands(squadFilter);
+  return c.json({ commands, total: commands.length });
+});
+
+// ── Command discovery (from task file headers) ───────────
+
+function discoverSquadCommands(squadFilter?: string, agentFilter?: string) {
+  const commands: Array<{
+    id: string; name: string; squadId: string; agentId?: string;
+    command: string; purpose?: string; type: string;
+  }> = [];
+
+  const scanTaskDir = (dir: string, squadId: string) => {
+    if (!existsSync(dir)) return;
+    for (const f of readdirSync(dir).filter(f => f.endsWith('.md'))) {
+      const id = basename(f, '.md');
+      const header = parseTaskCommandHeader(resolve(dir, f));
+      if (!header.command) continue;
+      // If filtering by agent, skip non-matching
+      const agentSlug = header.agent ? slugify(header.agent) : undefined;
+      if (agentFilter && agentSlug && !agentSlug.includes(agentFilter.toLowerCase())) continue;
+      commands.push({
+        id, name: header.name || formatName(id), squadId,
+        agentId: agentSlug, command: header.command,
+        purpose: header.purpose, type: header.executionType || 'task',
+      });
+    }
+  };
+
+  // Core tasks
+  if (!squadFilter || squadFilter === 'core') {
+    scanTaskDir(aiosCorePath('development', 'tasks'), 'core');
+  }
+
+  // Squad tasks
+  const squadsDir = getProjectPaths().squads;
+  if (existsSync(squadsDir)) {
+    for (const entry of readdirSync(squadsDir, { withFileTypes: true })) {
+      if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
+      if (squadFilter && squadFilter !== entry.name) continue;
+      scanTaskDir(resolve(squadsDir, entry.name, 'tasks'), entry.name);
+    }
+  }
+
+  return commands;
+}
+
+function parseTaskCommandHeader(filePath: string): {
+  name?: string; command?: string; agent?: string; purpose?: string; executionType?: string;
+} {
+  try {
+    const content = readFileSync(filePath, 'utf-8');
+    const lines = content.split('\n').slice(0, 10);
+    let name: string | undefined;
+    let command: string | undefined;
+    let agent: string | undefined;
+    let purpose: string | undefined;
+    let executionType: string | undefined;
+
+    for (const line of lines) {
+      const titleMatch = line.match(/^#\s+(?:Task:\s*)?(.+)/i);
+      if (titleMatch && !name) name = titleMatch[1].trim();
+      const cmdMatch = line.match(/\*\*Command\*\*:\s*`([^`]+)`/i);
+      if (cmdMatch) command = cmdMatch[1].trim();
+      const agentMatch = line.match(/\*\*Agent\*\*:\s*(.+)/i);
+      if (agentMatch) agent = agentMatch[1].trim();
+      const purposeMatch = line.match(/\*\*Purpose\*\*:\s*(.+)/i);
+      if (purposeMatch) purpose = purposeMatch[1].trim();
+      const typeMatch = line.match(/\*\*Execution Type\*\*:\s*`?([^`\n]+)`?/i);
+      if (typeMatch) executionType = typeMatch[1].trim();
+    }
+
+    return { name, command, agent, purpose, executionType };
+  } catch { return {}; }
+}
+
+function slugify(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
 
 // ── Squads (REAL from .aios-core + squads) ───────────────
 
@@ -552,7 +637,7 @@ stubs.get('/analytics/health-dashboard', (c) => {
 stubs.get('/dashboard/overview', (c) => {
   try {
     const agents = discoverAllAgents();
-    const squads = discoverAllSquads();
+    const _squads = discoverAllSquads();
     const db = getDb();
 
     const jobStats = db.query<{ total: number; done: number; failed: number; running: number }, []>(`
@@ -732,7 +817,7 @@ stubs.get('/system/env-vars', (c) => {
 });
 
 // ── Monitor events (SSE — real-time events from job queue) ──
-stubs.get('/monitor/events', (c) => {
+stubs.get('/monitor/events', (_c) => {
   const db = getDb();
   let recentJobs: Array<{ id: string; agent_id: string; status: string; command: string; created_at: string }> = [];
   try {
@@ -777,7 +862,7 @@ stubs.get('/monitor/events', (c) => {
           send('heartbeat', { timestamp: now() });
         } catch { clearInterval(hb); }
       }, 15000);
-      setTimeout(() => { clearInterval(hb); controller.close(); }, 300000);
+      setTimeout(() => { clearInterval(hb); try { controller.close(); } catch { /* already closed */ } }, 300000);
     },
   });
 
@@ -821,7 +906,7 @@ stubs.get('/logs', (c) => {
         const hb = setInterval(() => {
           try { controller.enqueue(enc.encode(`event: heartbeat\ndata: {}\n\n`)); } catch { clearInterval(hb); }
         }, 15000);
-        setTimeout(() => { clearInterval(hb); controller.close(); }, 300000);
+        setTimeout(() => { clearInterval(hb); try { controller.close(); } catch { /* already closed */ } }, 300000);
       },
     });
 
@@ -1060,7 +1145,7 @@ stubs.get('/tasks/:id/stream', (c) => {
 
         // Step 2: Developer implementation plan
         const step2Prompt = `Você é Dex, Full-Stack Developer. Com base na análise do Architect:\n\n${step1.accumulated.slice(0, 2000)}\n\nCrie um plano de implementação detalhado em Markdown para a demanda: "${demand}"\n\nInclua: arquivos a criar/modificar, tecnologias, etapas de implementação, e testes necessários. Seja conciso e direto.`;
-        const step2 = await executeStep('step-2', 'Developer Implementation', devAgent, 'Developer', step2Prompt);
+        const _step2 = await executeStep('step-2', 'Developer Implementation', devAgent, 'Developer', step2Prompt);
 
         send('task:completed', { taskId, status: 'completed' });
       } else {

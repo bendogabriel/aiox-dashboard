@@ -1,9 +1,8 @@
 import { memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { motion } from 'framer-motion';
 import { GripVertical, User, Zap } from 'lucide-react';
-import { GlassCard, ProgressBar } from '../ui';
+import { CockpitCard, ProgressBar } from '../ui';
 import { cn } from '../../lib/utils';
 import type { Story } from '../../stores/storyStore';
 
@@ -73,7 +72,7 @@ export const StoryCard = memo(function StoryCard({ story, onClick, isDragOverlay
   if (isDragOverlay) {
     return (
       <div
-        className="w-[280px] rounded-xl shadow-2xl shadow-black/40 ring-2 ring-blue-500/40"
+        className="w-[280px] rounded-none shadow-2xl shadow-black/40 ring-2 ring-[var(--aiox-lime)]/40"
         style={{
           transform: 'rotate(2deg) scale(1.05)',
           background: 'rgba(30, 30, 40, 0.95)',
@@ -96,15 +95,11 @@ export const StoryCard = memo(function StoryCard({ story, onClick, isDragOverlay
         isDragging && 'opacity-40'
       )}
     >
-      <motion.div
-        whileHover={{ scale: 1.01 }}
-        transition={{ duration: 0.15 }}
+      <div
       >
-        <GlassCard
+        <CockpitCard
           variant="subtle"
           padding="sm"
-          radius="md"
-          animate={false}
           interactive
           className="cursor-pointer relative"
           onClick={onClick}
@@ -126,8 +121,8 @@ export const StoryCard = memo(function StoryCard({ story, onClick, isDragOverlay
           <div className="pl-4">
             <StoryCardContent story={story} priority={priority} />
           </div>
-        </GlassCard>
-      </motion.div>
+        </CockpitCard>
+      </div>
     </div>
   );
 });
@@ -200,7 +195,6 @@ function StoryCardContent({
           size="sm"
           variant={progressVariant(story.progress)}
           showLabel
-          animate={false}
         />
       )}
 

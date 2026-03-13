@@ -192,8 +192,8 @@ vi.mock('lucide-react', () => {
 vi.mock('../../ui', () => ({
   Avatar: ({ name }: { name?: string }) => <div data-testid="avatar">{name}</div>,
   Badge: ({ children }: { children?: unknown }) => <span data-testid="badge">{children}</span>,
-  GlassButton: ({ children, ...props }: Record<string, unknown>) => <button {...props}>{children}</button>,
-  GlassInput: (props: Record<string, unknown>) => <input {...props} />,
+  CockpitButton: ({ children, ...props }: Record<string, unknown>) => <button {...props}>{children}</button>,
+  CockpitInput: (props: Record<string, unknown>) => <input {...props} />,
 }));
 
 vi.mock('../../../lib/utils', () => ({

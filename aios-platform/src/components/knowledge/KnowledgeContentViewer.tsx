@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { FileText, File, X, Copy } from 'lucide-react';
-import { GlassCard, GlassButton, Badge } from '../ui';
+import { CockpitCard, CockpitButton, Badge } from '../ui';
 import {
   useKnowledgeFileContent,
   formatFileSize,
@@ -23,22 +23,22 @@ export function KnowledgeContentViewer({ filePath, onClose }: KnowledgeContentVi
 
   if (!filePath) {
     return (
-      <GlassCard className="flex-1 flex flex-col items-center justify-center">
+      <CockpitCard className="flex-1 flex flex-col items-center justify-center">
         <FileText size={40} className="mb-3 text-tertiary opacity-30" />
         <p className="text-sm text-secondary">Selecione um arquivo</p>
         <p className="text-xs text-tertiary mt-1">
           Clique em um arquivo na lista para visualizar seu conteudo
         </p>
-      </GlassCard>
+      </CockpitCard>
     );
   }
 
   return (
-    <GlassCard className="flex-1 flex flex-col !p-0 overflow-hidden">
+    <CockpitCard className="flex-1 flex flex-col !p-0 overflow-hidden">
       {/* File Header */}
       <div className="flex items-center justify-between p-3 border-b border-glass-border">
         <div className="flex items-center gap-2 min-w-0">
-          <span className={FILE_TYPE_COLORS[fileContent?.extension || ''] || 'text-gray-400'}>
+          <span className={FILE_TYPE_COLORS[fileContent?.extension || ''] || 'text-tertiary'}>
             {fileContent?.extension === 'md' ? <FileText size={16} /> : <File size={16} />}
           </span>
           <div className="min-w-0">
@@ -57,12 +57,12 @@ export function KnowledgeContentViewer({ filePath, onClose }: KnowledgeContentVi
           </div>
         </div>
         <div className="flex items-center gap-1 flex-shrink-0">
-          <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopy} aria-label="Copiar conteudo">
+          <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopy} aria-label="Copiar conteudo">
             <Copy size={14} />
-          </GlassButton>
-          <GlassButton variant="ghost" size="icon" className="h-7 w-7" onClick={onClose} aria-label="Fechar">
+          </CockpitButton>
+          <CockpitButton variant="ghost" size="icon" className="h-7 w-7" onClick={onClose} aria-label="Fechar">
             <X size={14} />
-          </GlassButton>
+          </CockpitButton>
         </div>
       </div>
 
@@ -71,7 +71,7 @@ export function KnowledgeContentViewer({ filePath, onClose }: KnowledgeContentVi
         {isLoading ? (
           <div className="text-center py-8 text-tertiary text-sm">Carregando...</div>
         ) : fileContent?.content ? (
-          <pre className="text-sm whitespace-pre-wrap font-mono p-4 rounded-xl bg-black/20 text-secondary leading-relaxed">
+          <pre className="text-sm whitespace-pre-wrap font-mono p-4 rounded-none bg-black/20 text-secondary leading-relaxed">
             {fileContent.content}
           </pre>
         ) : (
@@ -80,6 +80,6 @@ export function KnowledgeContentViewer({ filePath, onClose }: KnowledgeContentVi
           </div>
         )}
       </div>
-    </GlassCard>
+    </CockpitCard>
   );
 }

@@ -3,7 +3,6 @@
  * Supports: JSON, Markdown, ZIP bundle, share link.
  */
 import { useState, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Download,
   FileJson,
@@ -43,39 +42,35 @@ export const ExportPanel = memo(function ExportPanel({
   };
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 overflow-hidden">
+    <div className="rounded-none border border-white/10 bg-white/5 overflow-hidden">
       {/* Toggle bar */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors"
       >
         <div className="flex items-center gap-2">
-          <Download className="w-4 h-4 text-cyan-400" />
+          <Download className="w-4 h-4 text-[var(--aiox-blue)]" />
           <span className="text-sm font-medium text-white/80">Exportar Resultados</span>
-          <span className="px-1.5 py-0.5 rounded text-[10px] bg-cyan-500/10 text-cyan-400">
+          <span className="px-1.5 py-0.5 rounded text-[10px] bg-[var(--aiox-blue)]/10 text-[var(--aiox-blue)]">
             {task.outputs.length} outputs
           </span>
         </div>
-        <motion.span animate={{ rotate: expanded ? 180 : 0 }} className="text-white/30">
+        <span className="text-white/30">
           <ChevronDown className="w-4 h-4" />
-        </motion.span>
+        </span>
       </button>
 
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0 }}
-            animate={{ height: 'auto' }}
-            exit={{ height: 0 }}
+      {expanded && (
+          <div
             className="overflow-hidden"
           >
             <div className="px-4 pb-4 grid grid-cols-2 gap-2">
               {/* ZIP Bundle */}
               <button
                 onClick={() => exportTaskAsZip(task)}
-                className="flex items-center gap-3 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors text-left group"
+                className="flex items-center gap-3 p-3 rounded-none bg-[var(--aiox-blue)]/10 border border-[var(--aiox-blue)]/20 hover:bg-[var(--aiox-blue)]/20 transition-colors text-left group"
               >
-                <Package className="w-5 h-5 text-cyan-400 flex-shrink-0" />
+                <Package className="w-5 h-5 text-[var(--aiox-blue)] flex-shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-white/90 group-hover:text-white">ZIP Bundle</p>
                   <p className="text-[10px] text-white/40">Todos os artefatos organizados</p>
@@ -85,9 +80,9 @@ export const ExportPanel = memo(function ExportPanel({
               {/* JSON */}
               <button
                 onClick={() => exportTaskAsJSON(task)}
-                className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-left group"
+                className="flex items-center gap-3 p-3 rounded-none bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-left group"
               >
-                <FileJson className="w-5 h-5 text-green-400 flex-shrink-0" />
+                <FileJson className="w-5 h-5 text-[var(--color-status-success)] flex-shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-white/90 group-hover:text-white">JSON</p>
                   <p className="text-[10px] text-white/40">Dados estruturados</p>
@@ -97,9 +92,9 @@ export const ExportPanel = memo(function ExportPanel({
               {/* Markdown */}
               <button
                 onClick={() => exportTaskAsMarkdown(task)}
-                className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-left group"
+                className="flex items-center gap-3 p-3 rounded-none bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-left group"
               >
-                <FileText className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                <FileText className="w-5 h-5 text-[var(--aiox-gray-muted)] flex-shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-white/90 group-hover:text-white">Markdown</p>
                   <p className="text-[10px] text-white/40">Report completo</p>
@@ -109,12 +104,12 @@ export const ExportPanel = memo(function ExportPanel({
               {/* Share Link */}
               <button
                 onClick={handleShare}
-                className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-left group"
+                className="flex items-center gap-3 p-3 rounded-none bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-left group"
               >
                 {shared ? (
-                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <Check className="w-5 h-5 text-[var(--color-status-success)] flex-shrink-0" />
                 ) : (
-                  <Share2 className="w-5 h-5 text-orange-400 flex-shrink-0" />
+                  <Share2 className="w-5 h-5 text-[var(--bb-flare)] flex-shrink-0" />
                 )}
                 <div>
                   <p className="text-sm font-medium text-white/90 group-hover:text-white">
@@ -128,18 +123,17 @@ export const ExportPanel = memo(function ExportPanel({
               {onSaveAllToVault && (
                 <button
                   onClick={onSaveAllToVault}
-                  className="col-span-2 flex items-center justify-center gap-2 p-3 rounded-xl bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 hover:from-cyan-500/20 hover:to-purple-500/20 transition-colors group"
+                  className="col-span-2 flex items-center justify-center gap-2 p-3 rounded-none bg-gradient-to-r from-[var(--aiox-blue)]/10 to-[var(--aiox-gray-muted)]/10 border border-[var(--aiox-blue)]/20 hover:from-[var(--aiox-blue)]/20 hover:to-[var(--aiox-gray-muted)]/20 transition-colors group"
                 >
-                  <Vault className="w-5 h-5 text-cyan-400" />
+                  <Vault className="w-5 h-5 text-[var(--aiox-blue)]" />
                   <span className="text-sm font-medium text-white/90 group-hover:text-white">
                     Salvar tudo no Vault
                   </span>
                 </button>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+</div>
   );
 });

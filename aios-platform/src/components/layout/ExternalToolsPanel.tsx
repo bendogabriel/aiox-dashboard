@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '../ui';
 import { useMCPStatus } from '../../hooks/useDashboard';
 import { cn } from '../../lib/utils';
@@ -41,7 +40,7 @@ export function ExternalToolsPanel() {
       {/* Summary */}
       <div className="flex items-center gap-2 text-[10px] text-tertiary px-1 mb-2">
         <span className="flex items-center gap-1">
-          <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-status-success)]" />
           {connectedServers.length} MCP{connectedServers.length !== 1 ? 's' : ''}
         </span>
         <span>•</span>
@@ -49,7 +48,7 @@ export function ExternalToolsPanel() {
         {disconnectedServers.length > 0 && (
           <>
             <span>•</span>
-            <span className="text-red-400">{disconnectedServers.length} offline</span>
+            <span className="text-[var(--bb-error)]">{disconnectedServers.length} offline</span>
           </>
         )}
       </div>
@@ -68,7 +67,7 @@ export function ExternalToolsPanel() {
                 'rounded-lg border transition-colors',
                 isConnected
                   ? 'border-white/10 bg-white/5'
-                  : 'border-red-500/20 bg-red-500/5'
+                  : 'border-[var(--bb-error)]/20 bg-[var(--bb-error)]/5'
               )}
             >
               {/* Server Header */}
@@ -82,7 +81,7 @@ export function ExternalToolsPanel() {
               >
                 <span className={cn(
                   'h-1.5 w-1.5 rounded-full flex-shrink-0',
-                  isConnected ? 'bg-green-500' : 'bg-red-500'
+                  isConnected ? 'bg-[var(--color-status-success)]' : 'bg-[var(--bb-error)]'
                 )} />
                 <PlugIcon />
                 <span className="text-xs text-primary truncate flex-1">
@@ -91,7 +90,7 @@ export function ExternalToolsPanel() {
                 {hasTools && (
                   <>
                     <Badge variant="count" size="sm">{server.tools.length}</Badge>
-                    <motion.svg
+                    <svg
                       width="12"
                       height="12"
                       viewBox="0 0 24 24"
@@ -99,24 +98,19 @@ export function ExternalToolsPanel() {
                       stroke="currentColor"
                       strokeWidth="2"
                       className="text-tertiary"
-                      animate={{ rotate: isExpanded ? 180 : 0 }}
                     >
                       <polyline points="6 9 12 15 18 9" />
-                    </motion.svg>
+                    </svg>
                   </>
                 )}
                 {!isConnected && (
-                  <span className="text-[9px] text-red-400">offline</span>
+                  <span className="text-[9px] text-[var(--bb-error)]">offline</span>
                 )}
               </button>
 
               {/* Tools List */}
-              <AnimatePresence>
-                {isExpanded && hasTools && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
+              {isExpanded && hasTools && (
+                  <div
                     className="overflow-hidden"
                   >
                     <div className="px-2 pb-2 space-y-1">
@@ -142,10 +136,9 @@ export function ExternalToolsPanel() {
                         </p>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
-            </div>
+</div>
           );
         })}
       </div>
