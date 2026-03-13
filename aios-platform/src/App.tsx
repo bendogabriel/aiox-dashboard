@@ -174,6 +174,10 @@ const MarketingHub = lazy(() =>
   import('./components/marketing/MarketingHub')
 );
 
+const DSPreview = lazy(() =>
+  import('./components/ds-preview/DSPreview')
+);
+
 const CreativeGallery = lazy(() =>
   import('./components/creative-gallery/CreativeGallery')
 );
@@ -226,6 +230,8 @@ const viewMap: Record<string, ComponentType> = {
   'creative-gallery': CreativeGallery,
   // Marketing Hub
   'marketing-hub': MarketingHub,
+  // Design System Preview
+  'ds-preview': DSPreview,
 };
 
 // Loading messages per view
@@ -276,6 +282,8 @@ const viewLoaderMessages: Record<string, string> = {
   'creative-gallery': 'Carregando galeria de criativos...',
   // Marketing Hub
   'marketing-hub': 'Carregando Marketing Hub...',
+  // Design System Preview
+  'ds-preview': 'Carregando Design System Preview...',
 };
 
 // Create a client

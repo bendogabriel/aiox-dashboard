@@ -34,6 +34,7 @@ import {
   ZapOff,
   RefreshCw,
   Megaphone,
+  Palette,
   type LucideIcon,
 } from 'lucide-react';
 import { CockpitCard, CockpitButton, AioxLogo } from '../ui';
@@ -138,6 +139,7 @@ const EXTRA_ITEMS: { id: string; label: string; icon: LucideIcon; shortcut: stri
   { id: 'sales-room', label: 'Sales Room', icon: Eye, shortcut: 'L' },
   { id: 'overnight', label: 'Overnight', icon: Moon, shortcut: 'O' },
   { id: 'marketplace', label: 'Marketplace', icon: Store, shortcut: 'K' },
+  { id: 'ds-preview', label: 'Design System', icon: Palette, shortcut: '' },
 ];
 
 // ── GroupItem Component ──
