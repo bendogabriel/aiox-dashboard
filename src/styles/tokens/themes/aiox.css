@@ -362,14 +362,14 @@ html[data-theme="aiox"] {
   --foreground: var(--aiox-warm-white);
   --primary: var(--aiox-lime);
   --primary-foreground: var(--aiox-dark);
-  --secondary: var(--aiox-surface-alt);
-  --secondary-foreground: var(--aiox-cream);
+  --secondary: var(--aiox-blue);
+  --secondary-foreground: #ffffff;
   --card: var(--aiox-surface);
   --card-foreground: var(--aiox-warm-white);
   --muted: var(--aiox-surface-alt);
   --muted-foreground: var(--aiox-gray-muted);
-  --accent: var(--aiox-lime);
-  --accent-foreground: var(--aiox-dark);
+  --accent: var(--aiox-blue);
+  --accent-foreground: #ffffff;
   --destructive: var(--color-status-error);
   --destructive-foreground: #ffffff;
   --border: var(--color-border-default);
