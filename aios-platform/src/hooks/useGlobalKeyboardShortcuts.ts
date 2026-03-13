@@ -75,11 +75,16 @@ export function useGlobalKeyboardShortcuts(options: KeyboardShortcutsOptions = {
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const modifier = isMac ? e.metaKey : e.ctrlKey;
 
-    // Don't trigger shortcuts when typing in inputs
+    // Don't trigger shortcuts when typing in inputs or inside modals/dialogs
     const target = e.target as HTMLElement;
     const isInput = target.tagName === 'INPUT' ||
                     target.tagName === 'TEXTAREA' ||
-                    target.isContentEditable;
+                    target.tagName === 'SELECT' ||
+                    target.isContentEditable ||
+                    target.closest('[role="textbox"]') !== null;
+
+    // Also suppress single-key shortcuts when a dialog/modal is open
+    const isInsideModal = target.closest('dialog, [role="dialog"], [aria-modal="true"]') !== null;
 
     // Allow some shortcuts even in inputs
     const allowInInput = ['k', 'Escape'].includes(e.key);
@@ -184,8 +189,8 @@ export function useGlobalKeyboardShortcuts(options: KeyboardShortcutsOptions = {
       }
     }
 
-    // === Single-key shortcuts (only when NOT in an input) ===
-    if (isInput && !allowInInput) return;
+    // === Single-key shortcuts (only when NOT in an input or modal) ===
+    if ((isInput || isInsideModal) && !allowInInput) return;
 
     // [ - Toggle sidebar
     if (e.key === '[' && !modifier) {
