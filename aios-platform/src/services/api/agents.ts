@@ -25,8 +25,12 @@ function isEngineOnline(): boolean {
 
 /** Parse rich agent data from engine's YAML content field */
 function parseAgentContent(content: string): Partial<Agent> {
-  // Extract YAML block from markdown (between ```yaml and ```)
-  const yamlMatch = content.match(/```yaml\n([\s\S]*?)```/);
+  // Try two YAML formats:
+  // 1. YAML frontmatter (--- ... ---) used by core agents in .claude/agents/
+  // 2. Fenced YAML block (```yaml ... ```) used by squad agents
+  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  const fencedMatch = content.match(/```yaml\n([\s\S]*?)```/);
+  const yamlMatch = frontmatterMatch || fencedMatch;
   if (!yamlMatch) return {};
 
   try {
@@ -243,11 +247,35 @@ function parseAgentContent(content: string): Partial<Agent> {
       }
     }
 
+    // Fallback: extract *command patterns from full markdown content if no YAML commands found
+    if (commands.length === 0) {
+      const cmdPattern = /\|\s*`(\*[a-z][\w-]*(?:\s+\{[^}]+\})?)`\s*\|\s*([^|]+)/g;
+      let cmdMatch: RegExpExecArray | null;
+      while ((cmdMatch = cmdPattern.exec(content)) !== null) {
+        const cmd = cmdMatch[1].trim();
+        const desc = cmdMatch[2].trim();
+        if (!commands.some(c => c.command === cmd)) {
+          commands.push({ command: cmd, action: cmd, description: desc });
+        }
+      }
+    }
+
+    // Extract sample tasks / trigger patterns from YAML
+    const rawTriggers = (parsed.triggers || parsed.activation_triggers) as Array<Record<string, string>> | undefined;
+    const sampleTasks: string[] = [];
+    if (Array.isArray(rawTriggers)) {
+      for (const t of rawTriggers) {
+        const trigger = t.trigger || t.command || t.pattern;
+        if (trigger) sampleTasks.push(trigger);
+      }
+    }
+
     return {
       persona,
       whenToUse,
       icon,
       commands: commands.length > 0 ? commands : undefined,
+      sampleTasks: sampleTasks.length > 0 ? sampleTasks : undefined,
       corePrinciples: allPrinciples.length > 0 ? allPrinciples : undefined,
       mindSource,
       voiceDna,
