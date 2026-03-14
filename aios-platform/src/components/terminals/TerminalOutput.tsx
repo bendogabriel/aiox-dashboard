@@ -82,6 +82,32 @@ function tryParseJson(line: string): Record<string, unknown> | null {
   try { return JSON.parse(trimmed); } catch { return null; }
 }
 
+/**
+ * Split a string that may contain multiple concatenated JSON objects.
+ * e.g. '{"a":1}{"b":2}' → ['{"a":1}', '{"b":2}']
+ */
+function splitJsonBlobs(text: string): string[] {
+  const results: string[] = [];
+  let depth = 0;
+  let start = -1;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '{') {
+      if (depth === 0) start = i;
+      depth++;
+    } else if (ch === '}') {
+      depth--;
+      if (depth === 0 && start >= 0) {
+        results.push(text.slice(start, i + 1));
+        start = -1;
+      }
+    }
+  }
+
+  return results;
+}
+
 function formatTimestamp(ts: string): string {
   try {
     const d = new Date(ts);
@@ -93,38 +119,46 @@ function truncate(s: string, max: number): string {
   return s.length > max ? s.slice(0, max) + '...' : s;
 }
 
-function parseLine(raw: string): ParsedLine {
-  // Try timestamp prefix: [2026-03-10T17:04:03.211Z] [type] {json}
+/**
+ * Parse a single raw line into one or more ParsedLines.
+ * Handles concatenated JSONs and [timestamp] [status] prefixes.
+ */
+function parseLineMulti(raw: string): ParsedLine[] {
+  if (!raw.trim()) return [];
+
+  // Try timestamp prefix: [2026-03-10T17:04:03.211Z] [type] {json...}{json...}
   const tsMatch = raw.match(/^\[(\d{4}-\d{2}-\d{2}T[\d:.]+Z?)\]\s*\[(\w+)\]\s*(.*)/s);
   if (tsMatch) {
     const ts = tsMatch[1];
     const status = tsMatch[2];
-    const rest = tsMatch[3];
-    const json = tryParseJson(rest);
+    const rest = tsMatch[3].trim();
 
-    if (json) {
-      return parseJsonEvent(json, ts, status);
+    // Try splitting concatenated JSONs
+    const blobs = splitJsonBlobs(rest);
+    if (blobs.length > 0) {
+      return blobs.map((blob) => {
+        const json = tryParseJson(blob);
+        if (json) return parseJsonEvent(json, ts, status);
+        return makeFallbackLine(blob, ts, status);
+      });
     }
 
-    return {
-      timestamp: formatTimestamp(ts),
-      type: status === 'error' ? 'error' : 'text',
-      label: status.toUpperCase(),
-      content: truncate(rest, 200),
-      detail: null,
-      colorClass: status === 'error' ? 'text-[var(--bb-error)]' : 'text-secondary',
-      labelClass: status === 'done' ? 'text-[var(--color-status-success)]' : status === 'error' ? 'text-[var(--bb-error)]' : 'text-[var(--aiox-gray-muted)]',
-    };
+    // Single non-JSON rest
+    return [makeFallbackLine(rest, ts, status)];
   }
 
-  // Try bare JSON
-  const json = tryParseJson(raw);
-  if (json) {
-    return parseJsonEvent(json, null, null);
+  // Try splitting bare concatenated JSONs
+  const blobs = splitJsonBlobs(raw);
+  if (blobs.length > 0) {
+    return blobs.map((blob) => {
+      const json = tryParseJson(blob);
+      if (json) return parseJsonEvent(json, null, null);
+      return { timestamp: null, type: 'raw' as const, label: '', content: blob, detail: null, colorClass: 'text-secondary', labelClass: '' };
+    });
   }
 
   // Raw line
-  return {
+  return [{
     timestamp: null,
     type: 'raw',
     label: '',
@@ -132,6 +166,18 @@ function parseLine(raw: string): ParsedLine {
     detail: null,
     colorClass: getHeuristicColor(raw),
     labelClass: '',
+  }];
+}
+
+function makeFallbackLine(text: string, ts: string, status: string): ParsedLine {
+  return {
+    timestamp: formatTimestamp(ts),
+    type: status === 'error' ? 'error' : 'text',
+    label: status.toUpperCase(),
+    content: truncate(text, 200),
+    detail: null,
+    colorClass: status === 'error' ? 'text-[var(--bb-error)]' : 'text-secondary',
+    labelClass: status === 'done' ? 'text-[var(--color-status-success)]' : status === 'error' ? 'text-[var(--bb-error)]' : 'text-[var(--aiox-gray-muted)]',
   };
 }
 
@@ -356,7 +402,7 @@ export function TerminalOutput({ lines, isActive }: TerminalOutputProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
 
-  const parsedLines = useMemo(() => lines.map(parseLine), [lines]);
+  const parsedLines = useMemo(() => lines.flatMap(parseLineMulti), [lines]);
 
   const scrollToBottom = useCallback(() => {
     const el = containerRef.current;
