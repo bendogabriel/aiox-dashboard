@@ -277,11 +277,7 @@ extrasApp.get('/secrets/:id', (c) => {
   return c.json({ error: 'Use credentials-ops.mjs get --service=<name>' }, 403);
 });
 
-// ── Integrations ───────────────────────────────────────────
-
-extrasApp.delete('/integrations/:id', (c) => {
-  return c.json({ ok: true, id: c.req.param('id') });
-});
+// ── Integrations moved to /integrations route (routes/integrations.ts) ──
 
 // ── Execute Workflows (real — reads from registry) ─────────
 
@@ -533,7 +529,27 @@ extrasApp.post('/stream/agent', async (c) => {
           for await (const event of claude.events()) {
             if (event.type === 'assistant' && event.message) {
               // Stream text chunks as they arrive
-              const text = extractTextFromAssistant(event.message);
+              // event.message can be a string (JSON-encoded) or an object
+              const rawMsg = event.message;
+              let text: string;
+              if (typeof rawMsg === 'string') {
+                text = extractTextFromAssistant(rawMsg);
+              } else if (typeof rawMsg === 'object' && rawMsg !== null) {
+                // Direct object: extract content[].text
+                const msgObj = rawMsg as Record<string, unknown>;
+                if (Array.isArray(msgObj.content)) {
+                  text = (msgObj.content as Array<{ type: string; text?: string }>)
+                    .filter(c => c.type === 'text' && c.text)
+                    .map(c => c.text)
+                    .join('');
+                } else if (typeof msgObj.content === 'string') {
+                  text = msgObj.content;
+                } else {
+                  text = '';
+                }
+              } else {
+                text = String(rawMsg);
+              }
               if (text) {
                 encode('text', { content: text });
               }

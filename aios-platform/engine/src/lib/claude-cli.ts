@@ -13,7 +13,7 @@
 export interface ClaudeStreamEvent {
   type: string;
   subtype?: string;
-  message?: string;
+  message?: string | Record<string, unknown>;
   result?: string;
   session_id?: string;
   input_tokens?: number;
@@ -36,7 +36,22 @@ export interface ClaudeSpawnResult {
  * The message can be either a plain string or a JSON string containing
  * {content:[{type:"text",text:"..."}]}.
  */
-export function extractTextFromAssistant(message: string): string {
+export function extractTextFromAssistant(message: string | Record<string, unknown> | undefined): string {
+  if (!message) return '';
+
+  // Handle object directly (Claude CLI can return message as object)
+  if (typeof message === 'object') {
+    if (Array.isArray(message.content)) {
+      return (message.content as Array<{ type: string; text?: string }>)
+        .filter(c => c.type === 'text' && c.text)
+        .map(c => c.text)
+        .join('');
+    }
+    if (typeof message.content === 'string') return message.content;
+    return '';
+  }
+
+  // Handle JSON string
   try {
     const parsed = JSON.parse(message);
     if (parsed?.content && Array.isArray(parsed.content)) {
