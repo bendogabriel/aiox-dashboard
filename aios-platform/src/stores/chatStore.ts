@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { safePersistStorage } from '../lib/safeStorage';
 import type { ChatSession, Message, SquadType } from '../types';
 import { generateId } from '../lib/utils';
+import { supabaseChatService } from '../services/supabase/chat';
 
 interface ChatState {
   sessions: ChatSession[];
@@ -11,6 +12,7 @@ interface ChatState {
   isStreaming: boolean;
   error: string | null;
   abortController: AbortController | null;
+  _supabaseSynced: boolean;
 }
 
 interface ChatActions {
@@ -27,6 +29,7 @@ interface ChatActions {
   setError: (error: string | null) => void;
   getActiveSession: () => ChatSession | null;
   getSessionByAgent: (agentId: string) => ChatSession | undefined;
+  _syncFromSupabase: () => Promise<void>;
 }
 
 export const useChatStore = create<ChatState & ChatActions>()(
@@ -39,6 +42,7 @@ export const useChatStore = create<ChatState & ChatActions>()(
       isStreaming: false,
       error: null,
       abortController: null,
+      _supabaseSynced: false,
 
       // Actions
       createSession: (agentId, agentName, squadId, squadType) => {
@@ -58,6 +62,9 @@ export const useChatStore = create<ChatState & ChatActions>()(
           sessions: [newSession, ...state.sessions],
           activeSessionId: id,
         }));
+
+        // Sync to Supabase in background
+        supabaseChatService.upsertSession(newSession).catch(() => {});
 
         return id;
       },
@@ -84,6 +91,13 @@ export const useChatStore = create<ChatState & ChatActions>()(
           ),
         }));
 
+        // Sync message + session header to Supabase in background
+        supabaseChatService.addMessage(sessionId, newMessage).catch(() => {});
+        const updatedSession = get().sessions.find((s) => s.id === sessionId);
+        if (updatedSession) {
+          supabaseChatService.upsertSession(updatedSession).catch(() => {});
+        }
+
         return messageId;
       },
 
@@ -108,6 +122,9 @@ export const useChatStore = create<ChatState & ChatActions>()(
               : session
           ),
         }));
+
+        // Sync to Supabase in background
+        supabaseChatService.updateMessage(sessionId, messageId, content, metadata).catch(() => {});
       },
 
       deleteSession: (sessionId) => {
@@ -118,6 +135,9 @@ export const useChatStore = create<ChatState & ChatActions>()(
               ? state.sessions[0]?.id || null
               : state.activeSessionId,
         }));
+
+        // Sync to Supabase in background (cascade-deletes messages via FK)
+        supabaseChatService.deleteSession(sessionId).catch(() => {});
       },
 
       clearSessions: () => set({ sessions: [], activeSessionId: null }),
@@ -145,6 +165,58 @@ export const useChatStore = create<ChatState & ChatActions>()(
 
       getSessionByAgent: (agentId) => {
         return get().sessions.find((s) => s.agentId === agentId);
+      },
+
+      _syncFromSupabase: async () => {
+        if (get()._supabaseSynced || !supabaseChatService.isAvailable()) return;
+        set({ _supabaseSynced: true });
+
+        try {
+          const remoteSessions = await supabaseChatService.listSessions();
+          if (!remoteSessions || remoteSessions.length === 0) {
+            // Supabase is empty — seed it with current localStorage sessions
+            const localSessions = get().sessions;
+            for (const session of localSessions) {
+              supabaseChatService.upsertSession(session).catch(() => {});
+              supabaseChatService.bulkInsertMessages(session.id, session.messages).catch(() => {});
+            }
+            return;
+          }
+
+          // Merge: Supabase sessions that localStorage does not have get added
+          const localSessions = get().sessions;
+          const localIds = new Set(localSessions.map((s) => s.id));
+          const missingSessions: ChatSession[] = [];
+
+          for (const remoteSession of remoteSessions) {
+            if (!localIds.has(remoteSession.id)) {
+              // Load full messages for this session
+              const messages = await supabaseChatService.getMessages(remoteSession.id);
+              missingSessions.push({
+                ...remoteSession,
+                messages: messages ?? [],
+              });
+            }
+          }
+
+          if (missingSessions.length > 0) {
+            set((state) => ({
+              sessions: [...state.sessions, ...missingSessions]
+                .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
+            }));
+          }
+
+          // Push any local-only sessions to Supabase
+          const remoteIds = new Set(remoteSessions.map((s) => s.id));
+          for (const local of localSessions) {
+            if (!remoteIds.has(local.id)) {
+              supabaseChatService.upsertSession(local).catch(() => {});
+              supabaseChatService.bulkInsertMessages(local.id, local.messages).catch(() => {});
+            }
+          }
+        } catch (error) {
+          console.error('[ChatStore] Failed to sync from Supabase:', error);
+        }
       },
     }),
     {
@@ -209,3 +281,6 @@ export const useChatStore = create<ChatState & ChatActions>()(
     }
   )
 );
+
+// Initialize Supabase sync on first load (same pattern as vaultStore)
+useChatStore.getState()._syncFromSupabase();
