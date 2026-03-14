@@ -1,5 +1,6 @@
 import { cn } from '../../../lib/utils';
 import { TrendingUp, TrendingDown, Minus, type LucideIcon } from 'lucide-react';
+import { SparklineChart } from '../charts';
 
 export interface MarketingKpiCardProps {
   label: string;
@@ -12,6 +13,7 @@ export interface MarketingKpiCardProps {
   suffix?: string;
   className?: string;
   compact?: boolean;
+  sparkline?: number[];
 }
 
 export function MarketingKpiCard({
@@ -25,6 +27,7 @@ export function MarketingKpiCard({
   suffix,
   className,
   compact = false,
+  sparkline,
 }: MarketingKpiCardProps) {
   // Auto-detect trend from changeValue if not explicitly set
   const trend = trendProp ?? (changeValue != null ? (changeValue > 0 ? 'up' : changeValue < 0 ? 'down' : 'neutral') : 'neutral');
@@ -101,23 +104,27 @@ export function MarketingKpiCard({
         {prefix}{value}{suffix}
       </span>
 
-      {/* Trend */}
-      {change && (
-        <span
-          style={{
-            fontFamily: 'var(--font-family-mono)',
-            fontSize: '0.6rem',
-            color: trendColor,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.25rem',
-            flexShrink: 0,
-          }}
-        >
-          <TrendIcon size={10} />
-          {change}
-        </span>
-      )}
+      {/* Trend + Sparkline row */}
+      <div className="flex items-center gap-2" style={{ flexShrink: 0 }}>
+        {change && (
+          <span
+            style={{
+              fontFamily: 'var(--font-family-mono)',
+              fontSize: '0.6rem',
+              color: trendColor,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+            }}
+          >
+            <TrendIcon size={10} />
+            {change}
+          </span>
+        )}
+        {sparkline && sparkline.length > 1 && (
+          <SparklineChart data={sparkline} trend={trend} width={56} height={22} />
+        )}
+      </div>
     </div>
   );
 }

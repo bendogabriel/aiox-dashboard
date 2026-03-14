@@ -19,6 +19,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { cn } from '../../lib/utils';
 import { hasAgentAvatar, getSquadImageUrl } from '../../lib/agent-avatars';
 import { getSquadType } from '../../types';
+import { SquadHealthBadge } from '../dashboard/SquadHealthBadge';
 import type { Squad, AgentSummary } from '../../types';
 
 // --- Domain Groups ---
@@ -214,6 +215,7 @@ export default function SquadsView() {
                     </div>
                     <div className="flex items-center gap-2 mt-2">
                       <Badge variant="default" size="sm">{squad.agentCount} agents</Badge>
+                      <SquadHealthBadge squadId={squad.id} compact />
                     </div>
                   </CockpitCard>
                 </RevealItem>
@@ -256,6 +258,7 @@ export default function SquadsView() {
                     </div>
                     <div className="flex items-center gap-2 mt-2">
                       <Badge variant="default" size="sm">{squad.agentCount} agents</Badge>
+                      <SquadHealthBadge squadId={squad.id} compact />
                     </div>
                   </CockpitCard>
                 </RevealItem>
@@ -304,10 +307,14 @@ export default function SquadsView() {
                   size="sm"
                   label={selectedSquad.status || 'active'}
                 />
+                <SquadHealthBadge squadId={selectedSquad.id} compact />
               </div>
             </div>
           </div>
         </CockpitCard>
+
+        {/* Health Detail Card */}
+        <SquadHealthBadge squadId={selectedSquad.id} />
 
         {/* Tab Bar */}
         <div className="flex items-center gap-1 p-1 glass-subtle rounded-none w-fit" role="tablist" aria-label="Abas do squad">

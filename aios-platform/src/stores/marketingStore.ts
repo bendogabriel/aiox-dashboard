@@ -2,7 +2,13 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { safePersistStorage } from '../lib/safeStorage';
 
-export type MarketingModule = 'overview' | 'traffic' | 'content' | 'funnels' | 'design-system' | 'analytics' | 'creatives';
+export type MarketingModule = 'overview' | 'traffic' | 'content' | 'funnels' | 'design-system' | 'analytics' | 'creatives' | 'scenarios';
+
+export interface ChartFilter {
+  source: string;
+  dimension: string;
+  value: string;
+}
 export type DatePreset = 'today' | 'yesterday' | 'last_7d' | 'last_14d' | 'last_30d' | 'last_90d' | 'custom';
 export type Platform = 'meta' | 'google' | 'ga4' | 'youtube' | 'instagram' | 'hotmart';
 
@@ -19,6 +25,8 @@ interface MarketingState {
   compactMode: boolean;
   refreshInterval: number; // ms, 0 = disabled
   lastRefresh: number; // timestamp
+  activeFilter: ChartFilter | null;
+  comparisonMode: boolean;
 }
 
 interface MarketingActions {
@@ -29,6 +37,8 @@ interface MarketingActions {
   setCompactMode: (compact: boolean) => void;
   setRefreshInterval: (ms: number) => void;
   markRefreshed: () => void;
+  setActiveFilter: (filter: ChartFilter | null) => void;
+  toggleComparisonMode: () => void;
 }
 
 export const useMarketingStore = create<MarketingState & MarketingActions>()(
@@ -42,6 +52,8 @@ export const useMarketingStore = create<MarketingState & MarketingActions>()(
       compactMode: false,
       refreshInterval: 300_000, // 5 minutes
       lastRefresh: 0,
+      activeFilter: null,
+      comparisonMode: false,
 
       // Actions
       setActiveModule: (module) => set({ activeModule: module }),
@@ -57,6 +69,8 @@ export const useMarketingStore = create<MarketingState & MarketingActions>()(
       setCompactMode: (compact) => set({ compactMode: compact }),
       setRefreshInterval: (ms) => set({ refreshInterval: ms }),
       markRefreshed: () => set({ lastRefresh: Date.now() }),
+      setActiveFilter: (filter) => set({ activeFilter: filter }),
+      toggleComparisonMode: () => set((state) => ({ comparisonMode: !state.comparisonMode })),
     }),
     {
       name: 'aios-marketing',

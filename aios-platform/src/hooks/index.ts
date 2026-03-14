@@ -96,3 +96,13 @@ export type {
   DashboardSystemInfo,
 } from './useDashboardOverview';
 export { useMonitorSSE } from './useMonitorSSE';
+export {
+  useMaturity,
+  usePlatformHealth,
+  useQualityGates,
+  useGraphStats,
+  useGraphData,
+  useKnowledgeStats,
+  useKnowledgeSearch,
+  usePlatformStatus,
+} from './usePlatformIntelligence';

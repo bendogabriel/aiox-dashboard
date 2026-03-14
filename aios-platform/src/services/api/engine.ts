@@ -141,6 +141,105 @@ export interface BundleInfo {
 
 export type ResourceType = 'checklists' | 'templates' | 'data' | 'protocols' | 'config' | 'docs' | 'scripts' | 'rules' | 'minds' | 'skills';
 
+// -- Platform Intelligence Types --
+
+export interface MaturityScores {
+  structure: number;
+  health: number;
+  integration: number;
+  knowledge: number;
+  execution: number;
+  tooling: number;
+}
+
+export interface MaturityReport {
+  date: string;
+  scores: MaturityScores;
+  weights: MaturityScores;
+  overall: number;
+  level: string;
+  details: {
+    health?: unknown;
+    graph?: unknown;
+    qualityGates?: unknown;
+    knowledge?: { chunks: number; squadsIndexed: number };
+  };
+}
+
+export interface SquadHealthResult {
+  squad: string;
+  score: number;
+  grade: string;
+  dimensions: {
+    structural: number;
+    agentQuality: number;
+    taskQuality: number;
+    infrastructure: number;
+  };
+}
+
+export interface HealthReport {
+  total_squads: number;
+  threshold: number;
+  passing_squads: number;
+  failing_squads: number;
+  passed: boolean;
+  summary: { average: number; min: number; max: number };
+  results: SquadHealthResult[];
+}
+
+export interface QualityGateCheck {
+  id: number;
+  check: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM';
+  result: 'PASS' | 'FAIL';
+  detail: string;
+}
+
+export interface QualityGateSquadResult {
+  squad: string;
+  gates: QualityGateCheck[];
+  total: number;
+  passed: number;
+  failed: number;
+  criticalFailed: number;
+  gateResult: 'PASS' | 'FAIL';
+}
+
+export interface QualityGateReport {
+  date: string;
+  squads: number;
+  totalChecks: number;
+  totalPass: number;
+  totalFail: number;
+  totalCriticalFail: number;
+  overallGate: 'PASS' | 'FAIL';
+  results: QualityGateSquadResult[];
+}
+
+export interface GraphStats {
+  totalTasks: number;
+  totalEdges: number;
+  crossSquadEdges: number;
+  cycles: Array<{ cycle: string[]; length: number }>;
+  isolatedSquads: string[];
+  squads: Array<{ squad: string; tasks: number; edges: number; crossRefs: number }>;
+}
+
+export interface KnowledgeStats {
+  totalChunks: number;
+  squadsIndexed: number;
+  bySquad: Record<string, number>;
+}
+
+export interface PlatformStatus {
+  date: string;
+  health: HealthReport | null;
+  graph: GraphStats | null;
+  qualityGates: QualityGateReport | null;
+  knowledge: { totalChunks: number; squadsIndexed: number } | null;
+}
+
 export interface ResourceInfo {
   id: string;
   name: string;
@@ -470,4 +569,37 @@ export const engineApi = {
 
   deleteSecretKey: (key: string) =>
     engineFetch<{ ok: boolean }>(`/secrets/${key}`, { method: 'DELETE' }),
+
+  // Platform Intelligence — Hono route: /platform/*
+  getMaturity: () =>
+    engineFetch<MaturityReport>('/platform/maturity'),
+
+  getPlatformHealth: (squad?: string) => {
+    const qs = squad ? `?squad=${encodeURIComponent(squad)}` : '';
+    return engineFetch<HealthReport>(`/platform/health${qs}`);
+  },
+
+  getQualityGates: (squad?: string) => {
+    const qs = squad ? `?squad=${encodeURIComponent(squad)}` : '';
+    return engineFetch<QualityGateReport>(`/platform/quality-gates${qs}`);
+  },
+
+  getGraphStats: () =>
+    engineFetch<GraphStats>('/platform/graph/stats'),
+
+  getGraphData: () =>
+    engineFetch<unknown>('/platform/graph/data'),
+
+  getKnowledgeStats: () =>
+    engineFetch<KnowledgeStats>('/platform/knowledge/stats'),
+
+  searchKnowledge: (query: string) => {
+    const qs = `?q=${encodeURIComponent(query)}`;
+    return engineFetch<{ results: Array<{ chunk: string; score: number; squad: string; file: string }> }>(
+      `/platform/knowledge/search${qs}`,
+    );
+  },
+
+  getPlatformStatus: () =>
+    engineFetch<PlatformStatus>('/platform/status'),
 };

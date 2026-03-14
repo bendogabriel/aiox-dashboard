@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Layers, LayoutTemplate, GitBranch, type LucideIcon } from 'lucide-react';
-import { ModuleHeader } from '../shared';
+import { ModuleHeader, HeroKpiStrip, SecondaryMetrics, SectionNumber, type HeroKpi } from '../shared';
 import { TemplateGallery } from './TemplateGallery';
 import { FunnelBuilder } from './FunnelBuilder';
 
@@ -15,6 +15,22 @@ interface TabDef {
 const TABS: TabDef[] = [
   { id: 'builder', label: 'Builder', icon: GitBranch },
   { id: 'templates', label: 'Templates', icon: LayoutTemplate },
+];
+
+const HERO_KPIS: HeroKpi[] = [
+  { label: 'Funis Ativos', value: '4', trend: 'neutral' },
+  { label: 'Conversao Media', value: '3.2%', trend: 'up' },
+  { label: 'Receita (Mes)', value: 'R$ 47.8K', trend: 'up' },
+  { label: 'Ticket Medio', value: 'R$ 142', trend: 'up' },
+  { label: 'Paginas Total', value: '18', trend: 'up' },
+  { label: 'Templates', value: '19', trend: 'neutral' },
+];
+
+const SECONDARY_METRICS = [
+  { label: 'Deploys (Mes)', value: '7' },
+  { label: 'Melhor Funil', value: 'MPG Perpetua' },
+  { label: 'CTR Landing', value: '8.4%' },
+  { label: 'Upsell Take Rate', value: '22%' },
 ];
 
 export default function FunnelDashboard() {
@@ -46,8 +62,24 @@ export default function FunnelDashboard() {
         </div>
       </ModuleHeader>
 
-      {activeTab === 'builder' && <FunnelBuilder />}
-      {activeTab === 'templates' && <TemplateGallery />}
+      {/* Hero KPI strip */}
+      <HeroKpiStrip kpis={HERO_KPIS} />
+
+      {/* Secondary metrics */}
+      <SecondaryMetrics metrics={SECONDARY_METRICS} />
+
+      {activeTab === 'builder' && (
+        <>
+          <SectionNumber number="01" title="Builder" subtitle="Construa e gerencie seus funis de vendas" />
+          <FunnelBuilder />
+        </>
+      )}
+      {activeTab === 'templates' && (
+        <>
+          <SectionNumber number="02" title="Templates" subtitle="19 templates prontos para uso" />
+          <TemplateGallery />
+        </>
+      )}
     </div>
   );
 }

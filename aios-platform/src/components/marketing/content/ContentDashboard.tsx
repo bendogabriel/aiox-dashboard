@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FileImage, Image, Calendar, PenTool, type LucideIcon } from 'lucide-react';
-import { ModuleHeader } from '../shared';
+import { ModuleHeader, HeroKpiStrip, SecondaryMetrics, SectionNumber, type HeroKpi } from '../shared';
 import { ThumbnailCreator } from './ThumbnailCreator';
 import { CarouselBuilder } from './CarouselBuilder';
 import { ContentCalendar } from './ContentCalendar';
@@ -17,6 +17,23 @@ const TABS: TabDef[] = [
   { id: 'calendar', label: 'Calendario', icon: Calendar },
   { id: 'thumbnails', label: 'Thumbnails', icon: Image },
   { id: 'carousel', label: 'Carrossel', icon: PenTool },
+];
+
+const HERO_KPIS: HeroKpi[] = [
+  { label: 'Posts Agendados', value: '12', trend: 'up' },
+  { label: 'Publicados (Mes)', value: '34', trend: 'up' },
+  { label: 'Engajamento Medio', value: '4.2%', trend: 'up' },
+  { label: 'Alcance Organico', value: '28.4K', trend: 'down' },
+  { label: 'Saves', value: '892', trend: 'up' },
+  { label: 'Shares', value: '456', trend: 'neutral' },
+];
+
+const SECONDARY_METRICS = [
+  { label: 'Stories/Semana', value: '18' },
+  { label: 'Reels/Semana', value: '4' },
+  { label: 'Carrosseis/Mes', value: '8' },
+  { label: 'Lives/Mes', value: '4' },
+  { label: 'Best Day', value: 'Ter 15h' },
 ];
 
 export default function ContentDashboard() {
@@ -51,6 +68,25 @@ export default function ContentDashboard() {
           })}
         </div>
       </ModuleHeader>
+
+      {/* Hero KPI strip */}
+      <HeroKpiStrip kpis={HERO_KPIS} />
+
+      {/* Secondary metrics */}
+      <SecondaryMetrics metrics={SECONDARY_METRICS} />
+
+      {/* Section header */}
+      <SectionNumber
+        number={activeTab === 'calendar' ? '01' : activeTab === 'thumbnails' ? '02' : '03'}
+        title={TABS.find((t) => t.id === activeTab)?.label ?? ''}
+        subtitle={
+          activeTab === 'calendar'
+            ? 'Planejamento semanal de publicacoes'
+            : activeTab === 'thumbnails'
+              ? 'Criacao de thumbnails para YouTube'
+              : 'Builder de carrosseis para Instagram'
+        }
+      />
 
       {/* Tab content */}
       {activeTab === 'calendar' && <ContentCalendar />}

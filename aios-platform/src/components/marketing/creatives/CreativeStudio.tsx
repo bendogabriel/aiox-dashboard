@@ -1,6 +1,6 @@
 import { useState, lazy, Suspense } from 'react';
 import { Sparkles, FolderOpen, Wand2, Zap, type LucideIcon } from 'lucide-react';
-import { ModuleHeader } from '../shared';
+import { ModuleHeader, HeroKpiStrip, SecondaryMetrics, SectionNumber, type HeroKpi } from '../shared';
 
 // Reuse existing CreativeGallery component
 const CreativeGallery = lazy(() =>
@@ -21,44 +21,67 @@ const TABS: TabDef[] = [
   { id: 'compare', label: 'A/B Test', icon: Zap },
 ];
 
+const HERO_KPIS: HeroKpi[] = [
+  { label: 'Criativos Ativos', value: '47', trend: 'up' },
+  { label: 'CTR Medio', value: '2.8%', trend: 'up' },
+  { label: 'Melhor Criativo', value: '4.1% CTR', trend: 'up' },
+  { label: 'Gerados (Mes)', value: '23', trend: 'up' },
+  { label: 'Testes A/B', value: '6', trend: 'neutral' },
+  { label: 'Win Rate', value: '67%', trend: 'up' },
+];
+
+const SECONDARY_METRICS = [
+  { label: 'Imagens', value: '34' },
+  { label: 'Videos', value: '13' },
+  { label: 'Carrosseis', value: '8' },
+  { label: 'CPA Medio', value: 'R$ 12,40' },
+  { label: 'Custo/Criativo', value: 'R$ 0,08' },
+];
+
 function GeneratePanel() {
   return (
-    <div
-      className="flex flex-col items-center justify-center gap-4 py-12"
-      style={{
-        background: 'var(--aiox-surface)',
-        border: '1px dashed rgba(156,156,156,0.15)',
-      }}
-    >
-      <Wand2 size={32} style={{ color: 'var(--aiox-gray-dim)' }} />
-      <p style={{ fontFamily: 'var(--font-family-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--aiox-cream)' }}>
-        Gerador de Criativos IA
-      </p>
-      <p style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.65rem', color: 'var(--aiox-gray-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center', maxWidth: 400 }}>
-        Gere variantes de criativos para Meta Ads usando fal-ai + nano-banana.
-        Interface completa em desenvolvimento.
-      </p>
+    <div>
+      <SectionNumber number="02" title="Gerador IA" subtitle="Crie variantes de criativos com inteligencia artificial" />
+      <div
+        className="flex flex-col items-center justify-center gap-4 py-12"
+        style={{
+          background: 'var(--aiox-surface)',
+          border: '1px dashed rgba(156,156,156,0.15)',
+        }}
+      >
+        <Wand2 size={32} style={{ color: 'var(--aiox-gray-dim)' }} />
+        <p style={{ fontFamily: 'var(--font-family-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--aiox-cream)' }}>
+          Gerador de Criativos IA
+        </p>
+        <p style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.65rem', color: 'var(--aiox-gray-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center', maxWidth: 400 }}>
+          Gere variantes de criativos para Meta Ads usando fal-ai + nano-banana.
+          Interface completa em desenvolvimento.
+        </p>
+      </div>
     </div>
   );
 }
 
 function ComparePanel() {
   return (
-    <div
-      className="flex flex-col items-center justify-center gap-4 py-12"
-      style={{
-        background: 'var(--aiox-surface)',
-        border: '1px dashed rgba(156,156,156,0.15)',
-      }}
-    >
-      <Zap size={32} style={{ color: 'var(--aiox-gray-dim)' }} />
-      <p style={{ fontFamily: 'var(--font-family-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--aiox-cream)' }}>
-        Teste A/B Visual
-      </p>
-      <p style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.65rem', color: 'var(--aiox-gray-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center', maxWidth: 400 }}>
-        Compare variantes de criativos lado a lado com metricas de performance.
-        Interface completa em desenvolvimento.
-      </p>
+    <div>
+      <SectionNumber number="03" title="Teste A/B" subtitle="Compare variantes lado a lado com metricas de performance" />
+      <div
+        className="flex flex-col items-center justify-center gap-4 py-12"
+        style={{
+          background: 'var(--aiox-surface)',
+          border: '1px dashed rgba(156,156,156,0.15)',
+        }}
+      >
+        <Zap size={32} style={{ color: 'var(--aiox-gray-dim)' }} />
+        <p style={{ fontFamily: 'var(--font-family-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--aiox-cream)' }}>
+          Teste A/B Visual
+        </p>
+        <p style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.65rem', color: 'var(--aiox-gray-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center', maxWidth: 400 }}>
+          Compare variantes de criativos lado a lado com metricas de performance.
+          Interface completa em desenvolvimento.
+        </p>
+      </div>
     </div>
   );
 }
@@ -92,18 +115,27 @@ export default function CreativeStudio() {
         </div>
       </ModuleHeader>
 
+      {/* Hero KPI strip */}
+      <HeroKpiStrip kpis={HERO_KPIS} />
+
+      {/* Secondary metrics */}
+      <SecondaryMetrics metrics={SECONDARY_METRICS} />
+
       {activeTab === 'gallery' && (
-        <Suspense
-          fallback={
-            <div className="flex items-center justify-center h-48">
-              <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.6rem', color: 'var(--aiox-gray-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                Carregando galeria...
-              </span>
-            </div>
-          }
-        >
-          <CreativeGallery />
-        </Suspense>
+        <>
+          <SectionNumber number="01" title="Galeria" subtitle={`${47} criativos ativos em campanhas`} />
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center h-48">
+                <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.6rem', color: 'var(--aiox-gray-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  Carregando galeria...
+                </span>
+              </div>
+            }
+          >
+            <CreativeGallery />
+          </Suspense>
+        </>
       )}
       {activeTab === 'generate' && <GeneratePanel />}
       {activeTab === 'compare' && <ComparePanel />}

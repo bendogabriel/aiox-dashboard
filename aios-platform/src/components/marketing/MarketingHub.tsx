@@ -9,6 +9,7 @@ import {
   Palette,
   BarChart3,
   Sparkles,
+  FlaskConical,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -20,21 +21,24 @@ const FunnelsModule = lazy(() => import('./funnels/FunnelDashboard'));
 const DesignSystemModule = lazy(() => import('./design-system/DSBrowser'));
 const AnalyticsModule = lazy(() => import('./analytics/UnifiedDashboard'));
 const CreativesModule = lazy(() => import('./creatives/CreativeStudio'));
+const ScenariosModule = lazy(() => import('./scenarios/ScenariosDashboard'));
 
 interface ModuleTab {
   id: MarketingModule;
   label: string;
   icon: LucideIcon;
+  badge?: string;
 }
 
 const MODULES: ModuleTab[] = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-  { id: 'traffic', label: 'Traffic', icon: Gauge },
+  { id: 'traffic', label: 'Traffic', icon: Gauge, badge: '10' },
   { id: 'content', label: 'Content', icon: FileImage },
   { id: 'creatives', label: 'Criativos', icon: Sparkles },
   { id: 'funnels', label: 'Funnels', icon: Layers },
   { id: 'design-system', label: 'Design System', icon: Palette },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+  { id: 'scenarios', label: 'Cenarios', icon: FlaskConical },
 ];
 
 const MODULE_MAP: Record<MarketingModule, React.ComponentType> = {
@@ -45,6 +49,7 @@ const MODULE_MAP: Record<MarketingModule, React.ComponentType> = {
   'design-system': DesignSystemModule,
   analytics: AnalyticsModule,
   creatives: CreativesModule,
+  scenarios: ScenariosModule,
 };
 
 function ModuleLoader() {
@@ -129,6 +134,21 @@ export default function MarketingHub() {
             >
               <Icon size={14} style={isActive ? { color: 'var(--aiox-lime)' } : undefined} />
               <span>{module.label}</span>
+              {/* Badge */}
+              {module.badge && (
+                <span
+                  style={{
+                    fontFamily: 'var(--font-family-mono)',
+                    fontSize: '0.5rem',
+                    padding: '0.1rem 0.35rem',
+                    background: isActive ? 'rgba(209, 255, 0, 0.15)' : 'rgba(156, 156, 156, 0.12)',
+                    color: isActive ? 'var(--aiox-lime)' : 'var(--aiox-gray-dim)',
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {module.badge}
+                </span>
+              )}
               {/* Active indicator */}
               {isActive && (
                 <span

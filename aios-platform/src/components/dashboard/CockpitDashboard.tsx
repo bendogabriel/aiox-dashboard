@@ -5,6 +5,7 @@ import { DependencyGraph } from './DependencyGraph'
 import { EventLogViewer } from './EventLogViewer'
 import { SlaPanel } from './SlaPanel'
 import { NotificationCenter } from './NotificationCenter'
+import { PlatformIntelligencePanel } from './PlatformIntelligencePanel'
 import {
   CockpitKpiCard,
   CockpitAlert,
@@ -168,32 +169,38 @@ export default function CockpitDashboard({ viewToggle }: { viewToggle?: React.Re
         </div>
       </div>
 
+      {/* Platform Intelligence */}
+      <CockpitSectionDivider label="Platform Intelligence" num="03" concept="Maturity & Governance" style={{ marginBottom: '1rem' }} />
+      <div style={{ marginBottom: '1.5rem' }}>
+        <PlatformIntelligencePanel />
+      </div>
+
       {/* Integration Health */}
-      <CockpitSectionDivider label="Integration Health" num="03" concept="Observability" style={{ marginBottom: '1rem' }} />
+      <CockpitSectionDivider label="Integration Health" num="04" concept="Observability" style={{ marginBottom: '1rem' }} />
       <div style={{ marginBottom: '1.5rem' }}>
         <HealthCard />
       </div>
 
       {/* SLA / Uptime Goals */}
-      <CockpitSectionDivider label="SLA Goals" num="03b" concept="Uptime" style={{ marginBottom: '1rem' }} />
+      <CockpitSectionDivider label="SLA Goals" num="04b" concept="Uptime" style={{ marginBottom: '1rem' }} />
       <div style={{ marginBottom: '1.5rem' }}>
         <SlaPanel />
       </div>
 
       {/* Dependency Map */}
-      <CockpitSectionDivider label="Dependency Map" num="04" concept="Dependencies" style={{ marginBottom: '1rem' }} />
+      <CockpitSectionDivider label="Dependency Map" num="05" concept="Dependencies" style={{ marginBottom: '1rem' }} />
       <div style={{ marginBottom: '1.5rem' }}>
         <DependencyGraph />
       </div>
 
       {/* Event Log */}
-      <CockpitSectionDivider label="Event Log" num="05" concept="Observability" style={{ marginBottom: '1rem' }} />
+      <CockpitSectionDivider label="Event Log" num="06" concept="Observability" style={{ marginBottom: '1rem' }} />
       <div style={{ marginBottom: '1.5rem' }}>
         <EventLogViewer />
       </div>
 
       {/* Tokens Summary */}
-      <CockpitSectionDivider label="Token Usage" num="06" style={{ marginBottom: '1rem' }} />
+      <CockpitSectionDivider label="Token Usage" num="07" style={{ marginBottom: '1rem' }} />
       <div>
         <div className="grid-hairline" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
           <CockpitKpiCard
