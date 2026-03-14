@@ -123,6 +123,7 @@ export function SlashCommandMenu({
 }: SlashCommandMenuProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
+  const selectionSourceRef = useRef<'keyboard' | 'mouse'>('keyboard');
 
   const allCommands = useMemo(
     () => [...BUILT_IN_COMMANDS, ...extraCommands],
@@ -152,9 +153,11 @@ export function SlashCommandMenu({
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
+        selectionSourceRef.current = 'keyboard';
         setSelectedIndex((i) => (i + 1) % filtered.length);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
+        selectionSourceRef.current = 'keyboard';
         setSelectedIndex((i) => (i - 1 + filtered.length) % filtered.length);
       } else if (e.key === 'Enter' || e.key === 'Tab') {
         e.preventDefault();
@@ -171,8 +174,10 @@ export function SlashCommandMenu({
     return () => window.removeEventListener('keydown', handleKey);
   }, [isVisible, filtered, selectedIndex, onSelect, onClose]);
 
-  // Scroll selected item into view
+  // Scroll selected item into view — only on keyboard navigation to avoid
+  // a scroll loop where scrollIntoView triggers mouseEnter on a new item
   useEffect(() => {
+    if (selectionSourceRef.current !== 'keyboard') return;
     if (!listRef.current) return;
     const item = listRef.current.children[selectedIndex] as HTMLElement;
     item?.scrollIntoView({ block: 'nearest' });
@@ -246,7 +251,7 @@ export function SlashCommandMenu({
                       isSelected ? 'bg-white/8' : 'hover:bg-white/4'
                     )}
                     onClick={() => onSelect(cmd)}
-                    onMouseEnter={() => setSelectedIndex(idx)}
+                    onMouseEnter={() => { selectionSourceRef.current = 'mouse'; setSelectedIndex(idx); }}
                   >
                     <div
                       className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center"
