@@ -3,6 +3,7 @@ import { Minimize2, Maximize2, FolderOpen, ArrowLeftRight, Box, Layers } from 'l
 import { CockpitCard, Badge, StatusDot } from '../ui';
 import type { StatusType } from '../ui/StatusDot';
 import { cn } from '../../lib/utils';
+import { TerminalOutput } from './TerminalOutput';
 
 export type InvocationType = 'full-context' | 'subagent' | 'delegated';
 
@@ -135,35 +136,13 @@ export function TerminalCard({ session, listMode = false }: TerminalCardProps) {
       {/* Terminal output area */}
       {!minimized && (
           <div
-            className="flex-1 overflow-hidden"
+            className={cn(
+              'flex-1 overflow-hidden',
+              !listMode && 'h-[200px]',
+              listMode && 'max-h-[160px]',
+            )}
           >
-            <div
-              className={cn(
-                'bg-black/80 p-3 font-mono text-xs leading-relaxed overflow-y-auto',
-                !listMode && 'h-[200px]',
-                listMode && 'max-h-[160px]',
-              )}
-              tabIndex={0}
-              role="region"
-              aria-label={`Terminal ${session.agent}`}
-            >
-              {visibleLines.map((line, i) => (
-                <div key={i} className="whitespace-pre-wrap">
-                  {line.startsWith('$') ? (
-                    <span className="terminal-prompt">{line}</span>
-                  ) : line.startsWith('PASS') || line.includes('passed') ? (
-                    <span className="terminal-success">{line}</span>
-                  ) : line.startsWith('FAIL') || line.includes('error') || line.includes('Error') ? (
-                    <span className="terminal-error">{line}</span>
-                  ) : (
-                    <span className="terminal-text">{line}</span>
-                  )}
-                </div>
-              ))}
-              {isActive && (
-                <span className="terminal-cursor animate-pulse">_</span>
-              )}
-            </div>
+            <TerminalOutput lines={visibleLines} isActive={isActive} />
           </div>
         )}
 {/* Last output preview (when minimized) */}
