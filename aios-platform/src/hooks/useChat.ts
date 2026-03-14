@@ -125,7 +125,8 @@ export function useChat() {
         isStreaming: currentIsStreaming
       });
 
-      if (!agentId || !squadId || !currentSessionId || currentIsStreaming) {
+      // squadId is optional for core agents (e.g. aios-qa, aios-dev) that have no squad
+      if (!agentId || !currentSessionId || currentIsStreaming) {
         console.log('[useChat.sendMessage] Early return - missing:', {
           agentId, squadId,
           hasSession: !!currentSessionId,
@@ -140,7 +141,7 @@ export function useChat() {
         useUIStore.setState({ selectedAgentId: agentId, selectedSquadId: squadId });
       }
 
-      const squadType = getSquadTypeUtil(squadId);
+      const squadType = squadId ? getSquadTypeUtil(squadId) : ('default' as ReturnType<typeof getSquadTypeUtil>);
       const { addToast } = useToastStore.getState();
 
       setError(null);
@@ -149,7 +150,7 @@ export function useChat() {
       try {
         await executeMutation.mutateAsync({
           sessionId: currentSessionId,
-          squadId,
+          squadId: squadId || 'core',
           agentId,
           agentName,
           squadType,
