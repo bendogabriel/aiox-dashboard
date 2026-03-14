@@ -12,6 +12,7 @@ interface ChatInputProps {
   isStreaming?: boolean;
   placeholder?: string;
   agentName?: string;
+  agentCommands?: SlashCommand[];
 }
 
 interface PendingFile {
@@ -110,6 +111,7 @@ export function ChatInput({
   isStreaming = false,
   placeholder,
   agentName,
+  agentCommands = [],
 }: ChatInputProps) {
   const [message, setMessage] = useState('');
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
@@ -426,6 +428,7 @@ export function ChatInput({
         onSelect={handleSlashSelect}
         onClose={handleSlashClose}
         anchor="top"
+        extraCommands={agentCommands}
       />
 
       <div className="flex items-end gap-2">

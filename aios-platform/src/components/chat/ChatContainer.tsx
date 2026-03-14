@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { SmartMessageList } from './VirtualizedMessageList';
 import { ChatInput } from './ChatInput';
+import type { SlashCommand } from './SlashCommandMenu';
 import { ChatConversationPanel } from './ChatConversationPanel';
 import { ChatHeader } from './ChatHeader';
 import { WelcomeMessage } from './WelcomeMessage';
@@ -8,6 +9,7 @@ import { EmptyChat } from './EmptyChat';
 import { useChat } from '../../hooks/useChat';
 import { useChatStore } from '../../stores/chatStore';
 import { useUIStore } from '../../stores/uiStore';
+import { useRegistryTasks, useRegistryWorkflows } from '../../hooks/useEngine';
 import { ORCHESTRATION_TRIGGERS } from './chat-types';
 
 export function ChatContainer() {
@@ -22,6 +24,57 @@ export function ChatContainer() {
   const { sessions, activeSessionId, setActiveSession, deleteSession } = useChatStore();
   const { selectedAgentId, setCurrentView } = useUIStore();
   const [chatSidebarOpen, setChatSidebarOpen] = useState(true);
+
+  // Fetch squad tasks/workflows for dynamic slash commands
+  const squadId = selectedAgent?.squad;
+  const { data: tasksData } = useRegistryTasks(squadId || undefined);
+  const { data: workflowsData } = useRegistryWorkflows(squadId || undefined);
+
+  // Build dynamic slash commands from agent commands + squad tasks/workflows
+  const agentSlashCommands = useMemo<SlashCommand[]>(() => {
+    const cmds: SlashCommand[] = [];
+
+    // Agent-level commands (from YAML/markdown)
+    if (selectedAgent?.commands) {
+      for (const cmd of selectedAgent.commands) {
+        cmds.push({
+          command: cmd.command.startsWith('*') ? `/${cmd.command.slice(1)}` : `/${cmd.command}`,
+          label: cmd.command.replace(/^\*/, ''),
+          description: cmd.description || cmd.action || '',
+          icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z', // zap
+          category: 'agent',
+        });
+      }
+    }
+
+    // Squad tasks
+    if (tasksData?.tasks) {
+      for (const task of tasksData.tasks) {
+        cmds.push({
+          command: `/${task.id}`,
+          label: task.name || task.id,
+          description: task.purpose || `Task: ${task.name}`,
+          icon: 'M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11', // check-square
+          category: 'workflow',
+        });
+      }
+    }
+
+    // Squad workflows
+    if (workflowsData?.workflows) {
+      for (const wf of workflowsData.workflows) {
+        cmds.push({
+          command: `/${wf.id}`,
+          label: wf.name || wf.id,
+          description: wf.description || `Workflow: ${wf.name}`,
+          icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', // layers
+          category: 'workflow',
+        });
+      }
+    }
+
+    return cmds;
+  }, [selectedAgent?.commands, tasksData, workflowsData]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -172,6 +225,7 @@ export function ChatContainer() {
             disabled={isStreaming}
             isStreaming={isStreaming}
             agentName={selectedAgent.name}
+            agentCommands={agentSlashCommands}
           />
         </div>
       </div>
