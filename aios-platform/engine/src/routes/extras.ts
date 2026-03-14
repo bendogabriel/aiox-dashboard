@@ -490,13 +490,14 @@ extrasApp.post('/stream/agent', async (c) => {
           const encode = (event: string, data: unknown) => {
             controller.enqueue(new TextEncoder().encode(formatSSE(event, data)));
           };
-          encode('start', { agentId, sessionId: `demo-${Date.now()}` });
+          const execId = `demo-${Date.now()}`;
+          encode('start', { executionId: execId, agentId, agentName: agentId });
           const demoResponse = `Sou o agente **${agentId}**. O Claude CLI não está disponível neste momento, então estou em modo demo.\n\nSua mensagem: "${message}"`;
           for (const word of demoResponse.split(' ')) {
             encode('text', { content: word + ' ' });
             await Bun.sleep(30);
           }
-          encode('done', { content: demoResponse });
+          encode('done', { usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }, duration: 0.5 });
           controller.close();
         }
       }),
@@ -523,31 +524,42 @@ extrasApp.post('/stream/agent', async (c) => {
           } catch { /* stream closed */ }
         };
 
-        encode('start', { agentId, sessionId: `cli-${Date.now()}` });
+        const execId = `cli-${Date.now()}`;
+        encode('start', { executionId: execId, agentId, agentName: agentId });
+
+        let gotResult = false;
 
         try {
           for await (const event of claude.events()) {
             if (event.type === 'assistant' && event.message) {
+              // Stream text chunks as they arrive
               const text = extractTextFromAssistant(event.message);
               if (text) {
                 encode('text', { content: text });
               }
             } else if (event.type === 'result') {
-              const text = event.result || (event.message ? extractTextFromAssistant(event.message) : '');
+              gotResult = true;
+              // Do NOT re-send content — it was already streamed via assistant events.
+              // Only send usage/duration metadata.
+              const inputTokens = event.input_tokens || 0;
+              const outputTokens = event.output_tokens || 0;
+              const durationSec = (event.duration_ms || 0) / 1000;
               encode('done', {
-                content: text,
-                model: event.model,
-                inputTokens: event.input_tokens,
-                outputTokens: event.output_tokens,
-                costUsd: event.cost_usd,
-                durationMs: event.duration_ms,
+                usage: { inputTokens, outputTokens, totalTokens: inputTokens + outputTokens },
+                duration: durationSec,
               });
             } else if (event.type === 'error') {
               encode('error', { error: event.message || 'Claude CLI error' });
             }
+            // Skip rate_limit_event, system, etc.
           }
         } catch (err) {
           encode('error', { error: (err as Error).message });
+        }
+
+        // If no result event came (e.g. process killed), send done anyway
+        if (!gotResult) {
+          encode('done', { usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }, duration: 0 });
         }
 
         try { controller.close(); } catch { /* already closed */ }
