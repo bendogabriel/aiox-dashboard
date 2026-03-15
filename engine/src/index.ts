@@ -21,6 +21,8 @@ import { cron } from './routes/cron';
 import { stream } from './routes/stream';
 import { whatsapp } from './routes/whatsapp';
 import { registry } from './routes/registry';
+import { analytics } from './routes/analytics';
+import { tools } from './routes/tools';
 
 // ============================================================
 // AIOS Agent Execution Engine — v0.4.0
@@ -85,6 +87,8 @@ app.route('/memory', memory);
 app.route('/cron', cron);
 app.route('/whatsapp', whatsapp);
 app.route('/registry', registry);
+app.route('/analytics', analytics);
+app.route('/tools', tools);
 
 // Serve dashboard static files if configured (AIOS_DASHBOARD_DIR env or ../dist/)
 const dashboardDir = process.env.AIOS_DASHBOARD_DIR
@@ -154,6 +158,8 @@ log.info('Endpoints:', {
   webhook: '/webhook/:squadId, /webhook/orchestrator',
   whatsapp: '/whatsapp/webhook, /whatsapp/events (SSE), /whatsapp/send, /whatsapp/status',
   registry: '/registry/project, /registry/squads, /registry/agents, /registry/workflows, /registry/tasks',
+  analytics: '/analytics/overview, /analytics/performance/agents',
+  tools: '/tools/mcp',
   memory: '/memory/:scope, /memory/recall, /memory/store',
   cron: '/cron (CRUD)',
   ws: 'ws://*/live',
