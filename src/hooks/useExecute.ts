@@ -251,7 +251,11 @@ export function useExecutionHistory(limit: number = 20) {
   return useQuery<ExecutionHistory>({
     queryKey: ['executionHistory', limit],
     queryFn: async () => {
-      return executeApi.getHistory({ limit });
+      try {
+        return await executeApi.getHistory({ limit });
+      } catch {
+        return { executions: [], total: 0 };
+      }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
     gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes

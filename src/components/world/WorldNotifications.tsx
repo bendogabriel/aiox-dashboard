@@ -26,16 +26,16 @@ const TYPE_ICONS: Record<WorldNotification['type'], string> = {
 
 // Demo notifications that cycle for ambience
 const DEMO_NOTIFICATIONS: Array<Omit<WorldNotification, 'id' | 'timestamp'>> = [
-  { message: 'copywriting finished sales page draft', domain: 'content', type: 'success' },
-  { message: 'media-buy optimizing campaign CPA', domain: 'sales', type: 'task' },
-  { message: 'dev deployed v2.3.1 to staging', domain: 'dev', type: 'success' },
-  { message: 'data-analytics report ready for review', domain: 'data', type: 'info' },
-  { message: 'design-system updated component library', domain: 'design', type: 'success' },
-  { message: 'devops running health check on VPS', domain: 'ops', type: 'task' },
-  { message: 'youtube-content publishing new video', domain: 'content', type: 'task' },
-  { message: 'funnel-creator A/B test results in', domain: 'sales', type: 'info' },
-  { message: 'architect reviewing PR #142', domain: 'dev', type: 'task' },
-  { message: 'creative-studio generating thumbnails', domain: 'design', type: 'task' },
+  { message: 'dex committed feat: handoff comercial pipeline', domain: 'dev', type: 'success' },
+  { message: 'quinn running QA gate on Story 3.2', domain: 'dev', type: 'task' },
+  { message: 'gage deployed dashboard v0.5.0 to staging', domain: 'ops', type: 'success' },
+  { message: 'aria reviewing architecture for AIOX engine', domain: 'dev', type: 'task' },
+  { message: 'morgan updated Epic 3 execution plan', domain: 'data', type: 'info' },
+  { message: 'dex implementing portfolio animations', domain: 'dev', type: 'success' },
+  { message: 'gage running health check on n8n instance', domain: 'ops', type: 'task' },
+  { message: 'pax validated Story 2.4 acceptance criteria', domain: 'data', type: 'info' },
+  { message: 'quinn approved Brave automations test suite', domain: 'dev', type: 'success' },
+  { message: 'river drafting Story 3.3 from Epic backlog', domain: 'design', type: 'task' },
 ];
 
 // Map agent name to a plausible domain

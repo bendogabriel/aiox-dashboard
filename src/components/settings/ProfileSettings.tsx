@@ -4,8 +4,8 @@ import { useToast } from '../ui/Toast';
 import { SettingRow } from './SettingsHelpers';
 
 export function ProfileSettings() {
-  const [name, setName] = useState('Rafael Costa');
-  const [email, setEmail] = useState('rafael@example.com');
+  const [name, setName] = useState('Gabriel Bendo');
+  const [email, setEmail] = useState('gabriel@synkra.dev');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { success, error: showError } = useToast();

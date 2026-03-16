@@ -50,16 +50,16 @@ const demoAgents: AgentMonitorData[] = aiosRegistry.agents.map((agent, i) => {
 
 // Demo activity actions keyed by agent index for variety
 const DEMO_ACTIONS: Array<{ action: string; status: 'success' | 'error'; duration: number }> = [
-  { action: 'Committed feat: implement agent monitor cards [Story 3.2]', status: 'success', duration: 4500 },
-  { action: 'Running unit tests for AgentMonitorCard', status: 'success', duration: 12300 },
-  { action: 'QA Gate — accessibility check failed (missing aria-labels)', status: 'error', duration: 8700 },
-  { action: 'Created draft for Story 3.3: Agent Performance Dashboard', status: 'success', duration: 3200 },
-  { action: 'Refactored useAgents hook to support polling interval', status: 'success', duration: 6100 },
-  { action: 'Auditing GlassCard component for token compliance', status: 'success', duration: 5400 },
-  { action: 'Approved architecture for analytics service layer', status: 'success', duration: 15200 },
-  { action: 'QA Gate — Story 3.1 lint & typecheck passed', status: 'success', duration: 9800 },
-  { action: 'Updated Epic 3 execution plan with revised estimates', status: 'success', duration: 4100 },
-  { action: 'Deployed staging build v0.4.2 via CI/CD pipeline', status: 'success', duration: 22400 },
+  { action: 'Committed feat: handoff comercial Brave pipeline [Automacao 13]', status: 'success', duration: 4500 },
+  { action: 'Running QA gate on portfolio Story 3.2 animations', status: 'success', duration: 12300 },
+  { action: 'QA Gate — Pipedrive sync missing null check on org_id', status: 'error', duration: 8700 },
+  { action: 'Created draft for Story 3.3: Final Review & Deploy', status: 'success', duration: 3200 },
+  { action: 'Implemented scroll-triggered animations for portfolio', status: 'success', duration: 6100 },
+  { action: 'Validated IDS verification gate engine [Story IDS-5a]', status: 'success', duration: 5400 },
+  { action: 'Reviewed AIOX engine architecture for dashboard integration', status: 'success', duration: 15200 },
+  { action: 'QA Gate — Portfolio SEO metadata + robots.txt passed', status: 'success', duration: 9800 },
+  { action: 'Updated Brave Educacao n8n workflow note sync fix', status: 'success', duration: 4100 },
+  { action: 'Deployed portfolio v1.0 to Vercel production', status: 'success', duration: 22400 },
 ];
 
 // Use at least 6 different agents, cycling through the first 8 from the registry

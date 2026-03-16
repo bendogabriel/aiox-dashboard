@@ -233,7 +233,7 @@ export function AgentInteractionPanel({
               className="flex-1 flex flex-col min-h-0"
             >
               {/* Messages area */}
-              <div className="flex-1 overflow-y-auto glass-scrollbar px-3 py-2 space-y-2">
+              <div className="flex-1 overflow-y-auto glass-scrollbar px-3 py-2 space-y-2" tabIndex={0} role="region" aria-label="Message history">
                 {messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center py-8">
                     <div
@@ -353,6 +353,7 @@ export function AgentInteractionPanel({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="flex-1 overflow-y-auto glass-scrollbar p-3 space-y-1"
+              tabIndex={0} role="region" aria-label="Agent activity log"
             >
               {/* Live status */}
               {liveActivity?.isActive && (
@@ -412,6 +413,7 @@ export function AgentInteractionPanel({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               className="flex-1 overflow-y-auto glass-scrollbar p-4 space-y-4"
+              tabIndex={0} role="region" aria-label="Agent information"
             >
               {isLoading ? (
                 <div className="space-y-3">
@@ -500,6 +502,7 @@ export function AgentInteractionPanel({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               className="flex-1 overflow-y-auto glass-scrollbar p-3 space-y-1.5"
+              tabIndex={0} role="region" aria-label="Agent commands"
             >
               {commands && commands.length > 0 ? (
                 commands.map((cmd: AgentCommand) => (

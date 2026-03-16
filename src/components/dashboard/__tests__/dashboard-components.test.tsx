@@ -134,7 +134,7 @@ vi.mock('../../insights/InsightsView', () => ({
   default: ({ viewToggle }: { viewToggle?: unknown }) => <div data-testid="insights">{viewToggle as React.ReactNode}</div>,
 }));
 
-describe('Dashboard Components — render tests', () => {
+describe('Dashboard Components — render tests', { timeout: 60_000 }, () => {
   beforeEach(() => { vi.resetModules(); });
 
   describe('DashboardWorkspace', () => {

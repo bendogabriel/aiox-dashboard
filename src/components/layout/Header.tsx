@@ -206,10 +206,10 @@ function UserMenu() {
     <div className="relative ml-2" ref={menuRef}>
       <button
         onClick={() => setShowMenu(!showMenu)}
-        aria-label="RC — Menu do usuário"
+        aria-label="GB — Menu do usuário"
         className="h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-gradient-to-br from-[#D1FF00] to-[#a8cc00] flex items-center justify-center text-[#0a0a0a] text-sm font-medium hover:scale-105 transition-transform touch-manipulation"
       >
-        RC
+        GB
       </button>
 
       <AnimatePresence>
@@ -223,8 +223,8 @@ function UserMenu() {
           >
             {/* User Info */}
             <div className="px-4 py-3 border-b border-glass-border">
-              <p className="text-primary font-medium">Rafael Costa</p>
-              <p className="text-tertiary text-xs">rafael@example.com</p>
+              <p className="text-primary font-medium">Gabriel Bendo</p>
+              <p className="text-tertiary text-xs">gabriel@synkra.dev</p>
             </div>
 
             {/* Menu Items */}

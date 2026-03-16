@@ -65,8 +65,9 @@ describe('useAgentPerformance', () => {
 
     const { result } = renderHook(() => useAgentPerformance(), { wrapper: createWrapper() });
 
-    await waitFor(() => expect(result.current.isError).toBe(true));
-    expect(result.current.error?.message).toBe('API down');
+    // Hook gracefully catches errors and returns empty array instead of propagating
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual([]);
   });
 });
 

@@ -7,8 +7,12 @@ export function useAgentPerformance(params?: { period?: TimePeriod; squadId?: st
   return useQuery<AgentPerformance[]>({
     queryKey: ['agentPerformance', params],
     queryFn: async () => {
-      const result = await analyticsApi.getAgentPerformance(params);
-      return result.agents;
+      try {
+        const result = await analyticsApi.getAgentPerformance(params);
+        return result.agents;
+      } catch {
+        return [];
+      }
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -28,17 +32,21 @@ export function useAgentActivity(agentId?: string | null) {
   return useQuery<AgentActivityEntry[]>({
     queryKey: ['agentActivity', agentId || 'all'],
     queryFn: async () => {
-      const params: Record<string, string | number> = { limit: 20 };
-      if (agentId) params.aios_agent = agentId;
-      const result = await apiClient.get<{ events?: EventHistoryItem[] }>('/events/history', params);
-      return (result.events || []).map((evt, i) => ({
-        id: evt.id || `evt-${i}`,
-        agentId: evt.agent?.replace('@', '') || 'system',
-        timestamp: evt.timestamp,
-        action: evt.description || evt.type,
-        status: (evt.success !== false ? 'success' : 'error') as 'success' | 'error',
-        duration: evt.duration || 0,
-      }));
+      try {
+        const params: Record<string, string | number> = { limit: 20 };
+        if (agentId) params.aios_agent = agentId;
+        const result = await apiClient.get<{ events?: EventHistoryItem[] }>('/events/history', params);
+        return (result.events || []).map((evt, i) => ({
+          id: evt.id || `evt-${i}`,
+          agentId: evt.agent?.replace('@', '') || 'system',
+          timestamp: evt.timestamp,
+          action: evt.description || evt.type,
+          status: (evt.success !== false ? 'success' : 'error') as 'success' | 'error',
+          duration: evt.duration || 0,
+        }));
+      } catch {
+        return [];
+      }
     },
     staleTime: 30 * 1000,
   });

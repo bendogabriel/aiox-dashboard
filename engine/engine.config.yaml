@@ -5,8 +5,8 @@
 # Empty = auto-detect by walking up from engine dir looking for .aios-core/
 # Set to absolute path to point engine at a specific project.
 project:
-  root: ""                       # auto-detect if empty
-  aios_core: ".aios-core"       # relative to root
+  root: "C:/Users/gmben/Documents/mmos"  # points to your AIOX project
+  aios_core: ".aiox-core"       # relative to root (AIOX rebrand)
   squads: "squads"              # relative to root
   rules: ".claude/rules"        # relative to root
 

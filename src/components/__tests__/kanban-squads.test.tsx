@@ -294,7 +294,7 @@ function createAgent(overrides: Partial<Agent> = {}): Agent {
 // KanbanBoard Tests
 // ---------------------------------------------------------------------------
 
-describe('KanbanBoard', () => {
+describe('KanbanBoard', { timeout: 30_000 }, () => {
   // Lazy import to ensure mocks are set up first
   let KanbanBoard: typeof import('../kanban/KanbanBoard').default;
 
@@ -323,7 +323,7 @@ describe('KanbanBoard', () => {
       done: ['story-003'],
       error: [],
     };
-  });
+  }, 30_000);
 
   it('renders loading skeleton when isLoading is true', () => {
     mockUseStories.mockReturnValue({

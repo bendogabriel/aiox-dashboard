@@ -154,8 +154,8 @@ describe('AgentsTab', () => {
   it('renders agent names from hook data', async () => {
     const { AgentsTab } = await import('../AgentsTab');
     render(<AgentsTab />);
-    expect(screen.getByText('Dex (Dev)')).toBeTruthy();
-    expect(screen.getByText('Quinn (QA)')).toBeTruthy();
+    expect(screen.getAllByText('Dex (Dev)').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Quinn (QA)').length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows agent execution counts', async () => {

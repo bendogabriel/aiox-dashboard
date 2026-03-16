@@ -89,12 +89,12 @@ const MOCK_DIRECTORY_ITEMS: KnowledgeFileItem[] = [
 const MOCK_AGENTS: AgentKnowledge[] = [
   { agentId: 'dev-1', agentName: 'Dex', squadId: 'core-dev', knowledgePath: 'agents/core-dev/knowledge', files: 14, lastUpdated: new Date(Date.now() - 3600000).toISOString() },
   { agentId: 'qa-1', agentName: 'Quinn', squadId: 'core-dev', knowledgePath: 'agents/core-dev/qa-knowledge', files: 8, lastUpdated: new Date(Date.now() - 7200000).toISOString() },
-  { agentId: 'arch-1', agentName: 'Atlas', squadId: 'core-dev', knowledgePath: 'agents/core-dev/arch-knowledge', files: 11, lastUpdated: new Date(Date.now() - 14400000).toISOString() },
+  { agentId: 'arch-1', agentName: 'Aria', squadId: 'core-dev', knowledgePath: 'agents/core-dev/arch-knowledge', files: 11, lastUpdated: new Date(Date.now() - 14400000).toISOString() },
   { agentId: 'pm-1', agentName: 'Morgan', squadId: 'product', knowledgePath: 'agents/product/pm-knowledge', files: 6, lastUpdated: new Date(Date.now() - 10800000).toISOString() },
   { agentId: 'po-1', agentName: 'Pax', squadId: 'product', knowledgePath: 'agents/product/po-knowledge', files: 9, lastUpdated: new Date(Date.now() - 21600000).toISOString() },
   { agentId: 'sm-1', agentName: 'River', squadId: 'product', knowledgePath: 'agents/product/sm-knowledge', files: 5, lastUpdated: new Date(Date.now() - 28800000).toISOString() },
   { agentId: 'devops-1', agentName: 'Gage', squadId: 'infra', knowledgePath: 'agents/infra/devops-knowledge', files: 12, lastUpdated: new Date(Date.now() - 18000000).toISOString() },
-  { agentId: 'analyst-1', agentName: 'Aria', squadId: 'infra', knowledgePath: 'agents/infra/analyst-knowledge', files: 7, lastUpdated: new Date(Date.now() - 43200000).toISOString() },
+  { agentId: 'analyst-1', agentName: 'Alex', squadId: 'infra', knowledgePath: 'agents/infra/analyst-knowledge', files: 7, lastUpdated: new Date(Date.now() - 43200000).toISOString() },
 ];
 
 const MOCK_FILE_CONTENT: KnowledgeFileContent = {
