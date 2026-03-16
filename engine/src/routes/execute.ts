@@ -164,16 +164,20 @@ execute.get('/llm/usage', (c) => {
 
   const stats = db.query<{
     total_executions: number;
+    total_tokens: number;
   }, [string]>(`
-    SELECT COUNT(*) as total_executions
-    FROM jobs WHERE created_at >= ?
+    SELECT
+      COUNT(*) as total_executions,
+      COALESCE(SUM(tokens_used), 0) as total_tokens
+    FROM executions WHERE created_at >= ?
   `).get(since);
 
   const totalRequests = stats?.total_executions ?? 0;
+  const totalTokens = stats?.total_tokens ?? 0;
 
   return c.json({
     claude: {
-      input: 0,
+      input: totalTokens,
       output: 0,
       requests: totalRequests,
     },
@@ -183,7 +187,7 @@ execute.get('/llm/usage', (c) => {
       requests: 0,
     },
     total: {
-      input: 0,
+      input: totalTokens,
       output: 0,
       requests: totalRequests,
     },
@@ -319,9 +323,9 @@ execute.post('/track', async (c) => {
 
   const db = getDb();
   db.run(
-    `INSERT INTO executions (id, job_id, squad_id, agent_id, duration_ms, success, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`,
-    [id, body.executionId ?? id, body.squadId, body.agentId, body.duration ?? null, body.success ? 1 : 0]
+    `INSERT INTO executions (id, job_id, squad_id, agent_id, duration_ms, tokens_used, success, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+    [id, body.executionId ?? id, body.squadId, body.agentId, body.duration ?? null, body.tokensUsed ?? null, body.success ? 1 : 0]
   );
 
   return c.json({ tracked: true, executionId: id });
@@ -334,6 +338,7 @@ execute.post('/track/batch', async (c) => {
     squadId: string;
     agentId: string;
     duration?: number;
+    tokensUsed?: number;
     success: boolean;
   }> }>();
 
@@ -348,9 +353,9 @@ execute.post('/track/batch', async (c) => {
     const id = ulid();
     try {
       db.run(
-        `INSERT INTO executions (id, job_id, squad_id, agent_id, duration_ms, success, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`,
-        [id, exec.executionId ?? id, exec.squadId, exec.agentId, exec.duration ?? null, exec.success ? 1 : 0]
+        `INSERT INTO executions (id, job_id, squad_id, agent_id, duration_ms, tokens_used, success, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+        [id, exec.executionId ?? id, exec.squadId, exec.agentId, exec.duration ?? null, exec.tokensUsed ?? null, exec.success ? 1 : 0]
       );
       results.push({ executionId: id, tracked: true });
     } catch {

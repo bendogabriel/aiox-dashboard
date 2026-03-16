@@ -39,7 +39,10 @@ export async function handleCompletion(input: CompletionInput): Promise<void> {
     memoryStored = await extractAndStoreMemories(job, stdout);
   }
 
-  // 3. Record execution metrics
+  // 3. Extract token usage from NDJSON output
+  const tokensUsed = parseTokensFromOutput(stdout);
+
+  // 4. Record execution metrics
   recordExecution({
     jobId: job.id,
     squadId: job.squad_id,
@@ -49,9 +52,10 @@ export async function handleCompletion(input: CompletionInput): Promise<void> {
     filesChanged,
     memoryStored,
     success,
+    tokensUsed,
   });
 
-  // 4. Notify dashboard
+  // 5. Notify dashboard
   if (success) {
     broadcast('job:completed', {
       jobId: job.id,
@@ -72,12 +76,12 @@ export async function handleCompletion(input: CompletionInput): Promise<void> {
     });
   }
 
-  // 5. Send callback if configured
+  // 6. Send callback if configured
   if (job.callback_url && success) {
     await sendCallback(job, exitCode, stdout, durationMs, filesChanged, memoryStored);
   }
 
-  // 6. Signal workflow engine if part of workflow
+  // 7. Signal workflow engine if part of workflow
   if (job.workflow_id) {
     try {
       onJobCompleted(job);
@@ -90,7 +94,7 @@ export async function handleCompletion(input: CompletionInput): Promise<void> {
     }
   }
 
-  // 6b. Check for delegation markers in output
+  // 7b. Check for delegation markers in output
   if (success && stdout) {
     const delegations = parseDelegation(stdout);
     if (delegations) {
@@ -102,7 +106,7 @@ export async function handleCompletion(input: CompletionInput): Promise<void> {
     }
   }
 
-  // 6c. Check if this is a sub-job (delegation result)
+  // 7c. Check if this is a sub-job (delegation result)
   if (job.parent_job_id) {
     try {
       onSubJobCompleted(job);
@@ -115,7 +119,7 @@ export async function handleCompletion(input: CompletionInput): Promise<void> {
     }
   }
 
-  // 7. Cleanup workspace
+  // 8. Cleanup workspace
   if (workspace && config.workspace.cleanup_on_success && success) {
     cleanupWorkspace(workspace);
   }
@@ -126,6 +130,7 @@ export async function handleCompletion(input: CompletionInput): Promise<void> {
     durationMs,
     filesChanged,
     memoryStored,
+    tokensUsed,
     callbackSent: !!job.callback_url,
   });
 }
@@ -255,6 +260,36 @@ async function detectGitChanges(workspacePath: string): Promise<number> {
   }
 }
 
+// -- Token Extraction from NDJSON --
+
+export function parseTokensFromOutput(output: string): number | null {
+  if (!output) return null;
+  try {
+    const lines = output.trim().split(String.fromCharCode(10));
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      try {
+        const parsed = JSON.parse(line);
+        if (parsed.type === "result" && parsed.usage) {
+          const u = parsed.usage;
+          const total =
+            (u.input_tokens ?? 0) +
+            (u.cache_creation_input_tokens ?? 0) +
+            (u.cache_read_input_tokens ?? 0) +
+            (u.output_tokens ?? 0);
+          return total > 0 ? total : null;
+        }
+      } catch {
+        continue;
+      }
+    }
+  } catch {
+    // Graceful degradation
+  }
+  return null;
+}
+
 // -- Execution Recording --
 
 function recordExecution(data: {
@@ -266,16 +301,17 @@ function recordExecution(data: {
   filesChanged: number;
   memoryStored: number;
   success: boolean;
+  tokensUsed?: number | null;
 }): void {
   const db = getDb();
   const id = ulid();
 
   db.run(
     `INSERT INTO executions (id, job_id, squad_id, agent_id, duration_ms, exit_code,
-      files_changed, memory_stored, success, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+      tokens_used, files_changed, memory_stored, success, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
     [id, data.jobId, data.squadId, data.agentId, data.durationMs,
-     data.exitCode, data.filesChanged, data.memoryStored, data.success ? 1 : 0],
+     data.exitCode, data.tokensUsed ?? null, data.filesChanged, data.memoryStored, data.success ? 1 : 0],
   );
 }
 
