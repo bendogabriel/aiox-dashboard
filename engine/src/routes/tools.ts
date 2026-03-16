@@ -6,6 +6,7 @@ import { homedir } from 'os';
 // ============================================================
 // Tools Routes — Story DASHBOARD-1.1 (Phase 2)
 // Read-only MCP server listing from Claude CLI config files
+// Enriched with tool counts from settings allowedTools/permissions
 // ============================================================
 
 interface MCPServerConfig {
@@ -38,11 +39,58 @@ function buildServerEntry(name: string, config: MCPServerConfig) {
   };
 }
 
+/**
+ * Collect MCP tool names from permissions.allow and allowedTools entries
+ * across global and project-level settings files.
+ * Entries follow the format: mcp__{serverName}__{toolName}
+ */
+function collectMCPToolsFromSettings(): Map<string, string[]> {
+  const toolsByServer = new Map<string, string[]>();
+
+  const settingsFiles = [
+    resolve(homedir(), '.claude', 'settings.json'),
+    resolve(homedir(), 'Documents', 'mmos', '.claude', 'settings.local.json'),
+  ];
+
+  for (const filePath of settingsFiles) {
+    try {
+      if (!existsSync(filePath)) continue;
+      const data = JSON.parse(readFileSync(filePath, 'utf-8'));
+
+      const entries: string[] = [
+        ...(Array.isArray(data.allowedTools) ? data.allowedTools : []),
+        ...(Array.isArray(data.permissions?.allow) ? data.permissions.allow : []),
+      ];
+
+      for (const entry of entries) {
+        if (typeof entry !== 'string' || !entry.startsWith('mcp__')) continue;
+        const parts = entry.split('__');
+        if (parts.length < 3) continue;
+        const serverName = parts[1];
+        const toolName = parts.slice(2).join('__');
+        if (!toolsByServer.has(serverName)) {
+          toolsByServer.set(serverName, []);
+        }
+        const existing = toolsByServer.get(serverName)!;
+        if (!existing.includes(toolName)) {
+          existing.push(toolName);
+        }
+      }
+    } catch {
+      // Silently continue if file is unreadable or malformed
+    }
+  }
+
+  return toolsByServer;
+}
+
 function getMCPServers() {
   const servers: ReturnType<typeof buildServerEntry>[] = [];
   const seen = new Set<string>();
 
-  // 1. Read ~/.claude.json (primary source)
+  const toolsByServer = collectMCPToolsFromSettings();
+
+  // 1. Read ~/.claude.json (primary source for server configs)
   try {
     const claudeJsonPath = resolve(homedir(), '.claude.json');
     if (existsSync(claudeJsonPath)) {
@@ -51,14 +99,18 @@ function getMCPServers() {
       for (const [name, config] of Object.entries(mcpServers)) {
         if (seen.has(name)) continue;
         seen.add(name);
-        servers.push(buildServerEntry(name, config as MCPServerConfig));
+        const entry = buildServerEntry(name, config as MCPServerConfig);
+        const knownTools = toolsByServer.get(name) || [];
+        entry.toolCount = knownTools.length;
+        entry.tools = knownTools.map((t) => ({ name: t, calls: 0 }));
+        servers.push(entry);
       }
     }
   } catch {
     // Silently continue if file is unreadable or malformed
   }
 
-  // 2. Read project-level .claude/mcp.json (if exists relative to engine)
+  // 2. Read project-level .claude/mcp.json (if exists)
   try {
     const projectMcpPath = resolve(homedir(), 'Documents', 'mmos', '.claude', 'mcp.json');
     if (existsSync(projectMcpPath)) {
@@ -67,7 +119,11 @@ function getMCPServers() {
       for (const [name, config] of Object.entries(mcpServers)) {
         if (seen.has(name)) continue;
         seen.add(name);
-        servers.push(buildServerEntry(name, config as MCPServerConfig));
+        const entry = buildServerEntry(name, config as MCPServerConfig);
+        const knownTools = toolsByServer.get(name) || [];
+        entry.toolCount = knownTools.length;
+        entry.tools = knownTools.map((t) => ({ name: t, calls: 0 }));
+        servers.push(entry);
       }
     }
   } catch {
