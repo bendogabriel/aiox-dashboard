@@ -57,8 +57,8 @@ vi.mock('../../../stores/uiStore', () => ({
 // Hook mocks — declared as variables so individual tests can override
 // ---------------------------------------------------------------------------
 const defaultAgentAnalytics = [
-  { agentId: 'dev-agent', agentName: 'Dex (Dev)', squad: 'core-squad', totalExecutions: 24, successRate: 95, avgResponseTime: 1.2 },
-  { agentId: 'qa-agent', agentName: 'Quinn (QA)', squad: 'core-squad', totalExecutions: 18, successRate: 100, avgResponseTime: 0.8 },
+  { agentId: 'dev', agentName: 'Dev', squad: 'core', totalExecutions: 24, successRate: 95, avgResponseTime: 1.2 },
+  { agentId: 'qa', agentName: 'QA', squad: 'core', totalExecutions: 18, successRate: 100, avgResponseTime: 0.8 },
 ];
 
 const defaultCommandAnalytics = [
@@ -155,8 +155,8 @@ describe('AgentsTab', () => {
   it('renders agent names from hook data', async () => {
     const { AgentsTab } = await import('../AgentsTab');
     render(<AgentsTab />);
-    expect(screen.getAllByText('Dex (Dev)').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('Quinn (QA)').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('💻 Dex').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('✅ Quinn').length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows agent execution counts', async () => {
@@ -196,9 +196,9 @@ describe('AgentsTab', () => {
     mockCommandAnalytics = null;
     const { AgentsTab } = await import('../AgentsTab');
     render(<AgentsTab />);
-    // Demo fallback agent names
-    expect(screen.getByText('Dex (Dev)')).toBeTruthy();
-    expect(screen.getByText('Aria (Architect)')).toBeTruthy();
+    // Demo fallback uses persona map: dev→Dex, architect→Aria
+    expect(screen.getByText('💻 Dex')).toBeTruthy();
+    expect(screen.getByText('🏛️ Aria')).toBeTruthy();
   });
 
   it('shows empty state message when agent list is empty', async () => {

@@ -10,6 +10,7 @@ import { useAgentPerformance, useAgentActivity } from '../../hooks/useAnalytics'
 import type { AgentPerformance } from '../../services/api/analytics';
 import type { AgentActivityEntry } from '../../types';
 import { cn } from '../../lib/utils';
+import { getAgentPersona } from '../../data/agent-personas';
 
 const POLLING_INTERVAL = 5000;
 
@@ -20,10 +21,11 @@ function mapToMonitorData(
 ): AgentMonitorData {
   const perf = perfLookup.get(agent.id);
   const modelMap: Record<number, string> = { 0: 'opus', 1: 'sonnet', 2: 'haiku' };
+  const { persona, icon } = getAgentPersona(agent.id, agent.name);
 
   return {
     id: agent.id,
-    name: agent.name,
+    name: `${icon} ${persona}`,
     status: 'idle',
     phase: '',
     progress: 0,

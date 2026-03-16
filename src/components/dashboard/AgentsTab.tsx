@@ -5,13 +5,14 @@ import { useUIStore } from '../../stores/uiStore';
 import { cn } from '../../lib/utils';
 import { BarChart, ProgressRing } from './Charts';
 import { TerminalIcon } from './dashboard-icons';
+import { getAgentPersona } from '../../data/agent-personas';
 
 // Demo fallback data for AgentsTab
 const DEMO_AGENT_ANALYTICS = [
-  { agentId: 'dev-agent', agentName: 'Dex (Dev)', squad: 'core-squad', totalExecutions: 24, successRate: 95, avgResponseTime: 1.2 },
-  { agentId: 'qa-agent', agentName: 'Quinn (QA)', squad: 'core-squad', totalExecutions: 18, successRate: 100, avgResponseTime: 0.8 },
-  { agentId: 'architect-agent', agentName: 'Aria (Architect)', squad: 'core-squad', totalExecutions: 12, successRate: 92, avgResponseTime: 2.1 },
-  { agentId: 'pm-agent', agentName: 'Morgan (PM)', squad: 'management-squad', totalExecutions: 9, successRate: 88, avgResponseTime: 1.5 },
+  { agentId: 'dev', agentName: 'Dev', squad: 'core', totalExecutions: 24, successRate: 95, avgResponseTime: 1.2 },
+  { agentId: 'qa', agentName: 'QA', squad: 'core', totalExecutions: 18, successRate: 100, avgResponseTime: 0.8 },
+  { agentId: 'architect', agentName: 'Architect', squad: 'core', totalExecutions: 12, successRate: 92, avgResponseTime: 2.1 },
+  { agentId: 'pm', agentName: 'PM', squad: 'core', totalExecutions: 9, successRate: 88, avgResponseTime: 1.5 },
 ];
 
 const DEMO_COMMAND_ANALYTICS = [
@@ -58,7 +59,12 @@ export function AgentsTab() {
               <div className="flex items-center gap-3 min-w-0">
                 <span className="text-lg font-bold text-tertiary w-6">#{index + 1}</span>
                 <div className="min-w-0">
-                  <p className="text-primary font-medium truncate">{agent.agentName}</p>
+                  <p className="text-primary font-medium truncate">
+                    {(() => {
+                      const { persona, icon } = getAgentPersona(agent.agentId, agent.agentName);
+                      return `${icon} ${persona}`;
+                    })()}
+                  </p>
                   <p className="text-xs text-tertiary">{agent.squad}</p>
                 </div>
               </div>

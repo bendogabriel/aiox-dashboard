@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../services/api/client';
 import { useSquads } from './useSquads';
 import { useState, useMemo, useCallback } from 'react';
+import { getAgentPersona } from '../data/agent-personas';
 
 // ── Types ──
 
@@ -86,16 +87,7 @@ const MOCK_DIRECTORY_ITEMS: KnowledgeFileItem[] = [
   { name: 'squad-manifest.json', type: 'file', size: 2800, modified: new Date(Date.now() - 25200000).toISOString(), extension: 'json' },
 ];
 
-const MOCK_AGENTS: AgentKnowledge[] = [
-  { agentId: 'dev-1', agentName: 'Dex', squadId: 'core-dev', knowledgePath: 'agents/core-dev/knowledge', files: 14, lastUpdated: new Date(Date.now() - 3600000).toISOString() },
-  { agentId: 'qa-1', agentName: 'Quinn', squadId: 'core-dev', knowledgePath: 'agents/core-dev/qa-knowledge', files: 8, lastUpdated: new Date(Date.now() - 7200000).toISOString() },
-  { agentId: 'arch-1', agentName: 'Aria', squadId: 'core-dev', knowledgePath: 'agents/core-dev/arch-knowledge', files: 11, lastUpdated: new Date(Date.now() - 14400000).toISOString() },
-  { agentId: 'pm-1', agentName: 'Morgan', squadId: 'product', knowledgePath: 'agents/product/pm-knowledge', files: 6, lastUpdated: new Date(Date.now() - 10800000).toISOString() },
-  { agentId: 'po-1', agentName: 'Pax', squadId: 'product', knowledgePath: 'agents/product/po-knowledge', files: 9, lastUpdated: new Date(Date.now() - 21600000).toISOString() },
-  { agentId: 'sm-1', agentName: 'River', squadId: 'product', knowledgePath: 'agents/product/sm-knowledge', files: 5, lastUpdated: new Date(Date.now() - 28800000).toISOString() },
-  { agentId: 'devops-1', agentName: 'Gage', squadId: 'infra', knowledgePath: 'agents/infra/devops-knowledge', files: 12, lastUpdated: new Date(Date.now() - 18000000).toISOString() },
-  { agentId: 'analyst-1', agentName: 'Alex', squadId: 'infra', knowledgePath: 'agents/infra/analyst-knowledge', files: 7, lastUpdated: new Date(Date.now() - 43200000).toISOString() },
-];
+// MOCK_AGENTS removed — useAgentKnowledge now enriches real Engine data with persona map
 
 const MOCK_FILE_CONTENT: KnowledgeFileContent = {
   path: 'mock',
@@ -211,12 +203,14 @@ export function useAgentKnowledge(enabled = true) {
     staleTime: 60000,
   });
 
-  const isMock = useMemo(() => {
-    if (!query.data) return false;
-    return query.data.length === 0;
+  // Enrich agent data with persona names from static map
+  const data = useMemo(() => {
+    if (!query.data || query.data.length === 0) return query.data || [];
+    return query.data.map((agent) => {
+      const { persona } = getAgentPersona(agent.agentId, agent.agentName);
+      return { ...agent, agentName: persona };
+    });
   }, [query.data]);
-
-  const data = isMock ? MOCK_AGENTS : query.data;
 
   const agentsBySquad = useMemo(() => {
     return data?.reduce((acc, agent) => {
@@ -227,6 +221,8 @@ export function useAgentKnowledge(enabled = true) {
       return acc;
     }, {} as Record<string, AgentKnowledge[]>) || {};
   }, [data]);
+
+  const isMock = !query.data || query.data.length === 0;
 
   return { ...query, data, agentsBySquad, squads, isMock };
 }

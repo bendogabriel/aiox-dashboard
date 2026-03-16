@@ -197,10 +197,10 @@ describe('Layout Components — render tests', () => {
       expect(screen.getByLabelText(/Buscar/)).toBeTruthy();
     });
 
-    it('renders AIOS Master button', async () => {
+    it('renders AIOX Master button', async () => {
       const { Header } = await import('../Header');
       render(<Header />);
-      expect(screen.getByLabelText('Falar com AIOS Master')).toBeTruthy();
+      expect(screen.getByLabelText('Falar com AIOX Master')).toBeTruthy();
     });
 
     it('renders user menu button', async () => {

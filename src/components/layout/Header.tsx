@@ -89,7 +89,7 @@ export function Header() {
         {/* Presence Avatars — team members online */}
         <PresenceAvatars />
 
-        {/* AIOS Master Button - Talk to orchestrator from anywhere */}
+        {/* AIOX Master Button - Talk to orchestrator from anywhere */}
         <AIOSMasterButton />
 
         {/* Notifications — powered by toast store */}
@@ -154,7 +154,7 @@ export function Header() {
   );
 }
 
-// AIOS Master Button - Global orchestrator access
+// AIOX Master Button - Global orchestrator access
 function AIOSMasterButton() {
   const { setSelectedAgentId, setCurrentView } = useUIStore();
 
@@ -179,10 +179,10 @@ function AIOSMasterButton() {
       )}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      aria-label="Falar com AIOS Master"
+      aria-label="Falar com AIOX Master"
     >
       <MasterIcon />
-      <span className="hidden sm:inline text-sm font-medium">AIOS Master</span>
+      <span className="hidden sm:inline text-sm font-medium">AIOX Master</span>
     </motion.button>
   );
 }

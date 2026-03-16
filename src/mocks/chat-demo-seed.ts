@@ -10,7 +10,7 @@
 const DEMO_SESSION_ID = 'demo-gage-showcase';
 const DEMO_AGENT_ID = 'devops';
 const DEMO_AGENT_NAME = 'Gage';
-const DEMO_SQUAD_ID = 'aiox-core';
+const DEMO_SQUAD_ID = 'core';
 const DEMO_SQUAD_TYPE = 'engineering';
 
 function ts(minutesAgo: number): string {
