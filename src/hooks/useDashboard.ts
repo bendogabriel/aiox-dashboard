@@ -22,9 +22,15 @@ import type {
 
 // Hook for analytics overview
 export function useAnalyticsOverview(period: TimePeriod = 'day') {
-  return useQuery<AnalyticsOverview>({
+  return useQuery<AnalyticsOverview | null>({
     queryKey: ['analytics-overview', period],
-    queryFn: () => analyticsApi.getOverview(period),
+    queryFn: async () => {
+      try {
+        return await analyticsApi.getOverview(period);
+      } catch {
+        return null;
+      }
+    },
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
     refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes
@@ -33,9 +39,15 @@ export function useAnalyticsOverview(period: TimePeriod = 'day') {
 
 // Hook for realtime metrics
 export function useRealtimeMetrics() {
-  return useQuery<RealtimeMetrics>({
+  return useQuery<RealtimeMetrics | null>({
     queryKey: ['analytics-realtime'],
-    queryFn: () => analyticsApi.getRealtime(),
+    queryFn: async () => {
+      try {
+        return await analyticsApi.getRealtime();
+      } catch {
+        return null;
+      }
+    },
     staleTime: 30 * 1000, // 30 seconds
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     refetchInterval: 60 * 1000, // Refetch every minute
@@ -44,9 +56,15 @@ export function useRealtimeMetrics() {
 
 // Hook for cost summary (derived from analytics)
 export function useCostSummary() {
-  const { data: costReport } = useQuery<CostReport>({
+  const { data: costReport } = useQuery<CostReport | null>({
     queryKey: ['analytics-costs'],
-    queryFn: () => analyticsApi.getCostReport('month'),
+    queryFn: async () => {
+      try {
+        return await analyticsApi.getCostReport('month');
+      } catch {
+        return null;
+      }
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
   });
@@ -203,7 +221,8 @@ export function useMCPStatus() {
     queryKey: ['mcp-status'],
     queryFn: async () => {
       try {
-        const response = await fetch('/api/tools/mcp');
+        const baseUrl = import.meta.env.VITE_API_URL || '/api';
+        const response = await fetch(`${baseUrl}/tools/mcp`);
         if (!response.ok) throw new Error('Failed to fetch MCP status');
         const data = await response.json();
         return data.servers || [];
@@ -273,9 +292,15 @@ export function useMCPStats() {
 
 // Hook for system health status
 export function useSystemHealth() {
-  const { data: healthDashboard } = useQuery<HealthDashboard>({
+  const { data: healthDashboard } = useQuery<HealthDashboard | null>({
     queryKey: ['analytics-health-dashboard'],
-    queryFn: () => analyticsApi.getHealthDashboard(),
+    queryFn: async () => {
+      try {
+        return await analyticsApi.getHealthDashboard();
+      } catch {
+        return null;
+      }
+    },
     staleTime: 10 * 1000,
     refetchInterval: 30 * 1000,
   });
@@ -314,9 +339,15 @@ export function useSystemHealth() {
 export function useSystemMetrics() {
   const { data: realtime } = useRealtimeMetrics();
   const { data: overview } = useAnalyticsOverview('day');
-  const { data: healthDashboard } = useQuery<HealthDashboard>({
+  const { data: healthDashboard } = useQuery<HealthDashboard | null>({
     queryKey: ['analytics-health-dashboard'],
-    queryFn: () => analyticsApi.getHealthDashboard(),
+    queryFn: async () => {
+      try {
+        return await analyticsApi.getHealthDashboard();
+      } catch {
+        return null;
+      }
+    },
     staleTime: 10 * 1000,
   });
 
