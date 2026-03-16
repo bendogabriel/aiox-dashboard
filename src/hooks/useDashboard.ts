@@ -227,32 +227,8 @@ export function useMCPStatus() {
         const data = await response.json();
         return data.servers || [];
       } catch (error) {
-        console.warn('MCP status fetch failed, using fallback:', error);
-        // Fallback data when API unavailable
-        return [
-          {
-            name: 'mcp-scrapers',
-            status: 'connected' as const,
-            type: 'scraper',
-            tools: [
-              { name: 'scraper_multi_search', calls: 0 },
-              { name: 'scraper_topic_research', calls: 0 },
-            ],
-            resources: [],
-            lastPing: new Date().toISOString(),
-          },
-          {
-            name: 'filesystem',
-            status: 'connected' as const,
-            type: 'builtin',
-            tools: [
-              { name: 'read_file', calls: 0 },
-              { name: 'write_file', calls: 0 },
-            ],
-            resources: [],
-            lastPing: new Date().toISOString(),
-          },
-        ];
+        console.warn('MCP status fetch failed:', error);
+        return [];
       }
     },
     staleTime: 30 * 1000, // 30 seconds

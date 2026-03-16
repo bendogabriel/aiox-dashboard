@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Play, Pause, RefreshCw, Moon, FlaskConical } from 'lucide-react';
-import { GlassButton, Badge, StatusDot, SectionLabel } from '../ui';
+import { Bot, Play, Pause, RefreshCw, Moon } from 'lucide-react';
+import { GlassButton, Badge, StatusDot, SectionLabel, EmptyState } from '../ui';
 import { AgentMonitorCard, type AgentMonitorData } from './AgentMonitorCard';
 import { AgentActivityTimeline } from './AgentActivityTimeline';
 import { AgentPerformanceStats } from './AgentPerformanceStats';
@@ -10,69 +10,8 @@ import { useAgentPerformance, useAgentActivity } from '../../hooks/useAnalytics'
 import type { AgentPerformance } from '../../services/api/analytics';
 import type { AgentActivityEntry } from '../../types';
 import { cn } from '../../lib/utils';
-import { aiosRegistry } from '../../data/aios-registry.generated';
 
 const POLLING_INTERVAL = 5000;
-
-// ---------------------------------------------------------------------------
-// Demo fallback data – derived from AIOS registry
-// ---------------------------------------------------------------------------
-
-// Demo runtime states for fallback display
-const DEMO_STATES: Array<{ status: AgentMonitorData['status']; phase: string; progress: number; story: string }> = [
-  { status: 'working', phase: 'Implementing Story 3.2', progress: 65, story: 'STORY-3.2' },
-  { status: 'working', phase: 'Writing tests', progress: 40, story: 'STORY-3.2' },
-  { status: 'idle', phase: '', progress: 0, story: '' },
-  { status: 'working', phase: 'Creating Story 3.3', progress: 20, story: 'EPIC-3' },
-  { status: 'error', phase: 'QA Gate failed', progress: 85, story: 'STORY-3.1' },
-  { status: 'idle', phase: '', progress: 0, story: '' },
-  { status: 'working', phase: 'Component audit', progress: 80, story: 'STORY-DS-1.4' },
-  { status: 'idle', phase: '', progress: 0, story: '' },
-];
-
-const demoAgents: AgentMonitorData[] = aiosRegistry.agents.map((agent, i) => {
-  const state = DEMO_STATES[i % DEMO_STATES.length];
-  return {
-    id: agent.id,
-    name: `${agent.name} (${agent.title.split(' ')[0]})`,
-    status: state.status,
-    phase: state.phase,
-    progress: state.progress,
-    story: state.story,
-    lastActivity: new Date(Date.now() - (i + 1) * 120_000).toISOString(),
-    model: i % 3 === 0 ? 'opus' : i % 3 === 1 ? 'sonnet' : 'haiku',
-    squad: 'aios-core',
-    totalExecutions: Math.floor(Math.random() * 150) + 20,
-    successRate: Math.floor(Math.random() * 10) + 90,
-    avgResponseTime: Math.floor(Math.random() * 2000) + 800,
-  };
-});
-
-// Demo activity actions keyed by agent index for variety
-const DEMO_ACTIONS: Array<{ action: string; status: 'success' | 'error'; duration: number }> = [
-  { action: 'Committed feat: handoff comercial Brave pipeline [Automacao 13]', status: 'success', duration: 4500 },
-  { action: 'Running QA gate on portfolio Story 3.2 animations', status: 'success', duration: 12300 },
-  { action: 'QA Gate — Pipedrive sync missing null check on org_id', status: 'error', duration: 8700 },
-  { action: 'Created draft for Story 3.3: Final Review & Deploy', status: 'success', duration: 3200 },
-  { action: 'Implemented scroll-triggered animations for portfolio', status: 'success', duration: 6100 },
-  { action: 'Validated IDS verification gate engine [Story IDS-5a]', status: 'success', duration: 5400 },
-  { action: 'Reviewed AIOX engine architecture for dashboard integration', status: 'success', duration: 15200 },
-  { action: 'QA Gate — Portfolio SEO metadata + robots.txt passed', status: 'success', duration: 9800 },
-  { action: 'Updated Brave Educacao n8n workflow note sync fix', status: 'success', duration: 4100 },
-  { action: 'Deployed portfolio v1.0 to Vercel production', status: 'success', duration: 22400 },
-];
-
-// Use at least 6 different agents, cycling through the first 8 from the registry
-const DEMO_ACTIVITY_AGENT_INDICES = [4, 8, 8, 10, 4, 11, 2, 8, 6, 5];
-
-const demoActivity: AgentActivityEntry[] = DEMO_ACTIONS.map((entry, i) => ({
-  id: `demo-act-${i + 1}`,
-  agentId: aiosRegistry.agents[DEMO_ACTIVITY_AGENT_INDICES[i] % aiosRegistry.agents.length]?.id || 'dev',
-  timestamp: new Date(Date.now() - (i + 1) * 60_000 * (i + 1)).toISOString(),
-  action: entry.action,
-  status: entry.status,
-  duration: entry.duration,
-}));
 
 // Map API data to monitor format, using analytics for performance enrichment
 function mapToMonitorData(
@@ -102,7 +41,7 @@ export default function AgentsMonitor() {
   const [isLive, setIsLive] = useState(true);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
-  const { data: apiAgents, refetch, isLoading } = useAgents(undefined, {
+  const { data: apiAgents, refetch, isLoading, isError } = useAgents(undefined, {
     refetchInterval: isLive ? POLLING_INTERVAL : false,
   });
 
@@ -115,15 +54,12 @@ export default function AgentsMonitor() {
     [perfData]
   );
 
-  // Map API agents with analytics enrichment; fall back to demo data
-  const isDemo = !apiAgents || apiAgents.length === 0;
-
+  // Map API agents with analytics enrichment; no demo fallback
   const agents: AgentMonitorData[] = useMemo(() => {
     if (apiAgents && apiAgents.length > 0) {
       return apiAgents.map((a) => mapToMonitorData(a, perfLookup));
     }
-    // Fallback to demo data when API is unavailable
-    return demoAgents;
+    return [];
   }, [apiAgents, perfLookup]);
 
   const activeAgents = agents.filter(
@@ -131,7 +67,7 @@ export default function AgentsMonitor() {
   );
   const standbyAgents = agents.filter((a) => a.status === 'idle');
 
-  const activity = activityData && activityData.length > 0 ? activityData : isDemo ? demoActivity : [];
+  const activity: AgentActivityEntry[] = activityData && activityData.length > 0 ? activityData : [];
 
   const handleRefresh = useCallback(() => {
     refetch();
@@ -140,6 +76,31 @@ export default function AgentsMonitor() {
   const handleCardClick = useCallback((agentId: string) => {
     setSelectedAgentId((prev) => (prev === agentId ? null : agentId));
   }, []);
+
+  // Engine offline state
+  if (!isLoading && (isError || (!apiAgents || apiAgents.length === 0))) {
+    return (
+      <div className="h-full flex flex-col overflow-y-auto p-4 md:p-6 gap-6">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <h1 className="text-xl font-bold text-primary">Agent Activity</h1>
+          <GlassButton
+            size="sm"
+            variant="ghost"
+            leftIcon={<RefreshCw className="h-3.5 w-3.5" />}
+            onClick={handleRefresh}
+          >
+            Refresh
+          </GlassButton>
+        </div>
+        <EmptyState
+          type="offline"
+          title="Engine not connected"
+          description="Start the Engine to see real agent data. Run: node engine/index.js"
+          action={{ label: 'Retry', onClick: () => refetch() }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col overflow-y-auto p-4 md:p-6 gap-6">
@@ -150,12 +111,6 @@ export default function AgentsMonitor() {
           <Badge variant="status" status="online" size="sm">
             {activeAgents.length}/{agents.length} active
           </Badge>
-          {isDemo && (
-            <Badge variant="default" size="sm" className="flex items-center gap-1 text-yellow-400 bg-yellow-500/10">
-              <FlaskConical className="h-3 w-3" />
-              Demo
-            </Badge>
-          )}
         </div>
         <div className="flex items-center gap-2">
           <GlassButton
@@ -283,10 +238,19 @@ export default function AgentsMonitor() {
             ? `Atividade: @${selectedAgentId}`
             : 'Atividade Recente'}
         </SectionLabel>
-        <AgentActivityTimeline
-          entries={activity}
-          agentFilter={selectedAgentId}
-        />
+        {activity.length > 0 ? (
+          <AgentActivityTimeline
+            entries={activity}
+            agentFilter={selectedAgentId}
+          />
+        ) : (
+          <div className="glass-subtle rounded-glass p-6 text-center">
+            <p className="text-sm text-secondary">Nenhuma atividade registrada</p>
+            <p className="text-[10px] text-tertiary mt-1">
+              Execute comandos via CLI para ver o historico aqui
+            </p>
+          </div>
+        )}
       </section>
 
       {/* Footer: polling indicator */}

@@ -1,44 +1,38 @@
 import { motion } from 'framer-motion';
 import { Timer, Signal, TrendingUp, AlertTriangle } from 'lucide-react';
-import { GlassCard } from '../ui';
+import { GlassCard, EmptyState } from '../ui';
 import { useSystemHealth, useSystemMetrics } from '../../hooks/useDashboard';
 import { useLLMHealth } from '../../hooks/useExecute';
 import { QuickStatCard, ServiceHealthCard } from './DashboardHelpers';
 
-// Demo fallback data for SystemTab
-const DEMO_HEALTH = {
-  api: { healthy: true, latency: 45 },
-  database: { healthy: true, latency: 12 },
-};
-
-const DEMO_METRICS = {
-  uptime: 259200,
-  avgLatency: 85,
-  requestsPerMinute: 4.2,
-  errorRate: 0.8,
-  queueSize: 0,
-  activeConnections: 3,
-};
-
-const DEMO_LLM_HEALTH = {
-  claude: { available: true, error: undefined },
-  openai: { available: false, error: 'API key not configured' },
-};
-
 export function SystemTab() {
-  const { data: rawHealth } = useSystemHealth();
-  const { data: rawMetrics } = useSystemMetrics();
-  const { data: rawLlmHealth } = useLLMHealth();
-
-  const health = rawHealth || DEMO_HEALTH;
-  const metrics = rawMetrics || DEMO_METRICS;
-  const llmHealth = rawLlmHealth || DEMO_LLM_HEALTH;
+  const { data: health } = useSystemHealth();
+  const { data: metrics } = useSystemMetrics();
+  const { data: llmHealth } = useLLMHealth();
 
   const formatUptime = (seconds: number): string => {
     const days = Math.floor(seconds / 86400);
     const hours = Math.floor((seconds % 86400) / 3600);
     return `${days}d ${hours}h`;
   };
+
+  // Show offline state when Engine is not connected (no real data available)
+  if (!health && !metrics && !llmHealth) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className="space-y-6 pb-6"
+      >
+        <EmptyState
+          type="offline"
+          title="Engine not connected"
+          description="Start the Engine to see system health and metrics. Run: node engine/index.js"
+        />
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -56,7 +50,7 @@ export function SystemTab() {
           color="green"
         />
         <QuickStatCard
-          label="Latência"
+          label="Latencia"
           value={metrics ? `${metrics.avgLatency.toFixed(0)}ms` : '-'}
           icon={Signal}
           color="blue"
@@ -77,16 +71,16 @@ export function SystemTab() {
 
       {/* Health Status */}
       <GlassCard>
-        <h2 className="font-semibold text-primary mb-4">Status dos Serviços</h2>
+        <h2 className="font-semibold text-primary mb-4">Status dos Servicos</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <ServiceHealthCard
             name="API Gateway"
-            healthy={health?.api.healthy ?? true}
+            healthy={health?.api.healthy ?? false}
             latency={health?.api.latency ?? 0}
           />
           <ServiceHealthCard
             name="Database"
-            healthy={health?.database.healthy ?? true}
+            healthy={health?.database.healthy ?? false}
             latency={health?.database.latency ?? 0}
           />
           <ServiceHealthCard
@@ -104,14 +98,14 @@ export function SystemTab() {
 
       {/* System Info */}
       <GlassCard>
-        <h2 className="font-semibold text-primary mb-4">Informações do Sistema</h2>
+        <h2 className="font-semibold text-primary mb-4">Informacoes do Sistema</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="p-3 rounded-xl glass-subtle">
-            <p className="text-xs text-tertiary mb-1">Fila de Execução</p>
+            <p className="text-xs text-tertiary mb-1">Fila de Execucao</p>
             <p className="text-xl font-semibold text-primary">{metrics?.queueSize ?? 0} tarefas</p>
           </div>
           <div className="p-3 rounded-xl glass-subtle">
-            <p className="text-xs text-tertiary mb-1">Conexões Ativas</p>
+            <p className="text-xs text-tertiary mb-1">Conexoes Ativas</p>
             <p className="text-xl font-semibold text-primary">{metrics?.activeConnections ?? 0}</p>
           </div>
         </div>

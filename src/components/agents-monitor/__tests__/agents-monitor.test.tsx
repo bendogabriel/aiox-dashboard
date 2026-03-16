@@ -19,6 +19,7 @@ const tag = (Tag: string) => ({ children, ...props }: Record<string, unknown>) =
 vi.mock('framer-motion', () => ({
   motion: {
     div: tag('div'), button: tag('button'), span: tag('span'),
+    h3: tag('h3'), p: tag('p'), h2: tag('h2'), section: tag('section'),
     svg: tag('svg'), circle: tag('circle'), g: tag('g'),
     tr: tag('tr'), path: tag('path'), line: tag('line'), text: tag('text'),
   },
@@ -54,16 +55,16 @@ describe('Agents Monitor Components — render tests', () => {
       expect(screen.getAllByText(/Agent Activity/i).length).toBeGreaterThan(0);
     });
 
-    it('shows demo badge when using fallback data', async () => {
+    it('shows offline state when no agent data available', async () => {
       const { default: AgentsMonitor } = await import('../AgentsMonitor');
       render(<AgentsMonitor />);
-      expect(screen.getAllByText(/Demo/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Engine not connected/i).length).toBeGreaterThan(0);
     });
 
-    it('shows live/paused toggle', async () => {
+    it('shows refresh button in offline state', async () => {
       const { default: AgentsMonitor } = await import('../AgentsMonitor');
       render(<AgentsMonitor />);
-      expect(screen.getAllByText(/Live|Paused/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Refresh/i).length).toBeGreaterThan(0);
     });
   });
 

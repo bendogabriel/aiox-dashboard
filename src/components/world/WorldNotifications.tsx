@@ -24,20 +24,6 @@ const TYPE_ICONS: Record<WorldNotification['type'], string> = {
   task: '\u2192',
 };
 
-// Demo notifications that cycle for ambience
-const DEMO_NOTIFICATIONS: Array<Omit<WorldNotification, 'id' | 'timestamp'>> = [
-  { message: 'dex committed feat: handoff comercial pipeline', domain: 'dev', type: 'success' },
-  { message: 'quinn running QA gate on Story 3.2', domain: 'dev', type: 'task' },
-  { message: 'gage deployed dashboard v0.5.0 to staging', domain: 'ops', type: 'success' },
-  { message: 'aria reviewing architecture for AIOX engine', domain: 'dev', type: 'task' },
-  { message: 'morgan updated Epic 3 execution plan', domain: 'data', type: 'info' },
-  { message: 'dex implementing portfolio animations', domain: 'dev', type: 'success' },
-  { message: 'gage running health check on n8n instance', domain: 'ops', type: 'task' },
-  { message: 'pax validated Story 2.4 acceptance criteria', domain: 'data', type: 'info' },
-  { message: 'quinn approved Brave automations test suite', domain: 'dev', type: 'success' },
-  { message: 'river drafting Story 3.3 from Epic backlog', domain: 'design', type: 'task' },
-];
-
 // Map agent name to a plausible domain
 function agentToDomain(agent: string): DomainId {
   const a = agent.toLowerCase();
@@ -60,7 +46,6 @@ function eventToType(event: MonitorEvent): WorldNotification['type'] {
 export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) {
   const domains = useDomains();
   const [notifications, setNotifications] = useState<WorldNotification[]>([]);
-  const [, setDemoIdx] = useState(0);
   const counterRef = useRef(0);
   const monitorConnected = useMonitorStore((s) => s.connected);
   const monitorEvents = useMonitorStore((s) => s.events);
@@ -102,33 +87,6 @@ export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- trigger on .length only; full array ref would over-fire
   }, [monitorEvents.length, monitorConnected, maxVisible]);
 
-  // Auto-generate demo notifications for ambience (only when not connected)
-  useEffect(() => {
-    if (monitorConnected) return;
-
-    const interval = setInterval(() => {
-      setDemoIdx((prev) => {
-        const idx = prev % DEMO_NOTIFICATIONS.length;
-        const demo = DEMO_NOTIFICATIONS[idx];
-        counterRef.current += 1;
-        const notif: WorldNotification = {
-          ...demo,
-          id: `notif-${counterRef.current}-${Date.now()}`,
-          timestamp: Date.now(),
-        };
-
-        setNotifications((prev) => {
-          const next = [notif, ...prev];
-          return next.slice(0, maxVisible + 2);
-        });
-
-        return prev + 1;
-      });
-    }, 8000 + Math.random() * 7000);
-
-    return () => clearInterval(interval);
-  }, [maxVisible, monitorConnected]);
-
   // Auto-dismiss after 6 seconds
   useEffect(() => {
     if (notifications.length === 0) return;
@@ -139,6 +97,11 @@ export function WorldNotifications({ maxVisible = 4 }: WorldNotificationsProps) 
 
     return () => clearTimeout(timer);
   }, [notifications]);
+
+  // When not connected, show nothing (no fake demo notifications)
+  if (!monitorConnected && notifications.length === 0) {
+    return null;
+  }
 
   return (
     <div

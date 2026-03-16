@@ -1,42 +1,33 @@
 import { motion } from 'framer-motion';
 import { Monitor as MonitorIcon, Link, Wrench, Zap } from 'lucide-react';
-import { GlassCard, Badge } from '../ui';
+import { GlassCard, Badge, EmptyState } from '../ui';
 import { useMCPStatus, useMCPStats } from '../../hooks/useDashboard';
 import { cn } from '../../lib/utils';
 import { BarChart } from './Charts';
 import { QuickStatCard } from './DashboardHelpers';
 import { PlugIcon } from './dashboard-icons';
 
-// Demo fallback data for MCPTab
-const DEMO_MCP_SERVERS = [
-  { name: 'context7', status: 'connected' as const, toolCount: 2, tools: [{ name: 'resolve-library-id', calls: 18 }, { name: 'get-library-docs', calls: 14 }], resources: [], error: undefined },
-  { name: 'playwright', status: 'connected' as const, toolCount: 5, tools: [{ name: 'navigate', calls: 22 }, { name: 'screenshot', calls: 11 }, { name: 'click', calls: 6 }], resources: [], error: undefined },
-  { name: 'google-workspace', status: 'connected' as const, toolCount: 4, tools: [{ name: 'drive-upload', calls: 8 }, { name: 'docs-create', calls: 5 }], resources: [], error: undefined },
-  { name: 'n8n', status: 'connected' as const, toolCount: 6, tools: [{ name: 'search-nodes', calls: 9 }, { name: 'update-workflow', calls: 7 }, { name: 'list-workflows', calls: 4 }], resources: [], error: undefined },
-  { name: 'pipedrive', status: 'connected' as const, toolCount: 3, tools: [{ name: 'search-deals', calls: 12 }, { name: 'get-deal', calls: 6 }], resources: [], error: undefined },
-  { name: 'exa-search', status: 'disconnected' as const, toolCount: 1, tools: [{ name: 'web_search', calls: 0 }], resources: [], error: 'Docker container not running' },
-];
-
-const DEMO_MCP_STATS = {
-  totalServers: 6,
-  connectedServers: 5,
-  totalTools: 21,
-  totalToolCalls: 122,
-  topTools: [
-    { name: 'navigate', calls: 22 },
-    { name: 'resolve-library-id', calls: 18 },
-    { name: 'get-library-docs', calls: 14 },
-    { name: 'search-deals', calls: 12 },
-    { name: 'screenshot', calls: 11 },
-  ],
-};
-
 export function MCPTab() {
-  const { data: rawMcpServers } = useMCPStatus();
-  const { data: rawMcpStats } = useMCPStats();
+  const { data: mcpServers, isLoading, isError } = useMCPStatus();
+  const { data: mcpStats } = useMCPStats();
 
-  const mcpServers = rawMcpServers || DEMO_MCP_SERVERS;
-  const mcpStats = rawMcpStats || DEMO_MCP_STATS;
+  // Show empty state when Engine is offline or no data
+  if (!isLoading && (!mcpServers || mcpServers.length === 0 || isError)) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className="space-y-6 pb-6"
+      >
+        <EmptyState
+          type="offline"
+          title="Engine not connected"
+          description="Start the Engine to see MCP server data. Run: node engine/index.js"
+        />
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -79,7 +70,7 @@ export function MCPTab() {
                     <p className="text-primary font-medium">{server.name}</p>
                     <p className="text-xs text-tertiary">
                       {server.toolCount || server.tools.length} tools
-                      {server.resources.length > 0 && ` • ${server.resources.length} resources`}
+                      {server.resources.length > 0 && ` \u2022 ${server.resources.length} resources`}
                     </p>
                   </div>
                 </div>

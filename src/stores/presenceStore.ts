@@ -12,33 +12,32 @@ export interface PresenceUser {
 
 interface PresenceState {
   users: PresenceUser[];
+  wsClientCount: number;
+  engineConnected: boolean;
   showCursors: boolean;
   setShowCursors: (show: boolean) => void;
+  setEngineStatus: (connected: boolean, wsClients?: number) => void;
 }
-
-// Simulated team members for demo
-const DEMO_USERS: PresenceUser[] = [
-  { id: 'u1', name: 'Orion (Master)', avatar: 'OR', color: '#D4A843', currentView: 'stories', lastSeen: Date.now() },
-  { id: 'u2', name: 'Dex (Dev)', avatar: 'DX', color: '#3B82F6', currentView: 'dashboard', lastSeen: Date.now() - 30000 },
-  { id: 'u3', name: 'Quinn (QA)', avatar: 'QN', color: '#10B981', currentView: 'chat', lastSeen: Date.now() - 120000 },
-];
 
 export const usePresenceStore = create<PresenceState>((set) => ({
-  users: DEMO_USERS,
+  users: [],
+  wsClientCount: 0,
+  engineConnected: false,
   showCursors: true,
   setShowCursors: (show) => set({ showCursors: show }),
+  setEngineStatus: (connected, wsClients) => set({
+    engineConnected: connected,
+    wsClientCount: wsClients ?? 0,
+    // Generate presence entries from WS client count
+    users: connected && wsClients
+      ? Array.from({ length: wsClients }, (_, i) => ({
+          id: `ws-${i}`,
+          name: `Client ${i + 1}`,
+          avatar: `C${i + 1}`,
+          color: ['#3B82F6', '#10B981', '#D4A843', '#EF4444', '#8B5CF6'][i % 5],
+          currentView: 'dashboard',
+          lastSeen: Date.now(),
+        }))
+      : [],
+  }),
 }));
-
-// Simulate random view changes every 15-30s
-if (typeof window !== 'undefined') {
-  const views = ['chat', 'stories', 'dashboard', 'monitor', 'roadmap'];
-  setInterval(() => {
-    usePresenceStore.setState((state) => ({
-      users: state.users.map((u) =>
-        Math.random() > 0.7
-          ? { ...u, currentView: views[Math.floor(Math.random() * views.length)], lastSeen: Date.now() }
-          : u
-      ),
-    }));
-  }, 20000);
-}

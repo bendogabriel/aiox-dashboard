@@ -28,6 +28,7 @@ const tag = (Tag: string) =>
 vi.mock('framer-motion', () => ({
   motion: {
     div: tag('div'), button: tag('button'), span: tag('span'),
+    h3: tag('h3'), p: tag('p'), h2: tag('h2'), section: tag('section'),
     svg: tag('svg'), circle: tag('circle'), g: tag('g'),
     tr: tag('tr'), path: tag('path'), line: tag('line'), text: tag('text'),
     rect: tag('rect'), polygon: tag('polygon'), polyline: tag('polyline'),
@@ -331,14 +332,14 @@ describe('MCPTab', () => {
     expect(screen.getByText('Tools Mais Usadas')).toBeTruthy();
   });
 
-  it('falls back to demo data when hooks return null', async () => {
+  it('shows offline state when hooks return null', async () => {
     mockMcpServers = null;
     mockMcpStats = null;
     const { MCPTab } = await import('../MCPTab');
     render(<MCPTab />);
-    // Demo fallback server names
-    expect(screen.getByText('context7')).toBeTruthy();
-    expect(screen.getByText('playwright')).toBeTruthy();
+    // Shows offline empty state instead of demo data
+    expect(screen.getByText('Engine not connected')).toBeTruthy();
+    // No demo data shown
   });
 
   it('shows empty tools message when topTools is empty', async () => {
@@ -377,7 +378,7 @@ describe('SystemTab', () => {
   it('renders service health section with service names', async () => {
     const { SystemTab } = await import('../SystemTab');
     render(<SystemTab />);
-    expect(screen.getByText('Status dos Serviços')).toBeTruthy();
+    expect(screen.getByText('Status dos Servicos')).toBeTruthy();
     expect(screen.getByText('API Gateway')).toBeTruthy();
     expect(screen.getByText('Database')).toBeTruthy();
     expect(screen.getByText('Claude API')).toBeTruthy();
@@ -387,9 +388,9 @@ describe('SystemTab', () => {
   it('shows system info section with queue and connections', async () => {
     const { SystemTab } = await import('../SystemTab');
     render(<SystemTab />);
-    expect(screen.getByText('Informações do Sistema')).toBeTruthy();
-    expect(screen.getByText('Fila de Execução')).toBeTruthy();
-    expect(screen.getByText('Conexões Ativas')).toBeTruthy();
+    expect(screen.getByText('Informacoes do Sistema')).toBeTruthy();
+    expect(screen.getByText('Fila de Execucao')).toBeTruthy();
+    expect(screen.getByText('Conexoes Ativas')).toBeTruthy();
     expect(screen.getByText(/0 tarefas/)).toBeTruthy();
   });
 
@@ -400,20 +401,20 @@ describe('SystemTab', () => {
     expect(screen.getByText('API key not confi...')).toBeTruthy();
   });
 
-  it('falls back to demo data when hooks return null', async () => {
+  it('shows offline state when hooks return null', async () => {
     mockHealth = null;
     mockMetrics = null;
     mockLlmHealth = null;
     const { SystemTab } = await import('../SystemTab');
     render(<SystemTab />);
-    // Demo fallback values
-    expect(screen.getByText('3d 0h')).toBeTruthy();
-    expect(screen.getByText('API Gateway')).toBeTruthy();
+    // Shows offline empty state instead of demo data
+    expect(screen.getByText('Engine not connected')).toBeTruthy();
+    // No demo data shown
   });
 
-  it('displays dash values when metrics is falsy but no demo fallback override', async () => {
-    // SystemTab has fallback: rawMetrics || DEMO_METRICS
-    // When rawMetrics is null, it falls back to DEMO, so it always renders data.
+  it('renders without error when only metrics is null', async () => {
+    // When metrics is null but health/llm data is present, component still renders
+    // We verify the component renders without error in this scenario.
     // We verify the component renders without error in this scenario.
     mockMetrics = null;
     const { SystemTab } = await import('../SystemTab');

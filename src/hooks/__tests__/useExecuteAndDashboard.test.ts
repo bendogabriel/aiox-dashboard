@@ -838,20 +838,20 @@ describe('useMCPStatus', () => {
     expect(result.current.data).toEqual(mockServers);
   });
 
-  it('should return fallback data when fetch fails', async () => {
+  it('should return empty array when fetch fails', async () => {
     mockFetch.mockRejectedValue(new Error('Network error'));
 
     const { result } = renderHook(() => useMCPStatus(), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    // Fallback has 2 servers
-    expect(result.current.data).toHaveLength(2);
-    expect(result.current.data![0].name).toBe('mcp-scrapers');
-    expect(result.current.data![1].name).toBe('filesystem');
+    // No fallback data - returns empty array
+    expect(result.current.data).toHaveLength(0);
+    // No fallback servers
+
   });
 
-  it('should return fallback when response is not ok', async () => {
+  it('should return empty array when response is not ok', async () => {
     mockFetch.mockResolvedValue({
       ok: false,
       status: 500,
@@ -862,7 +862,7 @@ describe('useMCPStatus', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(result.current.data).toHaveLength(2);
+    expect(result.current.data).toHaveLength(0);
   });
 });
 
